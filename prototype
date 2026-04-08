@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrendPulse</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0e12; font-family: 'Noto Sans KR', -apple-system, sans-serif; }
+  ::-webkit-scrollbar { height: 0; width: 0; }
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const PLATFORMS = {
+  all: { label: "전체", icon: "🔥", color: "#FF4500" },
+  youtube: { label: "YouTube Shorts", icon: "▶️", color: "#FF0000" },
+  tiktok: { label: "TikTok", icon: "♪", color: "#00F2EA" },
+  instagram: { label: "Instagram Reels", icon: "◎", color: "#E1306C" },
+};
+
+const CATEGORIES = ["전체","먹방","뷰티","댄스","일상 브이로그","게임","운동","펫","유머","ASMR","DIY","음악"];
+
+const TRENDS_DATA = [
+  { id:1, platform:"youtube", title:"3초 만에 완성하는 초간단 김밥 레시피", creator:"@cook_master_kr", views:12400000, likes:890000, comments:45200, shares:120000, category:"먹방", growth:342, duration:"0:58", thumbnail:"🍱", trending_since:"2시간 전", tags:["#shorts","#김밥","#간단레시피","#요리"] },
+  { id:2, platform:"youtube", title:"강아지가 주인 출근할 때 하는 행동 ㅋㅋ", creator:"@puppy_daily", views:8700000, likes:720000, comments:38100, shares:95000, category:"펫", growth:287, duration:"0:45", thumbnail:"🐕", trending_since:"4시간 전", tags:["#shorts","#강아지","#댕댕이","#펫스타그램"] },
+  { id:3, platform:"youtube", title:"이 운동 하루 5분이면 뱃살 빠집니다", creator:"@fit_korea", views:6300000, likes:410000, comments:22000, shares:88000, category:"운동", growth:198, duration:"1:00", thumbnail:"💪", trending_since:"6시간 전", tags:["#shorts","#운동","#다이어트","#뱃살"] },
+  { id:4, platform:"youtube", title:"갑자기 랩 시작한 할머니 반응 ㅋㅋㅋ", creator:"@daily_humor", views:15200000, likes:1100000, comments:67000, shares:230000, category:"유머", growth:520, duration:"0:32", thumbnail:"😂", trending_since:"1시간 전", tags:["#shorts","#유머","#할머니","#랩"] },
+  { id:5, platform:"youtube", title:"ASMR 한국 편의점 먹방 🇰🇷", creator:"@asmr_heaven", views:4100000, likes:290000, comments:15600, shares:42000, category:"ASMR", growth:156, duration:"0:59", thumbnail:"🎧", trending_since:"8시간 전", tags:["#shorts","#ASMR","#편의점","#먹방"] },
+  { id:6, platform:"youtube", title:"100원으로 명품 느낌 인테리어 DIY", creator:"@diy_queen", views:3800000, likes:265000, comments:18900, shares:67000, category:"DIY", growth:134, duration:"0:55", thumbnail:"🔨", trending_since:"10시간 전", tags:["#shorts","#DIY","#인테리어","#꿀팁"] },
+  { id:7, platform:"tiktok", title:"이 댄스 챌린지 아직도 안 해봤어? 🔥", creator:"@dance_king_kr", views:22000000, likes:2400000, comments:89000, shares:450000, category:"댄스", growth:680, duration:"0:15", thumbnail:"💃", trending_since:"30분 전", tags:["#댄스챌린지","#틱톡","#fyp","#viral"] },
+  { id:8, platform:"tiktok", title:"하루 만에 피부가 달라지는 루틴", creator:"@beauty_guru_kr", views:9800000, likes:870000, comments:42000, shares:156000, category:"뷰티", growth:412, duration:"0:22", thumbnail:"✨", trending_since:"2시간 전", tags:["#뷰티","#스킨케어","#피부관리","#꿀팁"] },
+  { id:9, platform:"tiktok", title:"요즘 MZ 출근 브이로그 현실.zip", creator:"@office_life_kr", views:7200000, likes:590000, comments:35000, shares:110000, category:"일상 브이로그", growth:345, duration:"0:30", thumbnail:"💼", trending_since:"3시간 전", tags:["#브이로그","#출근","#MZ세대","#직장인"] },
+  { id:10, platform:"tiktok", title:"게임하다 소름끼친 순간 TOP3", creator:"@game_master", views:5500000, likes:380000, comments:28000, shares:72000, category:"게임", growth:234, duration:"0:28", thumbnail:"🎮", trending_since:"5시간 전", tags:["#게임","#소름","#TOP3","#gaming"] },
+  { id:11, platform:"tiktok", title:"이 노래 기타로 치면 분위기 미침", creator:"@music_vibe", views:11000000, likes:950000, comments:51000, shares:180000, category:"음악", growth:478, duration:"0:18", thumbnail:"🎸", trending_since:"1시간 전", tags:["#음악","#기타","#커버","#감성"] },
+  { id:12, platform:"tiktok", title:"편의점 신상 조합 역대급 발견 ㅋㅋ", creator:"@food_finder", views:6800000, likes:520000, comments:31000, shares:94000, category:"먹방", growth:289, duration:"0:25", thumbnail:"🏪", trending_since:"4시간 전", tags:["#편의점","#신상","#먹방","#조합"] },
+  { id:13, platform:"instagram", title:"올봄 데일리룩 코디 모음.zip 🌸", creator:"@fashion_daily_kr", views:4500000, likes:340000, comments:19000, shares:78000, category:"뷰티", growth:198, duration:"0:20", thumbnail:"👗", trending_since:"3시간 전", tags:["#데일리룩","#코디","#봄패션","#ootd"] },
+  { id:14, platform:"instagram", title:"카페 사장님이 알려주는 홈카페 꿀팁", creator:"@cafe_owner_tips", views:3200000, likes:245000, comments:14500, shares:56000, category:"일상 브이로그", growth:167, duration:"0:35", thumbnail:"☕", trending_since:"6시간 전", tags:["#홈카페","#카페","#꿀팁","#커피"] },
+  { id:15, platform:"instagram", title:"고양이와 함께하는 아침 루틴 🐱", creator:"@cat_morning", views:5800000, likes:480000, comments:27000, shares:89000, category:"펫", growth:256, duration:"0:40", thumbnail:"🐱", trending_since:"2시간 전", tags:["#고양이","#모닝루틴","#캣스타그램","#일상"] },
+  { id:16, platform:"instagram", title:"서울 야경 타임랩스 🌃", creator:"@seoul_night", views:2800000, likes:210000, comments:11200, shares:45000, category:"일상 브이로그", growth:145, duration:"0:28", thumbnail:"🌃", trending_since:"8시간 전", tags:["#서울","#야경","#타임랩스","#사진"] },
+  { id:17, platform:"instagram", title:"3분 복근 운동 챌린지 💥", creator:"@gym_daily", views:4100000, likes:310000, comments:18000, shares:67000, category:"운동", growth:189, duration:"0:30", thumbnail:"🏋️", trending_since:"4시간 전", tags:["#운동","#복근","#챌린지","#헬스"] },
+  { id:18, platform:"instagram", title:"요즘 핫한 디저트 맛집 리뷰", creator:"@dessert_lover", views:3600000, likes:275000, comments:16000, shares:52000, category:"먹방", growth:178, duration:"0:45", thumbnail:"🍰", trending_since:"5시간 전", tags:["#디저트","#맛집","#리뷰","#카페투어"] },
+];
+
+function formatNumber(num) {
+  if (num >= 10000000) return (num / 10000000).toFixed(1) + "천만";
+  if (num >= 10000) return (num / 10000).toFixed(1) + "만";
+  if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+  return num.toString();
+}
+
+function EngagementBar({ label, value, max, color }) {
+  const pct = Math.min((value / max) * 100, 100);
+  return (
+    <div style={{ marginBottom: 6 }}>
+      <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, color:"#8a8f98", marginBottom:3 }}>
+        <span>{label}</span>
+        <span style={{ color:"#c0c4cc" }}>{formatNumber(value)}</span>
+      </div>
+      <div style={{ height:4, background:"#1e2028", borderRadius:2, overflow:"hidden" }}>
+        <div style={{ width:`${pct}%`, height:"100%", background:`linear-gradient(90deg, ${color}, ${color}88)`, borderRadius:2, transition:"width 0.6s ease" }} />
+      </div>
+    </div>
+  );
+}
+
+function TrendCard({ item, index, onClick }) {
+  const platformColor = PLATFORMS[item.platform]?.color || "#fff";
+  return (
+    <div
+      onClick={() => onClick(item)}
+      style={{
+        background:"linear-gradient(135deg, #16171d 0%, #1a1b23 100%)",
+        border:"1px solid #2a2b35", borderRadius:16, padding:20,
+        cursor:"pointer", transition:"all 0.3s ease", position:"relative", overflow:"hidden",
+        animationName:"fadeSlideUp", animationDuration:"0.5s", animationTimingFunction:"ease-out",
+        animationFillMode:"both", animationDelay:`${index * 0.05}s`,
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.border = `1px solid ${platformColor}55`;
+        e.currentTarget.style.transform = "translateY(-2px)";
+        e.currentTarget.style.boxShadow = `0 8px 32px ${platformColor}15`;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.border = "1px solid #2a2b35";
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+    >
+      <div style={{ position:"absolute", top:12, right:12, background: index < 3 ? `linear-gradient(135deg, ${platformColor}, ${platformColor}aa)` : "#2a2b35", color: index < 3 ? "#fff" : "#8a8f98", fontSize:11, fontWeight:700, padding:"3px 8px", borderRadius:6 }}>
+        #{index + 1}
+      </div>
+      <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+        <span style={{ background:`${platformColor}20`, color:platformColor, fontSize:10, fontWeight:600, padding:"3px 8px", borderRadius:4, letterSpacing:0.5, textTransform:"uppercase" }}>
+          {PLATFORMS[item.platform]?.icon} {PLATFORMS[item.platform]?.label}
+        </span>
+        <span style={{ fontSize:10, color:"#555" }}>•</span>
+        <span style={{ fontSize:10, color:"#6a6f7a" }}>{item.trending_since}</span>
+      </div>
+      <div style={{ display:"flex", gap:14, marginBottom:14 }}>
+        <div style={{ width:56, height:56, borderRadius:12, background:`linear-gradient(135deg, ${platformColor}25, ${platformColor}08)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, flexShrink:0 }}>
+          {item.thumbnail}
+        </div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:14, fontWeight:600, color:"#e8eaed", lineHeight:1.4, marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
+            {item.title}
+          </div>
+          <div style={{ fontSize:12, color:"#6a6f7a" }}>{item.creator}</div>
+        </div>
+      </div>
+      <div style={{ display:"flex", gap:12, marginBottom:14 }}>
+        {[{ label:"조회수", value:item.views, icon:"👁" }, { label:"좋아요", value:item.likes, icon:"❤" }, { label:"공유", value:item.shares, icon:"↗" }].map((s, i) => (
+          <div key={i} style={{ flex:1, textAlign:"center", padding:"8px 0", background:"#12131a", borderRadius:8 }}>
+            <div style={{ fontSize:10, color:"#555", marginBottom:2 }}>{s.icon} {s.label}</div>
+            <div style={{ fontSize:13, fontWeight:700, color:"#e0e2e8" }}>{formatNumber(s.value)}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+          {item.tags.slice(0, 2).map((tag, i) => (
+            <span key={i} style={{ fontSize:10, color:"#5a5f6a", background:"#1e1f28", padding:"2px 6px", borderRadius:4 }}>{tag}</span>
+          ))}
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:4, color: item.growth > 300 ? "#FF4444" : item.growth > 200 ? "#FF8C00" : "#4CAF50", fontSize:12, fontWeight:700 }}>
+          <span style={{ fontSize:14 }}>↑</span>
+          {item.growth}%
+          <span style={{ fontSize:9, fontWeight:400, color:"#555" }}>성장률</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DetailModal({ item, onClose }) {
+  if (!item) return null;
+  const platformColor = PLATFORMS[item.platform]?.color || "#fff";
+  const engagementRate = ((item.likes + item.comments + item.shares) / item.views * 100).toFixed(1);
+  const maxStat = Math.max(item.likes, item.comments, item.shares);
+  return (
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.75)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:20 }}>
+      <div onClick={e => e.stopPropagation()} style={{ background:"linear-gradient(160deg, #16171d 0%, #1a1b23 100%)", border:`1px solid ${platformColor}33`, borderRadius:20, padding:28, maxWidth:480, width:"100%", maxHeight:"85vh", overflowY:"auto", boxShadow:`0 24px 80px ${platformColor}20` }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
+          <span style={{ background:`${platformColor}20`, color:platformColor, fontSize:11, fontWeight:600, padding:"4px 10px", borderRadius:6 }}>
+            {PLATFORMS[item.platform]?.icon} {PLATFORMS[item.platform]?.label}
+          </span>
+          <button onClick={onClose} style={{ background:"#2a2b35", border:"none", color:"#8a8f98", fontSize:18, width:32, height:32, borderRadius:8, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>×</button>
+        </div>
+        <div style={{ display:"flex", gap:16, marginBottom:24 }}>
+          <div style={{ width:72, height:72, borderRadius:16, background:`linear-gradient(135deg, ${platformColor}30, ${platformColor}08)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:36, flexShrink:0 }}>{item.thumbnail}</div>
+          <div>
+            <h2 style={{ fontSize:17, fontWeight:700, color:"#e8eaed", lineHeight:1.4, margin:0 }}>{item.title}</h2>
+            <p style={{ fontSize:13, color:"#6a6f7a", margin:"6px 0 0" }}>{item.creator} • {item.duration} • {item.trending_since}</p>
+          </div>
+        </div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:24 }}>
+          {[{ label:"총 조회수", value:formatNumber(item.views), sub:`↑${item.growth}%` }, { label:"참여율", value:`${engagementRate}%`, sub:"Engagement" }, { label:"카테고리", value:item.category, sub:"Category" }].map((m, i) => (
+            <div key={i} style={{ textAlign:"center", padding:"14px 8px", background:"#12131a", borderRadius:12 }}>
+              <div style={{ fontSize:10, color:"#555", marginBottom:4 }}>{m.label}</div>
+              <div style={{ fontSize:16, fontWeight:700, color:"#e8eaed" }}>{m.value}</div>
+              <div style={{ fontSize:10, color:platformColor, marginTop:2 }}>{m.sub}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginBottom:24 }}>
+          <h3 style={{ fontSize:12, fontWeight:600, color:"#8a8f98", marginBottom:12, textTransform:"uppercase", letterSpacing:1 }}>참여도 분석</h3>
+          <EngagementBar label="❤ 좋아요" value={item.likes} max={maxStat} color="#FF4444" />
+          <EngagementBar label="💬 댓글" value={item.comments} max={maxStat} color="#4488FF" />
+          <EngagementBar label="↗ 공유" value={item.shares} max={maxStat} color="#44CC88" />
+        </div>
+        <div>
+          <h3 style={{ fontSize:12, fontWeight:600, color:"#8a8f98", marginBottom:10, textTransform:"uppercase", letterSpacing:1 }}>해시태그</h3>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:6 }}>
+            {item.tags.map((tag, i) => (
+              <span key={i} style={{ fontSize:12, color:platformColor, background:`${platformColor}12`, padding:"4px 10px", borderRadius:6, border:`1px solid ${platformColor}20` }}>{tag}</span>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop:20, padding:16, background:`${platformColor}08`, borderRadius:12, border:`1px solid ${platformColor}15` }}>
+          <div style={{ fontSize:11, fontWeight:600, color:platformColor, marginBottom:6 }}>💡 크리에이터 인사이트</div>
+          <div style={{ fontSize:12, color:"#8a8f98", lineHeight:1.6 }}>
+            이 콘텐츠는 <strong style={{ color:"#c0c4cc" }}>{item.category}</strong> 카테고리에서 상위 {item.growth > 300 ? "1%" : item.growth > 200 ? "5%" : "10%"} 성장률을 기록 중입니다.
+            참여율 <strong style={{ color:"#c0c4cc" }}>{engagementRate}%</strong>는 평균 대비 {parseFloat(engagementRate) > 10 ? "매우 높은" : parseFloat(engagementRate) > 5 ? "높은" : "양호한"} 수준입니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TrendPulse() {
+  const [activePlatform, setActivePlatform] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("전체");
+  const [sortBy, setSortBy] = useState("growth");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const catScrollRef = useRef(null);
+
+  useEffect(() => { setIsLoaded(true); }, []);
+
+  const filtered = TRENDS_DATA
+    .filter(item => activePlatform === "all" || item.platform === activePlatform)
+    .filter(item => activeCategory === "전체" || item.category === activeCategory)
+    .filter(item => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return item.title.toLowerCase().includes(q) || item.creator.toLowerCase().includes(q) || item.tags.some(t => t.toLowerCase().includes(q));
+    })
+    .sort((a, b) => {
+      if (sortBy === "growth") return b.growth - a.growth;
+      if (sortBy === "views") return b.views - a.views;
+      if (sortBy === "engagement") {
+        return ((b.likes+b.comments+b.shares)/b.views) - ((a.likes+a.comments+a.shares)/a.views);
+      }
+      return 0;
+    });
+
+  const totalViews = filtered.reduce((sum, i) => sum + i.views, 0);
+  const avgGrowth = filtered.length ? Math.round(filtered.reduce((sum, i) => sum + i.growth, 0) / filtered.length) : 0;
+  const topCategory = (() => {
+    const counts = {};
+    filtered.forEach(i => { counts[i.category] = (counts[i.category] || 0) + 1; });
+    return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+  })();
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(180deg, #0d0e12 0%, #111218 50%, #0d0e12 100%)", color:"#e8eaed", fontFamily:"'Noto Sans KR', -apple-system, sans-serif" }}>
+      <div style={{ padding:"28px 24px 0", opacity: isLoaded ? 1 : 0, transition:"opacity 0.6s ease" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
+          <div style={{ width:8, height:8, borderRadius:"50%", background:"#FF4500", animation:"pulse 2s ease-in-out infinite" }} />
+          <span style={{ fontSize:11, color:"#FF4500", fontWeight:600, letterSpacing:2, textTransform:"uppercase" }}>LIVE TRENDING</span>
+        </div>
+        <h1 style={{ fontSize:32, fontWeight:900, margin:"8px 0 6px", background:"linear-gradient(135deg, #e8eaed 0%, #8a8f98 100%)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", letterSpacing:-0.5 }}>TrendPulse</h1>
+        <p style={{ fontSize:13, color:"#5a5f6a", margin:0, lineHeight:1.5 }}>숏폼 플랫폼 트렌드를 한눈에 · 크리에이터를 위한 인사이트</p>
+      </div>
+
+      <div style={{ padding:"20px 24px 0" }}>
+        <div style={{ position:"relative", background:"#16171d", border:"1px solid #2a2b35", borderRadius:12 }}>
+          <span style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:16, color:"#4a4f5a" }}>🔍</span>
+          <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="제목, 크리에이터, 해시태그 검색..." style={{ width:"100%", padding:"13px 14px 13px 42px", background:"transparent", border:"none", outline:"none", color:"#e8eaed", fontSize:14 }} />
+        </div>
+      </div>
+
+      <div style={{ padding:"16px 24px 0", display:"flex", gap:8, overflowX:"auto" }}>
+        {Object.entries(PLATFORMS).map(([key, p]) => (
+          <button key={key} onClick={() => setActivePlatform(key)} style={{ padding:"8px 14px", borderRadius:10, cursor:"pointer", fontSize:12, fontWeight:600, whiteSpace:"nowrap", flexShrink:0, transition:"all 0.2s ease", background: activePlatform===key ? `${p.color}20` : "#16171d", color: activePlatform===key ? p.color : "#6a6f7a", border: activePlatform===key ? `1px solid ${p.color}40` : "1px solid #2a2b35" }}>
+            {p.icon} {p.label}
+          </button>
+        ))}
+      </div>
+
+      <div ref={catScrollRef} style={{ padding:"12px 24px 0", display:"flex", gap:6, overflowX:"auto" }}>
+        {CATEGORIES.map(cat => (
+          <button key={cat} onClick={() => setActiveCategory(cat)} style={{ padding:"5px 12px", borderRadius:20, border:"none", cursor:"pointer", fontSize:11, fontWeight:500, whiteSpace:"nowrap", flexShrink:0, background: activeCategory===cat ? "#e8eaed" : "transparent", color: activeCategory===cat ? "#0d0e12" : "#5a5f6a", transition:"all 0.2s" }}>
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ padding:"16px 24px 0", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <span style={{ fontSize:12, color:"#5a5f6a" }}>{filtered.length}개 트렌딩 콘텐츠</span>
+        <div style={{ display:"flex", gap:4 }}>
+          {[{ key:"growth", label:"성장률순" }, { key:"views", label:"조회수순" }, { key:"engagement", label:"참여율순" }].map(s => (
+            <button key={s.key} onClick={() => setSortBy(s.key)} style={{ padding:"4px 10px", borderRadius:6, border:"none", cursor:"pointer", fontSize:11, fontWeight:500, background: sortBy===s.key ? "#2a2b35" : "transparent", color: sortBy===s.key ? "#e8eaed" : "#5a5f6a" }}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding:"16px 24px 0", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+        {[{ label:"총 조회수", value:formatNumber(totalViews), color:"#FF4500" }, { label:"평균 성장률", value:`${avgGrowth}%`, color:"#4CAF50" }, { label:"인기 카테고리", value:topCategory, color:"#4488FF" }].map((s, i) => (
+          <div key={i} style={{ textAlign:"center", padding:"14px 8px", borderRadius:12, background:"linear-gradient(135deg, #16171d, #1a1b23)", border:"1px solid #2a2b35" }}>
+            <div style={{ fontSize:10, color:"#5a5f6a", marginBottom:4 }}>{s.label}</div>
+            <div style={{ fontSize:16, fontWeight:700, color:s.color }}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding:"20px 24px 40px", display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(320px, 1fr))", gap:14 }}>
+        {filtered.map((item, i) => (
+          <TrendCard key={item.id} item={item} index={i} onClick={setSelectedItem} />
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ gridColumn:"1/-1", textAlign:"center", padding:"60px 20px", color:"#4a4f5a" }}>
+            <div style={{ fontSize:40, marginBottom:12 }}>🔍</div>
+            <div style={{ fontSize:14 }}>검색 결과가 없습니다</div>
+          </div>
+        )}
+      </div>
+
+      {selectedItem && <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<TrendPulse />);
+</script>
+</body>
+</html>

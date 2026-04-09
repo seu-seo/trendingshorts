@@ -268,6 +268,10 @@ Secondary Hypothesis (에이카랩스 파일럿)
 Step 1.  에이카랩스에서 트렌드 기반 소재 5개 이상 제작·집행
 Step 2.  기존 소재(대조군)와 CTR · CVR · ROAS 비교
 Step 3.  플랫폼별 평균 인게이지먼트 기준점 대비 성과 측정
+         - YouTube Shorts: 5.91% 초과 여부 (Social Insider, 2026)
+         - TikTok: 3.70% 초과 여부 (Social Insider, 2025)
+         - Instagram Reels: 1.23% 초과 여부 (Social Insider, 2026)
+         - 측정 도구: 각 플랫폼 네이티브 분석 + Google Sheets 통합
 Step 4.  크리에이터 케이스 3건 이상 수집 (트렌드 파악 전후 비교)
 Step 5.  2주 단위로 결과 검토, 다음 소재 방향 조정
 ```

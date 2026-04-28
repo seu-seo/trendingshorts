@@ -1,0 +1,764 @@
+{
+  "is_mock": true,
+  "updated_at": "2026-04-28",
+  "source": "TrendingShorts categories — Mock data (업계 벤치마크 기반)",
+  "categories": [
+    {
+      "id": "food",
+      "name": "먹방",
+      "icon": "🍔",
+      "description": "음식 콘텐츠 5개 서브 분류",
+      "subcategories": [
+        {
+          "id": "food-korean",
+          "name": "한식",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.5 },
+            "tiktok":    { "engagement_rate": 5.2 },
+            "instagram": { "engagement_rate": 4.1 }
+          },
+          "insight": "검색 유입과 '저장 후 다시 보기' 비율이 높아 YouTube의 레시피·리뷰 알고리즘과 잘 맞아요. 재료 자막을 첫 3초에 띄워 재방문율을 높이세요.",
+          "success_examples": [
+            { "title": "새벽 자취 김치찌개 ASMR", "avg_engagement": 8.2, "pattern": "첫 5초 끓는 소리 + 재료 자막 훅" },
+            { "title": "할머니표 잡채 만드는 법", "avg_engagement": 7.8, "pattern": "친근한 톤 내레이션 + 클로즈업 컷" },
+            { "title": "1분 비빔밥 완성하기", "avg_engagement": 7.4, "pattern": "타임랩스 + 마지막 한 입 풀샷" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "식재료 클로즈업 + 조리 과정",
+            "music": "차분한 BGM 또는 ASMR 사운드",
+            "hashtags": ["#먹방", "#한식", "#쿠킹", "#레시피"]
+          }
+        },
+        {
+          "id": "food-western",
+          "name": "양식",
+          "platforms": {
+            "youtube":   { "engagement_rate": 6.8 },
+            "tiktok":    { "engagement_rate": 5.0 },
+            "instagram": { "engagement_rate": 4.5 }
+          },
+          "insight": "튜토리얼·리뷰 콘텐츠가 YouTube의 검색 유입과 강하게 연결돼요. 단계별 자막과 완성샷 비교를 함께 보여주세요.",
+          "success_examples": [
+            { "title": "5분 까르보나라 마스터", "avg_engagement": 7.2, "pattern": "단계별 자막 + 완성샷 풀스크린" },
+            { "title": "토마토 파스타 정석 레시피", "avg_engagement": 6.9, "pattern": "재료 그램 표시 + 조리 타임라인" },
+            { "title": "홈메이드 뉴욕 스테이크", "avg_engagement": 7.0, "pattern": "레어/미디엄/웰던 비교컷" }
+          ],
+          "format_tips": {
+            "length": "60-120초",
+            "style": "단계별 컷 + 완성샷 풀스크린",
+            "music": "캐주얼 BGM",
+            "hashtags": ["#양식", "#쿠킹", "#홈쿡", "#recipe"]
+          }
+        },
+        {
+          "id": "food-dessert",
+          "name": "디저트",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.6 },
+            "tiktok":    { "engagement_rate": 6.2 },
+            "instagram": { "engagement_rate": 8.3 }
+          },
+          "insight": "고화질 디저트 컷과 정사각 비주얼이 IG saves와 친구 공유 비율을 높여요. 광택과 텍스처를 강조하세요.",
+          "success_examples": [
+            { "title": "노오븐 티라미수 컵", "avg_engagement": 9.0, "pattern": "정사각 풀샷 + 슬로우모션 한 입" },
+            { "title": "수제 마카롱 컬러팔레트", "avg_engagement": 8.7, "pattern": "9분할 그리드 컴포지션" },
+            { "title": "초코 크럼블 라떼", "avg_engagement": 8.1, "pattern": "위에서 본 탑뷰 + 광택 강조" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "정사각 비주얼 + 슬로우모션 한 입",
+            "music": "카페 분위기 BGM",
+            "hashtags": ["#디저트", "#홈베이킹", "#dessert", "#foodporn"]
+          }
+        },
+        {
+          "id": "food-snack",
+          "name": "분식",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.4 },
+            "tiktok":    { "engagement_rate": 8.5 },
+            "instagram": { "engagement_rate": 5.8 }
+          },
+          "insight": "MZ 세대의 짧은 호흡과 트렌드 사운드 활용이 TikTok에서 효과적이에요. 분식 특유의 비주얼·조합 쇼츠가 fyp 알고리즘과 잘 맞아요.",
+          "success_examples": [
+            { "title": "신상 떡볶이 조합 리뷰", "avg_engagement": 9.1, "pattern": "빠른 컷 전환 + 트렌드 사운드" },
+            { "title": "편의점 라볶이 챌린지", "avg_engagement": 8.7, "pattern": "MZ 톤 자막 + 표정 클로즈업" },
+            { "title": "1분 김밥 6종", "avg_engagement": 8.3, "pattern": "타임랩스 + 점프컷 모음" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "빠른 컷 + 표정 클로즈업",
+            "music": "트렌딩 사운드",
+            "hashtags": ["#분식", "#떡볶이", "#fyp", "#먹방"]
+          }
+        },
+        {
+          "id": "food-night",
+          "name": "야식",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.8 },
+            "tiktok":    { "engagement_rate": 9.2 },
+            "instagram": { "engagement_rate": 6.0 }
+          },
+          "insight": "늦은 시간 fyp 알고리즘이 야식 콘텐츠 노출에 우호적이에요. ASMR 요소와 자극적인 비주얼이 완시청률을 끌어올려요.",
+          "success_examples": [
+            { "title": "새벽 1시 라면 3종", "avg_engagement": 9.8, "pattern": "ASMR 사운드 + 김 모락모락 클로즈업" },
+            { "title": "치킨+맥주 페어링", "avg_engagement": 9.4, "pattern": "튀김 소리 강조 + 한 입 컷" },
+            { "title": "야식 BEST 5", "avg_engagement": 8.9, "pattern": "순위 카운트다운 + 요약 자막" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "ASMR + 자극적 비주얼",
+            "music": "야식 ASMR 사운드",
+            "hashtags": ["#야식", "#먹방", "#ASMR", "#latenight"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "beauty",
+      "name": "뷰티",
+      "icon": "💄",
+      "description": "메이크업·스킨케어 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "beauty-makeup",
+          "name": "메이크업",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.6 },
+            "tiktok":    { "engagement_rate": 6.4 },
+            "instagram": { "engagement_rate": 8.5 }
+          },
+          "insight": "비포·애프터와 정지컷 활용이 IG의 saves와 친구 공유에 강력해요. 풀샷 + 부분 클로즈업 조합을 추천합니다.",
+          "success_examples": [
+            { "title": "5분 데일리 메이크업", "avg_engagement": 9.2, "pattern": "비포·애프터 + 풀샷 회전" },
+            { "title": "여름 글래스 메이크업", "avg_engagement": 8.7, "pattern": "포커스 풀링 + 광택 강조" },
+            { "title": "직장인 노메이크업 룩", "avg_engagement": 8.4, "pattern": "스텝별 자막 + 정사각 프레임" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "비포·애프터 + 부분 클로즈업",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#메이크업", "#뷰티", "#makeup", "#beauty"]
+          }
+        },
+        {
+          "id": "beauty-skincare",
+          "name": "스킨케어",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.2 },
+            "tiktok":    { "engagement_rate": 4.8 },
+            "instagram": { "engagement_rate": 5.5 }
+          },
+          "insight": "성분·루틴 정보 콘텐츠는 YouTube 검색 유입과 '저장' 비율이 높아요. 자막에 제품명과 단계를 명확히 표기하세요.",
+          "success_examples": [
+            { "title": "여드름 피부 5단계 루틴", "avg_engagement": 7.9, "pattern": "단계 자막 + 제품 클로즈업" },
+            { "title": "성분별 비교 가이드", "avg_engagement": 7.5, "pattern": "정보 자막 + 비교 차트" },
+            { "title": "건성 vs 지성 케어법", "avg_engagement": 7.2, "pattern": "타입별 분할 화면" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "단계별 자막 + 제품 클로즈업",
+            "music": "차분한 BGM",
+            "hashtags": ["#스킨케어", "#뷰티", "#피부관리", "#skincare"]
+          }
+        },
+        {
+          "id": "beauty-hair",
+          "name": "헤어",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.2 },
+            "tiktok":    { "engagement_rate": 6.0 },
+            "instagram": { "engagement_rate": 7.8 }
+          },
+          "insight": "헤어 변신 비포·애프터는 IG의 시각 알고리즘과 잘 맞아요. 정사각 + 회전 컷이 효과적입니다.",
+          "success_examples": [
+            { "title": "5분 셀프 컬링", "avg_engagement": 8.4, "pattern": "비포·애프터 + 풀샷 회전" },
+            { "title": "단발 셀프 컷", "avg_engagement": 8.0, "pattern": "타임랩스 + 마무리 컷 강조" },
+            { "title": "헤어 컬러 트렌드 5", "avg_engagement": 7.6, "pattern": "그리드 분할 + 색상 비교" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "비포·애프터 + 360 회전",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#헤어", "#헤어스타일", "#뷰티", "#hairstyle"]
+          }
+        },
+        {
+          "id": "beauty-nail",
+          "name": "네일",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.4 },
+            "tiktok":    { "engagement_rate": 6.8 },
+            "instagram": { "engagement_rate": 8.9 }
+          },
+          "insight": "네일은 마이크로 비주얼의 끝판왕이에요. 매크로 렌즈 클로즈업과 디테일 텍스처가 IG saves를 끌어올려요.",
+          "success_examples": [
+            { "title": "젤네일 그라데이션", "avg_engagement": 9.5, "pattern": "매크로 클로즈업 + 슬로우 회전" },
+            { "title": "여름 네일 디자인 5", "avg_engagement": 9.1, "pattern": "그리드 비교 + 컬러팔레트" },
+            { "title": "셀프 네일 케어 가이드", "avg_engagement": 8.6, "pattern": "단계별 자막 + 클로즈업" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "매크로 클로즈업 + 슬로우 회전",
+            "music": "차분한 BGM",
+            "hashtags": ["#네일", "#젤네일", "#nailart", "#뷰티"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "fashion",
+      "name": "패션",
+      "icon": "👗",
+      "description": "코디·룩북 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "fashion-ootd",
+          "name": "OOTD",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.2 },
+            "tiktok":    { "engagement_rate": 6.5 },
+            "instagram": { "engagement_rate": 8.7 }
+          },
+          "insight": "데일리 코디는 #ootd #데일리룩 해시태그 누적과 saves가 강력해요. 풀샷 정사각 + 360 회전 컷 조합이 효과적입니다.",
+          "success_examples": [
+            { "title": "오피스 데일리룩", "avg_engagement": 9.2, "pattern": "풀샷 + 360 회전 + 아이템 태그" },
+            { "title": "주말 캐주얼 룩", "avg_engagement": 8.8, "pattern": "비포·애프터 + 코디 비교" },
+            { "title": "MZ 미니멀 룩", "avg_engagement": 8.5, "pattern": "정사각 9분할 + 깔끔한 조명" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "풀샷 + 360 회전",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#ootd", "#데일리룩", "#fashion", "#styling"]
+          }
+        },
+        {
+          "id": "fashion-lookbook",
+          "name": "룩북",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.8 },
+            "tiktok":    { "engagement_rate": 6.2 },
+            "instagram": { "engagement_rate": 8.4 }
+          },
+          "insight": "시즌 룩북은 IG의 시각 매력과 Reels 친구 공유 비율이 높아요. 통일된 무드보드와 컬러 톤이 핵심입니다.",
+          "success_examples": [
+            { "title": "봄 룩북 5종", "avg_engagement": 8.9, "pattern": "야외 풀샷 + 통일된 무드" },
+            { "title": "여름 비치 룩북", "avg_engagement": 8.5, "pattern": "햇살 톤 + 자연 배경" },
+            { "title": "데이트 룩 컬렉션", "avg_engagement": 8.2, "pattern": "정사각 풀샷 + 워킹 컷" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "야외 풀샷 + 워킹 컷",
+            "music": "무드 BGM",
+            "hashtags": ["#룩북", "#lookbook", "#fashion", "#ootd"]
+          }
+        },
+        {
+          "id": "fashion-seasonal",
+          "name": "시즌 코디",
+          "platforms": {
+            "youtube":   { "engagement_rate": 6.5 },
+            "tiktok":    { "engagement_rate": 4.8 },
+            "instagram": { "engagement_rate": 5.6 }
+          },
+          "insight": "시즌별 코디 가이드와 아이템 추천 정보는 YouTube 검색 유입과 잘 맞아요. 풀버전 룩 + 가격대 정보를 함께 제공하세요.",
+          "success_examples": [
+            { "title": "초가을 코디 10가지", "avg_engagement": 7.0, "pattern": "아이템별 분할 + 가격 자막" },
+            { "title": "겨울 아우터 가이드", "avg_engagement": 6.7, "pattern": "타입별 비교 + 추천 시즌" },
+            { "title": "환절기 레이어드 룩", "avg_engagement": 6.4, "pattern": "단계별 레이어 + 풀샷" }
+          ],
+          "format_tips": {
+            "length": "60-120초",
+            "style": "아이템별 분할 + 풀샷",
+            "music": "캐주얼 BGM",
+            "hashtags": ["#시즌코디", "#fashion", "#styling", "#ootd"]
+          }
+        },
+        {
+          "id": "fashion-vintage",
+          "name": "빈티지",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.5 },
+            "tiktok":    { "engagement_rate": 7.6 },
+            "instagram": { "engagement_rate": 6.4 }
+          },
+          "insight": "빈티지·레트로 무드는 TikTok의 트렌드 감각과 사운드 활용으로 누적 바이럴이 가능해요. 자막 폰트와 필터로 무드를 강조하세요.",
+          "success_examples": [
+            { "title": "90s 레트로 룩 변신", "avg_engagement": 8.2, "pattern": "필터 + 레트로 폰트 자막" },
+            { "title": "구제 매장 하울", "avg_engagement": 7.9, "pattern": "트렌드 사운드 + 표정 컷" },
+            { "title": "빈티지 셋업 코디 5", "avg_engagement": 7.5, "pattern": "비포·애프터 + 무드 필터" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "빠른 컷 + 레트로 필터",
+            "music": "90s/00s 사운드",
+            "hashtags": ["#빈티지", "#vintage", "#fashion", "#y2k"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "dance",
+      "name": "댄스",
+      "icon": "💃",
+      "description": "안무·챌린지 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "dance-kpop",
+          "name": "K-pop 안무",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.2 },
+            "tiktok":    { "engagement_rate": 13.5 },
+            "instagram": { "engagement_rate": 6.8 }
+          },
+          "insight": "K-pop 안무 챌린지는 TikTok '사운드 사용하기' 기능으로 누적 바이럴이 가능해요. 첫 3초 훅 동작과 풀샷·얼굴샷 컷 분할이 효과적입니다.",
+          "success_examples": [
+            { "title": "신곡 안무 30초", "avg_engagement": 14.2, "pattern": "첫 3초 훅 + 카메라 회전" },
+            { "title": "그룹 안무 솔로 컷", "avg_engagement": 13.8, "pattern": "멤버별 분할 화면" },
+            { "title": "데뷔곡 챌린지", "avg_engagement": 13.5, "pattern": "원본 사운드 + 풀샷" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "풀샷 + 얼굴샷 컷 분할",
+            "music": "원본 K-pop 사운드",
+            "hashtags": ["#kpop", "#dance", "#fyp", "#챌린지"]
+          }
+        },
+        {
+          "id": "dance-challenge",
+          "name": "챌린지",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.0 },
+            "tiktok":    { "engagement_rate": 12.8 },
+            "instagram": { "engagement_rate": 6.5 }
+          },
+          "insight": "댄스 챌린지는 TikTok의 트렌드 사운드와 누적 참여 효과가 강력해요. 따라하기 쉬운 동작과 명확한 카운트가 핵심입니다.",
+          "success_examples": [
+            { "title": "이번주 핫 챌린지", "avg_engagement": 13.5, "pattern": "따라하기 자막 + 트렌드 사운드" },
+            { "title": "친구와 듀엣 챌린지", "avg_engagement": 13.0, "pattern": "분할 화면 + 듀엣 기능" },
+            { "title": "30일 챌린지 기록", "avg_engagement": 12.5, "pattern": "타임랩스 + 진행 표시" }
+          ],
+          "format_tips": {
+            "length": "10-30초",
+            "style": "정면 풀샷 + 듀엣 기능 활용",
+            "music": "트렌드 사운드",
+            "hashtags": ["#challenge", "#dance", "#fyp", "#viral"]
+          }
+        },
+        {
+          "id": "dance-cover",
+          "name": "안무 커버",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.2 },
+            "tiktok":    { "engagement_rate": 6.5 },
+            "instagram": { "engagement_rate": 5.4 }
+          },
+          "insight": "원본 풀버전 안무 커버는 YouTube의 시청 시간 알고리즘과 잘 맞아요. 멤버별 의상·동작 비교가 효과적입니다.",
+          "success_examples": [
+            { "title": "걸그룹 풀안무 커버", "avg_engagement": 7.8, "pattern": "원본 비교 분할 + 풀샷" },
+            { "title": "레전드 안무 커버 5", "avg_engagement": 7.4, "pattern": "년도별 컴필레이션" },
+            { "title": "솔로 안무 풀카피", "avg_engagement": 7.0, "pattern": "한 컷 풀샷 + 의상 강조" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "원본 비교 분할 + 풀샷",
+            "music": "원본 사운드",
+            "hashtags": ["#dancecover", "#kpop", "#cover", "#dance"]
+          }
+        },
+        {
+          "id": "dance-freestyle",
+          "name": "프리스타일",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.8 },
+            "tiktok":    { "engagement_rate": 9.8 },
+            "instagram": { "engagement_rate": 6.2 }
+          },
+          "insight": "프리스타일은 개성과 즉흥성이 TikTok 사용자 취향과 잘 맞아요. 시그니처 무브와 개성 있는 표정이 핵심입니다.",
+          "success_examples": [
+            { "title": "거리에서 프리스타일", "avg_engagement": 10.5, "pattern": "도심 배경 + 시그니처 무브" },
+            { "title": "비트박스 + 댄스", "avg_engagement": 10.0, "pattern": "음악 매칭 + 즉흥 동작" },
+            { "title": "프리스타일 배틀", "avg_engagement": 9.6, "pattern": "1대1 분할 + 관객 리액션" }
+          ],
+          "format_tips": {
+            "length": "15-45초",
+            "style": "시그니처 무브 + 도심·스튜디오 배경",
+            "music": "힙합·EDM 사운드",
+            "hashtags": ["#freestyle", "#dance", "#hiphop", "#fyp"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "vlog",
+      "name": "일상 브이로그",
+      "icon": "📹",
+      "description": "데일리 vlog 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "vlog-office",
+          "name": "출근 vlog",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.5 },
+            "tiktok":    { "engagement_rate": 5.2 },
+            "instagram": { "engagement_rate": 7.8 }
+          },
+          "insight": "감성 직장인 일상은 IG의 saves와 친구 공유 비율이 높아요. 정사각 비율 + 자연광 + 잔잔한 BGM 조합이 효과적입니다.",
+          "success_examples": [
+            { "title": "MZ 출근 30분", "avg_engagement": 8.5, "pattern": "정사각 + 자연광 + 슬로우 컷" },
+            { "title": "오피스 데이 인 라이프", "avg_engagement": 8.0, "pattern": "9-to-6 시간 자막 + 잔잔한 BGM" },
+            { "title": "퇴근 후 카페 루틴", "avg_engagement": 7.7, "pattern": "노을 톤 필터 + 풍경 인서트" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "정사각 비율 + 자연광",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#vlog", "#직장인", "#ootd", "#daily"]
+          }
+        },
+        {
+          "id": "vlog-self",
+          "name": "자취 vlog",
+          "platforms": {
+            "youtube":   { "engagement_rate": 6.5 },
+            "tiktok":    { "engagement_rate": 4.8 },
+            "instagram": { "engagement_rate": 5.5 }
+          },
+          "insight": "자취 정보·팁 콘텐츠는 YouTube의 긴 호흡과 챕터형 자막에 잘 맞아요. 시간대별 챕터로 시청 완료율을 높이세요.",
+          "success_examples": [
+            { "title": "자취 1년 차 일상", "avg_engagement": 7.2, "pattern": "시간대 챕터 + 정보 자막" },
+            { "title": "원룸 인테리어 변화", "avg_engagement": 6.8, "pattern": "비포·애프터 + 가구 정보" },
+            { "title": "자취 가계부 공개", "avg_engagement": 6.5, "pattern": "숫자 강조 자막 + 그래프" }
+          ],
+          "format_tips": {
+            "length": "90-120초",
+            "style": "시간대 챕터 + 정보 자막",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#자취", "#vlog", "#자취생", "#daily"]
+          }
+        },
+        {
+          "id": "vlog-travel",
+          "name": "여행 vlog",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.2 },
+            "tiktok":    { "engagement_rate": 6.0 },
+            "instagram": { "engagement_rate": 8.3 }
+          },
+          "insight": "여행 비주얼은 IG의 시각 매력과 Reels의 음악 활용이 강력해요. 시그니처 풍경 + 식사 컷 조합을 추천합니다.",
+          "success_examples": [
+            { "title": "도쿄 3박 4일", "avg_engagement": 9.0, "pattern": "시그니처 풍경 + 푸드 클로즈업" },
+            { "title": "제주도 카페 투어", "avg_engagement": 8.6, "pattern": "정사각 + 컬러 톤 통일" },
+            { "title": "유럽 한 달 살기", "avg_engagement": 8.2, "pattern": "도시별 인서트 + 무드 컷" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "시그니처 풍경 + 푸드 컷",
+            "music": "무드·시네마틱 BGM",
+            "hashtags": ["#travel", "#vlog", "#여행", "#daily"]
+          }
+        },
+        {
+          "id": "vlog-cafe",
+          "name": "카페 vlog",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.8 },
+            "tiktok":    { "engagement_rate": 5.6 },
+            "instagram": { "engagement_rate": 7.6 }
+          },
+          "insight": "카페 분위기 콘텐츠는 IG의 saves와 #카페 해시태그가 강력해요. 라떼아트와 인테리어 컷의 통일감이 핵심입니다.",
+          "success_examples": [
+            { "title": "성수동 카페 투어", "avg_engagement": 8.3, "pattern": "라떼아트 클로즈업 + 인테리어" },
+            { "title": "홈카페 만들기", "avg_engagement": 7.9, "pattern": "단계별 컷 + 완성샷" },
+            { "title": "카페 사장님 루틴", "avg_engagement": 7.5, "pattern": "백스테이지 + 음료 만드는 과정" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "라떼아트 + 인테리어 통일감",
+            "music": "카페 분위기 BGM",
+            "hashtags": ["#카페", "#cafe", "#홈카페", "#vlog"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "game",
+      "name": "게임",
+      "icon": "🎮",
+      "description": "게임 콘텐츠 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "game-review",
+          "name": "신작 리뷰",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.9 },
+            "tiktok":    { "engagement_rate": 4.6 },
+            "instagram": { "engagement_rate": 3.8 }
+          },
+          "insight": "게임 리뷰·정보 콘텐츠는 YouTube의 검색·관련영상 유입이 누적돼요. 점수표·장단점 자막 고정과 본편 리뷰 영상 링크로 시청 시간을 끌어올리세요.",
+          "success_examples": [
+            { "title": "신작 게임 30초 리뷰", "avg_engagement": 8.5, "pattern": "점수 자막 + 게임플레이 컷" },
+            { "title": "장단점 BEST 5", "avg_engagement": 8.1, "pattern": "리스트 자막 + 비교 컷" },
+            { "title": "신작 비교 리뷰", "avg_engagement": 7.7, "pattern": "분할 화면 + 점수 비교" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "점수 자막 + 게임플레이 컷",
+            "music": "게임 OST",
+            "hashtags": ["#게임", "#gaming", "#리뷰", "#review"]
+          }
+        },
+        {
+          "id": "game-clips",
+          "name": "클립 모음",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.4 },
+            "tiktok":    { "engagement_rate": 8.4 },
+            "instagram": { "engagement_rate": 5.0 }
+          },
+          "insight": "게임 하이라이트 클립은 TikTok의 짧은 호흡과 reaction 컷에 잘 맞아요. 첫 3초 임팩트 클립 배치가 완시청률을 높입니다.",
+          "success_examples": [
+            { "title": "이번 주 클러치 TOP 5", "avg_engagement": 9.0, "pattern": "카운트다운 + 임팩트 컷" },
+            { "title": "꿀잼 게임 모먼트", "avg_engagement": 8.6, "pattern": "리액션 분할 + 자막 효과" },
+            { "title": "프로 vs 일반인", "avg_engagement": 8.3, "pattern": "비교 분할 + 점수 표시" }
+          ],
+          "format_tips": {
+            "length": "15-45초",
+            "style": "카운트다운 + 임팩트 컷",
+            "music": "EDM·게임 OST",
+            "hashtags": ["#게임", "#gaming", "#clips", "#fyp"]
+          }
+        },
+        {
+          "id": "game-guide",
+          "name": "공략",
+          "platforms": {
+            "youtube":   { "engagement_rate": 8.5 },
+            "tiktok":    { "engagement_rate": 4.2 },
+            "instagram": { "engagement_rate": 3.6 }
+          },
+          "insight": "공략·튜토리얼 콘텐츠는 YouTube 검색의 강력한 키워드 유입을 가져요. 단계별 자막과 챕터로 정보 밀도를 높이세요.",
+          "success_examples": [
+            { "title": "보스 공략 3단계", "avg_engagement": 9.2, "pattern": "단계별 자막 + 화살표 가이드" },
+            { "title": "초보 가이드 모음", "avg_engagement": 8.8, "pattern": "챕터 마커 + 핵심 자막" },
+            { "title": "맵별 전략 가이드", "avg_engagement": 8.4, "pattern": "맵 오버레이 + 동선 표시" }
+          ],
+          "format_tips": {
+            "length": "90-120초",
+            "style": "단계별 자막 + 챕터 마커",
+            "music": "차분한 게임 OST",
+            "hashtags": ["#게임", "#공략", "#guide", "#gaming"]
+          }
+        },
+        {
+          "id": "game-esports",
+          "name": "e스포츠",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.2 },
+            "tiktok":    { "engagement_rate": 5.8 },
+            "instagram": { "engagement_rate": 4.5 }
+          },
+          "insight": "e스포츠 콘텐츠는 YouTube의 긴 시청 호흡과 매치 분석에 강해요. 선수별 하이라이트와 공식 데이터 자막이 효과적입니다.",
+          "success_examples": [
+            { "title": "결승전 베스트 모먼트", "avg_engagement": 7.8, "pattern": "캐스터 음성 + 데이터 자막" },
+            { "title": "선수 인터뷰 하이라이트", "avg_engagement": 7.4, "pattern": "감정 자막 + 클로즈업" },
+            { "title": "역대 명승부 TOP 3", "avg_engagement": 7.0, "pattern": "년도별 비교 + 카운트다운" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "캐스터 음성 + 데이터 자막",
+            "music": "게임 OST·BGM",
+            "hashtags": ["#esports", "#게임", "#lol", "#gaming"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "pet",
+      "name": "펫",
+      "icon": "🐶",
+      "description": "반려동물 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "pet-dog",
+          "name": "강아지",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.0 },
+            "tiktok":    { "engagement_rate": 6.7 },
+            "instagram": { "engagement_rate": 8.3 }
+          },
+          "insight": "감성 펫 콘텐츠는 IG의 저장과 #댕댕이 #강아지스타그램 해시태그가 강력해요. 자연광 정사각 프레임과 슬로우모션 컷을 활용하세요.",
+          "success_examples": [
+            { "title": "강아지 모닝 루틴", "avg_engagement": 9.0, "pattern": "자연광 + 슬로우 컷" },
+            { "title": "댕댕이 산책 vlog", "avg_engagement": 8.5, "pattern": "정사각 + 잔디·산책로 인서트" },
+            { "title": "처음 본 간식 반응", "avg_engagement": 8.2, "pattern": "표정 클로즈업 + 자막" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "자연광 + 슬로우 모션",
+            "music": "잔잔한 BGM",
+            "hashtags": ["#강아지", "#댕댕이", "#dog", "#pet"]
+          }
+        },
+        {
+          "id": "pet-cat",
+          "name": "고양이",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.4 },
+            "tiktok":    { "engagement_rate": 10.8 },
+            "instagram": { "engagement_rate": 6.1 }
+          },
+          "insight": "짧은 반응 컷과 웃긴 순간이 fyp의 '완시청' 지표와 직결돼요. 첫 1초에 가장 임팩트 있는 컷 배치와 자막 효과음을 추천합니다.",
+          "success_examples": [
+            { "title": "냥이 웃긴 순간 BEST", "avg_engagement": 11.5, "pattern": "첫 1초 임팩트 + 자막 효과음" },
+            { "title": "츤데레 고양이", "avg_engagement": 11.0, "pattern": "표정 클로즈업 + 자막 톡" },
+            { "title": "고양이 박스 챌린지", "avg_engagement": 10.5, "pattern": "트렌드 사운드 + 점프컷" }
+          ],
+          "format_tips": {
+            "length": "10-30초",
+            "style": "임팩트 컷 + 자막 효과음",
+            "music": "트렌드·재미 사운드",
+            "hashtags": ["#고양이", "#냥이", "#cat", "#fyp"]
+          }
+        },
+        {
+          "id": "pet-exotic",
+          "name": "이색 펫",
+          "platforms": {
+            "youtube":   { "engagement_rate": 6.8 },
+            "tiktok":    { "engagement_rate": 5.4 },
+            "instagram": { "engagement_rate": 4.6 }
+          },
+          "insight": "이색 동물 정보·교육은 YouTube의 검색·관련영상 유입에 강해요. 종 정보 자막과 케어 가이드가 효과적입니다.",
+          "success_examples": [
+            { "title": "햄스터 케어 가이드", "avg_engagement": 7.5, "pattern": "종별 정보 자막 + 케어 컷" },
+            { "title": "도마뱀 일상", "avg_engagement": 7.0, "pattern": "환경 설명 + 먹이주기 컷" },
+            { "title": "토끼 행동 가이드", "avg_engagement": 6.8, "pattern": "행동별 자막 + 의미 설명" }
+          ],
+          "format_tips": {
+            "length": "60-90초",
+            "style": "종별 정보 자막 + 케어 컷",
+            "music": "차분한 BGM",
+            "hashtags": ["#이색펫", "#pet", "#exoticpet", "#반려동물"]
+          }
+        },
+        {
+          "id": "pet-care",
+          "name": "펫 케어",
+          "platforms": {
+            "youtube":   { "engagement_rate": 7.5 },
+            "tiktok":    { "engagement_rate": 5.0 },
+            "instagram": { "engagement_rate": 4.8 }
+          },
+          "insight": "펫 건강·교육·훈련 정보는 YouTube의 '저장 후 다시 보기' 비율이 높아요. 수의사 검수 등 신뢰도 자막이 시청률을 높입니다.",
+          "success_examples": [
+            { "title": "강아지 훈련 5단계", "avg_engagement": 8.2, "pattern": "단계별 자막 + 보호자 시점" },
+            { "title": "고양이 건강 체크", "avg_engagement": 7.8, "pattern": "체크리스트 + 동물병원 정보" },
+            { "title": "펫푸드 비교 가이드", "avg_engagement": 7.4, "pattern": "성분 비교 + 점수표" }
+          ],
+          "format_tips": {
+            "length": "60-120초",
+            "style": "단계별 자막 + 신뢰도 표시",
+            "music": "차분한 BGM",
+            "hashtags": ["#펫케어", "#반려동물", "#pettip", "#훈련"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "humor",
+      "name": "유머",
+      "icon": "😂",
+      "description": "코미디 4개 서브 분류",
+      "subcategories": [
+        {
+          "id": "humor-sketch",
+          "name": "풍자·스케치",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.8 },
+            "tiktok":    { "engagement_rate": 11.5 },
+            "instagram": { "engagement_rate": 6.3 }
+          },
+          "insight": "공감형 풍자 코미디는 댓글 'ㅋㅋㅋ'·share·duet 트래픽이 누적돼요. 첫 1초에 상황 설정 자막과 빠른 컷, 표정 클로즈업이 효과적입니다.",
+          "success_examples": [
+            { "title": "MZ 회사생활 풍자", "avg_engagement": 12.2, "pattern": "상황 자막 + 표정 클로즈업" },
+            { "title": "직장인 공감 스케치", "avg_engagement": 11.8, "pattern": "1인 N역 + 빠른 컷" },
+            { "title": "부모님 vs 자식 세대", "avg_engagement": 11.4, "pattern": "분할 화면 + 자막 톡" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "상황 설정 자막 + 표정 클로즈업",
+            "music": "효과음·트렌드 사운드",
+            "hashtags": ["#코미디", "#풍자", "#fyp", "#comedy"]
+          }
+        },
+        {
+          "id": "humor-daily",
+          "name": "일상 코미디",
+          "platforms": {
+            "youtube":   { "engagement_rate": 4.5 },
+            "tiktok":    { "engagement_rate": 10.2 },
+            "instagram": { "engagement_rate": 6.0 }
+          },
+          "insight": "일상의 작은 웃긴 순간은 TikTok의 공감·재미 알고리즘에 잘 맞아요. 자막 톡과 효과음으로 임팩트를 강조하세요.",
+          "success_examples": [
+            { "title": "친구 vs 나", "avg_engagement": 10.9, "pattern": "비교 자막 + 표정 컷" },
+            { "title": "어제 있었던 일", "avg_engagement": 10.5, "pattern": "스토리텔링 자막 + 리액션" },
+            { "title": "MZ vs X세대 일상", "avg_engagement": 10.1, "pattern": "세대 비교 + 효과음" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "비교 자막 + 효과음",
+            "music": "트렌드·재미 사운드",
+            "hashtags": ["#일상", "#코미디", "#fyp", "#daily"]
+          }
+        },
+        {
+          "id": "humor-parody",
+          "name": "패러디",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.0 },
+            "tiktok":    { "engagement_rate": 6.8 },
+            "instagram": { "engagement_rate": 7.8 }
+          },
+          "insight": "유명 콘텐츠 패러디는 Reels의 친구 공유 비율이 높아요. 원본과의 비교 분할이 임팩트를 극대화해요.",
+          "success_examples": [
+            { "title": "광고 패러디", "avg_engagement": 8.5, "pattern": "원본 vs 패러디 분할" },
+            { "title": "드라마 명장면 패러디", "avg_engagement": 8.0, "pattern": "원본 사운드 + 코믹 연기" },
+            { "title": "K-pop MV 패러디", "avg_engagement": 7.7, "pattern": "안무 매칭 + 의상 강조" }
+          ],
+          "format_tips": {
+            "length": "30-60초",
+            "style": "원본 vs 패러디 분할",
+            "music": "원본 사운드",
+            "hashtags": ["#패러디", "#parody", "#코미디", "#funny"]
+          }
+        },
+        {
+          "id": "humor-reaction",
+          "name": "리액션",
+          "platforms": {
+            "youtube":   { "engagement_rate": 5.2 },
+            "tiktok":    { "engagement_rate": 9.5 },
+            "instagram": { "engagement_rate": 6.4 }
+          },
+          "insight": "리액션 콘텐츠는 TikTok의 짧은 호흡과 표정 강조에 잘 맞아요. 듀엣·스티치 기능으로 누적 참여를 끌어올릴 수 있어요.",
+          "success_examples": [
+            { "title": "신곡 첫 청취 리액션", "avg_engagement": 10.2, "pattern": "스티치 기능 + 표정 컷" },
+            { "title": "충격 영상 리액션", "avg_engagement": 9.8, "pattern": "분할 + 효과음 강조" },
+            { "title": "신상 음식 리액션", "avg_engagement": 9.4, "pattern": "한 입 + 표정 변화 추적" }
+          ],
+          "format_tips": {
+            "length": "15-30초",
+            "style": "스티치·듀엣 + 표정 클로즈업",
+            "music": "트렌드 사운드",
+            "hashtags": ["#리액션", "#reaction", "#fyp", "#funny"]
+          }
+        }
+      ]
+    }
+  ]
+}

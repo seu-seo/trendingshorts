@@ -1,9 +1,16 @@
 import { TrendItem } from "./mock-data";
 
-const API_KEY = process.env.YOUTUBE_API_KEY;
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
+const HANGUL_RE = /[가-힣]/;
 
-// ISO 8601 duration (PT1M30S) → seconds
+// Shorts가 주로 올라오는 카테고리 (Music 제외 — K-pop MV 위주)
+const SHORTS_CATEGORY_IDS = [
+  "23", // Comedy
+  "24", // Entertainment
+  "1",  // Film & Animation
+  "17", // Sports
+];
+
 function parseDuration(iso: string): number {
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return 0;
@@ -11,14 +18,12 @@ function parseDuration(iso: string): number {
   return (parseInt(h || "0") * 3600) + (parseInt(m || "0") * 60) + parseInt(s || "0");
 }
 
-// seconds → "M:SS"
 function formatDuration(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-// publishedAt → "N시간 전" 형태
 function timeAgo(publishedAt: string): string {
   const diff = Date.now() - new Date(publishedAt).getTime();
   const hours = Math.floor(diff / 3_600_000);
@@ -27,8 +32,8 @@ function timeAgo(publishedAt: string): string {
   return `${Math.floor(hours / 24)}일 전`;
 }
 
-// YouTube categoryId → 한국어 카테고리
 const CATEGORY_MAP: Record<string, string> = {
+  "1":  "일상 브이로그",
   "10": "음악",
   "15": "펫",
   "17": "운동",
@@ -36,12 +41,24 @@ const CATEGORY_MAP: Record<string, string> = {
   "22": "일상 브이로그",
   "23": "유머",
   "24": "댄스",
-  "26": "뷰티",
-  "1":  "일상 브이로그",
   "25": "일상 브이로그",
+  "26": "뷰티",
 };
 
-interface YouTubeVideo {
+const THUMBNAIL_MAP: Record<string, string> = {
+  "1":  "🎬",
+  "10": "🎵",
+  "15": "🐾",
+  "17": "🏃",
+  "20": "🎮",
+  "22": "📱",
+  "23": "😂",
+  "24": "🎭",
+  "25": "📺",
+  "26": "💄",
+};
+
+interface VideoDetail {
   id: string;
   snippet: {
     title: string;
@@ -49,8 +66,6 @@ interface YouTubeVideo {
     publishedAt: string;
     categoryId: string;
     tags?: string[];
-    description: string;
-    thumbnails: { default: { url: string } };
   };
   statistics: {
     viewCount?: string;
@@ -62,70 +77,102 @@ interface YouTubeVideo {
   };
 }
 
-interface YouTubeResponse {
-  items: YouTubeVideo[];
-  nextPageToken?: string;
+async function get<T>(url: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, { next: { revalidate: 900 } });
+    if (!res.ok) {
+      console.error("[youtube] HTTP error:", res.status, await res.text());
+      return null;
+    }
+    return res.json();
+  } catch (e) {
+    console.error("[youtube] fetch error:", e);
+    return null;
+  }
 }
 
-export async function fetchYouTubeTrends(categoryId?: string): Promise<TrendItem[]> {
+// /shorts/ URL 리다이렉트 여부로 세로형 Shorts 판별
+// 200 → Shorts 플레이어 (세로형), 3xx → /watch 리다이렉트 (가로형)
+async function isShort(videoId: string): Promise<boolean> {
+  try {
+    const res = await fetch(`https://www.youtube.com/shorts/${videoId}`, {
+      redirect: "manual",
+      headers: { "User-Agent": "Mozilla/5.0" },
+      cache: "force-cache",
+    });
+    return res.status < 300;
+  } catch {
+    return true;
+  }
+}
+
+export async function fetchYouTubeTrends(): Promise<TrendItem[]> {
+  const API_KEY = process.env.YOUTUBE_API_KEY;
   if (!API_KEY) return [];
 
-  const params = new URLSearchParams({
-    part: "snippet,statistics,contentDetails",
-    chart: "mostPopular",
-    regionCode: "KR",
-    maxResults: "50",
-    key: API_KEY,
-    ...(categoryId ? { videoCategoryId: categoryId } : {}),
-  });
+  // 카테고리별 mostPopular 병렬 호출 (카테고리당 1 unit, 총 4 units)
+  const categoryResults = await Promise.all(
+    SHORTS_CATEGORY_IDS.map((cid) => {
+      const params = new URLSearchParams({
+        part: "snippet,statistics,contentDetails",
+        chart: "mostPopular",
+        regionCode: "KR",
+        videoCategoryId: cid,
+        maxResults: "50",
+        key: API_KEY,
+      });
+      return get<{ items: VideoDetail[] }>(`${BASE_URL}/videos?${params}`);
+    })
+  );
 
-  // Next.js 내장 fetch 캐싱 — 15분 revalidate (Vercel 배포 환경에서도 유효)
-  const res = await fetch(`${BASE_URL}/videos?${params}`, {
-    next: { revalidate: 900 },
-  });
-
-  if (!res.ok) {
-    console.error("YouTube API error:", res.status, await res.text());
-    return [];
+  // 중복 제거 후 병합
+  const seen = new Set<string>();
+  const allVideos: VideoDetail[] = [];
+  for (const data of categoryResults) {
+    for (const video of data?.items ?? []) {
+      if (!seen.has(video.id)) {
+        seen.add(video.id);
+        allVideos.push(video);
+      }
+    }
   }
 
-  const data: YouTubeResponse = await res.json();
+  // 한국어 타이틀 + 180초 이하로 후보 추림
+  const candidates = allVideos.filter((video) => {
+    const seconds = parseDuration(video.contentDetails.duration);
+    return seconds > 0 && seconds <= 180 && HANGUL_RE.test(video.snippet.title);
+  });
 
-  return data.items
-    .filter((video) => {
-      const seconds = parseDuration(video.contentDetails.duration);
-      const hasShortTag =
-        video.snippet.title.toLowerCase().includes("#shorts") ||
-        video.snippet.description.toLowerCase().includes("#shorts") ||
-        video.snippet.tags?.some((t) => t.toLowerCase() === "#shorts");
-      // Shorts 조건: 60초 이하 OR #shorts 태그
-      return seconds <= 60 || hasShortTag;
-    })
-    .map((video, index) => {
-      const seconds = parseDuration(video.contentDetails.duration);
-      const views = parseInt(video.statistics.viewCount || "0");
-      const likes = parseInt(video.statistics.likeCount || "0");
-      const comments = parseInt(video.statistics.commentCount || "0");
-      const category = CATEGORY_MAP[video.snippet.categoryId] || "일상 브이로그";
-      const tags = (video.snippet.tags ?? [])
-        .filter((t) => t.startsWith("#"))
-        .slice(0, 4);
+  // /shorts/ URL 체크로 세로형 Shorts 확인
+  const shortFlags = await Promise.all(candidates.map((v) => isShort(v.id)));
+  const actualShorts = candidates.filter((_, i) => shortFlags[i]);
 
-      return {
-        id: index + 1,
-        platform: "youtube" as const,
-        title: video.snippet.title,
-        creator: `@${video.snippet.channelTitle.replace(/\s+/g, "_")}`,
-        views,
-        likes,
-        comments,
-        shares: 0, // YouTube API는 공유 수 미제공
-        category,
-        growth: 0,  // 시계열 저장 후 계산 예정
-        duration: formatDuration(seconds),
-        thumbnail: "▶",
-        trending_since: timeAgo(video.snippet.publishedAt),
-        tags: tags.length ? tags : ["#shorts"],
-      };
-    });
+  return actualShorts.map((video, index) => {
+    const seconds = parseDuration(video.contentDetails.duration);
+    const views = parseInt(video.statistics.viewCount || "0");
+    const likes = parseInt(video.statistics.likeCount || "0");
+    const comments = parseInt(video.statistics.commentCount || "0");
+    const category = CATEGORY_MAP[video.snippet.categoryId] || "일상 브이로그";
+    const tags = (video.snippet.tags ?? [])
+      .filter((t) => t.startsWith("#"))
+      .slice(0, 4);
+
+    return {
+      id: index + 1,
+      platform: "youtube" as const,
+      title: video.snippet.title,
+      creator: `@${video.snippet.channelTitle.replace(/\s+/g, "_")}`,
+      views,
+      likes,
+      comments,
+      shares: 0,
+      category,
+      growth: 0,
+      duration: formatDuration(seconds),
+      thumbnail: THUMBNAIL_MAP[video.snippet.categoryId] || "🎬",
+      trending_since: timeAgo(video.snippet.publishedAt),
+      tags: tags.length ? tags : ["#shorts"],
+      videoUrl: `https://www.youtube.com/shorts/${video.id}`,
+    };
+  });
 }

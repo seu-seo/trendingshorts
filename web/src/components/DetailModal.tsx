@@ -23,9 +23,21 @@ export default function DetailModal({ item, onClose }: Props) {
         style={{ background: "linear-gradient(160deg, #16171d 0%, #1a1b23 100%)", border: `1px solid ${platformColor}33`, borderRadius: 20, padding: 28, maxWidth: 480, width: "100%", maxHeight: "85vh", overflowY: "auto", boxShadow: `0 24px 80px ${platformColor}20` }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-          <span style={{ background: `${platformColor}20`, color: platformColor, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 6 }}>
-            {PLATFORMS[item.platform]?.icon} {PLATFORMS[item.platform]?.label}
-          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ background: `${platformColor}20`, color: platformColor, fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 6 }}>
+              {PLATFORMS[item.platform]?.icon} {PLATFORMS[item.platform]?.label}
+            </span>
+            {item.videoUrl && (
+              <a
+                href={item.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 11, color: platformColor, background: `${platformColor}15`, border: `1px solid ${platformColor}30`, padding: "4px 10px", borderRadius: 6, textDecoration: "none", fontWeight: 600 }}
+              >
+                ▶ 영상 보기
+              </a>
+            )}
+          </div>
           <button onClick={onClose} style={{ background: "#2a2b35", border: "none", color: "#8a8f98", fontSize: 18, width: 32, height: 32, borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
         </div>
         <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>

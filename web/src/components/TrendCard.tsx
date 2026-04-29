@@ -75,10 +75,23 @@ export default function TrendCard({ item, index, onClick }: Props) {
             <span key={i} style={{ fontSize: 10, color: "#5a5f6a", background: "#1e1f28", padding: "2px 6px", borderRadius: 4 }}>{tag}</span>
           ))}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, color: item.growth > 300 ? "#FF4444" : item.growth > 200 ? "#FF8C00" : "#4CAF50", fontSize: 12, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>↑</span>
-          {item.growth}%
-          <span style={{ fontSize: 9, fontWeight: 400, color: "#555" }}>성장률</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {item.videoUrl && (
+            <a
+              href={item.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              style={{ fontSize: 10, color: platformColor, background: `${platformColor}15`, border: `1px solid ${platformColor}30`, padding: "3px 8px", borderRadius: 6, textDecoration: "none", fontWeight: 600 }}
+            >
+              ▶ 보기
+            </a>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, color: item.growth > 300 ? "#FF4444" : item.growth > 200 ? "#FF8C00" : "#4CAF50", fontSize: 12, fontWeight: 700 }}>
+            <span style={{ fontSize: 14 }}>↑</span>
+            {item.growth}%
+            <span style={{ fontSize: 9, fontWeight: 400, color: "#555" }}>성장률</span>
+          </div>
         </div>
       </div>
     </div>

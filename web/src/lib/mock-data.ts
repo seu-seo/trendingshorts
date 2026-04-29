@@ -15,6 +15,7 @@ export interface TrendItem {
   thumbnail: string;
   trending_since: string;
   tags: string[];
+  videoUrl?: string;
 }
 
 export interface PlatformInfo {

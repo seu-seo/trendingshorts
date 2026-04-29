@@ -233,7 +233,23 @@ function ComparisonBar({ platformKey, rate, maxRate, isBest }) {
   );
 }
 
+// 카테고리 안에서 가장 강한 (서브, 플랫폼, 참여율) 조합을 찾기 → Level 1 카드 hook
+function findBestPick(category) {
+  let best = { subName: "", platformKey: "", rate: 0 };
+  for (const sub of category.subcategories) {
+    for (const [pk, p] of Object.entries(sub.platforms)) {
+      if (p.engagement_rate > best.rate) {
+        best = { subName: sub.name, platformKey: pk, rate: p.engagement_rate };
+      }
+    }
+  }
+  return best;
+}
+
 function MainCategoryCard({ category, onClick }) {
+  const best = findBestPick(category);
+  const bestPlatform = PLATFORMS[best.platformKey];
+  const bestColor = bestPlatform?.color || "#9B59B6";
   return (
     <div
       onClick={() => onClick(category.id)}
@@ -247,8 +263,8 @@ function MainCategoryCard({ category, onClick }) {
         textAlign:"center"
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.border = "1px solid #9B59B666";
-        e.currentTarget.style.boxShadow = "0 0 20px #9B59B633";
+        e.currentTarget.style.border = `1px solid ${bestColor}66`;
+        e.currentTarget.style.boxShadow = `0 0 20px ${bestColor}33`;
         e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={e => {
@@ -258,8 +274,13 @@ function MainCategoryCard({ category, onClick }) {
       }}
     >
       <div style={{ fontSize:36, marginBottom:8 }}>{category.icon}</div>
-      <div style={{ fontSize:15, fontWeight:700, color:"#e8eaed", marginBottom:6 }}>{category.name}</div>
-      <div style={{ fontSize:11, color:"#6a6f7a", lineHeight:1.4 }}>{category.description}</div>
+      <div style={{ fontSize:15, fontWeight:700, color:"#e8eaed", marginBottom:8 }}>{category.name}</div>
+      <div style={{ fontSize:11, color:"#8a8f98", lineHeight:1.5 }}>
+        <strong style={{ color:"#e0e2e8" }}>{best.subName}</strong>
+        {josa(best.subName, "은", "는")} <span style={{ color:bestColor, fontWeight:700 }}>{bestPlatform?.label}</span>에서
+        <br/>
+        평균 <span style={{ color:bestColor, fontWeight:700 }}>{best.rate.toFixed(1)}%</span> 참여율
+      </div>
     </div>
   );
 }
@@ -579,7 +600,7 @@ function CategoryHubView() {
               onMouseEnter={e => e.currentTarget.style.color = "#c290dd"}
               onMouseLeave={e => e.currentTarget.style.color = accentColor}
             >
-              ← {selectedMain.name}으로 돌아가기
+              ← {selectedMain.name}{josa(selectedMain.name, "으로", "로")} 돌아가기
             </button>
             <h2 style={{ fontSize:16, fontWeight:700, color:"#e8eaed", margin:"0 0 4px 0" }}>
               <span style={{ fontSize:20, marginRight:6 }}>{selectedMain.icon}</span>
@@ -630,6 +651,14 @@ function CategoryHubView() {
 
             {/* 섹션 1: 막대 그래프 */}
             <div>
+              <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", marginBottom:10 }}>
+                <div style={{ fontSize:11, fontWeight:600, color:"#8a8f98", textTransform:"uppercase", letterSpacing:1 }}>
+                  플랫폼별 평균 참여율
+                </div>
+                <div style={{ fontSize:10, color:"#5a5f6a" }}>
+                  (좋아요 + 댓글 + 공유) ÷ 조회수
+                </div>
+              </div>
               {platformKeys.map(k => (
                 <ComparisonBar
                   key={k}

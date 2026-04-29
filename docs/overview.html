@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortform Pulse — 개발 개요</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0d0e12; color: #e8eaed; font-family: 'Noto Sans KR', sans-serif; padding: 48px 32px 80px; }
+  h1 { font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
+  h2 { font-size: 13px; font-weight: 600; color: #5a5f6a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* 레이아웃 */
+  .wrap { max-width: 960px; margin: 0 auto; }
+  .section { margin-bottom: 56px; }
+
+  /* 헤더 */
+  .header { margin-bottom: 56px; padding-bottom: 32px; border-bottom: 1px solid #1e2028; }
+  .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #FF4500; animation: pulse 2s ease-in-out infinite; }
+  .live-label { font-size: 11px; color: #FF4500; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+  .header-sub { font-size: 14px; color: #5a5f6a; margin-top: 6px; }
+  .header-meta { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* 카드 */
+  .card { background: linear-gradient(135deg, #16171d, #1a1b23); border: 1px solid #2a2b35; border-radius: 14px; padding: 22px; }
+
+  /* 로드맵 */
+  .roadmap { display: flex; flex-direction: column; gap: 0; }
+  .phase { display: grid; grid-template-columns: 180px 1fr; gap: 0; }
+  .phase-line { display: flex; flex-direction: column; align-items: center; gap: 0; padding-right: 24px; }
+  .phase-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; font-weight: 700; }
+  .phase-connector { width: 2px; flex: 1; min-height: 24px; }
+  .phase-label { text-align: right; padding-right: 24px; padding-top: 8px; }
+  .phase-label-title { font-size: 12px; font-weight: 700; }
+  .phase-label-sub { font-size: 10px; color: #5a5f6a; margin-top: 2px; }
+  .phase-content { padding: 6px 0 32px; }
+  .phase-content-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .phase-tasks { display: flex; flex-direction: column; gap: 6px; }
+  .task { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #8a8f98; }
+  .task-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* 아키텍처 */
+  .arch { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; align-items: center; }
+  .arch-box { border-radius: 12px; padding: 18px 16px; text-align: center; }
+  .arch-arrow { color: #3a3f4a; font-size: 20px; padding: 0 8px; display: flex; align-items: center; }
+  .arch-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .arch-items { display: flex; flex-direction: column; gap: 6px; }
+  .arch-item { font-size: 11px; padding: 5px 10px; border-radius: 6px; font-weight: 500; }
+
+  /* 스택 */
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .stack-card { background: #16171d; border: 1px solid #2a2b35; border-radius: 10px; padding: 16px; }
+  .stack-category { font-size: 10px; font-weight: 600; color: #5a5f6a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .stack-items { display: flex; flex-direction: column; gap: 6px; }
+  .stack-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+  .stack-item-text { display: flex; flex-direction: column; gap: 2px; }
+  .stack-item-desc { font-size: 10px; color: #4a4f5a; line-height: 1.4; }
+  .stack-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* API 우선순위 */
+  .api-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .api-card { border-radius: 12px; padding: 18px; border: 1px solid; }
+  .api-rank { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .api-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .api-scope { font-size: 11px; margin-bottom: 12px; line-height: 1.5; }
+  .api-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .api-tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; }
+  .api-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; margin-top: 12px; padding: 3px 8px; border-radius: 20px; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  @media (max-width: 640px) {
+    .arch { grid-template-columns: 1fr; }
+    .arch-arrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
+    .api-grid { grid-template-columns: 1fr; }
+    .phase { grid-template-columns: 140px 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-top">
+      <div class="live-dot"></div>
+      <span class="live-label">Shortform Pulse</span>
+    </div>
+    <h1>개발 프로세스 개요</h1>
+    <p class="header-sub">YouTube Shorts · TikTok · Instagram Reels 크로스플랫폼 트렌드 인텔리전스 플랫폼</p>
+    <div class="header-meta">
+      <span class="badge" style="background:#1e2028; color:#8a8f98;">KAIST BIZ 699911</span>
+      <span class="badge" style="background:#1a2a1a; color:#4CAF50;">kyudong/backend-setup</span>
+      <span class="badge" style="background:#1a1a2a; color:#4488FF;">Next.js 16 · Vercel</span>
+    </div>
+  </div>
+
+  <!-- 1. 개발 로드맵 -->
+  <div class="section">
+    <h2>Backend 개발 로드맵</h2>
+    <div class="roadmap">
+
+      <!-- Phase 1 -->
+      <div class="phase">
+        <div style="display:flex; align-items:flex-start; justify-content:flex-end; padding-right:24px; padding-top:6px;">
+          <div>
+            <div class="phase-label-title" style="color:#FF8C00; text-align:right;">진행 중</div>
+            <div class="phase-label-sub" style="text-align:right;">Phase 1</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:16px; padding-bottom:28px; border-left:2px solid #FF8C0033; padding-left:24px; margin-left:-1px;">
+          <div class="phase-dot" style="background:#2a1e0a; color:#FF8C00; border:2px solid #FF8C00; margin-left:-30px; flex-shrink:0; animation:pulse 2s ease-in-out infinite;">→</div>
+          <div class="phase-content" style="padding:0;">
+            <div class="phase-content-title">
+              Next.js 마이그레이션 + YouTube API
+              <span class="badge" style="background:#2a1e0a; color:#FF8C00; font-size:10px;">In Progress</span>
+            </div>
+            <div class="phase-tasks">
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> Next.js 16 App Router 프로젝트 생성 (<span class="mono">web/</span>)</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> 컴포넌트 분리 — TrendCard, DetailModal, EngagementBar</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> 타입 정의 + mock 데이터 (<span class="mono">lib/mock-data.ts</span>)</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Google Cloud Console API 키 발급</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> <span class="mono">app/api/trends/route.ts</span> — API Route 생성</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> <span class="mono">lib/youtube.ts</span> — YouTube Data API v3 모듈</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Shorts 필터링 (duration ≤ 60s + #shorts) + 15분 캐싱</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase">
+        <div style="display:flex; align-items:flex-start; justify-content:flex-end; padding-right:24px; padding-top:6px;">
+          <div>
+            <div class="phase-label-title" style="color:#5a5f6a; text-align:right;">예정</div>
+            <div class="phase-label-sub" style="text-align:right;">Phase 2</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:16px; padding-bottom:28px; border-left:2px solid #2a2b35; padding-left:24px; margin-left:-1px;">
+          <div class="phase-dot" style="background:#1e2028; color:#5a5f6a; border:2px solid #2a2b35; margin-left:-30px; flex-shrink:0;">2</div>
+          <div class="phase-content" style="padding:0;">
+            <div class="phase-content-title">Instagram Graph API 연동</div>
+            <div class="phase-tasks">
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Facebook Developer 앱 생성 + Business 계정 연결</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> 카테고리별 해시태그 목록 정의 (먹방·뷰티·댄스 등)</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> hashtag.search + top_media 연동</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> engagement 점수 계산 (좋아요+댓글 × 가중치, 조회수 미노출)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase">
+        <div style="display:flex; align-items:flex-start; justify-content:flex-end; padding-right:24px; padding-top:6px;">
+          <div>
+            <div class="phase-label-title" style="color:#5a5f6a; text-align:right;">병렬 진행</div>
+            <div class="phase-label-sub" style="text-align:right;">Phase 3</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:16px; border-left:2px solid #2a2b35; padding-left:24px; margin-left:-1px;">
+          <div class="phase-dot" style="background:#1e2028; color:#5a5f6a; border:2px solid #2a2b35; margin-left:-30px; flex-shrink:0;">3</div>
+          <div class="phase-content" style="padding:0;">
+            <div class="phase-content-title">TikTok API (병렬 신청 중)</div>
+            <div class="phase-tasks">
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> TikTok for Developers 계정 생성 + Content Posting API 신청</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Research API 신청 병렬 진행</div>
+              <div class="task"><span class="task-icon" style="color:#FF4444;">!</span> 승인 대기 중 UI: TikTok 탭 "데이터 수집 중" 표시</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. 시스템 아키텍처 -->
+  <div class="section">
+    <h2>시스템 아키텍처</h2>
+    <div class="card">
+      <div class="arch">
+        <!-- 데이터 레이어 -->
+        <div class="arch-box" style="background:#12131a; border:1px solid #2a2b35;">
+          <div class="arch-title" style="color:#5a5f6a;">Data Layer</div>
+          <div class="arch-items">
+            <div class="arch-item" style="background:#FF000015; color:#FF6666;">▶ YouTube Data API v3</div>
+            <div class="arch-item" style="background:#E1306C15; color:#E1306C;">◎ Instagram Graph API</div>
+            <div class="arch-item" style="background:#00F2EA15; color:#00F2EA;">♪ TikTok Research API</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">→</div>
+
+        <!-- 백엔드 -->
+        <div class="arch-box" style="background:#12131a; border:1px solid #4488FF44;">
+          <div class="arch-title" style="color:#4488FF;">Backend (Next.js API Routes)</div>
+          <div class="arch-items">
+            <div class="arch-item" style="background:#4488FF15; color:#4488FF;" class="mono">/api/trends</div>
+            <div class="arch-item" style="background:#1e2028; color:#8a8f98;">lib/youtube.ts</div>
+            <div class="arch-item" style="background:#1e2028; color:#8a8f98;">lib/instagram.ts</div>
+            <div class="arch-item" style="background:#1e2028; color:#5a5f6a; font-size:10px; margin-top:4px;">캐시 TTL 15분</div>
+            <div class="arch-item" style="background:#1e2028; color:#5a5f6a; font-size:10px;">시계열 DB 저장</div>
+          </div>
+        </div>
+
+        <div class="arch-arrow">→</div>
+
+        <!-- 프론트엔드 -->
+        <div class="arch-box" style="background:#12131a; border:1px solid #4CAF5044;">
+          <div class="arch-title" style="color:#4CAF50;">Frontend (Next.js App Router)</div>
+          <div class="arch-items">
+            <div class="arch-item" style="background:#4CAF5015; color:#4CAF50;">TrendCard</div>
+            <div class="arch-item" style="background:#4CAF5015; color:#4CAF50;">DetailModal</div>
+            <div class="arch-item" style="background:#1e2028; color:#8a8f98;">플랫폼 · 카테고리 필터</div>
+            <div class="arch-item" style="background:#1e2028; color:#8a8f98;">성장률 · 조회수 · 참여율 정렬</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인프라 보조 -->
+      <div style="margin-top:16px; padding-top:16px; border-top:1px solid #1e2028; display:flex; gap:10px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:140px; background:#1e2028; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:#5a5f6a; margin-bottom:4px;">Cache</div>
+          <div style="font-size:12px; color:#8a8f98;">In-memory / Redis</div>
+          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">TTL 15min</div>
+        </div>
+        <div style="flex:1; min-width:140px; background:#1e2028; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:#5a5f6a; margin-bottom:4px;">Database</div>
+          <div style="font-size:12px; color:#8a8f98;">Supabase (Free Tier)</div>
+          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">트렌드 시계열 · 성장률</div>
+        </div>
+        <div style="flex:1; min-width:140px; background:#1e2028; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:#5a5f6a; margin-bottom:4px;">Deployment</div>
+          <div style="font-size:12px; color:#8a8f98;">Vercel</div>
+          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">web/ 루트 디렉토리</div>
+        </div>
+        <div style="flex:1; min-width:140px; background:#1e2028; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:#5a5f6a; margin-bottom:4px;">API 비용 (100명 기준)</div>
+          <div style="font-size:12px; color:#4CAF50;">$0~20 / 월</div>
+          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">YouTube ~700 units/일</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. API 연동 우선순위 -->
+  <div class="section">
+    <h2>API 연동 우선순위</h2>
+    <div class="api-grid">
+      <div class="api-card" style="background:#16171d; border-color:#4CAF5040;">
+        <div class="api-rank" style="color:#4CAF50;">🟢 1순위</div>
+        <div class="api-name">YouTube Data API v3</div>
+        <div class="api-scope" style="color:#8a8f98;">즉시 사용 가능 · API 키 발급만으로 시작. mostPopular + Shorts 필터링으로 트렌딩 목록 직접 조회.</div>
+        <div class="api-tags">
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">조회수</span>
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">좋아요</span>
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">댓글</span>
+          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">공유수 ✕</span>
+        </div>
+        <div class="api-status" style="background:#1a2a1a; color:#4CAF50;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#4CAF50; display:inline-block;"></span>
+          Full 연동 목표
+        </div>
+      </div>
+
+      <div class="api-card" style="background:#16171d; border-color:#FF8C0040;">
+        <div class="api-rank" style="color:#FF8C00;">🟡 2순위</div>
+        <div class="api-name">Instagram Graph API</div>
+        <div class="api-scope" style="color:#8a8f98;">1~3일 앱 심사 필요. 트렌딩 피드 없음 → 해시태그 기반 top_media로 근사.</div>
+        <div class="api-tags">
+          <span class="api-tag" style="background:#FF8C0015; color:#FF8C00;">좋아요</span>
+          <span class="api-tag" style="background:#FF8C0015; color:#FF8C00;">댓글</span>
+          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">조회수 ✕</span>
+          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">트렌딩 피드 ✕</span>
+        </div>
+        <div class="api-status" style="background:#2a1e0a; color:#FF8C00;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#FF8C00; display:inline-block;"></span>
+          Hashtag Partial
+        </div>
+      </div>
+
+      <div class="api-card" style="background:#16171d; border-color:#FF444440;">
+        <div class="api-rank" style="color:#FF4444;">🔴 3순위</div>
+        <div class="api-name">TikTok Research API</div>
+        <div class="api-scope" style="color:#8a8f98;">승인 수 주~수 개월. 한국 개발자 계정 접근 조건 불투명. MVP는 "수집 중" 표시로 대응.</div>
+        <div class="api-tags">
+          <span class="api-tag" style="background:#FF444415; color:#FF6666;">신청 진행 중</span>
+          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">승인 대기</span>
+        </div>
+        <div class="api-status" style="background:#2a1010; color:#FF4444;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#FF4444; display:inline-block; animation:pulse 2s ease-in-out infinite;"></span>
+          보류 (병렬 신청)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 기술 스택 -->
+  <div class="section">
+    <h2>기술 스택</h2>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-category">Frontend</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="stack-dot" style="background:#4488FF; margin-top:4px;"></div><div class="stack-item-text"><span>Next.js 16 App Router</span><span class="stack-item-desc">페이지·레이아웃·API Route를 하나의 프레임워크에서 관리</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#4488FF; margin-top:4px;"></div><div class="stack-item-text"><span>TypeScript</span><span class="stack-item-desc">API 응답·컴포넌트 props에 타입 보장, 런타임 오류 사전 차단</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#4488FF; margin-top:4px;"></div><div class="stack-item-text"><span>React 19</span><span class="stack-item-desc">Server Component로 초기 렌더링, Client Component로 인터랙션 처리</span></div></div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-category">Backend</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="stack-dot" style="background:#4CAF50; margin-top:4px;"></div><div class="stack-item-text"><span>Next.js API Routes</span><span class="stack-item-desc">API 키를 서버에서만 호출 — 클라이언트 노출 차단</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#4CAF50; margin-top:4px;"></div><div class="stack-item-text"><span>In-memory Cache</span><span class="stack-item-desc">TTL 15분으로 API 반복 호출 차단, YouTube quota 절약</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#4CAF50; margin-top:4px;"></div><div class="stack-item-text"><span>Supabase (Free Tier)</span><span class="stack-item-desc">1시간 간격 조회수 시계열 저장 → 성장률 계산에 활용</span></div></div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-category">외부 API</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="stack-dot" style="background:#FF6666; margin-top:4px;"></div><div class="stack-item-text"><span>YouTube Data API v3</span><span class="stack-item-desc">mostPopular + duration 필터로 Shorts 트렌딩 직접 조회 (10,000 units/일 무료)</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#E1306C; margin-top:4px;"></div><div class="stack-item-text"><span>Instagram Graph API</span><span class="stack-item-desc">트렌딩 피드 없음 → 카테고리별 해시태그 top_media로 근사</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#00F2EA; margin-top:4px;"></div><div class="stack-item-text"><span>TikTok Research API</span><span class="stack-item-desc">승인 대기 중 (수 주~수 개월) — MVP에서는 "수집 중" UI로 대응</span></div></div>
+        </div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-category">인프라 · 배포</div>
+        <div class="stack-items">
+          <div class="stack-item"><div class="stack-dot" style="background:#8a8f98; margin-top:4px;"></div><div class="stack-item-text"><span>Vercel</span><span class="stack-item-desc">web/ 디렉토리를 루트로 지정, Next.js 서버리스 배포</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#8a8f98; margin-top:4px;"></div><div class="stack-item-text"><span>GitHub</span><span class="stack-item-desc">kyudong/backend-setup 브랜치에서 개발 후 main 머지</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#8a8f98; margin-top:4px;"></div><div class="stack-item-text"><span>GitHub Pages</span><span class="stack-item-desc">기존 index.html 데모는 그대로 유지 (seu-seo.github.io/trendingshorts)</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div style="padding-top:32px; border-top:1px solid #1e2028; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <span style="font-size:12px; color:#3a3f4a;">Shortform Pulse · KAIST BIZ 699911</span>
+    <span style="font-size:12px; color:#3a3f4a;" class="mono">kyudong/backend-setup · 2026-04-29</span>
+  </div>
+
+</div>
+</body>
+</html>

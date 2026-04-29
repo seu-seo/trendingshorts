@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { TRENDS_DATA, PLATFORMS, CATEGORIES, TrendItem, formatNumber } from "@/lib/mock-data";
+import { PLATFORMS, CATEGORIES, TrendItem, formatNumber } from "@/lib/mock-data";
 import TrendCard from "@/components/TrendCard";
 import DetailModal from "@/components/DetailModal";
 
@@ -13,12 +13,20 @@ export default function TrendPulse() {
   const [sortBy, setSortBy] = useState<SortKey>("growth");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItem, setSelectedItem] = useState<TrendItem | null>(null);
+  const [trends, setTrends] = useState<TrendItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const catScrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setIsLoaded(true); }, []);
+  useEffect(() => {
+    fetch(`/api/trends?platform=${activePlatform}`)
+      .then((r) => r.json())
+      .then(({ data }: { data: TrendItem[] }) => {
+        setTrends(data);
+        setIsLoaded(true);
+      });
+  }, [activePlatform]);
 
-  const filtered = TRENDS_DATA
+  const filtered = trends
     .filter(item => activePlatform === "all" || item.platform === activePlatform)
     .filter(item => activeCategory === "전체" || item.category === activeCategory)
     .filter(item => {

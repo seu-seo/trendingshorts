@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shortform Pulse — Creator Persona</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0A0A0B;
+  --s1: #111114;
+  --s2: #18181C;
+  --s3: #222228;
+  --w: #F2F0EB;
+  --w60: rgba(242,240,235,.6);
+  --w20: rgba(242,240,235,.2);
+  --w08: rgba(242,240,235,.08);
+  --w04: rgba(242,240,235,.04);
+  --accent: #C8FF57;
+  --accent2: #57C8FF;
+  --accent3: #FF8657;
+  --border: rgba(242,240,235,.08);
+  --border2: rgba(242,240,235,.14);
+  --sans: 'Instrument Sans', sans-serif;
+  --display: 'Bebas Neue', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{height:100%}
+body{
+  background:var(--bg);color:var(--w);font-family:var(--sans);
+  font-size:15px;line-height:1.6;min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── GRAIN TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.6;
+}
+
+/* ── HEADER ── */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:18px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:rgba(10,10,11,.8);backdrop-filter:blur(20px);
+}
+.logo{font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--w);display:flex;align-items:center;gap:10px}
+.logo-mark{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s ease infinite}
+.step-indicator{display:flex;align-items:center;gap:8px}
+.step-dot{width:6px;height:6px;border-radius:50%;background:var(--w08);transition:all .3s}
+.step-dot.done{background:var(--accent)}
+.step-dot.active{background:var(--w);width:20px;border-radius:3px}
+
+/* ── MAIN ── */
+main{
+  position:relative;z-index:1;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:100px 24px 60px;
+}
+.screen{display:none;width:100%;max-width:640px;margin:0 auto;animation:fadeUp .4s ease both}
+.screen.active{display:block}
+
+/* ── INTRO ── */
+.intro-eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:3px;
+  color:var(--accent);text-transform:uppercase;margin-bottom:20px;
+}
+.intro-title{
+  font-family:var(--display);font-size:clamp(52px,10vw,88px);
+  line-height:.95;letter-spacing:1px;margin-bottom:24px;
+}
+.intro-title span{color:var(--accent)}
+.intro-sub{font-size:16px;color:var(--w60);line-height:1.75;margin-bottom:40px;max-width:480px}
+.btn-start{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--accent);color:#0A0A0B;
+  padding:16px 32px;border-radius:2px;
+  font-family:var(--display);font-size:20px;letter-spacing:2px;
+  border:none;cursor:pointer;transition:all .2s;
+}
+.btn-start:hover{background:#d4ff6a;transform:translateY(-2px)}
+.btn-start:active{transform:translateY(0)}
+.intro-meta{margin-top:20px;font-family:var(--mono);font-size:11px;color:var(--w20);letter-spacing:1px}
+
+/* ── QUESTION ── */
+.q-progress{
+  font-family:var(--mono);font-size:11px;color:var(--w20);
+  letter-spacing:2px;margin-bottom:16px;
+}
+.q-num{
+  font-family:var(--display);font-size:80px;line-height:1;
+  color:var(--w08);margin-bottom:-10px;
+}
+.q-text{
+  font-size:clamp(22px,4vw,30px);font-weight:600;
+  line-height:1.25;margin-bottom:8px;color:var(--w);
+}
+.q-sub{font-size:14px;color:var(--w60);margin-bottom:32px;line-height:1.6}
+
+/* ── OPTIONS ── */
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.opt{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;
+  border:1px solid var(--border);border-radius:4px;
+  background:var(--w04);cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+  text-align:left;width:100%;font-family:var(--sans);
+}
+.opt::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--accent);transform:scaleY(0);transform-origin:bottom;
+  transition:transform .2s;
+}
+.opt:hover{border-color:var(--border2);background:var(--w08)}
+.opt:hover::before{transform:scaleY(1)}
+.opt.selected{border-color:var(--accent);background:rgba(200,255,87,.06)}
+.opt.selected::before{transform:scaleY(1)}
+.opt-key{
+  font-family:var(--mono);font-size:11px;color:var(--w20);
+  width:20px;flex-shrink:0;letter-spacing:1px;transition:color .2s;
+}
+.opt.selected .opt-key{color:var(--accent)}
+.opt-content{flex:1}
+.opt-label{font-size:15px;font-weight:500;color:var(--w);margin-bottom:2px}
+.opt-desc{font-size:12px;color:var(--w60)}
+
+/* Multi-select options */
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px}
+.opt-chip{
+  padding:14px 16px;border:1px solid var(--border);border-radius:4px;
+  background:var(--w04);cursor:pointer;transition:all .2s;text-align:left;
+  font-family:var(--sans);width:100%;position:relative;
+}
+.opt-chip:hover{border-color:var(--border2);background:var(--w08)}
+.opt-chip.selected{border-color:var(--accent);background:rgba(200,255,87,.06)}
+.opt-chip-icon{font-size:18px;margin-bottom:6px;display:block}
+.opt-chip-label{font-size:13px;font-weight:500;color:var(--w)}
+.opt-chip-check{
+  position:absolute;top:10px;right:10px;width:16px;height:16px;
+  border:1px solid var(--border2);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:transparent;transition:all .2s;
+}
+.opt-chip.selected .opt-chip-check{background:var(--accent);border-color:var(--accent);color:#0A0A0B}
+
+/* Scale input */
+.scale-wrap{margin-bottom:32px}
+.scale-track{position:relative;padding:16px 0}
+.scale-input{width:100%;-webkit-appearance:none;height:2px;background:var(--border);outline:none;cursor:pointer}
+.scale-input::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);cursor:pointer;transition:transform .1s;
+}
+.scale-input::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.scale-labels{display:flex;justify-content:space-between;margin-top:10px}
+.scale-label{font-family:var(--mono);font-size:10px;color:var(--w20);letter-spacing:1px}
+.scale-val{
+  text-align:center;font-family:var(--display);font-size:48px;
+  color:var(--accent);margin-bottom:4px;line-height:1;
+}
+.scale-desc{text-align:center;font-size:13px;color:var(--w60);min-height:20px}
+
+/* Navigation */
+.nav-row{display:flex;align-items:center;justify-content:space-between}
+.btn-next{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--w);color:var(--bg);
+  padding:13px 28px;border-radius:2px;
+  font-family:var(--display);font-size:18px;letter-spacing:2px;
+  border:none;cursor:pointer;transition:all .2s;
+}
+.btn-next:hover{background:var(--w60);transform:translateX(4px)}
+.btn-next:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-back{
+  background:none;border:1px solid var(--border);color:var(--w60);
+  padding:13px 20px;border-radius:2px;cursor:pointer;
+  font-family:var(--sans);font-size:13px;transition:all .2s;
+}
+.btn-back:hover{border-color:var(--border2);color:var(--w)}
+
+/* ── LOADING ── */
+.loading-wrap{text-align:center;padding:40px 0}
+.loading-title{font-family:var(--display);font-size:40px;letter-spacing:2px;margin-bottom:12px;color:var(--w)}
+.loading-sub{font-size:13px;color:var(--w60);margin-bottom:40px}
+.loading-bar-track{width:100%;height:2px;background:var(--border);border-radius:1px;margin-bottom:24px;overflow:hidden}
+.loading-bar-fill{height:100%;background:var(--accent);border-radius:1px;width:0;transition:width .4s ease}
+.loading-steps{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto}
+.loading-step{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:11px;color:var(--w20);letter-spacing:1px;
+  transition:color .3s;
+}
+.loading-step.active{color:var(--w60)}
+.loading-step.done{color:var(--accent)}
+.loading-step-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── RESULT ── */
+.result-wrap{animation:fadeUp .6s ease both}
+.persona-header{
+  border:1px solid var(--border);border-radius:4px;padding:28px 28px 24px;
+  margin-bottom:20px;position:relative;overflow:hidden;
+}
+.persona-header::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:4px;
+}
+.persona-header.type-0::after{background:var(--accent)}
+.persona-header.type-1::after{background:var(--accent2)}
+.persona-header.type-2::after{background:var(--accent3)}
+.persona-header.type-3::after{background:#C857FF}
+.persona-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--w20);margin-bottom:12px}
+.persona-type{font-family:var(--display);font-size:48px;letter-spacing:2px;line-height:1;margin-bottom:10px}
+.persona-tagline{font-size:14px;color:var(--w60);line-height:1.6}
+
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.result-card{
+  background:var(--s1);border:1px solid var(--border);border-radius:4px;padding:18px 20px;
+}
+.result-card-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--w20);margin-bottom:8px;text-transform:uppercase}
+.result-card-content{font-size:13px;color:var(--w);line-height:1.65}
+.result-full{
+  background:var(--s1);border:1px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:12px;
+}
+.result-full-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--w20);margin-bottom:12px;text-transform:uppercase}
+
+/* Trend items in result */
+.trend-row{
+  display:flex;align-items:center;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.trend-row:last-child{border-bottom:none}
+.trend-badge{
+  font-family:var(--mono);font-size:10px;padding:3px 8px;
+  border-radius:2px;flex-shrink:0;
+}
+.trend-rising{background:rgba(200,255,87,.12);color:var(--accent)}
+.trend-peak{background:rgba(255,184,48,.1);color:#FFB830}
+.trend-info{flex:1}
+.trend-keyword{font-size:13px;font-weight:500;color:var(--w);margin-bottom:2px}
+.trend-why{font-size:12px;color:var(--w60)}
+.trend-fit{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--accent)}
+
+/* Hook patterns */
+.hook-item{
+  padding:12px 14px;background:var(--w04);border-radius:3px;margin-bottom:8px;
+  border-left:2px solid var(--accent);
+}
+.hook-type{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:1px;margin-bottom:4px}
+.hook-example{font-size:13px;color:var(--w);font-style:italic}
+
+/* Action items */
+.action-item{
+  display:flex;gap:14px;padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.action-item:last-child{border-bottom:none}
+.action-num{
+  font-family:var(--display);font-size:28px;color:var(--w08);
+  line-height:1;flex-shrink:0;width:32px;
+}
+.action-body .action-title{font-size:13px;font-weight:500;color:var(--w);margin-bottom:3px}
+.action-body .action-desc{font-size:12px;color:var(--w60);line-height:1.6}
+
+.btn-restart{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:14px;border:1px solid var(--border);border-radius:2px;
+  background:transparent;color:var(--w60);cursor:pointer;
+  font-family:var(--mono);font-size:12px;letter-spacing:1px;
+  transition:all .2s;margin-top:20px;
+}
+.btn-restart:hover{border-color:var(--border2);color:var(--w)}
+
+/* Error */
+.error-box{
+  background:rgba(255,68,88,.08);border:1px solid rgba(255,68,88,.2);
+  border-radius:4px;padding:14px 18px;font-size:13px;color:var(--w60);
+  line-height:1.6;margin-top:16px;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--w08);border-radius:2px}
+
+@media(max-width:560px){
+  header{padding:14px 20px}
+  main{padding:80px 16px 40px}
+  .opts-grid{grid-template-columns:1fr}
+  .result-grid{grid-template-columns:1fr}
+  .intro-title{font-size:52px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-mark"></div>SHORTFORM PULSE</div>
+  <div class="step-indicator" id="stepDots"></div>
+</header>
+
+<main>
+
+<!-- ── INTRO ── -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-eyebrow">Creator Persona Survey</div>
+  <h1 class="intro-title">FIND YOUR<br><span>CREATOR</span><br>TYPE.</h1>
+  <p class="intro-sub">7가지 질문으로 내 크리에이터 페르소나를 분석하고, 지금 내 채널에 맞는 트렌드·훅 패턴·콘텐츠 전략을 받아보세요.</p>
+  <button class="btn-start" onclick="startSurvey()">
+    시작하기 <span style="font-size:16px">→</span>
+  </button>
+  <div class="intro-meta">약 3분 소요 · AI 분석 포함</div>
+</div>
+
+<!-- ── QUESTIONS ── -->
+<div class="screen" id="screen-q"></div>
+
+<!-- ── LOADING ── -->
+<div class="screen" id="screen-loading">
+  <div class="loading-wrap">
+    <div class="loading-title">ANALYZING</div>
+    <div class="loading-sub">페르소나 분석 중...</div>
+    <div class="loading-bar-track"><div class="loading-bar-fill" id="loadBar"></div></div>
+    <div class="loading-steps" id="loadSteps"></div>
+  </div>
+</div>
+
+<!-- ── RESULT ── -->
+<div class="screen" id="screen-result"></div>
+
+</main>
+
+<script>
+// ══════════════════════════════════════
+//  SURVEY DATA
+// ══════════════════════════════════════
+const QUESTIONS = [
+  {
+    id: 'platform',
+    type: 'single',
+    text: '주로 활동하는 플랫폼은 어디인가요?',
+    sub: '가장 집중하고 싶은 플랫폼 하나를 선택하세요.',
+    options: [
+      { key:'A', label:'YouTube Shorts', desc:'롱폼과 숏폼을 함께 운영 또는 숏폼 전환 중', value:'youtube' },
+      { key:'B', label:'TikTok', desc:'빠른 확산과 바이럴 중심', value:'tiktok' },
+      { key:'C', label:'Instagram Reels', desc:'비주얼과 커뮤니티 중심', value:'instagram' },
+      { key:'D', label:'멀티 플랫폼', desc:'여러 플랫폼을 동시에 운영', value:'multi' },
+    ],
+  },
+  {
+    id: 'category',
+    type: 'single',
+    text: '내 채널의 주요 카테고리는 무엇인가요?',
+    sub: '가장 가까운 카테고리를 선택하세요.',
+    options: [
+      { key:'A', label:'요리 / 먹방', desc:'레시피, 먹방, 식품 리뷰', value:'food' },
+      { key:'B', label:'뷰티 / 패션', desc:'메이크업, 스킨케어, 패션 하울', value:'beauty' },
+      { key:'C', label:'라이프스타일 / 일상', desc:'브이로그, 루틴, 일상 공유', value:'lifestyle' },
+      { key:'D', label:'정보 / 자기계발', desc:'재테크, 공부법, 커리어', value:'edu' },
+      { key:'E', label:'게임 / 엔터테인먼트', desc:'게임 클립, 리액션, 밈', value:'gaming' },
+      { key:'F', label:'운동 / 건강', desc:'운동 루틴, 다이어트, 웰니스', value:'fitness' },
+    ],
+  },
+  {
+    id: 'experience',
+    type: 'scale',
+    text: '숏폼 크리에이터 경력이 얼마나 됩니까?',
+    sub: '슬라이더로 선택하세요.',
+    min: 0, max: 5,
+    labels: ['이제 시작', '5년 이상'],
+    descriptions: ['아직 채널이 없어요', '1개월 미만', '1~6개월', '6개월~1년', '1~3년', '3년 이상'],
+    value: 1,
+  },
+  {
+    id: 'goal',
+    type: 'single',
+    text: '지금 가장 원하는 목표는 무엇인가요?',
+    sub: '솔직하게 선택하세요. 정답은 없습니다.',
+    options: [
+      { key:'A', label:'구독자 / 팔로워 증가', desc:'빠르게 채널을 키우고 싶다', value:'growth' },
+      { key:'B', label:'수익화 시작', desc:'광고, 협찬, 커머스로 돈을 벌고 싶다', value:'monetize' },
+      { key:'C', label:'브랜드 인지도 구축', desc:'나 또는 내 브랜드를 알리고 싶다', value:'brand' },
+      { key:'D', label:'팬덤 / 커뮤니티', desc:'진짜 팬을 만들고 싶다', value:'community' },
+    ],
+  },
+  {
+    id: 'style',
+    type: 'multi',
+    text: '내 콘텐츠 스타일을 표현하는 키워드는?',
+    sub: '해당하는 것을 모두 선택하세요 (최대 3개).',
+    max: 3,
+    options: [
+      { icon:'🎭', label:'유머 / 웃음', value:'humor' },
+      { icon:'💡', label:'정보 / 교육', value:'info' },
+      { icon:'🤍', label:'감성 / 공감', value:'emotion' },
+      { icon:'⚡', label:'자극 / 임팩트', value:'impact' },
+      { icon:'📝', label:'솔직 / 현실', value:'honest' },
+      { icon:'✨', label:'비주얼 / 심미', value:'visual' },
+      { icon:'🔥', label:'챌린지 / 트렌드', value:'challenge' },
+      { icon:'🧪', label:'실험 / 독창성', value:'creative' },
+    ],
+  },
+  {
+    id: 'pain',
+    type: 'single',
+    text: '숏폼 제작에서 가장 힘든 부분은?',
+    sub: '가장 공감되는 고민을 선택하세요.',
+    options: [
+      { key:'A', label:'아이디어가 안 떠올라요', desc:'뭘 만들어야 할지 매번 막막하다', value:'idea' },
+      { key:'B', label:'트렌드를 어떻게 써야 할지 모르겠어요', desc:'트렌드는 보는데 내 채널에 어떻게 연결할지 모른다', value:'trend' },
+      { key:'C', label:'영상을 만들어도 반응이 없어요', desc:'업로드는 하는데 조회수가 안 나온다', value:'reach' },
+      { key:'D', label:'꾸준히 못하겠어요', desc:'번아웃이 오거나 지속이 어렵다', value:'consistency' },
+    ],
+  },
+  {
+    id: 'frequency',
+    type: 'scale',
+    text: '앞으로 주당 몇 편을 올리고 싶나요?',
+    sub: '현실적인 목표를 선택하세요.',
+    min: 1, max: 14,
+    labels: ['주 1편', '매일 2편'],
+    descriptions: ['','주 1편','주 2편','주 3편','주 4편','주 5편','주 6편','매일 1편','매일 + 1편','매일 + 2편','매일 + 3편','매일 + 4편','매일 + 5편','매일 + 6편','매일 2편'],
+    value: 3,
+  },
+];
+
+const TOTAL_Q = QUESTIONS.length;
+let answers = {};
+let currentQ = 0;
+let multiSelected = {};
+
+// ══════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function startSurvey() {
+  updateDots();
+  renderQuestion(0);
+  showScreen('q');
+}
+
+function updateDots() {
+  const dots = document.getElementById('stepDots');
+  if (currentQ < 0) { dots.innerHTML = ''; return; }
+  dots.innerHTML = Array.from({length: TOTAL_Q}, (_,i) =>
+    `<div class="step-dot ${i < currentQ ? 'done' : i === currentQ ? 'active' : ''}"></div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+//  RENDER QUESTION
+// ══════════════════════════════════════
+function renderQuestion(idx) {
+  currentQ = idx;
+  updateDots();
+  const q = QUESTIONS[idx];
+  const isFirst = idx === 0;
+  const wrap = document.getElementById('screen-q');
+
+  let body = `
+    <div class="q-progress">QUESTION ${idx+1} / ${TOTAL_Q}</div>
+    <div class="q-num">0${idx+1}</div>
+    <div class="q-text">${q.text}</div>
+    <div class="q-sub">${q.sub}</div>`;
+
+  if (q.type === 'single') {
+    body += `<div class="options">` +
+      q.options.map(o => `
+        <button class="opt ${answers[q.id] === o.value ? 'selected':''}"
+          onclick="selectSingle('${q.id}','${o.value}',this)">
+          <span class="opt-key">${o.key}</span>
+          <span class="opt-content">
+            <span class="opt-label">${o.label}</span>
+            ${o.desc ? `<span class="opt-desc">${o.desc}</span>` : ''}
+          </span>
+        </button>`).join('') + `</div>`;
+
+  } else if (q.type === 'multi') {
+    if (!multiSelected[q.id]) multiSelected[q.id] = new Set(answers[q.id] || []);
+    body += `<div class="opts-grid">` +
+      q.options.map(o => `
+        <button class="opt-chip ${multiSelected[q.id].has(o.value) ? 'selected':''}"
+          onclick="toggleMulti('${q.id}','${o.value}','${q.max}',this)">
+          <span class="opt-chip-icon">${o.icon}</span>
+          <span class="opt-chip-label">${o.label}</span>
+          <span class="opt-chip-check">✓</span>
+        </button>`).join('') + `</div>`;
+
+  } else if (q.type === 'scale') {
+    const val = answers[q.id] !== undefined ? answers[q.id] : q.value;
+    body += `<div class="scale-wrap">
+      <div class="scale-val" id="scaleVal">${val}</div>
+      <div class="scale-desc" id="scaleDesc">${q.descriptions[val] || ''}</div>
+      <div class="scale-track">
+        <input type="range" class="scale-input" id="scaleInput"
+          min="${q.min}" max="${q.max}" value="${val}" step="1"
+          oninput="updateScale('${q.id}',this.value,'${q.id}')">
+      </div>
+      <div class="scale-labels">
+        <span class="scale-label">${q.labels[0]}</span>
+        <span class="scale-label">${q.labels[1]}</span>
+      </div>
+    </div>`;
+    answers[q.id] = val;
+  }
+
+  body += `<div class="nav-row">
+    ${!isFirst ? `<button class="btn-back" onclick="goBack()">← 이전</button>` : `<div></div>`}
+    <button class="btn-next" id="btnNext" onclick="goNext()" ${canProceed(q) ? '' : 'disabled'}>
+      ${idx === TOTAL_Q-1 ? '분석 시작' : '다음'} →
+    </button>
+  </div>`;
+
+  wrap.innerHTML = body;
+}
+
+function canProceed(q) {
+  if (q.type === 'single') return answers[q.id] !== undefined;
+  if (q.type === 'scale') return answers[q.id] !== undefined;
+  if (q.type === 'multi') {
+    const s = multiSelected[q.id];
+    return s && s.size > 0;
+  }
+  return false;
+}
+
+// ══════════════════════════════════════
+//  INTERACTION HANDLERS
+// ══════════════════════════════════════
+function selectSingle(qId, val, el) {
+  answers[qId] = val;
+  document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const btn = document.getElementById('btnNext');
+  if (btn) btn.disabled = false;
+}
+
+function toggleMulti(qId, val, max, el) {
+  if (!multiSelected[qId]) multiSelected[qId] = new Set();
+  const s = multiSelected[qId];
+  if (s.has(val)) {
+    s.delete(val);
+    el.classList.remove('selected');
+  } else {
+    if (s.size >= parseInt(max)) {
+      const first = [...s][0];
+      s.delete(first);
+      document.querySelectorAll('.opt-chip').forEach(c => {
+        if (c.querySelector('.opt-chip-label')?.textContent) {
+          const q = QUESTIONS.find(q => q.id === qId);
+          const opt = q?.options.find(o => o.value === first);
+          if (opt && c.querySelector('.opt-chip-label').textContent === opt.label) {
+            c.classList.remove('selected');
+          }
+        }
+      });
+    }
+    s.add(val);
+    el.classList.add('selected');
+  }
+  answers[qId] = [...s];
+  const btn = document.getElementById('btnNext');
+  if (btn) btn.disabled = s.size === 0;
+}
+
+function updateScale(qId, val, descKey) {
+  answers[qId] = parseInt(val);
+  const q = QUESTIONS.find(q => q.id === qId);
+  document.getElementById('scaleVal').textContent = val;
+  document.getElementById('scaleDesc').textContent = q.descriptions[val] || '';
+}
+
+function goNext() {
+  const q = QUESTIONS[currentQ];
+  if (q.type === 'multi') answers[q.id] = [...(multiSelected[q.id] || [])];
+  if (currentQ === TOTAL_Q - 1) {
+    startAnalysis();
+  } else {
+    renderQuestion(currentQ + 1);
+  }
+}
+
+function goBack() {
+  if (currentQ > 0) renderQuestion(currentQ - 1);
+}
+
+// ══════════════════════════════════════
+//  ANALYSIS WITH CLAUDE API
+// ══════════════════════════════════════
+const LOAD_STEPS = [
+  '설문 응답 처리 중...',
+  '페르소나 패턴 분석 중...',
+  '트렌드 데이터 매핑 중...',
+  '콘텐츠 전략 생성 중...',
+  '결과 완성 중...',
+];
+
+async function startAnalysis() {
+  showScreen('loading');
+  updateDots();
+
+  const bar = document.getElementById('loadBar');
+  const stepsEl = document.getElementById('loadSteps');
+  stepsEl.innerHTML = LOAD_STEPS.map((s,i) =>
+    `<div class="loading-step" id="ls${i}">
+      <div class="loading-step-dot"></div><span>${s}</span>
+    </div>`).join('');
+
+  let progress = 0;
+  let stepIdx = 0;
+  const interval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 12, 90);
+    bar.style.width = progress + '%';
+    const newStep = Math.floor((progress / 90) * LOAD_STEPS.length);
+    if (newStep > stepIdx) {
+      if (stepIdx < LOAD_STEPS.length) document.getElementById(`ls${stepIdx}`)?.classList.add('done');
+      stepIdx = newStep;
+      if (stepIdx < LOAD_STEPS.length) document.getElementById(`ls${stepIdx}`)?.classList.add('active');
+    }
+  }, 400);
+
+  const prompt = buildPrompt();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    const data = await resp.json();
+    const raw = data.content.map(c => c.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+
+    clearInterval(interval);
+    bar.style.width = '100%';
+    LOAD_STEPS.forEach((_,i) => document.getElementById(`ls${i}`)?.classList.add('done'));
+
+    setTimeout(() => renderResult(result), 600);
+
+  } catch (e) {
+    clearInterval(interval);
+    const errResult = buildFallbackResult();
+    bar.style.width = '100%';
+    setTimeout(() => renderResult(errResult), 400);
+  }
+}
+
+function buildPrompt() {
+  const a = answers;
+  const catMap = {food:'요리/먹방',beauty:'뷰티/패션',lifestyle:'라이프스타일',edu:'정보/자기계발',gaming:'게임/엔터',fitness:'운동/건강'};
+  const platMap = {youtube:'YouTube Shorts',tiktok:'TikTok',instagram:'Instagram Reels',multi:'멀티플랫폼'};
+  const goalMap = {growth:'구독자 증가',monetize:'수익화',brand:'브랜드 인지도',community:'팬덤 구축'};
+  const painMap = {idea:'아이디어 부재',trend:'트렌드 연결 어려움',reach:'낮은 도달',consistency:'꾸준함 어려움'};
+  const expDesc = ['채널 없음','1개월 미만','1~6개월','6개월~1년','1~3년','3년 이상'];
+
+  return `당신은 숏폼 크리에이터 전략 전문가입니다. 아래 설문 결과를 분석해서 크리에이터 페르소나와 맞춤 전략을 JSON으로 반환하세요.
+
+설문 응답:
+- 플랫폼: ${platMap[a.platform] || a.platform}
+- 카테고리: ${catMap[a.category] || a.category}
+- 경력: ${expDesc[a.experience] || a.experience + '년'}
+- 목표: ${goalMap[a.goal] || a.goal}
+- 콘텐츠 스타일: ${(Array.isArray(a.style) ? a.style : [a.style]).join(', ')}
+- 가장 큰 고민: ${painMap[a.pain] || a.pain}
+- 목표 업로드 빈도: 주 ${a.frequency}편
+
+아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이:
+{
+  "personaType": "페르소나 이름 (영문 대문자 2~3단어, 예: THE TRENDSETTER, THE NICHE KING)",
+  "personaTagline": "한 줄 설명 (20자 이내, 한국어)",
+  "personaSummary": "이 크리에이터의 강점과 특성을 2~3문장으로 설명 (한국어)",
+  "topTrends": [
+    {"keyword": "#트렌드키워드", "state": "rising", "fitScore": 92, "reason": "이 트렌드가 맞는 이유 (한 문장)"},
+    {"keyword": "#트렌드키워드", "state": "rising", "fitScore": 88, "reason": "이 트렌드가 맞는 이유 (한 문장)"},
+    {"keyword": "#트렌드키워드", "state": "peak", "fitScore": 74, "reason": "이 트렌드가 맞는 이유 (한 문장)"}
+  ],
+  "hookPatterns": [
+    {"type": "훅 유형명", "example": "실제 사용할 수 있는 훅 예시 문장"},
+    {"type": "훅 유형명", "example": "실제 사용할 수 있는 훅 예시 문장"}
+  ],
+  "actionItems": [
+    {"title": "실행 항목 제목", "desc": "구체적인 실행 방법 (1~2문장)"},
+    {"title": "실행 항목 제목", "desc": "구체적인 실행 방법 (1~2문장)"},
+    {"title": "실행 항목 제목", "desc": "구체적인 실행 방법 (1~2문장)"}
+  ],
+  "weeklyPlan": "이 크리에이터를 위한 이번 주 콘텐츠 계획 (2~3문장, 구체적인 주제 포함)",
+  "typeIndex": 0
+}
+
+typeIndex는 0~3 중 하나 (페르소나 색상 구분용, 랜덤으로 지정).`;
+}
+
+function buildFallbackResult() {
+  const catMap = {food:'요리/먹방',beauty:'뷰티/패션',lifestyle:'라이프스타일',edu:'정보/자기계발',gaming:'게임',fitness:'운동'};
+  const cat = catMap[answers.category] || '콘텐츠';
+  return {
+    personaType: 'THE CREATOR',
+    personaTagline: '나만의 길을 만드는 크리에이터',
+    personaSummary: `${cat} 분야에서 자신만의 스타일로 성장 중인 크리에이터입니다. 꾸준한 업로드와 트렌드 감각을 결합하면 빠른 성장이 가능합니다.`,
+    topTrends: [
+      { keyword: `#${cat}챌린지`, state:'rising', fitScore:90, reason:'내 채널과 직접 연결되는 바이럴 포맷' },
+      { keyword: `#일상${cat}`, state:'rising', fitScore:82, reason:'진정성 있는 일상 콘텐츠로 팬덤 형성 가능' },
+      { keyword: `#${cat}꿀팁`, state:'peak', fitScore:71, reason:'정보성 콘텐츠로 저장률과 공유율이 높음' },
+    ],
+    hookPatterns: [
+      { type:'질문형 훅', example:'"이거 진짜 해봤어? 결과가 놀라웠다"' },
+      { type:'공감형 훅', example:'"이런 상황 겪어본 사람? 나만 이런 거 아니지?"' },
+    ],
+    actionItems: [
+      { title:'오늘 바로 첫 영상 기획', desc:'라이징 트렌드 키워드 하나를 골라서 내 채널 스타일로 각색하세요.' },
+      { title:'업로드 루틴 확정', desc:`목표 업로드 횟수인 주 ${answers.frequency}편을 캘린더에 블로킹하세요.` },
+      { title:'첫 3초 훅 연습', desc:'위의 훅 패턴을 활용해서 영상 인트로를 3가지 버전으로 써보세요.' },
+    ],
+    weeklyPlan: `이번 주는 트렌드 분석에 하루, 콘텐츠 제작에 이틀을 투자하세요. 첫 영상은 완벽함보다 일단 올리는 것이 목표입니다.`,
+    typeIndex: 0,
+  };
+}
+
+// ══════════════════════════════════════
+//  RENDER RESULT
+// ══════════════════════════════════════
+function renderResult(r) {
+  showScreen('result');
+  currentQ = -1;
+  updateDots();
+
+  const stateLabel = s => s === 'rising' ? '▲ RISING' : s === 'peak' ? '◆ PEAK' : '▼ FADING';
+  const stateClass = s => s === 'rising' ? 'trend-rising' : s === 'peak' ? 'trend-peak' : '';
+
+  document.getElementById('screen-result').innerHTML = `
+  <div class="result-wrap">
+    <div class="persona-header type-${r.typeIndex || 0}">
+      <div class="persona-eyebrow">YOUR CREATOR PERSONA</div>
+      <div class="persona-type">${r.personaType}</div>
+      <div class="persona-tagline">${r.personaTagline}</div>
+    </div>
+
+    <div class="result-full">
+      <div class="result-full-label">페르소나 분석</div>
+      <div style="font-size:14px;color:var(--w60);line-height:1.75">${r.personaSummary}</div>
+    </div>
+
+    <div class="result-full">
+      <div class="result-full-label">내 채널에 맞는 트렌드 TOP 3</div>
+      ${r.topTrends.map(t => `
+        <div class="trend-row">
+          <span class="trend-badge ${stateClass(t.state)}">${stateLabel(t.state)}</span>
+          <div class="trend-info">
+            <div class="trend-keyword">${t.keyword}</div>
+            <div class="trend-why">${t.reason}</div>
+          </div>
+          <div class="trend-fit">${t.fitScore}%</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="result-grid">
+      <div class="result-card">
+        <div class="result-card-label">추천 훅 패턴</div>
+        ${r.hookPatterns.map(h => `
+          <div class="hook-item">
+            <div class="hook-type">${h.type.toUpperCase()}</div>
+            <div class="hook-example">${h.example}</div>
+          </div>`).join('')}
+      </div>
+      <div class="result-card">
+        <div class="result-card-label">이번 주 플랜</div>
+        <div style="font-size:13px;color:var(--w60);line-height:1.7">${r.weeklyPlan}</div>
+      </div>
+    </div>
+
+    <div class="result-full">
+      <div class="result-full-label">지금 당장 할 일 3가지</div>
+      ${r.actionItems.map((a,i) => `
+        <div class="action-item">
+          <div class="action-num">0${i+1}</div>
+          <div class="action-body">
+            <div class="action-title">${a.title}</div>
+            <div class="action-desc">${a.desc}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <button class="btn-restart" onclick="restart()">↺ &nbsp;다시 분석하기</button>
+  </div>`;
+}
+
+function restart() {
+  answers = {};
+  multiSelected = {};
+  currentQ = 0;
+  showScreen('intro');
+  document.getElementById('stepDots').innerHTML = '';
+}
+</script>
+</body>
+</html>

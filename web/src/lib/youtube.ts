@@ -9,6 +9,11 @@ const SHORTS_CATEGORY_IDS = [
   "24", // Entertainment
   "1",  // Film & Animation
   "17", // Sports
+  "20", // Gaming
+  "26", // Howto & Style (뷰티·패션·요리)
+  "22", // People & Blogs (일상)
+  "15", // Pets & Animals
+  "28", // Science & Technology
 ];
 
 function parseDuration(iso: string): number {
@@ -43,6 +48,7 @@ const CATEGORY_MAP: Record<string, string> = {
   "24": "댄스",
   "25": "일상 브이로그",
   "26": "뷰티",
+  "28": "테크",
 };
 
 const THUMBNAIL_MAP: Record<string, string> = {
@@ -56,6 +62,7 @@ const THUMBNAIL_MAP: Record<string, string> = {
   "24": "🎭",
   "25": "📺",
   "26": "💄",
+  "28": "💻",
 };
 
 interface VideoDetail {

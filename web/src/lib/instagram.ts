@@ -8,6 +8,12 @@ const HASHTAG_URLS = [
   "https://www.instagram.com/explore/tags/먹방/",
   "https://www.instagram.com/explore/tags/뷰티/",
   "https://www.instagram.com/explore/tags/브이로그/",
+  "https://www.instagram.com/explore/tags/게임/",
+  "https://www.instagram.com/explore/tags/운동/",
+  "https://www.instagram.com/explore/tags/패션/",
+  "https://www.instagram.com/explore/tags/여행/",
+  "https://www.instagram.com/explore/tags/요리/",
+  "https://www.instagram.com/explore/tags/댄스/",
 ];
 
 const HASHTAG_CATEGORY: Record<string, string> = {
@@ -15,6 +21,12 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "먹방":   "먹방",
   "뷰티":   "뷰티",
   "브이로그": "일상 브이로그",
+  "게임":   "게임",
+  "운동":   "운동",
+  "패션":   "뷰티",
+  "여행":   "일상 브이로그",
+  "요리":   "먹방",
+  "댄스":   "댄스",
 };
 
 interface ApifyPost {

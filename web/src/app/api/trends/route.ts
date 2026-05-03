@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchYouTubeTrends } from "@/lib/youtube";
+import { fetchInstagramTrends } from "@/lib/instagram";
 import { TRENDS_DATA, TrendItem } from "@/lib/mock-data";
 
 export async function GET(req: Request) {
@@ -18,10 +19,17 @@ export async function GET(req: Request) {
     }
   }
 
-  // Instagram · TikTok: Phase 2~3에서 연동 예정 → 현재 mock 반환
+  // Instagram: Apify 토큰 있으면 실데이터, 없으면 mock
   if (platform === "all" || platform === "instagram") {
-    results.push(...TRENDS_DATA.filter((i) => i.platform === "instagram"));
+    const instagramData = await fetchInstagramTrends();
+    if (instagramData.length > 0) {
+      results.push(...instagramData);
+    } else {
+      results.push(...TRENDS_DATA.filter((i) => i.platform === "instagram"));
+    }
   }
+
+  // TikTok: Phase 3에서 연동 예정 → 현재 mock 반환
   if (platform === "all" || platform === "tiktok") {
     results.push(...TRENDS_DATA.filter((i) => i.platform === "tiktok"));
   }

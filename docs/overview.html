@@ -138,19 +138,24 @@
       <div class="phase">
         <div style="display:flex; align-items:flex-start; justify-content:flex-end; padding-right:24px; padding-top:6px;">
           <div>
-            <div class="phase-label-title" style="color:#FF8C00; text-align:right;">진행 중</div>
+            <div class="phase-label-title" style="color:#4CAF50; text-align:right;">완료</div>
             <div class="phase-label-sub" style="text-align:right;">Phase 2</div>
           </div>
         </div>
-        <div style="display:flex; align-items:flex-start; gap:16px; padding-bottom:28px; border-left:2px solid #FF8C0033; padding-left:24px; margin-left:-1px;">
-          <div class="phase-dot" style="background:#2a1e0a; color:#FF8C00; border:2px solid #FF8C00; margin-left:-30px; flex-shrink:0; animation:pulse 2s ease-in-out infinite;">→</div>
+        <div style="display:flex; align-items:flex-start; gap:16px; padding-bottom:28px; border-left:2px solid #4CAF5033; padding-left:24px; margin-left:-1px;">
+          <div class="phase-dot" style="background:#1a2a1a; color:#4CAF50; border:2px solid #4CAF50; margin-left:-30px; flex-shrink:0;">✓</div>
           <div class="phase-content" style="padding:0;">
-            <div class="phase-content-title">Instagram Graph API 연동</div>
+            <div class="phase-content-title">
+              Instagram Reels 연동 — Apify 스크레이퍼
+              <span class="badge" style="background:#1a2a1a; color:#4CAF50; font-size:10px;">Done</span>
+            </div>
             <div class="phase-tasks">
-              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Facebook Developer 앱 생성 + Business 계정 연결</div>
-              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> 카테고리별 해시태그 목록 정의 (먹방·뷰티·댄스 등)</div>
-              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> hashtag.search + top_media 연동</div>
-              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> engagement 점수 계산 (좋아요+댓글 × 가중치, 조회수 미노출)</div>
+              <div class="task"><span class="task-icon" style="color:#FF4444;">!</span> <span style="color:#e8eaed;">Instagram Graph API 한계 확인</span> — 자기 계정 데이터만 제공, hashtag.search API 2021년 이후 신규 앱에 미지원</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> 대안 채택: <span style="color:#e8eaed;">Apify Instagram Scraper</span> (공개 해시태그 페이지 스크레이핑)</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> Apify 계정 생성 + API 토큰 발급 → <span class="mono">.env.local</span> 에 APIFY_API_TOKEN 설정</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> <span class="mono">lib/instagram.ts</span> 구현 — 쇼츠·먹방·뷰티·브이로그 4개 해시태그 탐색, Video 타입 + 한글 캡션 + 중복 필터, 15분 캐싱</div>
+              <div class="task"><span class="task-icon" style="color:#4CAF50;">✓</span> <span class="mono">app/api/trends/route.ts</span> 에 연결 — 실데이터 우선, Apify 실패 시 mock 자동 fallback</div>
+              <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> 실환경 End-to-End 테스트 (예정)</div>
             </div>
           </div>
         </div>
@@ -160,14 +165,14 @@
       <div class="phase">
         <div style="display:flex; align-items:flex-start; justify-content:flex-end; padding-right:24px; padding-top:6px;">
           <div>
-            <div class="phase-label-title" style="color:#5a5f6a; text-align:right;">병렬 진행</div>
+            <div class="phase-label-title" style="color:#FF8C00; text-align:right;">진행 중</div>
             <div class="phase-label-sub" style="text-align:right;">Phase 3</div>
           </div>
         </div>
-        <div style="display:flex; align-items:flex-start; gap:16px; border-left:2px solid #2a2b35; padding-left:24px; margin-left:-1px;">
-          <div class="phase-dot" style="background:#1e2028; color:#5a5f6a; border:2px solid #2a2b35; margin-left:-30px; flex-shrink:0;">3</div>
+        <div style="display:flex; align-items:flex-start; gap:16px; border-left:2px solid #FF8C0033; padding-left:24px; margin-left:-1px;">
+          <div class="phase-dot" style="background:#2a1e0a; color:#FF8C00; border:2px solid #FF8C00; margin-left:-30px; flex-shrink:0; animation:pulse 2s ease-in-out infinite;">→</div>
           <div class="phase-content" style="padding:0;">
-            <div class="phase-content-title">TikTok API (병렬 신청 중)</div>
+            <div class="phase-content-title">TikTok API (신청 중)</div>
             <div class="phase-tasks">
               <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> TikTok for Developers 계정 생성 + Content Posting API 신청</div>
               <div class="task"><span class="task-icon" style="color:#5a5f6a;">○</span> Research API 신청 병렬 진행</div>
@@ -190,7 +195,7 @@
           <div class="arch-title" style="color:#5a5f6a;">Data Layer</div>
           <div class="arch-items">
             <div class="arch-item" style="background:#FF000015; color:#FF6666;">▶ YouTube Data API v3</div>
-            <div class="arch-item" style="background:#E1306C15; color:#E1306C;">◎ Instagram Graph API</div>
+            <div class="arch-item" style="background:#E1306C15; color:#E1306C;">◎ Apify Instagram Scraper</div>
             <div class="arch-item" style="background:#00F2EA15; color:#00F2EA;">♪ TikTok Research API</div>
           </div>
         </div>
@@ -242,8 +247,8 @@
         </div>
         <div style="flex:1; min-width:140px; background:#1e2028; border-radius:8px; padding:12px; text-align:center;">
           <div style="font-size:10px; color:#5a5f6a; margin-bottom:4px;">API 비용 (100명 기준)</div>
-          <div style="font-size:12px; color:#4CAF50;">$0~20 / 월</div>
-          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">YouTube ~4 units/15분</div>
+          <div style="font-size:12px; color:#4CAF50;">$5~25 / 월</div>
+          <div style="font-size:10px; color:#4a4f5a; margin-top:2px;">YouTube ~4 units/15분 + Apify</div>
         </div>
       </div>
     </div>
@@ -269,19 +274,19 @@
         </div>
       </div>
 
-      <div class="api-card" style="background:#16171d; border-color:#FF8C0040;">
-        <div class="api-rank" style="color:#FF8C00;">🟡 2순위</div>
-        <div class="api-name">Instagram Graph API</div>
-        <div class="api-scope" style="color:#8a8f98;">1~3일 앱 심사 필요. 트렌딩 피드 없음 → 해시태그 기반 top_media로 근사.</div>
+      <div class="api-card" style="background:#16171d; border-color:#4CAF5040;">
+        <div class="api-rank" style="color:#4CAF50;">🟢 2순위</div>
+        <div class="api-name">Instagram Reels (Apify)</div>
+        <div class="api-scope" style="color:#8a8f98;">연동 완료. Instagram Graph API는 자기 계정만 접근 가능(hashtag.search 신규 앱 불가) → Apify 스크레이퍼로 대체. 쇼츠·먹방·뷰티·브이로그 4개 해시태그 탐색, 해시태그당 8개 Video 수집.</div>
         <div class="api-tags">
-          <span class="api-tag" style="background:#FF8C0015; color:#FF8C00;">좋아요</span>
-          <span class="api-tag" style="background:#FF8C0015; color:#FF8C00;">댓글</span>
-          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">조회수 ✕</span>
-          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">트렌딩 피드 ✕</span>
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">조회수</span>
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">좋아요</span>
+          <span class="api-tag" style="background:#4CAF5015; color:#4CAF50;">댓글</span>
+          <span class="api-tag" style="background:#1e2028; color:#5a5f6a;">공유수 ✕</span>
         </div>
-        <div class="api-status" style="background:#2a1e0a; color:#FF8C00;">
-          <span style="width:6px; height:6px; border-radius:50%; background:#FF8C00; display:inline-block;"></span>
-          Hashtag Partial
+        <div class="api-status" style="background:#1a2a1a; color:#4CAF50;">
+          <span style="width:6px; height:6px; border-radius:50%; background:#4CAF50; display:inline-block;"></span>
+          연동 완료 ✓
         </div>
       </div>
 
@@ -325,7 +330,7 @@
         <div class="stack-category">외부 API</div>
         <div class="stack-items">
           <div class="stack-item"><div class="stack-dot" style="background:#FF6666; margin-top:4px;"></div><div class="stack-item-text"><span>YouTube Data API v3</span><span class="stack-item-desc">카테고리별 mostPopular(4 units) + /shorts/ URL 체크로 세로형만 추출 (10,000 units/일 무료)</span></div></div>
-          <div class="stack-item"><div class="stack-dot" style="background:#E1306C; margin-top:4px;"></div><div class="stack-item-text"><span>Instagram Graph API</span><span class="stack-item-desc">트렌딩 피드 없음 → 카테고리별 해시태그 top_media로 근사</span></div></div>
+          <div class="stack-item"><div class="stack-dot" style="background:#E1306C; margin-top:4px;"></div><div class="stack-item-text"><span>Apify Instagram Scraper</span><span class="stack-item-desc">Instagram Graph API 한계(자기 계정 전용) 대신 공개 해시태그 페이지 스크레이핑. 15분 캐싱으로 과금 최소화.</span></div></div>
           <div class="stack-item"><div class="stack-dot" style="background:#00F2EA; margin-top:4px;"></div><div class="stack-item-text"><span>TikTok Research API</span><span class="stack-item-desc">승인 대기 중 (수 주~수 개월) — MVP에서는 "수집 중" UI로 대응</span></div></div>
         </div>
       </div>
@@ -343,7 +348,7 @@
   <!-- 푸터 -->
   <div style="padding-top:32px; border-top:1px solid #1e2028; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
     <span style="font-size:12px; color:#3a3f4a;">Shortform Pulse · KAIST BIZ 699911</span>
-    <span style="font-size:12px; color:#3a3f4a;" class="mono">kyudong/backend-setup · 2026-04-29</span>
+    <span style="font-size:12px; color:#3a3f4a;" class="mono">kyudong/backend-setup · Phase 1~2 완료 · 2026-04-29</span>
   </div>
 
 </div>

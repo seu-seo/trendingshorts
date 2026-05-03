@@ -18,13 +18,13 @@ export default function TrendPulse() {
   const catScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch(`/api/trends?platform=${activePlatform}`)
+    fetch("/api/trends?platform=all")
       .then((r) => r.json())
       .then(({ data }: { data: TrendItem[] }) => {
         setTrends(data);
         setIsLoaded(true);
       });
-  }, [activePlatform]);
+  }, []);
 
   const filtered = trends
     .filter(item => activePlatform === "all" || item.platform === activePlatform)
@@ -128,7 +128,7 @@ export default function TrendPulse() {
       {/* 카드 그리드 */}
       <div style={{ padding: "20px 24px 40px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
         {filtered.map((item, i) => (
-          <TrendCard key={item.id} item={item} index={i} onClick={setSelectedItem} />
+          <TrendCard key={`${item.platform}-${item.id}`} item={item} index={i} onClick={setSelectedItem} />
         ))}
         {filtered.length === 0 && (
           <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "60px 20px", color: "#4a4f5a" }}>

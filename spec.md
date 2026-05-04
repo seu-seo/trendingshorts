@@ -12,7 +12,7 @@
 |---|---|---|
 | YouTube Shorts | ✅ 완료 | YouTube Data API v3 |
 | Instagram Reels | ✅ 완료 | Apify Instagram Scraper |
-| TikTok | 🔍 탐색 중 | TikTok Research API 외 대안 방법 탐색 중 |
+| TikTok | ✅ 완료 | Apify TikTok Scraper |
 
 ---
 
@@ -184,8 +184,34 @@ Next.js `fetch` 옵션 `next: { revalidate: 900 }` (15분) 적용. 동일 캐시
 
 ---
 
+## TikTok 수집 (`lib/tiktok.ts`)
+
+### 수집 방식
+
+TikTok Research API 승인 대기 대신 **Apify TikTok Scraper** (`clockworks~free-tiktok-scraper` Actor)로 대체.
+
+1. 한국 해시태그 10개 기준 수집: `먹방`, `뷰티`, `댄스`, `게임`, `운동`, `브이로그`, `요리`, `패션`, `여행`, `일상`
+2. 해시태그당 최대 5개, 총 최대 50개 영상 수집
+3. 필터링 조건:
+   - `isAd === true` 또는 `isSponsored === true` 제외
+   - 한글 텍스트(`/[가-힣]/`) — 한국 콘텐츠만
+   - 중복 ID 제거
+4. Instagram과 달리 `shares` 필드 실제값 존재 (`shareCount`)
+
+### 데이터 성격
+
+해시태그 검색 결과 기준 — 로그인 세션 없이 수집하므로 **개인화 없는 일반 top 콘텐츠**.
+
+### 한계
+
+- 응답 지연: Actor 실행 시간 포함 수십 초 소요 가능
+- TikTok 구조 변경 시 스크레이퍼 깨질 수 있음
+- 성장률(`growth`) 계산 불가, `0` 하드코딩
+- Apify 무료 크레딧을 Instagram과 공유
+
+---
+
 ## 미구현 / 다음 단계
 
-- [ ] TikTok 데이터 수집 방법 확정 — Research API 외 대안 탐색 중 (`lib/tiktok.ts` 구현 예정)
 - [ ] 성장률(`growth`) 계산 — Supabase에 조회수 시계열 저장 후 전 주기 대비 증감률 산출
 - [ ] `/api/trends` 응답 캐싱 개선 — 현재 요청마다 외부 API 호출

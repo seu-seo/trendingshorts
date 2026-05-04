@@ -87,9 +87,9 @@ export async function fetchInstagramTrends(): Promise<TrendItem[]> {
       body: JSON.stringify({
         directUrls: HASHTAG_URLS,
         resultsType: "reels",
-        resultsLimit: 8, // 해시태그당 8개 → 최대 80개
+        resultsLimit: 30, // 해시태그당 30개 → 최대 300개
       }),
-      next: { revalidate: 900 },
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {

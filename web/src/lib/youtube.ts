@@ -86,7 +86,7 @@ interface VideoDetail {
 
 async function get<T>(url: string): Promise<T | null> {
   try {
-    const res = await fetch(url, { next: { revalidate: 900 } });
+    const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) {
       console.error("[youtube] HTTP error:", res.status, await res.text());
       return null;

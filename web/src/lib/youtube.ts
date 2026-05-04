@@ -3,17 +3,19 @@ import { TrendItem } from "./mock-data";
 const BASE_URL = "https://www.googleapis.com/youtube/v3";
 const HANGUL_RE = /[가-힣]/;
 
-// Shorts가 주로 올라오는 카테고리 (Music 제외 — K-pop MV 위주)
 const SHORTS_CATEGORY_IDS = [
   "23", // Comedy
   "24", // Entertainment
-  "1",  // Film & Animation
+  "1",  // Film & Animation → 콘텐츠
   "17", // Sports
   "20", // Gaming
   "26", // Howto & Style (뷰티·패션·요리)
   "22", // People & Blogs (일상)
   "15", // Pets & Animals
   "28", // Science & Technology
+  "10", // Music
+  "19", // Travel & Events → 여행
+  "27", // Education → DIY
 ];
 
 function parseDuration(iso: string): number {
@@ -38,16 +40,18 @@ function timeAgo(publishedAt: string): string {
 }
 
 const CATEGORY_MAP: Record<string, string> = {
-  "1":  "일상 브이로그",
+  "1":  "콘텐츠",
   "10": "음악",
   "15": "펫",
   "17": "운동",
+  "19": "여행",
   "20": "게임",
   "22": "일상 브이로그",
   "23": "유머",
   "24": "댄스",
   "25": "일상 브이로그",
   "26": "뷰티",
+  "27": "DIY",
   "28": "테크",
 };
 
@@ -56,12 +60,14 @@ const THUMBNAIL_MAP: Record<string, string> = {
   "10": "🎵",
   "15": "🐾",
   "17": "🏃",
+  "19": "✈️",
   "20": "🎮",
   "22": "☀️",
   "23": "😂",
   "24": "🎭",
   "25": "📺",
   "26": "💄",
+  "27": "🔨",
   "28": "💻",
 };
 

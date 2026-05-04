@@ -29,7 +29,7 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "게임":   "게임",
   "운동":   "운동",
   "패션":   "뷰티",
-  "여행":   "일상 브이로그",
+  "여행":   "여행",
   "요리":   "먹방",
   "댄스":   "댄스",
   "반려동물": "펫",
@@ -52,6 +52,8 @@ const CATEGORY_THUMBNAIL: Record<string, string> = {
   "테크":       "💻",
   "ASMR":      "🎧",
   "DIY":       "🔨",
+  "여행":       "✈️",
+  "콘텐츠":     "🎬",
 };
 
 interface ApifyPost {

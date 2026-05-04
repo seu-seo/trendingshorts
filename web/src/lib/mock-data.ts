@@ -31,7 +31,7 @@ export const PLATFORMS: Record<"all" | Platform, PlatformInfo> = {
   instagram: { label: "Instagram Reels", icon: "◎", color: "#E1306C" },
 };
 
-export const CATEGORIES = ["전체", "먹방", "뷰티", "댄스", "일상 브이로그", "게임", "운동", "펫", "유머", "ASMR", "DIY", "음악"];
+export const CATEGORIES = ["전체", "먹방", "뷰티", "댄스", "일상 브이로그", "게임", "운동", "펫", "유머", "ASMR", "DIY", "음악", "여행", "콘텐츠", "테크"];
 
 export const TRENDS_DATA: TrendItem[] = [
   { id: 1, platform: "youtube", title: "3초 만에 완성하는 초간단 김밥 레시피", creator: "@cook_master_kr", views: 12400000, likes: 890000, comments: 45200, shares: 120000, category: "먹방", growth: 342, duration: "0:58", thumbnail: "🍱", trending_since: "2시간 전", tags: ["#shorts", "#김밥", "#간단레시피", "#요리"] },

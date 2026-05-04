@@ -17,7 +17,7 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "브이로그": "일상 브이로그",
   "요리":   "먹방",
   "패션":   "뷰티",
-  "여행":   "일상 브이로그",
+  "여행":   "여행",
   "일상":   "일상 브이로그",
   "반려동물": "펫",
   "유머":   "유머",
@@ -39,6 +39,8 @@ const CATEGORY_THUMBNAIL: Record<string, string> = {
   "테크":       "💻",
   "ASMR":      "🎧",
   "DIY":       "🔨",
+  "여행":       "✈️",
+  "콘텐츠":     "🎬",
 };
 
 interface TikTokPost {

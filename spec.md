@@ -69,9 +69,121 @@ web/
 │   └── lib/
 │       ├── youtube.ts             # YouTube Shorts 수집 모듈
 │       ├── instagram.ts           # Instagram Reels 수집 모듈
+│       ├── tiktok.ts              # TikTok 수집 모듈
 │       └── mock-data.ts           # Fallback mock 데이터 + 공통 타입
 └── .env.local                     # API 키 (git 제외)
 ```
+
+---
+
+## 플랫폼별 수집 상세
+
+### 1. API 호출 주기
+
+| 플랫폼 | 캐시 TTL | 최대 호출 횟수 | 비고 |
+|---|---|---|---|
+| YouTube | 1시간 | 24회/일 | Next.js `revalidate: 3600` |
+| Instagram | 1시간 | 24회/일 | Next.js `revalidate: 3600` |
+| TikTok | 1시간 | 24회/일 | Next.js `revalidate: 3600` |
+
+> 캐시 동작 방식: 첫 요청 시 외부 API 호출 → 1시간 캐시 → 만료 후 다음 요청 시 재호출. 사용자가 없는 시간대는 호출 자체가 발생하지 않음.
+
+---
+
+### 2. 카테고리 수 및 수집 콘텐츠 수
+
+| 플랫폼 | 수집 단위 | 단위 수 | 단위당 수집 | 최대 수집(필터 전) | 실 수집(필터 후) |
+|---|---|---|---|---|---|
+| YouTube | 카테고리 | 9개 | 50개 | 450개 | 수십~100여 개 |
+| Instagram | 해시태그 | 15개 | 30개 | 450개 | 수십~150개 |
+| TikTok | 해시태그 | 15개 | 20개 | 300개 | 수십~100개 |
+
+**YouTube 카테고리 (9개)**
+
+| categoryId | YouTube 분류 | 서비스 카테고리 | 썸네일 |
+|---|---|---|---|
+| 23 | Comedy | 유머 | 😂 |
+| 24 | Entertainment | 댄스 | 🎭 |
+| 17 | Sports | 운동 | 🏃 |
+| 1 | Film & Animation | 일상 브이로그 | 🎬 |
+| 20 | Gaming | 게임 | 🎮 |
+| 26 | Howto & Style | 뷰티 | 💄 |
+| 22 | People & Blogs | 일상 브이로그 | ☀️ |
+| 15 | Pets & Animals | 펫 | 🐾 |
+| 28 | Science & Technology | 테크 | 💻 |
+
+**Instagram·TikTok 해시태그 (15개)**
+
+| 해시태그 | 서비스 카테고리 | 썸네일 |
+|---|---|---|
+| 먹방, 요리 | 먹방 | 🍽️ |
+| 뷰티, 패션 | 뷰티 | 💄 |
+| 댄스 | 댄스 | 🎭 |
+| 게임 | 게임 | 🎮 |
+| 운동 | 운동 | 🏃 |
+| 쇼츠(IG), 브이로그, 여행, 일상(TK) | 일상 브이로그 | ☀️ |
+| 음악 | 음악 | 🎵 |
+| 반려동물 | 펫 | 🐾 |
+| 유머 | 유머 | 😂 |
+| asmr | ASMR | 🎧 |
+| diy | DIY | 🔨 |
+
+---
+
+### 3. 콘텐츠 수집 기준
+
+**YouTube**
+- 세로형 Shorts 검증: `youtube.com/shorts/{id}` HTTP 요청 → 200 응답이면 Shorts 플레이어, 3xx 리다이렉트이면 일반 영상으로 판별·제외
+- 길이 180초(3분) 이하
+- 한글 타이틀 포함 (`/[가-힣]/`)
+
+**Instagram**
+- `resultsType: "reels"` — Reels 전용 수집 (posts로 호출 시 Image 타입만 반환됨)
+- `type === "Video"` 인 게시물만 추출
+- 한글 캡션 포함 (`/[가-힣]/`)
+- 광고 제외: 해시태그 `광고 / ad / sponsored` 또는 캡션 내 `광고 / 협찬 / 유료광고 / 제품제공 / PR` 포함 시 제외
+- 중복 ID 제거
+
+**TikTok**
+- 한글 텍스트 포함 (`/[가-힣]/`)
+- `isAd === true` 또는 `isSponsored === true` 제외
+- 중복 ID 제거
+
+---
+
+### 4. "Trending" 정의 기준
+
+각 플랫폼의 Trending 기준은 **플랫폼 자체 알고리즘**에 따르며, 로그인 없이 수집하므로 개인화 없는 일반 top 콘텐츠입니다.
+
+| 플랫폼 | Trending 기준 | 근거 |
+|---|---|---|
+| YouTube | YouTube가 한국(KR) 전체 사용자 기준으로 산정하는 **인기 차트** | `chart=mostPopular&regionCode=KR` — 조회수·시청 시간·좋아요·댓글 등 종합 신호 반영 |
+| Instagram | 해당 해시태그 **탐색(Explore) 페이지 상위 노출 게시물** | 최근성 + 참여도(좋아요·댓글·저장) 기반으로 Instagram 알고리즘이 선별 |
+| TikTok | 해당 해시태그 **검색 결과 상위 노출 영상** | 조회수·좋아요·댓글·공유 + TikTok 내부 바이럴 신호 기반으로 플랫폼이 정렬 |
+
+---
+
+### 5. 누락될 수 있는 요소
+
+**YouTube**
+- 한글 타이틀 없이 영어·이모지로만 작성된 한국 Shorts (타이틀 필터에서 제외)
+- 업로드 직후 아직 인기 차트에 진입하지 못한 급상승 콘텐츠
+- 9개 카테고리에 해당하지 않는 분야 (예: 뉴스, 교육 등)
+
+**Instagram**
+- 한글 캡션 없이 이모지·영어로만 작성된 한국 크리에이터 Reels
+- 비공개 계정 또는 지역 제한 게시물
+- 해시태그를 사용하지 않고 알고리즘 노출만으로 트렌딩된 콘텐츠
+- 광고 필터가 잡지 못하는 비명시적 협찬 (예: "이 제품 써봤어요" 형태)
+
+**TikTok**
+- 한글 텍스트 없이 영상·음악만으로 트렌딩된 콘텐츠 (예: 챌린지 사운드 기반)
+- 듀엣·스티치 형태의 파생 트렌딩 콘텐츠
+- 15개 해시태그 외 새롭게 부상하는 신조어 해시태그
+
+**공통**
+- 성장률(`growth`) 미계산 — 현재 `0` 하드코딩, 시계열 DB 미구축
+- 실시간성 한계 — 1시간 캐시로 인해 최대 1시간 지연
 
 ---
 
@@ -83,29 +195,11 @@ web/
 2. **한글 타이틀 필터** — `/[가-힣]/` 정규식으로 한국어 콘텐츠만 추출.
 3. **세로형 Shorts 검증** — `youtube.com/shorts/{id}` HTTP 요청 시 200 반환이면 Shorts 플레이어, 3xx 리다이렉트이면 일반 영상으로 판별.
 
-### 데이터 성격
-
-`chart=mostPopular regionCode=KR` — 로그인 없이 호출하므로 **개인화 없는 일반 top 콘텐츠**. YouTube가 한국 전체 사용자 기준으로 산정하는 인기 차트.
-
 ### 주요 결정 사항
 
 - `search.list` 미사용 — `q` 파라미터 없이 호출 시 결과 0개, 100 units 낭비
 - YouTube 내부 Shorts 피드(`FEshorts` browseId) 미사용 — 인증 없이 400 반환
 - `isShort()` fetch에 `cache: "force-cache"` 적용 — `redirect: "manual"`과 `next: { revalidate }` 동시 사용 불가
-
-### 카테고리 → 썸네일 매핑
-
-| categoryId | YouTube 분류 | 카테고리 | 썸네일 |
-|---|---|---|---|
-| 23 | Comedy | 유머 | 😂 |
-| 24 | Entertainment | 댄스 | 🎭 |
-| 17 | Sports | 운동 | 🏃 |
-| 1 | Film & Animation | 일상 브이로그 | 🎬 |
-| 20 | Gaming | 게임 | 🎮 |
-| 26 | Howto & Style | 뷰티 | 💄 |
-| 22 | People & Blogs | 일상 브이로그 | 📱 |
-| 15 | Pets & Animals | 펫 | 🐾 |
-| 28 | Science & Technology | 테크 | 💻 |
 
 ---
 
@@ -115,44 +209,26 @@ web/
 
 Instagram Graph API는 자기 계정 데이터만 접근 가능하며, 해시태그 검색(`hashtag.search`) API는 2021년 이후 신규 앱에 미지원. **Apify Instagram Scraper** (`apify~instagram-scraper` Actor)로 대체.
 
-1. 한국 카테고리별 해시태그 탐색 페이지 10개를 입력으로 전달
-   - `쇼츠`, `먹방`, `뷰티`, `브이로그`, `게임`, `운동`, `패션`, `여행`, `요리`, `댄스`
-2. `resultsType: "reels"` 로 Reels 전용 수집 (posts 사용 시 Image 타입만 반환되는 문제 수정)
-3. 해시태그당 최대 8개, 총 최대 80개 게시물 수집
-4. 필터링 조건:
-   - `type === "Video"` — Reels만 추출
-   - 한글 캡션 (`/[가-힣]/`) — 한국 콘텐츠만
-   - 광고 제외 — 해시태그 `광고/ad/sponsored` 또는 캡션 내 `광고/협찬/유료광고/제품제공/PR` 포함 시 제외
-   - 중복 ID 제거
-
-### 카테고리 → 썸네일 매핑
-
-| 카테고리 | 썸네일 |
-|---|---|
-| 먹방 | 🍽️ |
-| 뷰티 | 💄 |
-| 댄스 | 🎭 |
-| 게임 | 🎮 |
-| 운동 | 🏃 |
-| 일상 브이로그 | 📱 |
-| 음악 | 🎵 |
-| 펫 | 🐾 |
-| 유머 | 😂 |
-| 테크 | 💻 |
-
-### 데이터 성격
-
-`explore/tags/{해시태그}` 공개 탐색 페이지 기준 — 로그인 세션 없이 수집하므로 **개인화 없는 일반 top 콘텐츠**. 한국 불특정 다수에게 노출되는 상위 게시물 기준.
-
-### Apify 호출 방식
-
 `run-sync-get-dataset-items` 엔드포인트로 동기 실행 — Actor 완료까지 대기 후 결과 반환.
 
 ### 한계
 
 - 응답 지연: Actor 실행 시간 포함으로 수십 초 소요 가능
 - Instagram HTML 구조 변경 시 스크레이퍼 깨질 수 있음
-- 트렌딩 지표 없음 — 성장률(`growth`) 계산 불가, `0` 하드코딩
+
+---
+
+## TikTok 수집 (`lib/tiktok.ts`)
+
+### 수집 방식
+
+TikTok Research API 승인 대기 대신 **Apify TikTok Scraper** (`clockworks~free-tiktok-scraper` Actor)로 대체. Instagram과 달리 `shares` 필드 실제값 존재 (`shareCount`).
+
+### 한계
+
+- 응답 지연: Actor 실행 시간 포함 수십 초 소요 가능
+- TikTok 구조 변경 시 스크레이퍼 깨질 수 있음
+- Apify 무료 크레딧을 Instagram과 공유
 
 ---
 
@@ -167,47 +243,14 @@ Instagram Graph API는 자기 계정 데이터만 접근 가능하며, 해시태
 
 ---
 
-## 캐싱
-
-Next.js `fetch` 옵션 `next: { revalidate: 900 }` (15분) 적용. 동일 캐시 윈도우 내 중복 API 호출 차단.
-
----
-
 ## 환경변수
 
 | 변수명 | 용도 |
 |---|---|
 | `YOUTUBE_API_KEY` | YouTube Data API v3 키 (Google Cloud Console) |
-| `APIFY_API_TOKEN` | Apify Instagram Scraper 토큰 |
+| `APIFY_API_TOKEN` | Apify Instagram·TikTok Scraper 공용 토큰 |
 | `TIKTOK_CLIENT_KEY` | TikTok Research API (미사용, 승인 대기) |
 | `TIKTOK_CLIENT_SECRET` | TikTok Research API (미사용, 승인 대기) |
-
----
-
-## TikTok 수집 (`lib/tiktok.ts`)
-
-### 수집 방식
-
-TikTok Research API 승인 대기 대신 **Apify TikTok Scraper** (`clockworks~free-tiktok-scraper` Actor)로 대체.
-
-1. 한국 해시태그 10개 기준 수집: `먹방`, `뷰티`, `댄스`, `게임`, `운동`, `브이로그`, `요리`, `패션`, `여행`, `일상`
-2. 해시태그당 최대 5개, 총 최대 50개 영상 수집
-3. 필터링 조건:
-   - `isAd === true` 또는 `isSponsored === true` 제외
-   - 한글 텍스트(`/[가-힣]/`) — 한국 콘텐츠만
-   - 중복 ID 제거
-4. Instagram과 달리 `shares` 필드 실제값 존재 (`shareCount`)
-
-### 데이터 성격
-
-해시태그 검색 결과 기준 — 로그인 세션 없이 수집하므로 **개인화 없는 일반 top 콘텐츠**.
-
-### 한계
-
-- 응답 지연: Actor 실행 시간 포함 수십 초 소요 가능
-- TikTok 구조 변경 시 스크레이퍼 깨질 수 있음
-- 성장률(`growth`) 계산 불가, `0` 하드코딩
-- Apify 무료 크레딧을 Instagram과 공유
 
 ---
 

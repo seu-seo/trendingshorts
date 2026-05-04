@@ -29,6 +29,19 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "댄스":   "댄스",
 };
 
+const CATEGORY_THUMBNAIL: Record<string, string> = {
+  "먹방":       "🍽️",
+  "뷰티":       "💄",
+  "댄스":       "🎭",
+  "게임":       "🎮",
+  "운동":       "🏃",
+  "일상 브이로그": "📱",
+  "음악":       "🎵",
+  "펫":         "🐾",
+  "유머":       "😂",
+  "테크":       "💻",
+};
+
 interface ApifyPost {
   id: string;
   type: string;           // "Video" | "Image" | "Sidecar"
@@ -38,9 +51,10 @@ interface ApifyPost {
   likesCount: number;
   videoViewCount?: number;
   videoPlayCount?: number;
+  igPlayCount?: number;
   timestamp: string;
   url: string;
-  username: string;
+  ownerUsername: string;
   hashtags?: string[];
 }
 
@@ -72,8 +86,8 @@ export async function fetchInstagramTrends(): Promise<TrendItem[]> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         directUrls: HASHTAG_URLS,
-        resultsType: "posts",
-        resultsLimit: 8, // 해시태그당 8개 → 최대 32개
+        resultsType: "reels",
+        resultsLimit: 8, // 해시태그당 8개 → 최대 80개
       }),
       next: { revalidate: 900 },
     });
@@ -89,13 +103,15 @@ export async function fetchInstagramTrends(): Promise<TrendItem[]> {
     const results: TrendItem[] = [];
 
     for (const post of posts) {
-      // Video(Reel)만, 한국어 캡션만, 중복 제거
+      // Video(Reel)만, 한국어 캡션만, 광고 제외, 중복 제거
       if (post.type !== "Video") continue;
       if (!HANGUL_RE.test(post.caption || "")) continue;
+      if ((post.hashtags ?? []).some(t => t === "광고" || t === "ad" || t === "sponsored")) continue;
+      if (/광고|협찬|유료광고|제품제공|PR\b/i.test(post.caption || "")) continue;
       if (seen.has(post.id)) continue;
       seen.add(post.id);
 
-      const views    = post.videoViewCount ?? post.videoPlayCount ?? 0;
+      const views    = post.videoViewCount ?? post.igPlayCount ?? post.videoPlayCount ?? 0;
       const likes    = post.likesCount ?? 0;
       const comments = post.commentsCount ?? 0;
       const tags     = (post.hashtags ?? []).map(t => `#${t}`).slice(0, 4);
@@ -109,7 +125,7 @@ export async function fetchInstagramTrends(): Promise<TrendItem[]> {
         id: results.length + 1,
         platform: "instagram" as const,
         title,
-        creator: `@${post.username}`,
+        creator: `@${post.ownerUsername}`,
         views,
         likes,
         comments,
@@ -117,7 +133,7 @@ export async function fetchInstagramTrends(): Promise<TrendItem[]> {
         category,
         growth: 0,
         duration: "0:30",
-        thumbnail: "◎",
+        thumbnail: CATEGORY_THUMBNAIL[category] ?? "📱",
         trending_since: timeAgo(post.timestamp),
         tags: tags.length ? tags : ["#릴스"],
         videoUrl: post.url,

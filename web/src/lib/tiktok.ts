@@ -5,6 +5,7 @@ const HANGUL_RE = /[가-힣]/;
 const HASHTAGS = [
   "먹방", "뷰티", "댄스", "게임", "운동",
   "브이로그", "요리", "패션", "여행", "일상",
+  "반려동물", "유머", "asmr", "diy", "음악",
 ];
 
 const HASHTAG_CATEGORY: Record<string, string> = {
@@ -18,6 +19,11 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "패션":   "뷰티",
   "여행":   "일상 브이로그",
   "일상":   "일상 브이로그",
+  "반려동물": "펫",
+  "유머":   "유머",
+  "asmr":  "ASMR",
+  "diy":   "DIY",
+  "음악":   "음악",
 };
 
 const CATEGORY_THUMBNAIL: Record<string, string> = {
@@ -31,6 +37,8 @@ const CATEGORY_THUMBNAIL: Record<string, string> = {
   "펫":         "🐾",
   "유머":       "😂",
   "테크":       "💻",
+  "ASMR":      "🎧",
+  "DIY":       "🔨",
 };
 
 interface TikTokPost {

@@ -14,6 +14,11 @@ const HASHTAG_URLS = [
   "https://www.instagram.com/explore/tags/여행/",
   "https://www.instagram.com/explore/tags/요리/",
   "https://www.instagram.com/explore/tags/댄스/",
+  "https://www.instagram.com/explore/tags/반려동물/",
+  "https://www.instagram.com/explore/tags/유머/",
+  "https://www.instagram.com/explore/tags/asmr/",
+  "https://www.instagram.com/explore/tags/diy/",
+  "https://www.instagram.com/explore/tags/음악/",
 ];
 
 const HASHTAG_CATEGORY: Record<string, string> = {
@@ -27,6 +32,11 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   "여행":   "일상 브이로그",
   "요리":   "먹방",
   "댄스":   "댄스",
+  "반려동물": "펫",
+  "유머":   "유머",
+  "asmr":  "ASMR",
+  "diy":   "DIY",
+  "음악":   "음악",
 };
 
 const CATEGORY_THUMBNAIL: Record<string, string> = {
@@ -40,6 +50,8 @@ const CATEGORY_THUMBNAIL: Record<string, string> = {
   "펫":         "🐾",
   "유머":       "😂",
   "테크":       "💻",
+  "ASMR":      "🎧",
+  "DIY":       "🔨",
 };
 
 interface ApifyPost {

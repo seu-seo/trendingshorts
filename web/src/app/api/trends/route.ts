@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { fetchYouTubeTrends } from "@/lib/youtube";
 import { fetchInstagramTrends } from "@/lib/instagram";
 import { fetchTikTokTrends } from "@/lib/tiktok";
+import { classifyItems } from "@/lib/classify";
 import { TRENDS_DATA, TrendItem } from "@/lib/mock-data";
 
 export async function GET(req: Request) {
@@ -40,5 +41,7 @@ export async function GET(req: Request) {
     }
   }
 
-  return NextResponse.json({ data: results, source: process.env.YOUTUBE_API_KEY ? "live" : "mock" });
+  const classified = await classifyItems(results);
+
+  return NextResponse.json({ data: classified, source: process.env.YOUTUBE_API_KEY ? "live" : "mock" });
 }

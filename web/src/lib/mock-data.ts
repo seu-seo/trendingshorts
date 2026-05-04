@@ -10,6 +10,7 @@ export interface TrendItem {
   comments: number;
   shares: number;
   category: string;
+  subcategory?: string;
   growth: number;
   duration: string;
   thumbnail: string;

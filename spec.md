@@ -105,8 +105,8 @@ web/
 | 플랫폼 | 수집 단위 | 단위 수 | 단위당 수집 | 최대 수집(필터 전) | 실 수집(필터 후) |
 |---|---|---|---|---|---|
 | YouTube | 카테고리 | 12개 | 50개 | 600개 | 수십~150개 |
-| Instagram | 해시태그 | 15개 | 30개 | 450개 | 수십~150개 |
-| TikTok | 해시태그 | 15개 | 20개 | 300개 | 수십~100개 |
+| Instagram | 해시태그 | 15개 | 12개 | 180개 | 수십~80개 |
+| TikTok | 해시태그 | 15개 | 6개 | 90개 | 수십~50개 |
 
 **YouTube 카테고리 (12개)**
 
@@ -257,12 +257,49 @@ TikTok Research API 승인 대기 대신 **Apify TikTok Scraper** (`clockworks~f
 
 ---
 
+## 서브카테고리 분류 (`lib/classify.ts`)
+
+수집된 콘텐츠에 Claude Haiku를 이용해 서브카테고리를 자동 분류하여 `TrendItem.subcategory` 필드로 반환.
+
+### 분류 방식
+
+- **AI 분류**: `ANTHROPIC_API_KEY` 설정 시 Claude Haiku (`claude-haiku-4-5-20251001`)로 제목·해시태그 기반 분류
+- **Keyword fallback**: API 키 미설정 또는 오류 시 정규식 기반 keyword 분류 (커버리지 ~70%)
+
+### 서브카테고리 목록
+
+| 카테고리 | 서브카테고리 |
+|---|---|
+| 먹방 | 레시피, 맛집리뷰, 편의점, 카페·디저트, 먹방ASMR |
+| 뷰티 | 메이크업, 스킨케어, 헤어, 패션·코디 |
+| 댄스 | 챌린지, 커버댄스, 안무 |
+| 일상 브이로그 | 하루일상, 출근·직장, 루틴, 모닝루틴 |
+| 게임 | 게임플레이, 공략·팁, 반응·리액션 |
+| 운동 | 홈트, 헬스·바디빌딩, 요가·필라테스, 다이어트 |
+| 펫 | 강아지, 고양이, 특이한동물 |
+| 유머 | 상황극, 몰카·반응, 밈 |
+| ASMR | 먹방ASMR, 자연·환경, 일상ASMR |
+| DIY | 인테리어, 공예·만들기, 요리DIY |
+| 음악 | 커버·MR제거, 작곡·비트, 뮤직비디오 |
+| 여행 | 국내여행, 해외여행, 맛집투어 |
+| 콘텐츠 | 영화·드라마, 웹툰·애니, 리뷰 |
+| 테크 | 기기리뷰, 언박싱, IT꿀팁 |
+
+### 비용
+
+| 모델 | 토큰/건 | 하루(~400건) | 월 비용 |
+|---|---|---|---|
+| Claude Haiku 4.5 | ~150 input / ~10 output | ~$0.05 | **~$1.50** |
+
+---
+
 ## 환경변수
 
 | 변수명 | 용도 |
 |---|---|
 | `YOUTUBE_API_KEY` | YouTube Data API v3 키 (Google Cloud Console) |
 | `APIFY_API_TOKEN` | Apify Instagram·TikTok Scraper 공용 토큰 |
+| `ANTHROPIC_API_KEY` | Claude Haiku 서브카테고리 분류용 |
 | `TIKTOK_CLIENT_KEY` | TikTok Research API (미사용, 승인 대기) |
 | `TIKTOK_CLIENT_SECRET` | TikTok Research API (미사용, 승인 대기) |
 
@@ -272,3 +309,4 @@ TikTok Research API 승인 대기 대신 **Apify TikTok Scraper** (`clockworks~f
 
 - [ ] 성장률(`growth`) 계산 — Supabase에 조회수 시계열 저장 후 전 주기 대비 증감률 산출
 - [ ] `/api/trends` 응답 캐싱 개선 — 현재 요청마다 외부 API 호출
+- [ ] Sue 브랜치(`feature/cross-platform-comparison`) 계층형 카테고리 UI에 `subcategory` 필드 연결

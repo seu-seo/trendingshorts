@@ -93,11 +93,11 @@ export async function fetchTikTokTrends(): Promise<TrendItem[]> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         hashtags: HASHTAGS,
-        resultsPerPage: 20, // 해시태그당 20개 → 최대 200개
+        resultsPerPage: 6, // 해시태그당 6개 → 최대 90개
         shouldDownloadVideos: false,
         shouldDownloadCovers: false,
       }),
-      next: { revalidate: 3600 },
+      next: { revalidate: 86400 },
     });
 
     if (!res.ok) {

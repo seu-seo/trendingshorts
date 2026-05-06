@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { PLATFORMS, CATEGORIES, TrendItem, formatNumber } from "@/lib/mock-data";
+import { loadPersona } from "@/lib/persona";
 import TrendCard from "@/components/TrendCard";
 import DetailModal from "@/components/DetailModal";
+import BottomNav from "@/components/BottomNav";
 
 type SortKey = "growth" | "views" | "engagement";
 
 export default function TrendPulse() {
+  const router = useRouter();
   const [activePlatform, setActivePlatform] = useState<"all" | "youtube" | "tiktok" | "instagram">("all");
   const [activeCategory, setActiveCategory] = useState("전체");
   const [sortBy, setSortBy] = useState<SortKey>("growth");
@@ -18,13 +22,17 @@ export default function TrendPulse() {
   const catScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!loadPersona()) {
+      router.push("/onboarding");
+      return;
+    }
     fetch("/api/trends?platform=all")
       .then((r) => r.json())
       .then(({ data }: { data: TrendItem[] }) => {
         setTrends(data);
         setIsLoaded(true);
       });
-  }, []);
+  }, [router]);
 
   const filtered = trends
     .filter(item => activePlatform === "all" || item.platform === activePlatform)
@@ -49,7 +57,7 @@ export default function TrendPulse() {
   })();
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #0d0e12 0%, #111218 50%, #0d0e12 100%)", color: "#e8eaed" }}>
+    <div style={{ minHeight: "100vh", background: "linear-gradient(180deg, #0d0e12 0%, #111218 50%, #0d0e12 100%)", color: "#e8eaed", paddingBottom: 80 }}>
       {/* 헤더 */}
       <div style={{ padding: "28px 24px 0", opacity: isLoaded ? 1 : 0, transition: "opacity 0.6s ease" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
@@ -139,6 +147,7 @@ export default function TrendPulse() {
       </div>
 
       {selectedItem && <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
+      <BottomNav />
     </div>
   );
 }

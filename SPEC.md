@@ -1,4 +1,4 @@
-# Shortform Pulse — 제품 명세서
+# Shortform Pulse — SPEC
 
 ## 1. Product Summary
 

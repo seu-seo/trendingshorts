@@ -102,8 +102,8 @@ CTA    (행동 유도)
 | 플랫폼 | 데이터 소스 | 갱신 주기 |
 |---|---|---|
 | YouTube Shorts | YouTube Data API v3 (공식, 무료 한도 내) | 일 1회 |
-| Instagram Reels | Apify Instagram Scraper (유료 플랜) | 일 1회 |
-| TikTok | Apify TikTok Scraper (유료 플랜) | 일 1회 |
+| Instagram Reels | Apify Instagram Scraper (유료 플랜) | 주 1회 |
+| TikTok | Apify TikTok Scraper (유료 플랜) | 주 1회 |
 
 ### 7.2 본질적 한계
 

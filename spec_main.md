@@ -1,103 +1,218 @@
-# Shortform Pulse — 제품 명세서
+# Shortform Pulse — Working Spec
 
-## 1. Product Summary
+## 1. Core User Flows
 
-**Shortform Pulse는 팔로워 1만 명 미만의 초기 크리에이터에게 "오늘 뭘 찍을지"를 알려주는 도구입니다.**
-
-사용자는 짧은 온보딩 설문으로 페르소나를 설정하고, 크로스플랫폼(YouTube Shorts·TikTok·Instagram Reels) 트렌드 대시보드에서 자기 채널에 맞는 트렌드를 발견하고, AI 대본 초안(Hook + 본문 + CTA)을 받아 영상 제작에 즉시 착수할 수 있습니다.
-
-기존 도구(VidIQ, TubeBuddy 등)가 *"무엇이 인기인가"* 까지만 보여주는 것과 달리, 본 제품은 *"그래서 너는 뭘 만들어야 하는가"* 까지 워크플로우를 확장합니다.
-
----
-
-## 2. Problem Statement
-
-지난 10년간 모든 콘텐츠 플랫폼은 **개인화 추천 알고리즘**으로 진화했습니다. 소비자에게는 순기능이지만, **소비자가 크리에이터로 전환하는 시점에 구조적 정보 격차가 발생합니다.**
+### 1.1 전체 앱 흐름
 
 ```
-   소비자 모드                       크리에이터 모드
-  ─────────────                    ────────────────
-   개인 선호 콘텐츠                   대중 선호 콘텐츠
-        ↓                                  ↓
-   알고리즘이 노출                     알고리즘이 노출 안 함
-        ↓                                  ↓
-   최적화된 노출                       정보 비대칭 발생
+최초 구동
+    ↓
+[온보딩] 설문 7문항 (지은)
+    ↓ Claude API → 페르소나 생성
+[페르소나 결과 화면] 확인 후 앱 진입
+    ↓
+┌─────────────────────────────────────────┐
+│            하단 탭 네비게이션              │
+│  [트렌드 대시보드 탭]   [추천 탭]          │
+└─────────────────────────────────────────┘
 ```
 
-사용자의 개인화된 피드는 *본인의 소비 패턴*만 반영할 뿐, *대중의 집계된 행동*을 반영하지 않습니다. **콘텐츠를 만들려는 사용자에게 가장 필요한 데이터(자신의 버블 외부에서 대중이 무엇을 보는가)가, 플랫폼이 가장 노출하지 않는 데이터**라는 역설이 발생합니다.
+### 1.2 트렌드 대시보드 탭 (기본 탭)
 
-이 격차는 자체 데이터팀이나 엔터프라이즈 도구를 갖춘 기성 크리에이터(10만+ 팔로워)는 자체 해결 가능하나, **팔로워 1만 명 미만의 초기 크리에이터**는 해소 수단이 없습니다. 본 제품은 이들을 대상으로 합니다.
+크로스플랫폼(YouTube Shorts·TikTok·Instagram Reels) 트렌드를 카테고리·서브카테고리 단위로 표시. 페르소나 무관하게 전체 트렌드 조감.
 
-**시장 데이터:**
-- 한국 스마트폰 이용자가 주 5일 이상 소비하는 콘텐츠 1위: **숏폼 41.8%** (KCC, 2024)
-- OTT 내 숏폼 이용: 58.1% → 70.7% (전년 대비 +12.6%p)
-- 한국 숏폼 영상 편집 단가의 53.9%가 1만~1.5만 원 (커넥스페이스, 2025) — *시간 절감 자체가 경제적 가치*
-
----
-
-## 3. Target Users
-
-### 팔로워 1만 명 미만 초기 크리에이터
-- 콘텐츠 제작 경력 3년 미만
-- 월 0~10편 산출
-- 부업 또는 풀타임 전환 초기
-- 1만 명은 광고 수익 진입선이자 자체 데이터 인프라를 구축할 자원의 임계
-
----
-
-## 4. Goals
-
-- **G1.** 사용자가 "오늘 찍을 것"을 정하는 데 걸리는 시간을 단축한다 (현재 베이스라인 30~90분)
-- **G2.** 트렌드 추천이 사용자 카테고리·페르소나에 정합적이다
-- **G3.** 4명 팀원의 피처가 하나의 흐름으로 동작한다 (Onboarding → Dashboard → Production)
-- **G4.** 비전공자도 데모를 보고 즉시 이해할 수 있다
-
----
-
-## 5. Core User Flows
+### 1.3 추천 탭 — 3단계 파이프라인
 
 ```
-   Onboarding              Dashboard / Personalization        Production
-   ──────────       →     ─────────────────────────    →    ──────────
-   설문 기반              전반 트렌드 대시보드 +              트렌드 기반
-   페르소나 설정          개인화 추천 (통합 탭)               대본 초안 생성
+STEP 1. 레퍼런스 제시
+    페르소나 + 트렌드 데이터 기반으로 트렌딩 숏폼 콘텐츠 3~5개 제시
+    (썸네일·제목·플랫폼·인게이지먼트 수치 포함)
+        ↓
+STEP 2. LLM 콘텐츠 방향 추천  [사용자 수정 가능]
+    Claude가 레퍼런스를 분석하여 "이 페르소나에게 최적의 콘텐츠 방향"을 추천
+    - 추천 주제, 접근 방식, 훅 패턴 포함
+    - 사용자가 방향을 직접 수정·보완 가능 (텍스트 편집)
+        ↓
+STEP 3. 대본 초안 생성 (경재)
+    수정된 콘텐츠 방향을 컨텍스트로 Claude에 전달
+    Hook (첫 3초) + 본문 3단 내러티브 + CTA 구조로 대본 생성
+    페르소나 기반 추천 톤 1개 제시 + 다른 톤 토글로 제공
 ```
 
 ---
 
-## 6. Functional Requirements
+## 2. Functional Requirements
 
-### 6.1 Onboarding (담당: 지은)
+### 2.1 Onboarding (담당: 지은)
 
-설문 기반 온보딩으로 사용자 페르소나를 도출합니다.
+설문 기반 온보딩으로 사용자 페르소나를 도출합니다. 최초 앱 진입 시에만 실행.
 
-> **TBD:** 설문 질문 수, 질문 항목, 페르소나 유형 분류 체계는 향후 팀 합의를 통해 확정합니다.
+#### 설문 문항 (7문항)
 
-### 6.2 Dashboard / Discovery (담당: 승연 + 규동)
+| # | 질문 | 유형 | 선택지 |
+|---|---|---|---|
+| Q1 | 주로 활동하는 플랫폼은? | Single select | YouTube Shorts / TikTok / Instagram Reels / 멀티플랫폼 |
+| Q2 | 내 채널의 주요 카테고리는? | Single select | 요리/먹방 / 뷰티/패션 / 라이프스타일/일상 / 정보/자기계발 / 게임/엔터테인먼트 / 운동/건강 |
+| Q3 | 숏폼 크리에이터 경력은? | Slider (0~5) | 채널 없음 / 1개월 미만 / 1~6개월 / 6개월~1년 / 1~3년 / 3년 이상 |
+| Q4 | 지금 가장 원하는 목표는? | Single select | 구독자 증가 / 수익화 시작 / 브랜드 인지도 / 팬덤/커뮤니티 |
+| Q5 | 내 콘텐츠 스타일 키워드는? | Multi select (최대 3개) | 유머/웃음 / 정보/교육 / 감성/공감 / 자극/임팩트 / 솔직/현실 / 비주얼/심미 / 챌린지/트렌드 / 실험/독창성 |
+| Q6 | 숏폼 제작에서 가장 힘든 부분은? | Single select | 아이디어 / 트렌드 활용 / 반응 부재 / 지속성 |
+| Q7 | 주당 목표 업로드 편수는? | Slider (1~14) | 주 1편 → 매일 2편 |
 
-전반 트렌드 대시보드와 개인화 추천을 같은 탭에서 제공합니다. 카테고리별 트렌드를 크로스플랫폼으로 비교 가능한 정보 구조로 설계합니다.
-
-기존 도구는 카테고리 단위("먹방")로 추천합니다. 본 제품은 **서브카테고리 단위**로 추천하여, 동일 카테고리에 속하지만 플랫폼별 성과가 상이한 콘텐츠에 차별화된 가이드를 제공하는 것을 목표로 합니다.
-
-> **TBD:** 페르소나 정보를 활용한 개인화 추천 방식(어떤 입력으로 어떤 추천을 할지)은 향후 팀 합의를 통해 확정합니다.
-
-### 6.3 Production (담당: 경재)
-
-3-part 구조의 영상 대본 초안을 생성합니다:
+#### Claude API 호출
 
 ```
-HOOK   (첫 3초)
-BODY   (3단 내러티브)
-CTA    (행동 유도)
+model: claude-sonnet-4-20250514
+max_tokens: 1000
+입력: 7개 설문 응답값 (한국어 레이블로 변환 후 전달)
+출력: 페르소나 JSON
 ```
 
-> **TBD:** 대본 생성에 입력으로 사용할 컨텍스트(페르소나·카테고리·트렌드 메타데이터 중 어떤 것을 어떻게 활용할지)는 향후 팀 합의를 통해 확정합니다.
+#### 페르소나 JSON 응답 스키마
+
+```json
+{
+  "personaType": "string (영문 대문자, 예: THE TRENDSETTER)",
+  "personaTagline": "string (20자 이내 한국어)",
+  "personaSummary": "string (2~3문장)",
+  "topTrends": [
+    {
+      "keyword": "string (#해시태그)",
+      "state": "rising | peak | fading",
+      "fitScore": "number (0~100)",
+      "reason": "string (한 문장)"
+    }
+  ],
+  "hookPatterns": [
+    {
+      "type": "string (훅 유형명)",
+      "example": "string (예시 문장)"
+    }
+  ],
+  "actionItems": [
+    {
+      "title": "string",
+      "desc": "string (1~2문장)"
+    }
+  ],
+  "weeklyPlan": "string (2~3문장)",
+  "typeIndex": "number (0~3)"
+}
+```
+
+#### 결과 화면 (페르소나 대시보드) — 6개 섹션
+
+1. **페르소나 카드** — 이름·태그라인·typeIndex에 따른 accent color
+2. **페르소나 분석** — 강점·특성 2~3문장
+3. **채널 Fit 트렌드 TOP 3** — Lifecycle 상태(▲ RISING / ◆ PEAK / ▼ FADING) + Fit Score
+4. **추천 훅 패턴 2개** — 훅 유형 + 예시 문장
+5. **이번 주 콘텐츠 플랜** — 구체적 주제 포함 2~3문장
+6. **지금 당장 할 일 3가지** — 실행 가능한 액션 아이템
+
+#### Fallback 전략
+
+API 실패(네트워크 오류, rate limit, 파싱 실패) 시 `buildFallbackResult()`로 rule-based 기본 페르소나 생성. 사용자는 실패 여부를 인지하지 않음.
+
+#### Lifecycle Meter 알고리즘
+
+트렌드 TOP 3의 `state` 값을 결정.
+
+```javascript
+function classifyLifecycle({ viewsRecent, viewsPrev, uploadsRecent, uploadsPrev }) {
+  const safeDiv = (a, b) => b === 0 ? 1 : a / b;
+  const viewGR   = safeDiv(viewsRecent, viewsPrev);
+  const uploadGR = safeDiv(uploadsRecent, uploadsPrev);
+  const supplyPenalty = 2 - Math.min(uploadGR, 2);
+  const score = (viewGR * 0.6) + (supplyPenalty * 0.4);
+  if (score > 1.4)  return 'rising';
+  if (score >= 0.9) return 'peak';
+  return                   'fading';
+}
+```
 
 ---
 
-## 7. Data and API Plan
+### 2.2 Dashboard / Discovery (담당: 승연 + 규동)
 
-### 7.1 데이터 소스
+앱 진입 시 기본 탭. 전체 트렌드 조감.
+
+- 카테고리·서브카테고리 단위 트렌드 표시
+- 크로스플랫폼(YouTube·TikTok·Instagram) 비교 가능한 정보 구조
+- `GET /api/trends` 엔드포인트에서 데이터 fetch
+
+> **TBD:** 카테고리 ID 통합 표준 — 지은 6개 / 승연 8개 / 규동 12+15개 → 단일 표준으로 합의 필요.
+
+---
+
+### 2.3 Recommend (담당: 규동 + 경재)
+
+추천 탭. §1.3의 3단계 파이프라인으로 동작.
+
+#### STEP 1 — 레퍼런스 제시
+
+페르소나 + 실시간 트렌드 데이터 기반으로 콘텐츠 레퍼런스 3~5개 표시.
+
+각 레퍼런스 카드에 포함되는 정보:
+
+```json
+{
+  "video_id": "string",
+  "title": "string",
+  "category": "string",
+  "platform": "youtube_shorts | tiktok | instagram_reels",
+  "engagement_rate": 0.082,
+  "category_avg_engagement": 0.0591,
+  "thumbnail_url": "string",
+  "duration_sec": 30
+}
+```
+
+#### STEP 2 — LLM 콘텐츠 방향 추천 (사용자 수정 가능)
+
+Claude가 STEP 1의 레퍼런스 3~5개를 분석해 이 페르소나에게 적합한 콘텐츠 방향을 추천. 결과는 텍스트로 표시되며 사용자가 직접 수정 가능.
+
+추천에 포함되는 내용:
+- 추천 콘텐츠 주제
+- 접근 방식
+- 훅 패턴 제안
+
+#### STEP 3 — 대본 초안 생성 (경재)
+
+STEP 2의 (수정된) 방향을 컨텍스트로 Claude에 전달해 대본 생성.
+
+**대본 구조:**
+```
+HOOK   첫 3초 멘트
+BODY   3단 내러티브
+CTA    행동 유도
+```
+
+**톤 추천 방식 (V1):**
+- 페르소나에 따라 1개 톤 자동 추천 + 적합도 점수(0~10) 표시
+- 나머지 2개 톤은 토글로 전환 가능
+
+| 톤 | 설명 |
+|---|---|
+| 정보형 | 데이터·팁·인사이트 중심 |
+| 스토리형 | 내러티브·공감 중심 |
+| 후킹형 | 강한 첫인상·자극 중심 |
+
+**페르소나-톤 매핑 (기본값):**
+
+| 페르소나 유형 | 추천 톤 |
+|---|---|
+| 초보 크리에이터 | 후킹형 |
+| 정보 전달형 | 정보형 |
+| 스토리텔러 | 스토리형 |
+| 전문 브랜드 | 정보형 |
+
+> **TBD:** 페르소나 유형 분류 체계 확정 후 매핑 테이블 업데이트 필요.
+
+---
+
+## 3. Data and API Plan
+
+### 3.1 데이터 소스
 
 | 플랫폼 | 데이터 소스 | 갱신 주기 |
 |---|---|---|
@@ -105,36 +220,38 @@ CTA    (행동 유도)
 | Instagram Reels | Apify Instagram Scraper (유료 플랜) | 주 1회 |
 | TikTok | Apify TikTok Scraper (유료 플랜) | 주 1회 |
 
-### 7.2 본질적 한계
+### 3.2 본질적 한계
 
-외부 API는 **텍스트 메타데이터(제목, 설명, 해시태그)만 제공**하며, 영상의 BGM이나 시각적 콘텐츠 자체는 분류 대상에 포함되지 않습니다.
+외부 API는 **텍스트 메타데이터(제목, 설명, 해시태그)만 제공**하며, BGM이나 시각적 콘텐츠 자체는 분류 대상에 포함되지 않습니다.
 
 **영향:**
 - 텍스트 부재 비주얼 중심 콘텐츠 분류 불가
 - 한글 텍스트 없이 이모지·영어로만 작성된 영상 누락
 - 챌린지 사운드 기반 파생 트렌드 식별 어려움
 
-**완화 방안:** 사용자가 콘텐츠 URL로 원본 영상 랜딩 가능하도록 설계. V2에서 음원 ID 또는 비전 모델 연동 검토.
+**완화 방안:** 사용자가 원본 플랫폼 URL로 영상 랜딩 가능하도록 설계. V2에서 음원 ID 또는 비전 모델 연동 검토.
 
 ---
 
-## 8. System Architecture
+## 4. System Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                        Client (Browser)                      │
-│         Next.js 프론트엔드 (Onboarding + 2-Tab 구조)            │
+│    Next.js 프론트엔드                                          │
+│    Onboarding → 트렌드 대시보드 탭 / 추천 탭 (하단 네비)         │
 └──────────────────────────────┬───────────────────────────────┘
                                ▼
 ┌──────────────────────────────────────────────────────────────┐
 │                     Next.js API Routes                       │
-│                     (서버 사이드 처리)                          │
+│  GET /api/trends   POST /api/recommend   POST /api/script    │
 └──────┬───────────────────┬─────────────────────┬─────────────┘
        ▼                   ▼                     ▼
 ┌─────────────┐    ┌──────────────────┐    ┌─────────────────┐
 │  Anthropic  │    │  External APIs   │    │   Anthropic     │
 │  Claude     │    │  YouTube API     │    │   Claude        │
-│  (분석)      │    │  + Apify (paid)  │    │   (생성)         │
+│  (온보딩 분석 │    │  + Apify (paid)  │    │  (방향 추천 +    │
+│   페르소나)  │    │                  │    │   대본 생성)     │
 └─────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
@@ -145,117 +262,162 @@ CTA    (행동 유도)
 | 외부 데이터 | YouTube Data API + Apify (유료) |
 | AI | Claude (Anthropic) |
 
-> **TBD:** 호스팅 플랫폼은 향후 팀 합의를 통해 확정합니다.
+> **TBD:** 호스팅 플랫폼 미정.
 
 ---
 
-## 9. API Contract
+## 5. API Contract
 
-> 본 섹션은 향후 팀 합의가 필요한 항목입니다. 현재 합의된 사항만 기록합니다.
+### 5.1 공통
 
-### 9.1 합의된 사항
+- 모든 외부 API 키는 서버 사이드(API Route)에서만 호출
+- 응답 형식: JSON, `source: "live" | "mock"` 필드로 실데이터/Mock 구분
 
-- **Backend는 Next.js API Routes로 구현**하며, 모든 외부 API 키는 서버 사이드에서만 호출됩니다.
-- **`GET /api/trends`** — 규동의 기존 백엔드 구현체 (`spec-2.md`) 기반으로 통합. 플랫폼별 트렌드 데이터를 단일 엔드포인트에서 반환합니다.
-- **응답 형식:** JSON, `source: "live" | "mock"` 필드로 실데이터/Mock 데이터 구분.
+### 5.2 GET /api/trends
 
-### 9.2 향후 합의 필요 (TBD)
+플랫폼별 트렌드 데이터 반환.
 
-- 페르소나 분석 엔드포인트 명세 (요청·응답 스키마)
-- 대본 생성 엔드포인트 명세 (요청·응답 스키마)
-- TrendItem 통합 스키마 (각 팀원의 데이터 형식 통일)
+**Response:**
+```json
+{
+  "source": "live | mock",
+  "trends": [
+    {
+      "video_id": "string",
+      "title": "string",
+      "category": "string",
+      "platform": "youtube_shorts | tiktok | instagram_reels",
+      "engagement_rate": 0.082,
+      "category_avg_engagement": 0.0591,
+      "thumbnail_url": "string",
+      "duration_sec": 30
+    }
+  ]
+}
+```
+
+### 5.3 POST /api/recommend
+
+페르소나 + 레퍼런스를 받아 콘텐츠 방향 추천.
+
+**Request:**
+```json
+{
+  "persona": {
+    "personaType": "string",
+    "category": "string",
+    "platform": "string",
+    "styles": ["string"]
+  },
+  "references": [ /* TrendItem 배열 (3~5개) */ ]
+}
+```
+
+**Response:**
+```json
+{
+  "direction": "string (LLM 추천 방향, 사용자 수정 가능)",
+  "suggestedTopic": "string",
+  "hookPattern": "string"
+}
+```
+
+### 5.4 POST /api/script
+
+콘텐츠 방향 + 레퍼런스를 받아 대본 초안 생성.
+
+**Request:**
+```json
+{
+  "direction": "string (사용자 수정 반영된 최종 방향)",
+  "reference": { /* TrendItem */ },
+  "persona": {
+    "personaType": "string",
+    "typeIndex": 0
+  },
+  "tone": "informative | story | hooking"
+}
+```
+
+**Response:**
+```json
+{
+  "recommendedTone": "informative | story | hooking",
+  "toneScore": 8,
+  "scripts": {
+    "informative": { "hook": "string", "body": "string", "cta": "string" },
+    "story":       { "hook": "string", "body": "string", "cta": "string" },
+    "hooking":     { "hook": "string", "body": "string", "cta": "string" }
+  }
+}
+```
+
+### 5.5 TBD
+
 - 카테고리 ID 통합 표준 (지은 6개 / 승연 8개 / 규동 12+15개 → 단일 표준)
-- 페르소나 → 추천 → 대본 생성으로의 컨텍스트 전달 방식
-
-이 항목들은 통합 단계에서 4명 팀원이 함께 정의합니다.
-
----
-
-## 10. Security and Privacy
-
-### API 키 관리
-- 모든 외부 API 키(Anthropic, YouTube, Apify)는 Next.js API Route 서버 사이드에서만 호출
-- 클라이언트 코드에 키 노출 금지
-- `.gitignore` 설정 완료
-
-### 사용자 데이터
-- V1은 사용자 계정·로그인 없음 (익명 사용)
-- 서버에 사용자 식별 정보 저장하지 않음
-
-### 외부 콘텐츠 처리
-- 트렌드 영상은 메타데이터(제목, 통계, URL)만 캐시; 영상 파일 자체는 저장 안 함
-- 사용자는 원본 플랫폼 URL을 통해 영상 시청
+- 페르소나 유형 분류 체계 확정
+- 멀티플랫폼 선택 시 트렌드 가중치 기준
 
 ---
 
-## 11. Success Criteria
+## 6. Security and Privacy
+
+- 모든 외부 API 키(Anthropic, YouTube, Apify)는 서버 사이드에서만 호출, `.gitignore` 설정 완료
+- V1 사용자 계정·로그인 없음 (익명 사용), 식별 정보 저장 안 함
+- 트렌드 영상은 메타데이터(제목, 통계, URL)만 캐시; 영상 파일 저장 안 함
+
+---
+
+## 7. Success Criteria
 
 ### V1 발표 기준
 
 | 지표 | 목표 |
 |---|---|
-| End-to-end 플로우 동작 | Onboarding → Dashboard → Production 무중단 |
+| End-to-end 플로우 동작 | Onboarding → 대시보드 → 추천 → 대본 생성 무중단 |
 | 데이터 신선도 | 24시간 이내 갱신 |
 | 외부 API 장애 시 동작 | Mock fallback으로 데모 유지 |
-
-### 베타 테스트 기준 (V1 발표 후)
-
-- 팔로워 1만 명 미만 크리에이터 대상 파일럿 테스트
-- 현업 마케터 정성 피드백 세션
-- 정량 데이터 + 정성 피드백 결합 검증
+| 대본 생성 성공률 | 95%+ |
+| 평균 응답 시간 | < 8초 |
 
 ---
 
-## 12. Current Scope and Future Work
+## 8. Current Scope
 
 ### 완료
-- GitHub 저장소 기본 구조 + README
-- 프로토타입 홈페이지 (`seu-seo.github.io/trendingshorts`)
-- 페르소나 설문 V0 (지은)
-- 카테고리 추천 PR #6 디자인 시안 (승연)
+- 페르소나 설문 V0 — 7문항, Claude API 연동, 결과 대시보드 (지은)
 - YouTube Data API 연동 모듈 (규동)
 - Apify Instagram·TikTok Scraper 연동 모듈 (규동)
 - Claude Haiku 서브카테고리 자동 분류기 (규동)
-- 대본 생성 V0 (경재, HW6)
-- `.gitignore` 및 API 키 보안 설정
+- 대본 생성 V0 — Hook + Body + CTA, 3가지 톤 (경재)
 
 ### 진행 중
-- 통합 제품 명세서 작성 (본 문서)
 - 메인 브랜치 통합 및 Next.js 프로젝트 구조 전환
-- Pull Request 리뷰 및 머지
-- 두 가지 UI/UX 샘플 비교 제작
+- PR 리뷰 및 머지
 
-### 향후 작업
-- **온보딩 설문 항목·페르소나 유형 분류 합의**
-- **페르소나 기반 추천 로직 합의**
-- **대본 생성 컨텍스트 입력 합의**
-- **호스팅 플랫폼 합의**
-- 4명 팀원 간 API Contract 합의 (§9.2)
-- 카테고리 ID 통합 표준 합의
-- YouTube Shorts API 본격 연동
-- Instagram Reels 실데이터 수집 (Apify 유료 플랜 활성화)
-- TikTok 트렌드 데이터 탐색 (Apify 유료 플랜 활성화)
-- 크로스플랫폼 트렌드 비교 대시보드 구현
-- 대본 생성 V1
-- 팔로워 1만 명 미만 크리에이터 대상 파일럿 테스트
-- 현업 마케터 정성 피드백 세션
-- BGM·시각 콘텐츠 분류용 음원 ID 또는 비전 모델 연동 (V2 이후)
+### 향후
+- **카테고리 ID 통합 표준 합의** (팀 전체)
+- **페르소나 유형 분류 체계 확정** (지은 + 팀)
+- `POST /api/recommend` 구현 (규동)
+- `POST /api/script` 구현 — 경재 V0 → Next.js API Route 이전 (경재 + 규동)
+- 추천 탭 UI — STEP 1~3 파이프라인 화면 (승연 + 경재)
+- 대본 생성 V1 — 1톤 추천 + 적합도 점수 + 토글 (경재)
+- Instagram·TikTok 실데이터 수집 (Apify 유료 플랜 활성화)
+- V2: BGM·비전 모델 연동
 
 ---
 
-## 13. Pull Request Review Checklist
-
-머지 전 다음 항목을 확인합니다.
+## 9. PR Checklist
 
 ### 코드 품질
 - [ ] 커밋 메시지가 변경 사항을 명확히 설명하는가
-- [ ] 추가된 코드에 명백한 디버그 출력(console.log, debug print)이 없는가
+- [ ] 디버그 출력(console.log 등)이 없는가
 - [ ] 들여쓰기·네이밍 컨벤션이 기존 코드와 일관되는가
 
 ### 보안
 - [ ] API 키·시크릿이 코드에 하드코딩되지 않았는가
 - [ ] `.env` 파일이 `.gitignore`에 포함되어 있는가
-- [ ] 외부 API 호출이 클라이언트가 아닌 서버 사이드(API Route)에서 이루어지는가
+- [ ] 외부 API 호출이 서버 사이드(API Route)에서 이루어지는가
 
 ### 외부 의존성
 - [ ] 새 패키지 추가 시 `package.json`과 lockfile이 함께 업데이트되었는가
@@ -267,8 +429,6 @@ CTA    (행동 유도)
 - [ ] 모바일 화면 너비(360px~)에서 레이아웃이 깨지지 않는가
 
 ### 문서
-- [ ] 새 기능 추가 시 README나 본 spec의 관련 섹션이 업데이트되었는가
+- [ ] 새 기능 추가 시 README나 spec_main의 관련 섹션이 업데이트되었는가
 - [ ] 환경 변수 추가 시 설정 가이드가 함께 추가되었는가
 - [ ] PR 설명에 변경 의도와 테스트 방법이 명시되어 있는가
-
----

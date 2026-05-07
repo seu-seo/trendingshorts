@@ -1,0 +1,2816 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Shortform Pulse — ver.2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-darker: #050507;
+    --bg: #0A0A0B;
+    --surface-1: #111114;
+    --surface-2: #18181C;
+    --surface-3: #25252B;
+    --border: #2A2A30;
+    --border-bright: #3A3A42;
+    --text: #F2F0EB;
+    --text-dim: #8A8A92;
+    --text-faint: #5A5A62;
+    --accent-lime: #C8FF57;
+    --accent-pink: #FF3D7F;
+    --accent-blue: #57C8FF;
+    --accent-orange: #FF8657;
+    --accent-purple: #C857FF;
+    --rising: #C8FF57;
+    --peak: #FFD700;
+    --fading: #6A6A72;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: #000;
+    color: var(--text);
+    height: 100%;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  .stage {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(200, 255, 87, 0.04), transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(255, 61, 127, 0.05), transparent 50%),
+      var(--bg-darker);
+    padding: 20px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 880px;
+    background: var(--bg);
+    border: 1px solid var(--border-bright);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 6px var(--surface-2),
+      0 40px 80px rgba(0, 0, 0, 0.5),
+      0 0 60px rgba(200, 255, 87, 0.04);
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 480px) {
+    .stage { padding: 0; }
+    .phone {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  .status-bar {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .status-icons { display: flex; gap: 5px; align-items: center; opacity: 0.8; }
+
+  .app-header {
+    flex-shrink: 0;
+    padding: 8px 24px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .app-logo { display: flex; align-items: center; gap: 8px; }
+
+  .app-logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 10px var(--accent-lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .app-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .app-header-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .app-header-right:hover { color: var(--text); }
+
+  .screen-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-3) transparent;
+    opacity: 0;
+    transform: translateX(15px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    padding-bottom: 100px;
+  }
+
+  .screen.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .screen::-webkit-scrollbar { width: 4px; }
+  .screen::-webkit-scrollbar-track { background: transparent; }
+  .screen::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+
+  /* ======== Bottom tab bar ======== */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 11, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 22px;
+    display: flex;
+    justify-content: space-around;
+    z-index: 10;
+  }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  .tab-item.active { color: var(--accent-lime); }
+  .tab-item:hover:not(.active) { color: var(--text); }
+
+  .tab-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+  }
+
+  .tab-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ======== DASHBOARD — Simplified ======== */
+  .dashboard-hero {
+    padding: 0 24px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-title .accent { color: var(--accent-lime); }
+
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Combined search + filter bar */
+  .search-bar {
+    margin: 0 24px 16px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .search-wrap {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .search-input::placeholder { color: var(--text-faint); }
+
+  .search-input:focus {
+    border-color: var(--accent-lime);
+    background: var(--surface-2);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+
+  .filter-btn {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s;
+    position: relative;
+    font-family: inherit;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--border-bright);
+    color: var(--text);
+  }
+
+  .filter-btn.has-filter {
+    border-color: var(--accent-lime);
+    color: var(--accent-lime);
+  }
+
+  .filter-btn-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 6px var(--accent-lime);
+  }
+
+  /* Active filter summary */
+  .filter-summary {
+    padding: 0 24px 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 28px;
+  }
+
+  .filter-summary-empty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .filter-summary-empty .count {
+    color: var(--accent-lime);
+  }
+
+  .active-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px 4px 10px;
+    background: rgba(200, 255, 87, 0.08);
+    border: 1px solid rgba(200, 255, 87, 0.3);
+    border-radius: 100px;
+    color: var(--accent-lime);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .active-filter-tag .x {
+    background: none;
+    border: none;
+    color: var(--accent-lime);
+    cursor: pointer;
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .active-filter-tag .x:hover { opacity: 1; }
+
+  .clear-all {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-left: 4px;
+  }
+
+  .clear-all:hover { color: var(--text-dim); }
+
+  /* ======== TREND PULSE — Platform comparison ======== */
+  .pulse-section {
+    padding: 0 24px 24px;
+  }
+
+  .pulse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .pulse-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .pulse-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 6px var(--accent-lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .pulse-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Platform cards grid — 3 columns */
+  .platform-pulse-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .platform-pulse-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .platform-pulse-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient);
+    opacity: 0.7;
+  }
+
+  .platform-pulse-card.youtube { --gradient: linear-gradient(to right, #FF0033, #FF4466); }
+  .platform-pulse-card.tiktok { --gradient: linear-gradient(to right, #69C9D0, #25F4EE); }
+  .platform-pulse-card.instagram { --gradient: linear-gradient(to right, #FF8657, #FF3D7F, #C857FF); }
+
+  .platform-pulse-card:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-2px);
+  }
+
+  .platform-pulse-card.youtube:hover { box-shadow: 0 8px 20px rgba(255, 0, 51, 0.15); }
+  .platform-pulse-card.tiktok:hover { box-shadow: 0 8px 20px rgba(105, 201, 208, 0.15); }
+  .platform-pulse-card.instagram:hover { box-shadow: 0 8px 20px rgba(255, 61, 127, 0.15); }
+
+  .pulse-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .pulse-card-platform {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .pulse-card-platform.youtube { color: #FF4466; }
+  .pulse-card-platform.tiktok { color: #69C9D0; }
+  .pulse-card-platform.instagram { color: #FF6699; }
+
+  .pulse-card-rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .pulse-card-thumb {
+    width: 100%;
+    aspect-ratio: 1.2 / 1;
+    background: var(--surface-2);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 32px;
+    margin-top: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pulse-card-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(200, 255, 87, 0.12), transparent 60%);
+  }
+
+  .pulse-card-title {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 28px;
+  }
+
+  .pulse-card-growth {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lime);
+    margin-top: auto;
+  }
+
+  /* ======== Heatmap — Category × Platform ======== */
+  .heatmap-section {
+    padding: 0 24px 24px;
+  }
+
+  .heatmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .heatmap-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-pink);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .heatmap-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-pink);
+    box-shadow: 0 0 6px var(--accent-pink);
+  }
+
+  .heatmap-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .heatmap-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .heatmap-table {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr 1fr;
+    gap: 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .heatmap-cell-header {
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .heatmap-cell-header.left {
+    text-align: left;
+    padding-left: 0;
+  }
+
+  .heatmap-cell-cat {
+    padding: 12px 4px 12px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Instrument Sans', sans-serif;
+  }
+
+  .heatmap-cat-emoji { font-size: 14px; }
+
+  .heatmap-cell {
+    padding: 6px 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .heatmap-block {
+    width: 100%;
+    aspect-ratio: 2.4 / 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .heatmap-block:hover {
+    transform: scale(1.05);
+    z-index: 2;
+    outline: 1.5px solid var(--text);
+    outline-offset: 1px;
+  }
+
+  /* Intensity levels — lime for value */
+  .heatmap-block.l1 { background: rgba(200, 255, 87, 0.06); color: var(--text-faint); }
+  .heatmap-block.l2 { background: rgba(200, 255, 87, 0.16); color: var(--text-dim); }
+  .heatmap-block.l3 { background: rgba(200, 255, 87, 0.32); color: var(--text); }
+  .heatmap-block.l4 { background: rgba(200, 255, 87, 0.55); color: var(--bg); }
+  .heatmap-block.l5 { background: var(--accent-lime); color: var(--bg); box-shadow: 0 0 12px rgba(200, 255, 87, 0.3); }
+
+  .heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    justify-content: space-between;
+  }
+
+  .heatmap-legend-scale {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  /* ======== Featured trend card (large, hero) ======== */
+  .featured-section {
+    padding: 0 24px 20px;
+  }
+
+  .featured-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .featured-label::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 6px var(--accent-lime);
+  }
+
+  .featured-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border-bright);
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .featured-card:hover {
+    border-color: var(--accent-lime);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(200, 255, 87, 0.08);
+  }
+
+  .featured-thumb {
+    height: 140px;
+    background: linear-gradient(135deg, var(--surface-2), var(--surface-3));
+    display: grid;
+    place-items: center;
+    font-size: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .featured-thumb::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(200, 255, 87, 0.15), transparent 60%);
+  }
+
+  .featured-thumb-emoji {
+    position: relative;
+    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
+  }
+
+  .featured-platform {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+  }
+
+  .featured-growth {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--accent-lime);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+
+  .featured-body {
+    padding: 16px 18px 18px;
+  }
+
+  .featured-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .featured-creator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  .featured-stats {
+    display: flex;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .featured-stats div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ======== Compact list trends ======== */
+  .list-section-heading {
+    padding: 4px 24px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  .trend-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px;
+  }
+
+  .trend-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .trend-row:last-child { border-bottom: none; }
+  .trend-row:hover { padding-left: 4px; }
+
+  .trend-rank-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text-faint);
+    min-width: 32px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .trend-row.rising .trend-rank-num { color: var(--accent-lime); }
+
+  .trend-row-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .trend-row-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .trend-row-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .trend-row-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+
+  .trend-row-meta-platform {
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+
+  .trend-row-meta-platform.youtube { color: #FF4466; }
+  .trend-row-meta-platform.tiktok { color: #69C9D0; }
+  .trend-row-meta-platform.instagram { color: #FF6699; }
+
+  .trend-row-growth {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lime);
+    flex-shrink: 0;
+  }
+
+  .trend-row-growth.fade { color: var(--text-faint); }
+
+  /* ======== Filter Modal ======== */
+  .filter-modal-section {
+    margin-bottom: 20px;
+  }
+
+  .filter-modal-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .filter-modal-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .filter-modal-pill {
+    padding: 8px 14px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .filter-modal-pill.active {
+    background: rgba(200, 255, 87, 0.1);
+    border-color: var(--accent-lime);
+    color: var(--accent-lime);
+  }
+
+  /* Keep old card style for recommend tab */
+  .trend-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trend-card:hover { border-color: var(--border-bright); transform: translateY(-1px); }
+
+  .trend-rank {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--accent-lime);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .trend-rank.peak { background: var(--peak); }
+  .trend-rank.fading { background: var(--fading); color: var(--text); }
+
+  .trend-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .platform-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .platform-badge.youtube { background: #FF0033; color: white; }
+  .platform-badge.tiktok { background: #69C9D0; color: var(--bg); }
+  .platform-badge.instagram {
+    background: linear-gradient(135deg, #FF8657, #FF3D7F, #C857FF);
+    color: white;
+  }
+
+  .trend-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .trend-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .trend-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .trend-info { flex: 1; min-width: 0; }
+
+  .trend-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 4px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    padding-right: 30px;
+  }
+
+  .trend-creator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .trend-stats {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .trend-stats > div { display: flex; align-items: center; gap: 4px; }
+
+  .trend-growth {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .growth-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lime);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .growth-tag.fade { color: var(--text-faint); }
+
+  .hashtags {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+
+  /* ======== Production prompts modal (slide up from trend) ======== */
+  .prompt-bottom-sheet {
+    background: var(--bg);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    width: 100%;
+    max-height: 88%;
+    overflow-y: auto;
+    padding: 0 0 32px;
+    border-top: 1px solid var(--border-bright);
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .prompt-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--surface-3);
+    border-radius: 2px;
+    margin: 12px auto 16px;
+  }
+
+  .prompt-sheet-trend {
+    margin: 0 24px 24px;
+    padding: 14px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .prompt-sheet-trend-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .prompt-sheet-trend-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .prompt-sheet-trend-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent-lime);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .prompt-sheet-trend-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .prompt-sheet-heading {
+    padding: 0 24px 16px;
+  }
+
+  .prompt-sheet-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-blue);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .prompt-sheet-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    box-shadow: 0 0 6px var(--accent-blue);
+  }
+
+  .prompt-sheet-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+
+  .prompt-sheet-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 32px;
+    color: var(--text-faint);
+  }
+
+  .empty-emoji {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .empty-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-faint);
+  }
+
+  /* ======== RECOMMEND ======== */
+  .reco-hero { padding: 0 24px 20px; }
+
+  .reco-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-pink);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .reco-eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-pink);
+    box-shadow: 0 0 8px var(--accent-pink);
+  }
+
+  .reco-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+
+  .reco-title .accent { color: var(--accent-pink); }
+
+  .reco-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .setup-card {
+    margin: 0 24px 24px;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(200, 255, 87, 0.08), rgba(87, 200, 255, 0.06));
+    border: 1px dashed var(--border-bright);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .setup-card-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent-lime);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .setup-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+  }
+
+  .setup-card-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .setup-card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--accent-lime);
+    color: var(--bg);
+    border: none;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .setup-card-btn:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 16px rgba(200, 255, 87, 0.3);
+  }
+
+  .persona-active {
+    margin: 0 24px 24px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, rgba(200, 255, 87, 0.1), rgba(255, 61, 127, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .persona-active::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(200, 255, 87, 0.2), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .persona-active-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+  }
+
+  .persona-active-info { flex: 1; }
+
+  .persona-active-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .persona-active-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--accent-lime);
+  }
+
+  .persona-active-edit {
+    background: transparent;
+    border: 1px solid var(--border-bright);
+    color: var(--text-dim);
+    padding: 6px 10px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .persona-active-edit:hover {
+    color: var(--text);
+    border-color: var(--text);
+  }
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 24px 14px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .section-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ======== PRODUCTION ======== */
+  .production-back {
+    padding: 0 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 8px 8px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover {
+    background: var(--surface-2);
+    color: var(--text);
+    transform: translateX(-2px);
+  }
+
+  .back-btn-arrow {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* Selected trend reference card on production screen */
+  .selected-trend {
+    margin: 0 24px 24px;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(200, 255, 87, 0.08), rgba(87, 200, 255, 0.05));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .selected-trend::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(200, 255, 87, 0.15), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .selected-trend-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 11px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .selected-trend-info {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  .selected-trend-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent-lime);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .selected-trend-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 6px var(--accent-lime);
+  }
+
+  .selected-trend-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .production-hero { padding: 0 24px 20px; }
+
+  .production-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .production-eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    box-shadow: 0 0 8px var(--accent-blue);
+  }
+
+  .production-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+
+  .production-title .accent { color: var(--accent-blue); }
+
+  .production-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .prompt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 24px;
+  }
+
+  .prompt-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prompt-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(87, 200, 255, 0.1);
+  }
+
+  .prompt-card-num {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+
+  .prompt-card-tone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--border-bright);
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .tone-emotional { color: var(--accent-pink); border-color: rgba(255, 61, 127, 0.4); }
+  .tone-info { color: var(--accent-blue); border-color: rgba(87, 200, 255, 0.4); }
+  .tone-trend { color: var(--accent-lime); border-color: rgba(200, 255, 87, 0.4); }
+
+  .prompt-card-headline {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    padding-right: 50px;
+  }
+
+  .prompt-card-meta {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .prompt-meta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .prompt-card-reason {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+
+  .prompt-card-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .prompt-card-cta-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prompt-card-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: var(--bg);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    transition: transform 0.2s;
+  }
+
+  .prompt-card:hover .prompt-card-arrow {
+    transform: translateX(3px);
+  }
+
+  .tbd-note {
+    margin: 24px;
+    padding: 12px 14px;
+    background: rgba(255, 215, 0, 0.06);
+    border: 1px dashed rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .tbd-icon {
+    color: var(--peak);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    background: rgba(255, 215, 0, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .tbd-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ======== Modal ======== */
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    animation: fadeIn 0.3s;
+  }
+
+  .modal-backdrop.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--bg);
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    width: 100%;
+    max-height: 88%;
+    overflow-y: auto;
+    padding: 24px;
+    border-top: 1px solid var(--border-bright);
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--surface-3);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+
+  .modal-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .modal-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+
+  .modal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .modal-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-option:hover { border-color: var(--border-bright); }
+
+  .modal-option.selected {
+    background: rgba(200, 255, 87, 0.08);
+    border-color: var(--accent-lime);
+  }
+
+  .modal-option-emoji {
+    font-size: 18px;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    background: var(--surface-2);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .modal-option.selected .modal-option-emoji {
+    background: rgba(200, 255, 87, 0.15);
+  }
+
+  .modal-option-label {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .modal-option-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-bright);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .modal-option.selected .modal-option-check {
+    background: var(--accent-lime);
+    border-color: var(--accent-lime);
+  }
+
+  .modal-option.selected .modal-option-check::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border-right: 2px solid var(--bg);
+    border-bottom: 2px solid var(--bg);
+    transform: rotate(45deg);
+    margin-top: -2px;
+  }
+
+  .modal-option.multi.selected .modal-option-check { border-radius: 4px; }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .modal-btn-cancel {
+    background: var(--surface-1);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .modal-btn-cancel:hover { background: var(--surface-2); color: var(--text); }
+
+  .modal-btn-save {
+    background: var(--accent-lime);
+    color: var(--bg);
+  }
+
+  .modal-btn-save:hover {
+    box-shadow: 0 0 30px rgba(200, 255, 87, 0.4);
+  }
+
+  .modal-btn-save:disabled {
+    background: var(--surface-2);
+    color: var(--text-faint);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <span>●●●</span>
+        <span>📶</span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <div class="app-header">
+      <div class="app-logo">
+        <div class="app-logo-dot"></div>
+        <div class="app-logo-text">SHORTFORM PULSE</div>
+      </div>
+      <div class="app-header-right" id="headerRight">v.2 · BETA</div>
+    </div>
+
+    <div class="screen-container">
+
+      <!-- DASHBOARD -->
+      <div class="screen active" id="screen-dashboard">
+        <div class="dashboard-hero">
+          <div class="hero-title">이번 주 <span class="accent">트렌드</span><br/>한눈에 비교</div>
+          <div class="hero-meta">06 MAY · 7 DAYS</div>
+        </div>
+
+        <!-- Platform Pulse — 3 cards showing top trend per platform -->
+        <div class="pulse-section" id="pulseSection"></div>
+
+        <!-- Category × Platform Heatmap -->
+        <div class="heatmap-section" id="heatmapSection"></div>
+
+        <!-- Search + Filter button -->
+        <div class="search-bar">
+          <div class="search-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/>
+            </svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="트렌드, 크리에이터, 해시태그..." />
+          </div>
+          <button class="filter-btn" id="filterBtn" onclick="openFilterModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="6" y1="12" x2="18" y2="12"/>
+              <line x1="9" y1="18" x2="15" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Active filter summary -->
+        <div class="filter-summary" id="filterSummary"></div>
+
+        <!-- Featured trend (largest, most prominent) -->
+        <div id="featuredSection"></div>
+
+        <!-- Compact list of remaining trends -->
+        <div id="trendList"></div>
+      </div>
+
+      <!-- RECOMMEND -->
+      <div class="screen" id="screen-recommend">
+        <div class="reco-hero">
+          <div class="reco-eyebrow">FOR YOU</div>
+          <div class="reco-title"><span class="accent">맞춤</span><br/>추천</div>
+          <div class="reco-sub" id="recoSub">너에게 어울리는 트렌드를 골라봤어</div>
+        </div>
+
+        <div id="personaSection"></div>
+
+        <div class="section-heading">
+          <div class="section-title">RECOMMENDED FOR YOU</div>
+          <div class="section-subtitle" id="recoCount">3 건</div>
+        </div>
+
+        <div id="recoList"></div>
+      </div>
+
+      <!-- PRODUCTION -->
+      <div class="screen" id="screen-production">
+        <!-- Back button + selected trend context -->
+        <div id="productionContext"></div>
+
+        <div class="production-hero">
+          <div class="production-eyebrow">CONTENT IDEAS</div>
+          <div class="production-title"><span class="accent">대본</span><br/>아이디어</div>
+          <div class="production-sub" id="productionSub">스타일별 추천 프롬프트 3종</div>
+        </div>
+
+        <div class="prompt-list" id="promptList"></div>
+
+        <div class="tbd-note">
+          <div class="tbd-icon">TBD</div>
+          <div class="tbd-text">대본 생성 컨텍스트(페르소나·카테고리·트렌드 메타데이터의 활용 방식)는 향후 팀 합의 후 확정합니다. 현재 화면은 가설 데이터.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <div class="tab-label">대시보드</div>
+      </button>
+      <button class="tab-item" data-tab="recommend" onclick="switchTab('recommend')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z"/>
+          </svg>
+        </div>
+        <div class="tab-label">추천</div>
+      </button>
+      <button class="tab-item" data-tab="production" onclick="switchTab('production')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div class="tab-label">제작</div>
+      </button>
+    </div>
+
+    <div class="modal-backdrop" id="personaModal">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-handle"></div>
+        <div class="modal-eyebrow">SET YOUR PERSONA</div>
+        <div class="modal-title">너에게 맞는 추천을<br/>받아볼래?</div>
+        <div class="modal-sub">간단한 정보를 알려주면 추천 정확도가 올라가요. 언제든 변경 가능합니다.</div>
+
+        <div class="modal-section-label">주 카테고리 (1개 선택)</div>
+        <div class="modal-options" id="modalCategoryOptions"></div>
+
+        <div class="modal-section-label">콘텐츠 스타일 (최대 3개)</div>
+        <div class="modal-options" id="modalStyleOptions"></div>
+
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-cancel" onclick="closeModal()">취소</button>
+          <button class="modal-btn modal-btn-save" id="modalSaveBtn" onclick="savePersona()" disabled>저장</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="modal-backdrop" id="filterModal">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-handle"></div>
+        <div class="modal-eyebrow">FILTER</div>
+        <div class="modal-title">트렌드 필터</div>
+        <div class="modal-sub">원하는 조건으로 트렌드를 좁혀보세요.</div>
+
+        <div class="filter-modal-section">
+          <div class="filter-modal-label">플랫폼</div>
+          <div class="filter-modal-pills" id="filterModalPlatforms"></div>
+        </div>
+
+        <div class="filter-modal-section">
+          <div class="filter-modal-label">카테고리</div>
+          <div class="filter-modal-pills" id="filterModalCategories"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="modal-btn modal-btn-cancel" onclick="resetFilters()">초기화</button>
+          <button class="modal-btn modal-btn-save" onclick="closeFilterModal()">적용</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const CATEGORIES = [
+  { value: 'food', emoji: '🍔', label: '먹방 / 요리' },
+  { value: 'beauty', emoji: '💄', label: '뷰티 / 패션' },
+  { value: 'dance', emoji: '💃', label: '댄스 / 챌린지' },
+  { value: 'lifestyle', emoji: '📹', label: '일상 브이로그' },
+  { value: 'gaming', emoji: '🎮', label: '게임 / 엔터' },
+  { value: 'pets', emoji: '🐶', label: '펫 / 동물' },
+];
+
+const STYLES = [
+  { value: 'humor', emoji: '🎭', label: '유머 / 웃음' },
+  { value: 'info', emoji: '💡', label: '정보 / 교육' },
+  { value: 'emotion', emoji: '🤍', label: '감성 / 공감' },
+  { value: 'impact', emoji: '⚡', label: '자극 / 임팩트' },
+  { value: 'honest', emoji: '📝', label: '솔직 / 현실' },
+  { value: 'visual', emoji: '✨', label: '비주얼 / 심미' },
+  { value: 'challenge', emoji: '🔥', label: '챌린지 / 트렌드' },
+  { value: 'creative', emoji: '🧪', label: '실험 / 독창성' },
+];
+
+const CATEGORY_LABELS = {
+  food: '먹방', beauty: '뷰티', dance: '댄스',
+  lifestyle: '일상', gaming: '게임', pets: '펫'
+};
+
+const ALL_TRENDS = [
+  { id: 1, category: 'beauty', lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '30분 전',
+    thumb: '✨', title: '하루 만에 피부가 달라지는 K-스킨케어 루틴', creator: '@beauty_guru_kr',
+    views: '2.2M', likes: '240K', shares: '45K', hashtags: '#스킨케어 #뷰티', growth: '↑ 680%', growthNum: 680 },
+  { id: 2, category: 'beauty', lifecycle: 'peak', platform: 'tiktok', platformLabel: 'TIKTOK', time: '1시간 전',
+    thumb: '💄', title: '3분 메이크업으로 출근 준비 끝내기', creator: '@morning_beauty',
+    views: '1.5M', likes: '110K', shares: '23K', hashtags: '#메이크업 #아침루틴', growth: '↑ 420%', growthNum: 420 },
+  { id: 3, category: 'beauty', lifecycle: 'rising', platform: 'youtube', platformLabel: 'SHORTS', time: '2시간 전',
+    thumb: '💅', title: '집에서 셀프 네일아트 따라하기', creator: '@nail_diary_',
+    views: '980K', likes: '87K', shares: '15K', hashtags: '#네일 #셀프네일', growth: '↑ 312%', growthNum: 312 },
+  { id: 4, category: 'beauty', lifecycle: 'fading', platform: 'instagram', platformLabel: 'REELS', time: '3시간 전',
+    thumb: '👗', title: '봄 데일리 OOTD 5가지 스타일링', creator: '@daily_outfit__',
+    views: '720K', likes: '59K', shares: '11K', hashtags: '#OOTD #봄패션', growth: '↓ 12%', growthNum: -12 },
+  { id: 5, category: 'food', lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '20분 전',
+    thumb: '🍜', title: '편의점 신상 라면 조합 역대급 발견', creator: '@food_finder',
+    views: '3.1M', likes: '380K', shares: '52K', hashtags: '#편의점 #먹방', growth: '↑ 720%', growthNum: 720 },
+  { id: 6, category: 'food', lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+    thumb: '🥢', title: '3초 만에 완성하는 초간단 김밥 레시피', creator: '@cook_master_kr',
+    views: '1.2M', likes: '89K', shares: '12K', hashtags: '#요리 #간단레시피', growth: '↑ 380%', growthNum: 380 },
+  { id: 7, category: 'food', lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '2시간 전',
+    thumb: '🍰', title: '비주얼 깡패 디저트 카페 BEST 5', creator: '@dessert_seoul',
+    views: '850K', likes: '72K', shares: '18K', hashtags: '#디저트 #카페투어', growth: '↑ 295%', growthNum: 295 },
+  { id: 8, category: 'dance', lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '30분 전',
+    thumb: '💃', title: '이 댄스 챌린지 아직도 안 해봤어? 🔥', creator: '@dance_king_kr',
+    views: '2.2M', likes: '240K', shares: '45K', hashtags: '#댄스챌린지 #틱톡', growth: '↑ 680%', growthNum: 680 },
+  { id: 9, category: 'dance', lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+    thumb: '🎤', title: 'K-pop 신곡 안무 30초 완벽 정리', creator: '@kpop_choreo',
+    views: '1.8M', likes: '195K', shares: '38K', hashtags: '#K팝 #안무', growth: '↑ 410%', growthNum: 410 },
+  { id: 10, category: 'lifestyle', lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '40분 전',
+    thumb: '☕', title: '요즘 MZ 출근 브이로그 현실.zip', creator: '@office_life_kr',
+    views: '1.9M', likes: '180K', shares: '32K', hashtags: '#직장인 #브이로그', growth: '↑ 540%', growthNum: 540 },
+  { id: 11, category: 'lifestyle', lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '2시간 전',
+    thumb: '🏠', title: '자취 5년차의 미니멀 정리 루틴', creator: '@solo_living_',
+    views: '720K', likes: '64K', shares: '11K', hashtags: '#자취 #정리', growth: '↑ 280%', growthNum: 280 },
+  { id: 12, category: 'gaming', lifecycle: 'rising', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+    thumb: '🎮', title: '롤 신챔 30초 완벽 가이드', creator: '@gamer_kr',
+    views: '1.4M', likes: '128K', shares: '22K', hashtags: '#롤 #게임공략', growth: '↑ 460%', growthNum: 460 },
+  { id: 13, category: 'pets', lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '2시간 전',
+    thumb: '🐶', title: '강아지가 주인 출근할 때 하는 행동 ㅋㅋ', creator: '@puppy_daily',
+    views: '870K', likes: '72K', shares: '9.5K', hashtags: '#강아지 #반려견', growth: '↑ 390%', growthNum: 390 },
+  { id: 14, category: 'pets', lifecycle: 'peak', platform: 'tiktok', platformLabel: 'TIKTOK', time: '4시간 전',
+    thumb: '🐱', title: '고양이가 집사 부르는 방법 BEST 5', creator: '@cat_diary_kr',
+    views: '650K', likes: '58K', shares: '12K', hashtags: '#고양이 #집사일상', growth: '↑ 240%', growthNum: 240 },
+];
+
+const PRODUCTION_PROMPTS = [
+  {
+    toneClass: 'tone-emotional',
+    toneLabel: '감성형 · STORY',
+    headline: '"진짜 토너 쓰는 법, 알려드릴게요"',
+    meta: ['#스킨케어', 'INSTAGRAM REELS', 'RISING'],
+    reason: '감성·솔직 톤이 강점인 콘텐츠. 흔한 오해를 짚어주는 포맷이라 댓글 참여율이 높습니다. "내가 처음 시작했을 때 헷갈렸던 부분"부터 풀어보세요.'
+  },
+  {
+    toneClass: 'tone-info',
+    toneLabel: '정보형 · INFORMATIVE',
+    headline: '아침 vs 저녁 스킨케어, 무엇이 다른가',
+    meta: ['#K뷰티', 'YOUTUBE SHORTS', 'PEAK'],
+    reason: '단계별 비교 포맷은 정보 전달에 강력합니다. 성분과 시간대별 효과를 표 형태로 보여주면 신뢰도가 올라갑니다. 30초 안에 핵심만 요약하세요.'
+  },
+  {
+    toneClass: 'tone-trend',
+    toneLabel: '후킹형 · TRENDING HOOK',
+    headline: '"이거 모르고 토너 쓰면 다 헛수고예요"',
+    meta: ['#클렌저', 'TIKTOK', 'RISING'],
+    reason: '강한 도입부로 첫 3초 시청 유지율 극대화. 단정적 명제 → 반전 → 솔루션 구조로 풀면 좋습니다. 음원도 트렌딩 사운드로 매칭하세요.'
+  }
+];
+
+let state = {
+  currentTab: 'dashboard',
+  filterPlatform: 'all',
+  filterCategory: null,
+  searchQuery: '',
+  sortBy: 'trending',
+  persona: null,
+  modalDraft: { category: null, styles: [] },
+  selectedTrendId: null,  // for production screen context
+};
+
+// ============================================================
+// VISUALIZATIONS — Platform Pulse + Heatmap
+// ============================================================
+
+function renderPlatformPulse() {
+  // Get top trend per platform (highest growthNum)
+  const platforms = ['youtube', 'tiktok', 'instagram'];
+  const platformLabels = {
+    youtube: 'YOUTUBE',
+    tiktok: 'TIKTOK',
+    instagram: 'INSTAGRAM'
+  };
+
+  const topPerPlatform = platforms.map((platform, idx) => {
+    const trends = ALL_TRENDS.filter(t => t.platform === platform);
+    const top = trends.sort((a, b) => b.growthNum - a.growthNum)[0];
+    return { platform, top, rank: idx + 1 };
+  });
+
+  const html = `
+    <div class="pulse-header">
+      <div class="pulse-eyebrow">플랫폼별 TOP 1</div>
+      <div class="pulse-meta">이번 주 · 3개 플랫폼</div>
+    </div>
+    <div class="platform-pulse-grid">
+      ${topPerPlatform.map(({ platform, top }) => `
+        <div class="platform-pulse-card ${platform}" onclick="goToProduction(${top.id})">
+          <div class="pulse-card-header">
+            <span class="pulse-card-platform ${platform}">${platformLabels[platform]}</span>
+            <span class="pulse-card-rank">#1</span>
+          </div>
+          <div class="pulse-card-thumb">${top.thumb}</div>
+          <div class="pulse-card-title">${top.title}</div>
+          <div class="pulse-card-growth">${top.growth}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('pulseSection').innerHTML = html;
+}
+
+function renderHeatmap() {
+  // Build matrix: category × platform → average growth (intensity)
+  const cats = ['food', 'beauty', 'dance', 'lifestyle', 'gaming', 'pets'];
+  const platforms = ['youtube', 'tiktok', 'instagram'];
+  const platformShortLabels = { youtube: 'YT', tiktok: 'TT', instagram: 'IG' };
+  const catEmojis = { food: '🍔', beauty: '💄', dance: '💃', lifestyle: '📹', gaming: '🎮', pets: '🐶' };
+
+  // Calculate intensity for each cell: avg growthNum of trends in that cat × platform
+  // For empty cells, use a small fallback so cells don't appear empty
+  function getIntensity(cat, platform) {
+    const matching = ALL_TRENDS.filter(t => t.category === cat && t.platform === platform);
+    if (matching.length === 0) return 0;
+    const avgGrowth = matching.reduce((sum, t) => sum + Math.max(0, t.growthNum), 0) / matching.length;
+    return avgGrowth;
+  }
+
+  // Find max intensity to normalize
+  const allIntensities = [];
+  cats.forEach(c => platforms.forEach(p => allIntensities.push(getIntensity(c, p))));
+  const maxIntensity = Math.max(...allIntensities);
+
+  function intensityClass(value) {
+    if (value === 0) return 'l1';
+    const ratio = value / maxIntensity;
+    if (ratio > 0.85) return 'l5';
+    if (ratio > 0.6) return 'l4';
+    if (ratio > 0.4) return 'l3';
+    if (ratio > 0.2) return 'l2';
+    return 'l1';
+  }
+
+  function cellLabel(value) {
+    if (value === 0) return '—';
+    return Math.round(value) + '%';
+  }
+
+  let cellsHtml = '';
+  // Header row
+  cellsHtml += `<div class="heatmap-cell-header left">CATEGORY</div>`;
+  platforms.forEach(p => {
+    cellsHtml += `<div class="heatmap-cell-header">${platformShortLabels[p]}</div>`;
+  });
+
+  // Data rows
+  cats.forEach(cat => {
+    cellsHtml += `
+      <div class="heatmap-cell-cat">
+        <span class="heatmap-cat-emoji">${catEmojis[cat]}</span>
+        <span>${CATEGORY_LABELS[cat]}</span>
+      </div>
+    `;
+    platforms.forEach(p => {
+      const intensity = getIntensity(cat, p);
+      const cls = intensityClass(intensity);
+      cellsHtml += `
+        <div class="heatmap-cell">
+          <div class="heatmap-block ${cls}" onclick="filterByHeatmap('${cat}','${p}')">${cellLabel(intensity)}</div>
+        </div>
+      `;
+    });
+  });
+
+  const html = `
+    <div class="heatmap-header">
+      <div class="heatmap-eyebrow">카테고리 적합도</div>
+      <div class="heatmap-meta">이번 주 평균 성장률</div>
+    </div>
+    <div class="heatmap-card">
+      <div class="heatmap-table">${cellsHtml}</div>
+      <div class="heatmap-legend">
+        <span>LOW</span>
+        <span class="heatmap-legend-scale">
+          <span class="legend-dot" style="background: rgba(200,255,87,0.06)"></span>
+          <span class="legend-dot" style="background: rgba(200,255,87,0.16)"></span>
+          <span class="legend-dot" style="background: rgba(200,255,87,0.32)"></span>
+          <span class="legend-dot" style="background: rgba(200,255,87,0.55)"></span>
+          <span class="legend-dot" style="background: var(--accent-lime)"></span>
+        </span>
+        <span>HIGH</span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('heatmapSection').innerHTML = html;
+}
+
+function filterByHeatmap(category, platform) {
+  state.filterCategory = category;
+  state.filterPlatform = platform;
+  renderDashboard();
+  // Scroll to filter results
+  setTimeout(() => {
+    document.getElementById('featuredSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ============================================================
+// DASHBOARD — Simplified
+// ============================================================
+
+function renderDashboard() {
+  // Render visualizations (Platform Pulse + Heatmap)
+  renderPlatformPulse();
+  renderHeatmap();
+
+  // Filter trends
+  let filtered = ALL_TRENDS;
+
+  if (state.filterPlatform !== 'all') {
+    filtered = filtered.filter(t => t.platform === state.filterPlatform);
+  }
+  if (state.filterCategory) {
+    filtered = filtered.filter(t => t.category === state.filterCategory);
+  }
+  if (state.searchQuery.trim()) {
+    const q = state.searchQuery.toLowerCase();
+    filtered = filtered.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      t.creator.toLowerCase().includes(q) ||
+      t.hashtags.toLowerCase().includes(q)
+    );
+  }
+
+  // Sort by trending
+  filtered = [...filtered].sort((a, b) => b.growthNum - a.growthNum);
+
+  // Update filter button visual state
+  const hasFilter = state.filterPlatform !== 'all' || state.filterCategory !== null;
+  const filterBtn = document.getElementById('filterBtn');
+  filterBtn.classList.toggle('has-filter', hasFilter);
+
+  // Render filter summary
+  renderFilterSummary(filtered.length);
+
+  // Featured (top 1) + list (rest)
+  const featuredSection = document.getElementById('featuredSection');
+  const list = document.getElementById('trendList');
+
+  if (filtered.length === 0) {
+    featuredSection.innerHTML = '';
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-emoji">🔍</div>
+        <div class="empty-title">결과 없음</div>
+        <div class="empty-text">검색어나 필터를 조정해보세요</div>
+      </div>
+    `;
+    return;
+  }
+
+  const featured = filtered[0];
+  const rest = filtered.slice(1);
+
+  featuredSection.innerHTML = `
+    <div class="featured-section">
+      <div class="featured-label">이번 주 1위</div>
+      <div class="featured-card" onclick="goToProduction(${featured.id})">
+        <div class="featured-thumb">
+          <span class="featured-platform">
+            <span class="platform-badge ${featured.platform}">${featured.platformLabel}</span>
+          </span>
+          <span class="featured-growth">${featured.growth}</span>
+          <span class="featured-thumb-emoji">${featured.thumb}</span>
+        </div>
+        <div class="featured-body">
+          <div class="featured-title">${featured.title}</div>
+          <div class="featured-creator">${featured.creator} · ${featured.time}</div>
+          <div class="featured-stats">
+            <div>👁 ${featured.views}</div>
+            <div>♥ ${featured.likes}</div>
+            <div>↗ ${featured.shares}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (rest.length > 0) {
+    list.innerHTML = `
+      <div class="list-section-heading">이어지는 ${rest.length}개 트렌드</div>
+      <div class="trend-list">
+        ${rest.map((t, i) => trendRow(t, i + 2)).join('')}
+      </div>
+    `;
+  } else {
+    list.innerHTML = '';
+  }
+}
+
+function trendRow(t, rank) {
+  const fadeClass = t.growth.includes('↓') ? 'fade' : '';
+  const risingClass = t.lifecycle === 'rising' ? 'rising' : '';
+  const platformShort = t.platform === 'youtube' ? 'YT' : t.platform === 'tiktok' ? 'TT' : 'IG';
+
+  return `
+    <div class="trend-row ${risingClass}" onclick="goToProduction(${t.id})">
+      <div class="trend-rank-num">${String(rank).padStart(2, '0')}</div>
+      <div class="trend-row-thumb">${t.thumb}</div>
+      <div class="trend-row-info">
+        <div class="trend-row-title">${t.title}</div>
+        <div class="trend-row-meta">
+          <span class="trend-row-meta-platform ${t.platform}">${platformShort}</span>
+          <span>·</span>
+          <span>${t.views}</span>
+          <span>·</span>
+          <span>${t.time}</span>
+        </div>
+      </div>
+      <div class="trend-row-growth ${fadeClass}">${t.growth}</div>
+    </div>
+  `;
+}
+
+// Old card style — used in Recommend tab
+function trendCard(t) {
+  const rankClass = t.lifecycle === 'peak' ? 'peak' : t.lifecycle === 'fading' ? 'fading' : '';
+  const fadeClass = t.growth.includes('↓') ? 'fade' : '';
+  return `
+    <div class="trend-card" onclick="goToProduction(${t.id})">
+      <div class="trend-rank ${rankClass}">#${t.displayRank}</div>
+      <div class="trend-meta">
+        <span class="platform-badge ${t.platform}">${t.platformLabel}</span>
+        <span class="trend-time">${t.time}</span>
+      </div>
+      <div class="trend-body">
+        <div class="trend-thumb">${t.thumb}</div>
+        <div class="trend-info">
+          <div class="trend-title">${t.title}</div>
+          <div class="trend-creator">${t.creator}</div>
+          <div class="trend-stats">
+            <div>👁 ${t.views}</div>
+            <div>♥ ${t.likes}</div>
+            <div>↗ ${t.shares}</div>
+          </div>
+        </div>
+      </div>
+      <div class="trend-growth">
+        <span class="hashtags">${t.hashtags}</span>
+        <span class="growth-tag ${fadeClass}">${t.growth}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderFilterSummary(count) {
+  const wrap = document.getElementById('filterSummary');
+  const platformLabel = state.filterPlatform === 'all' ? null : (
+    state.filterPlatform === 'youtube' ? 'YouTube' :
+    state.filterPlatform === 'tiktok' ? 'TikTok' :
+    'Reels'
+  );
+  const categoryLabel = state.filterCategory ? CATEGORY_LABELS[state.filterCategory] : null;
+
+  if (!platformLabel && !categoryLabel) {
+    wrap.innerHTML = `<div class="filter-summary-empty">이번 주 <span class="count">${count}</span>건 트렌딩</div>`;
+    return;
+  }
+
+  let html = '';
+  if (platformLabel) {
+    html += `<span class="active-filter-tag">${platformLabel}<button class="x" onclick="clearPlatformFilter()">×</button></span>`;
+  }
+  if (categoryLabel) {
+    html += `<span class="active-filter-tag">${categoryLabel}<button class="x" onclick="clearCategoryFilter()">×</button></span>`;
+  }
+  html += `<button class="clear-all" onclick="clearAllFilters()">CLEAR ALL</button>`;
+  wrap.innerHTML = html;
+}
+
+function clearPlatformFilter() {
+  state.filterPlatform = 'all';
+  renderDashboard();
+}
+
+function clearCategoryFilter() {
+  state.filterCategory = null;
+  renderDashboard();
+}
+
+function clearAllFilters() {
+  state.filterPlatform = 'all';
+  state.filterCategory = null;
+  renderDashboard();
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  state.searchQuery = e.target.value;
+  renderDashboard();
+});
+
+// ============================================================
+// FILTER MODAL
+// ============================================================
+
+function openFilterModal() {
+  renderFilterModalOptions();
+  document.getElementById('filterModal').classList.add('active');
+}
+
+function closeFilterModal() {
+  document.getElementById('filterModal').classList.remove('active');
+}
+
+function resetFilters() {
+  state.filterPlatform = 'all';
+  state.filterCategory = null;
+  renderFilterModalOptions();
+  renderDashboard();
+}
+
+function renderFilterModalOptions() {
+  const platforms = [
+    { value: 'all', label: '전체' },
+    { value: 'youtube', label: 'YouTube' },
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'instagram', label: 'Reels' }
+  ];
+
+  const platformsEl = document.getElementById('filterModalPlatforms');
+  platformsEl.innerHTML = platforms.map(p => `
+    <button class="filter-modal-pill ${state.filterPlatform === p.value ? 'active' : ''}" onclick="setFilterPlatform('${p.value}')">${p.label}</button>
+  `).join('');
+
+  const catsEl = document.getElementById('filterModalCategories');
+  catsEl.innerHTML = `
+    <button class="filter-modal-pill ${state.filterCategory === null ? 'active' : ''}" onclick="setFilterCategory(null)">전체</button>
+    ${CATEGORIES.map(c => `
+      <button class="filter-modal-pill ${state.filterCategory === c.value ? 'active' : ''}" onclick="setFilterCategory('${c.value}')">${c.emoji} ${c.label.split(' / ')[0]}</button>
+    `).join('')}
+  `;
+}
+
+function setFilterPlatform(p) {
+  state.filterPlatform = p;
+  renderFilterModalOptions();
+  renderDashboard();
+}
+
+function setFilterCategory(cat) {
+  state.filterCategory = cat;
+  renderFilterModalOptions();
+  renderDashboard();
+}
+
+// ============================================================
+// TREND → PRODUCTION SCREEN NAVIGATION
+// ============================================================
+
+function goToProduction(trendId) {
+  state.selectedTrendId = trendId;
+  switchTab('production');
+}
+
+document.getElementById('filterModal').addEventListener('click', (e) => {
+  if (e.target.id === 'filterModal') closeFilterModal();
+});
+
+// ============================================================
+// RECOMMEND
+// ============================================================
+
+function renderRecommend() {
+  const section = document.getElementById('personaSection');
+  const recoSub = document.getElementById('recoSub');
+
+  if (!state.persona) {
+    section.innerHTML = `
+      <div class="setup-card">
+        <div class="setup-card-eyebrow">SETUP</div>
+        <div class="setup-card-title">맞춤 추천을 받으려면<br/>페르소나를 먼저 설정해주세요</div>
+        <div class="setup-card-text">간단한 정보 두 가지만 알려주면 너에게 어울리는 트렌드를 찾아드려요. 30초도 안 걸려요.</div>
+        <button class="setup-card-btn" onclick="openModal()">
+          페르소나 설정 →
+        </button>
+      </div>
+    `;
+    recoSub.textContent = '페르소나를 설정하면 너에게 맞는 추천이 나타나요';
+  } else {
+    const cat = CATEGORY_LABELS[state.persona.category];
+    section.innerHTML = `
+      <div class="persona-active">
+        <div class="persona-active-row">
+          <div class="persona-active-info">
+            <div class="persona-active-eyebrow">YOUR FOCUS</div>
+            <div class="persona-active-name">${cat}</div>
+          </div>
+          <button class="persona-active-edit" onclick="openModal()">EDIT</button>
+        </div>
+      </div>
+    `;
+    recoSub.textContent = `${cat} 카테고리에서 너에게 어울리는 트렌드`;
+  }
+
+  let recos = ALL_TRENDS;
+  if (state.persona) {
+    recos = recos.filter(t => t.category === state.persona.category);
+  }
+  recos = [...recos].sort((a, b) => b.growthNum - a.growthNum).slice(0, 3);
+
+  document.getElementById('recoCount').textContent = `${recos.length} 건`;
+
+  const recoList = document.getElementById('recoList');
+  if (recos.length === 0) {
+    recoList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-emoji">✨</div>
+        <div class="empty-text">추천할 트렌드가 없어요</div>
+      </div>
+    `;
+  } else {
+    recoList.innerHTML = `
+      <div class="trend-list">
+        ${recos.map((t, i) => trendCard({ ...t, displayRank: i + 1 })).join('')}
+      </div>
+    `;
+  }
+}
+
+// ============================================================
+// PRODUCTION
+// ============================================================
+
+function renderProduction() {
+  const contextEl = document.getElementById('productionContext');
+  const list = document.getElementById('promptList');
+  const subEl = document.getElementById('productionSub');
+
+  // Case 1: User came directly to [제작] tab without selecting a trend
+  if (!state.selectedTrendId) {
+    contextEl.innerHTML = '';
+    subEl.textContent = '먼저 트렌드를 선택해주세요';
+
+    list.innerHTML = `
+      <div style="padding: 0 24px;">
+        <div style="background: var(--surface-1); border: 1px dashed var(--border-bright); border-radius: 16px; padding: 24px; text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 12px;">✨</div>
+          <div style="font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1.05; margin-bottom: 10px;">트렌드를 골라야<br/>대본을 만들 수 있어요</div>
+          <div style="font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px;">
+            대시보드에서 마음에 드는 트렌드를 선택하면<br/>
+            그에 맞는 추천 프롬프트 3종이 여기에 나타나요.
+          </div>
+          <button class="setup-card-btn" onclick="switchTab('dashboard')">
+            트렌드 보러 가기 →
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Case 2: User selected a trend → show prompts for it
+  const trend = ALL_TRENDS.find(t => t.id === state.selectedTrendId);
+  if (!trend) {
+    state.selectedTrendId = null;
+    renderProduction();
+    return;
+  }
+
+  contextEl.innerHTML = `
+    <div class="production-back">
+      <button class="back-btn" onclick="goBack()">
+        <span class="back-btn-arrow">←</span>
+        <span>BACK</span>
+      </button>
+    </div>
+    <div class="selected-trend">
+      <div class="selected-trend-thumb">${trend.thumb}</div>
+      <div class="selected-trend-info">
+        <div class="selected-trend-eyebrow">SELECTED TREND · ${trend.platformLabel}</div>
+        <div class="selected-trend-title">${trend.title}</div>
+      </div>
+    </div>
+  `;
+
+  subEl.textContent = `이 트렌드로 만들 수 있는 대본 스타일 3종`;
+
+  list.innerHTML = PRODUCTION_PROMPTS.map((p, i) => `
+    <div class="prompt-card">
+      <div class="prompt-card-num">${String(i + 1).padStart(2, '0')} / 03</div>
+      <div class="prompt-card-tone ${p.toneClass}">${p.toneLabel}</div>
+      <div class="prompt-card-headline">${p.headline}</div>
+      <div class="prompt-card-meta">
+        ${p.meta.map(m => `<span class="prompt-meta-tag">${m}</span>`).join('')}
+      </div>
+      <div class="prompt-card-reason">${p.reason}</div>
+      <div class="prompt-card-cta">
+        <span class="prompt-card-cta-text">대본 만들기</span>
+        <span class="prompt-card-arrow">→</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function goBack() {
+  state.selectedTrendId = null;
+  switchTab(state.currentTab === 'production' ? 'dashboard' : state.currentTab);
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+
+function openModal() {
+  state.modalDraft = state.persona
+    ? { category: state.persona.category, styles: [...state.persona.styles] }
+    : { category: null, styles: [] };
+  renderModalOptions();
+  document.getElementById('personaModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('personaModal').classList.remove('active');
+}
+
+function renderModalOptions() {
+  const catOpts = document.getElementById('modalCategoryOptions');
+  catOpts.innerHTML = CATEGORIES.map(c => {
+    const sel = state.modalDraft.category === c.value ? 'selected' : '';
+    return `
+      <div class="modal-option ${sel}" onclick="selectCategory('${c.value}')">
+        <div class="modal-option-emoji">${c.emoji}</div>
+        <div class="modal-option-label">${c.label}</div>
+        <div class="modal-option-check"></div>
+      </div>
+    `;
+  }).join('');
+
+  const styleOpts = document.getElementById('modalStyleOptions');
+  styleOpts.innerHTML = STYLES.map(s => {
+    const sel = state.modalDraft.styles.includes(s.value) ? 'selected' : '';
+    return `
+      <div class="modal-option multi ${sel}" onclick="selectStyle('${s.value}')">
+        <div class="modal-option-emoji">${s.emoji}</div>
+        <div class="modal-option-label">${s.label}</div>
+        <div class="modal-option-check"></div>
+      </div>
+    `;
+  }).join('');
+
+  updateSaveBtn();
+}
+
+function selectCategory(value) {
+  state.modalDraft.category = value;
+  renderModalOptions();
+}
+
+function selectStyle(value) {
+  const arr = state.modalDraft.styles;
+  if (arr.includes(value)) {
+    state.modalDraft.styles = arr.filter(v => v !== value);
+  } else {
+    if (arr.length >= 3) return;
+    state.modalDraft.styles = [...arr, value];
+  }
+  renderModalOptions();
+}
+
+function updateSaveBtn() {
+  const valid = state.modalDraft.category && state.modalDraft.styles.length > 0;
+  document.getElementById('modalSaveBtn').disabled = !valid;
+}
+
+function savePersona() {
+  state.persona = {
+    category: state.modalDraft.category,
+    styles: [...state.modalDraft.styles]
+  };
+  closeModal();
+  renderRecommend();
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+  if (tab === 'dashboard') {
+    document.getElementById('screen-dashboard').classList.add('active');
+    document.getElementById('headerRight').textContent = 'WEEKLY';
+    renderDashboard();
+  } else if (tab === 'recommend') {
+    document.getElementById('screen-recommend').classList.add('active');
+    document.getElementById('headerRight').textContent = 'FOR YOU';
+    renderRecommend();
+  } else if (tab === 'production') {
+    document.getElementById('screen-production').classList.add('active');
+    document.getElementById('headerRight').textContent = 'PRODUCE';
+    renderProduction();
+  }
+
+  state.currentTab = tab;
+}
+
+// When [제작] tab is clicked directly via tab bar, clear selected trend (so user sees the empty state)
+document.querySelector('.tab-item[data-tab="production"]').addEventListener('click', (e) => {
+  // Stop the click from triggering the inline onclick=switchTab
+  // Actually inline onclick will fire first; we just clear after
+  state.selectedTrendId = null;
+});
+
+document.getElementById('personaModal').addEventListener('click', (e) => {
+  if (e.target.id === 'personaModal') closeModal();
+});
+
+renderDashboard();
+</script>
+
+</body>
+</html>

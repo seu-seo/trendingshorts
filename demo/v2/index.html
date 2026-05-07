@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Shortform Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-darker: #050507;
+    --bg: #0A0A0B;
+    --surface-1: #111114;
+    --surface-2: #18181C;
+    --surface-3: #25252B;
+    --border: #2A2A30;
+    --border-bright: #3A3A42;
+    --text: #F2F0EB;
+    --text-dim: #8A8A92;
+    --text-faint: #5A5A62;
+    --accent-lime: #C8FF57;
+    --accent-pink: #FF3D7F;
+    --accent-blue: #57C8FF;
+    --accent-orange: #FF8657;
+    --accent-purple: #C857FF;
+    --rising: #C8FF57;
+    --peak: #FFD700;
+    --fading: #6A6A72;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: #000;
+    color: var(--text);
+    height: 100%;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ======== STAGE — center the phone on desktop ======== */
+  .stage {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(200, 255, 87, 0.04), transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(255, 61, 127, 0.05), transparent 50%),
+      var(--bg-darker);
+    padding: 20px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 880px;
+    background: var(--bg);
+    border: 1px solid var(--border-bright);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 6px var(--surface-2),
+      0 40px 80px rgba(0, 0, 0, 0.5),
+      0 0 60px rgba(200, 255, 87, 0.04);
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 480px) {
+    .stage { padding: 0; }
+    .phone {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  /* ======== Status bar ======== */
+  .status-bar {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .status-icons { display: flex; gap: 5px; align-items: center; opacity: 0.8; }
+
+  /* ======== App header ======== */
+  .app-header {
+    flex-shrink: 0;
+    padding: 8px 24px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .app-logo { display: flex; align-items: center; gap: 8px; }
+
+  .app-logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 10px var(--accent-lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .app-logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .app-header-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .app-header-right:hover { color: var(--text); }
+
+  /* ======== Screen container — handles transitions ======== */
+  .screen-container {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-3) transparent;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+  }
+
+  .screen.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .screen.exit-left {
+    transform: translateX(-20px);
+  }
+
+  .screen::-webkit-scrollbar { width: 4px; }
+  .screen::-webkit-scrollbar-track { background: transparent; }
+  .screen::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+
+  /* ======== Welcome screen — Editorial Magazine Style ======== */
+  .welcome {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Animated gradient mesh background */
+  .welcome-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .welcome-bg::before,
+  .welcome-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.6;
+  }
+
+  .welcome-bg::before {
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, var(--accent-lime), transparent 70%);
+    top: -80px;
+    right: -80px;
+    animation: float-1 8s ease-in-out infinite;
+  }
+
+  .welcome-bg::after {
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, var(--accent-pink), transparent 70%);
+    bottom: 100px;
+    left: -100px;
+    animation: float-2 10s ease-in-out infinite;
+  }
+
+  @keyframes float-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-30px, 40px) scale(1.1); }
+  }
+
+  @keyframes float-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, -30px) scale(0.9); }
+  }
+
+  /* Noise texture overlay */
+  .welcome-noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  .welcome-content {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 28px 32px;
+    z-index: 2;
+  }
+
+  /* Top section — branding */
+  .welcome-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: auto;
+  }
+
+  .welcome-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .welcome-brand-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 12px var(--accent-lime);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .welcome-brand-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .welcome-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* Main headline section */
+  .welcome-main {
+    margin: auto 0;
+  }
+
+  .welcome-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .welcome-eyebrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--accent-lime), transparent);
+    max-width: 100px;
+  }
+
+  .welcome-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 76px;
+    line-height: 0.88;
+    letter-spacing: 0;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  .welcome-title .line-1 {
+    display: block;
+    color: var(--text);
+  }
+
+  .welcome-title .line-2 {
+    display: block;
+    color: var(--accent-lime);
+    text-shadow: 0 0 40px rgba(200, 255, 87, 0.3);
+  }
+
+  .welcome-title .line-3 {
+    display: block;
+    font-style: italic;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.3;
+    letter-spacing: 0;
+    margin-top: 16px;
+    color: var(--text-dim);
+    max-width: 280px;
+  }
+
+  /* Stats inline strip */
+  .welcome-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin: 32px 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .welcome-stat {
+    text-align: left;
+    position: relative;
+  }
+
+  .welcome-stat:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 10%;
+    bottom: 10%;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .welcome-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .welcome-stat-num.accent {
+    color: var(--accent-lime);
+  }
+
+  .welcome-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* Bottom CTA section */
+  .welcome-cta-section {
+    margin-top: auto;
+  }
+
+  .welcome-cta {
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--accent-lime);
+    color: var(--bg);
+    border: none;
+    border-radius: 16px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .welcome-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+
+  .welcome-cta:hover::before {
+    transform: translateX(100%);
+  }
+
+  .welcome-cta:hover {
+    box-shadow: 0 8px 30px rgba(200, 255, 87, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .welcome-cta-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--accent-lime);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    transition: transform 0.2s;
+  }
+
+  .welcome-cta:hover .welcome-cta-arrow {
+    transform: translateX(4px);
+  }
+
+  .welcome-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  .welcome-meta-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .welcome-meta-time::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-pink);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Staggered entrance */
+  .welcome-eyebrow,
+  .welcome-title,
+  .welcome-stats,
+  .welcome-cta-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: rise-in 0.8s forwards;
+  }
+
+  .welcome-eyebrow { animation-delay: 0.1s; }
+  .welcome-title { animation-delay: 0.2s; }
+  .welcome-stats { animation-delay: 0.4s; }
+  .welcome-cta-section { animation-delay: 0.5s; }
+
+  @keyframes rise-in {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ======== Survey screen ======== */
+  .survey-content {
+    padding: 0 24px 100px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .survey-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 32px;
+  }
+
+  .progress-segment {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--surface-2);
+    transition: background 0.3s;
+  }
+
+  .progress-segment.done { background: var(--accent-lime); }
+  .progress-segment.current { background: var(--accent-lime); opacity: 0.6; }
+
+  .survey-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent-lime);
+    margin-bottom: 12px;
+  }
+
+  .survey-question {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    margin-bottom: 8px;
+  }
+
+  .survey-hint {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+
+  .option-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .option:hover { border-color: var(--border-bright); transform: translateX(2px); }
+
+  .option.selected {
+    background: rgba(200, 255, 87, 0.08);
+    border-color: var(--accent-lime);
+  }
+
+  .option-emoji {
+    font-size: 22px;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background: var(--surface-2);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .option.selected .option-emoji {
+    background: rgba(200, 255, 87, 0.15);
+  }
+
+  .option-label {
+    font-size: 15px;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .option-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-bright);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option.selected .option-check {
+    background: var(--accent-lime);
+    border-color: var(--accent-lime);
+  }
+
+  .option.selected .option-check::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border-right: 2px solid var(--bg);
+    border-bottom: 2px solid var(--bg);
+    transform: rotate(45deg);
+    margin-top: -2px;
+  }
+
+  /* Multi-select for Q5 */
+  .option.multi.selected .option-check { border-radius: 4px; }
+  .option.multi.selected .option-check::after {
+    width: 5px;
+    height: 9px;
+  }
+
+  /* Slider */
+  .slider-wrap {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px;
+    margin-bottom: 28px;
+  }
+
+  .slider-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent-lime);
+    margin-bottom: 4px;
+  }
+
+  .slider-value-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  .slider-input {
+    width: 100%;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+
+  .slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-lime);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 6px rgba(200, 255, 87, 0.15);
+  }
+
+  .slider-input::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: var(--accent-lime);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 6px rgba(200, 255, 87, 0.15);
+  }
+
+  .slider-scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  /* Survey footer */
+  .survey-footer {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+    padding-top: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 16px 24px;
+    border-radius: 14px;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary {
+    background: var(--surface-1);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { background: var(--surface-2); color: var(--text); }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--accent-lime);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover {
+    background: #DAFF7F;
+    box-shadow: 0 0 30px rgba(200, 255, 87, 0.4);
+  }
+
+  .btn-primary:disabled {
+    background: var(--surface-2);
+    color: var(--text-faint);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* ======== Loading screen ======== */
+  .loading {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .loading-orb {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-lime), transparent 70%);
+    margin-bottom: 32px;
+    animation: orb-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes orb-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .loading-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .loading-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .loading-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 24px;
+    min-height: 18px;
+  }
+
+  /* ======== Bottom tab bar ======== */
+  .tab-bar {
+    flex-shrink: 0;
+    background: rgba(10, 10, 11, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    padding: 10px 0 22px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .tab-bar.hidden { display: none; }
+
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  .tab-item.active { color: var(--accent-lime); }
+  .tab-item:hover:not(.active) { color: var(--text); }
+
+  .tab-icon {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+  }
+
+  .tab-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ======== Persona-led Dashboard ======== */
+  .persona-hero {
+    margin: 0 24px 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(200, 255, 87, 0.12), rgba(255, 61, 127, 0.08));
+    border: 1px solid var(--border-bright);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .persona-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(200, 255, 87, 0.25), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .persona-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(255, 61, 127, 0.2), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .persona-hero-top {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .persona-hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent-lime);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .persona-hero-eyebrow::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    box-shadow: 0 0 8px var(--accent-lime);
+  }
+
+  .persona-hero-greeting {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .persona-hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--accent-lime);
+    margin-bottom: 6px;
+    position: relative;
+    text-shadow: 0 0 30px rgba(200, 255, 87, 0.2);
+  }
+
+  .persona-hero-tagline {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 18px;
+    position: relative;
+    max-width: 280px;
+  }
+
+  .persona-hero-divider {
+    position: relative;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-bright), transparent);
+    margin: 16px 0 14px;
+  }
+
+  .persona-hero-context {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .context-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .context-chip-key {
+    color: var(--text-faint);
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .context-chip-val {
+    color: var(--accent-lime);
+    font-weight: 600;
+  }
+
+  /* Section transition: from persona to feed */
+  .feed-intro {
+    padding: 12px 24px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .feed-intro-text {
+    flex: 1;
+  }
+
+  .feed-intro-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .feed-intro-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  .feed-intro-title .accent {
+    color: var(--accent-lime);
+  }
+
+  .feed-intro-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ======== Dashboard ======== */
+  .dashboard-content { padding: 0 0 100px; }
+
+  .dashboard-greeting { padding: 0 24px 16px; }
+
+  .greeting-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent-lime);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .greeting-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 24px 14px;
+    scrollbar-width: none;
+  }
+
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .platform-pill {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .platform-pill.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+
+  .platform-pill .pill-emoji { font-size: 13px; }
+
+  .chip-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 0 24px 18px;
+    scrollbar-width: none;
+  }
+
+  .chip-row::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .chip.active {
+    background: rgba(200, 255, 87, 0.1);
+    border-color: var(--accent-lime);
+    color: var(--accent-lime);
+  }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 0 24px 24px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .stat {
+    background: var(--surface-1);
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  .stat-value.lime { color: var(--accent-lime); }
+  .stat-value.pink { color: var(--accent-pink); }
+
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 24px 14px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .section-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .trend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 24px;
+  }
+
+  .trend-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .trend-card:hover { border-color: var(--border-bright); transform: translateY(-1px); }
+
+  .trend-rank {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--accent-lime);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .trend-rank.peak { background: var(--peak); }
+  .trend-rank.fading { background: var(--fading); color: var(--text); }
+
+  .trend-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .platform-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .platform-badge.youtube { background: #FF0033; color: white; }
+  .platform-badge.tiktok { background: #69C9D0; color: var(--bg); }
+  .platform-badge.instagram {
+    background: linear-gradient(135deg, #FF8657, #FF3D7F, #C857FF);
+    color: white;
+  }
+
+  .trend-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .trend-body {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .trend-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .trend-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .trend-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 4px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    padding-right: 30px;
+  }
+
+  .trend-creator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .trend-stats {
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .trend-stats > div { display: flex; align-items: center; gap: 4px; }
+
+  .trend-growth {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .growth-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lime);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .growth-tag.fade { color: var(--text-faint); }
+
+  .hashtags {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+
+  /* ======== Recommendation ======== */
+  .reco-content { padding: 0 0 100px; }
+
+  .reco-header { padding: 0 24px 20px; }
+
+  .reco-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent-pink);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .reco-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+  }
+
+  .persona-card {
+    margin: 0 24px 24px;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(200, 255, 87, 0.1), rgba(255, 61, 127, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .persona-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(200, 255, 87, 0.2), transparent 70%);
+    border-radius: 50%;
+  }
+
+  .persona-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .persona-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--accent-lime);
+    margin-bottom: 6px;
+    position: relative;
+  }
+
+  .persona-tagline {
+    font-size: 13px;
+    color: var(--text);
+    position: relative;
+  }
+
+  .reco-prompts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 24px;
+  }
+
+  .reco-prompt-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .reco-prompt-card:hover {
+    border-color: var(--accent-lime);
+    transform: translateY(-1px);
+  }
+
+  .prompt-num {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+
+  .prompt-fit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .fit-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 100px;
+  }
+
+  .fit-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--accent-lime), var(--accent-pink));
+  }
+
+  .fit-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-lime);
+  }
+
+  .prompt-headline {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    padding-right: 36px;
+  }
+
+  .prompt-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .prompt-meta-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .prompt-reason {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .prompt-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .prompt-cta-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-lime);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .prompt-arrow {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-lime);
+    color: var(--bg);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    transition: transform 0.2s;
+  }
+
+  .reco-prompt-card:hover .prompt-arrow { transform: translateX(3px); }
+
+  /* ======== Profile / Reset ======== */
+  .profile {
+    padding: 24px;
+  }
+
+  .profile-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .profile-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .profile-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .profile-value.persona {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent-lime);
+    letter-spacing: 0.04em;
+  }
+
+  .profile-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .profile-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 4px 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+  }
+
+  .reset-btn {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+  }
+
+  .reset-btn:hover {
+    background: var(--surface-1);
+    color: var(--accent-pink);
+    border-color: var(--accent-pink);
+  }
+
+  .empty-message {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text-faint);
+  }
+
+  .empty-message-emoji {
+    font-size: 36px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .empty-message-text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* TBD note */
+  .tbd-note {
+    margin: 24px;
+    padding: 12px 14px;
+    background: rgba(255, 215, 0, 0.06);
+    border: 1px dashed rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .tbd-icon {
+    color: var(--peak);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    background: rgba(255, 215, 0, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .tbd-text {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone">
+
+    <!-- Status bar (always visible) -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-icons">
+        <span>●●●</span>
+        <span>📶</span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <!-- App header (visible after onboarding) -->
+    <div class="app-header" id="appHeader" style="display: none;">
+      <div class="app-logo">
+        <div class="app-logo-dot"></div>
+        <div class="app-logo-text">SHORTFORM PULSE</div>
+      </div>
+      <div class="app-header-right" id="headerRight">LIVE</div>
+    </div>
+
+    <!-- Screen container -->
+    <div class="screen-container">
+
+      <!-- WELCOME -->
+      <div class="screen active" id="screen-welcome">
+        <div class="welcome">
+          <div class="welcome-bg"></div>
+          <div class="welcome-noise"></div>
+
+          <div class="welcome-content">
+            <!-- Top: brand + version -->
+            <div class="welcome-top">
+              <div class="welcome-brand">
+                <div class="welcome-brand-dot"></div>
+                <div class="welcome-brand-text">SHORTFORM PULSE</div>
+              </div>
+              <div class="welcome-version">v.1 · BETA</div>
+            </div>
+
+            <!-- Main: editorial headline -->
+            <div class="welcome-main">
+              <div class="welcome-eyebrow">FOR EARLY CREATORS</div>
+
+              <h1 class="welcome-title">
+                <span class="line-1">대중이</span>
+                <span class="line-2">뭘 보는지,</span>
+                <span class="line-3">알고리즘이 보여주지 않는<br/>트렌드의 진짜 그림.</span>
+              </h1>
+
+              <!-- Stats strip -->
+              <div class="welcome-stats">
+                <div class="welcome-stat">
+                  <div class="welcome-stat-num accent">3</div>
+                  <div class="welcome-stat-label">PLATFORMS</div>
+                </div>
+                <div class="welcome-stat">
+                  <div class="welcome-stat-num">7</div>
+                  <div class="welcome-stat-label">QUESTIONS</div>
+                </div>
+                <div class="welcome-stat">
+                  <div class="welcome-stat-num">3<span style="font-size: 14px; color: var(--text-dim);">min</span></div>
+                  <div class="welcome-stat-label">TO START</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom: CTA -->
+            <div class="welcome-cta-section">
+              <button class="welcome-cta" onclick="startSurvey()">
+                <span>너의 페르소나 찾기</span>
+                <span class="welcome-cta-arrow">→</span>
+              </button>
+              <div class="welcome-meta">
+                <span class="welcome-meta-time">LIVE · 06 MAY</span>
+                <span>DEMO PROTOTYPE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SURVEY -->
+      <div class="screen" id="screen-survey">
+        <div class="survey-content">
+          <div class="survey-progress" id="progressBar">
+            <!-- 7 segments injected by JS -->
+          </div>
+          <div class="survey-step-num" id="stepNum">QUESTION 01 / 07</div>
+          <div class="survey-question" id="questionText">주로 활동하는<br/>플랫폼은?</div>
+          <div class="survey-hint" id="questionHint">하나만 선택해주세요</div>
+
+          <div id="questionBody">
+            <!-- Options or slider injected by JS -->
+          </div>
+
+          <div class="survey-footer">
+            <button class="btn btn-secondary" id="backBtn" onclick="prevQuestion()">BACK</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>NEXT →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOADING -->
+      <div class="screen" id="screen-loading">
+        <div class="loading">
+          <div class="loading-orb"></div>
+          <div class="loading-eyebrow">● ANALYZING</div>
+          <div class="loading-title">너에게 맞는<br/>페르소나를 찾는 중...</div>
+          <div class="loading-step" id="loadingStep">설문 응답 분석 중</div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div class="screen" id="screen-dashboard">
+        <div class="dashboard-content" id="dashboardContent">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- RECOMMENDATION -->
+      <div class="screen" id="screen-reco">
+        <div class="reco-content" id="recoContent">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="screen" id="screen-profile">
+        <div class="profile" id="profileContent">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom tab bar (visible after onboarding) -->
+    <div class="tab-bar hidden" id="tabBar">
+      <button class="tab-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <div class="tab-label">대시보드</div>
+      </button>
+      <button class="tab-item" data-tab="reco" onclick="switchTab('reco')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div class="tab-label">추천</div>
+      </button>
+      <button class="tab-item" data-tab="profile" onclick="switchTab('profile')">
+        <div class="tab-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+          </svg>
+        </div>
+        <div class="tab-label">프로필</div>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const QUESTIONS = [
+  {
+    id: 'platform',
+    title: '주로 활동하는<br/>플랫폼은?',
+    hint: '하나만 선택해주세요',
+    type: 'single',
+    options: [
+      { value: 'youtube', emoji: '▶', label: 'YouTube Shorts' },
+      { value: 'tiktok', emoji: '♪', label: 'TikTok' },
+      { value: 'instagram', emoji: '◎', label: 'Instagram Reels' },
+      { value: 'multi', emoji: '🌐', label: '여러 플랫폼' },
+    ]
+  },
+  {
+    id: 'category',
+    title: '내 채널의<br/>주요 카테고리는?',
+    hint: '하나만 선택해주세요',
+    type: 'single',
+    options: [
+      { value: 'food', emoji: '🍔', label: '먹방 / 요리' },
+      { value: 'beauty', emoji: '💄', label: '뷰티 / 패션' },
+      { value: 'dance', emoji: '💃', label: '댄스 / 챌린지' },
+      { value: 'lifestyle', emoji: '📹', label: '일상 브이로그' },
+      { value: 'gaming', emoji: '🎮', label: '게임 / 엔터' },
+      { value: 'pets', emoji: '🐶', label: '펫 / 동물' },
+    ]
+  },
+  {
+    id: 'experience',
+    title: '숏폼 크리에이터<br/>경력은?',
+    hint: '슬라이더를 움직여주세요',
+    type: 'slider',
+    min: 0, max: 5, default: 2,
+    labels: ['채널 없음', '1개월 미만', '1~6개월', '6개월~1년', '1~3년', '3년 이상']
+  },
+  {
+    id: 'goal',
+    title: '지금 가장<br/>원하는 목표는?',
+    hint: '하나만 선택해주세요',
+    type: 'single',
+    options: [
+      { value: 'growth', emoji: '📈', label: '구독자 / 팔로워 증가' },
+      { value: 'monetize', emoji: '💰', label: '수익화 시작' },
+      { value: 'brand', emoji: '✨', label: '브랜드 인지도 구축' },
+      { value: 'community', emoji: '💞', label: '팬덤 / 커뮤니티' },
+    ]
+  },
+  {
+    id: 'styles',
+    title: '내 콘텐츠<br/>스타일은?',
+    hint: '최대 3개까지 선택해주세요',
+    type: 'multi',
+    max: 3,
+    options: [
+      { value: 'humor', emoji: '🎭', label: '유머 / 웃음' },
+      { value: 'info', emoji: '💡', label: '정보 / 교육' },
+      { value: 'emotion', emoji: '🤍', label: '감성 / 공감' },
+      { value: 'impact', emoji: '⚡', label: '자극 / 임팩트' },
+      { value: 'honest', emoji: '📝', label: '솔직 / 현실' },
+      { value: 'visual', emoji: '✨', label: '비주얼 / 심미' },
+      { value: 'challenge', emoji: '🔥', label: '챌린지 / 트렌드' },
+      { value: 'creative', emoji: '🧪', label: '실험 / 독창성' },
+    ]
+  },
+  {
+    id: 'concern',
+    title: '제작에서 가장<br/>힘든 부분은?',
+    hint: '하나만 선택해주세요',
+    type: 'single',
+    options: [
+      { value: 'idea', emoji: '💭', label: '아이디어가 안 떠올라요' },
+      { value: 'trend', emoji: '🌊', label: '트렌드를 어떻게 써야 할지' },
+      { value: 'reach', emoji: '📊', label: '영상을 만들어도 반응이 없어요' },
+      { value: 'consistency', emoji: '🔁', label: '꾸준히 못하겠어요' },
+    ]
+  },
+  {
+    id: 'frequency',
+    title: '주당 목표<br/>업로드 편수는?',
+    hint: '슬라이더를 움직여주세요',
+    type: 'slider',
+    min: 1, max: 14, default: 3,
+    suffix: '편/주',
+    labels: null
+  },
+];
+
+// Persona determination based on styles + concern
+function determinePersona(answers) {
+  const styles = answers.styles || [];
+  const concern = answers.concern;
+
+  if (styles.includes('emotion') || styles.includes('honest')) {
+    return {
+      type: 'THE EMOTIONAL EXPERT',
+      tagline: '감성으로 마음을 흔드는 크리에이터',
+      tone: 'story',
+      color: 'lime'
+    };
+  }
+  if (styles.includes('info') || styles.includes('creative')) {
+    return {
+      type: 'THE NICHE EXPERT',
+      tagline: '정보와 인사이트로 신뢰를 쌓는 크리에이터',
+      tone: 'info',
+      color: 'blue'
+    };
+  }
+  if (styles.includes('challenge') || styles.includes('impact')) {
+    return {
+      type: 'THE TRENDSETTER',
+      tagline: '트렌드의 가장 앞에서 달리는 크리에이터',
+      tone: 'hook',
+      color: 'pink'
+    };
+  }
+  return {
+    type: 'THE STORYTELLER',
+    tagline: '이야기로 사람을 끌어들이는 크리에이터',
+    tone: 'story',
+    color: 'purple'
+  };
+}
+
+// Trend data — 카테고리별로 분리
+const TRENDS_BY_CATEGORY = {
+  beauty: [
+    { rank: 1, lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '30분 전',
+      thumb: '✨', title: '하루 만에 피부가 달라지는 K-스킨케어 루틴', creator: '@beauty_guru_kr',
+      views: '2.2M', likes: '240K', shares: '45K', hashtags: '#스킨케어 #뷰티', growth: '↑ 680%' },
+    { rank: 2, lifecycle: 'peak', platform: 'tiktok', platformLabel: 'TIKTOK', time: '1시간 전',
+      thumb: '💄', title: '3분 메이크업으로 출근 준비 끝내기', creator: '@morning_beauty',
+      views: '1.5M', likes: '110K', shares: '23K', hashtags: '#메이크업 #아침루틴', growth: '↑ 420%' },
+    { rank: 3, lifecycle: 'rising', platform: 'youtube', platformLabel: 'SHORTS', time: '2시간 전',
+      thumb: '💅', title: '집에서 셀프 네일아트 따라하기', creator: '@nail_diary_',
+      views: '980K', likes: '87K', shares: '15K', hashtags: '#네일 #셀프네일', growth: '↑ 312%' },
+    { rank: 4, lifecycle: 'fading', platform: 'instagram', platformLabel: 'REELS', time: '3시간 전',
+      thumb: '👗', title: '봄 데일리 OOTD 5가지 스타일링', creator: '@daily_outfit__',
+      views: '720K', likes: '59K', shares: '11K', hashtags: '#OOTD #봄패션', growth: '↓ 12%' },
+  ],
+  food: [
+    { rank: 1, lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '20분 전',
+      thumb: '🍜', title: '편의점 신상 라면 조합 역대급 발견', creator: '@food_finder',
+      views: '3.1M', likes: '380K', shares: '52K', hashtags: '#편의점 #먹방', growth: '↑ 720%' },
+    { rank: 2, lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+      thumb: '🥢', title: '3초 만에 완성하는 초간단 김밥 레시피', creator: '@cook_master_kr',
+      views: '1.2M', likes: '89K', shares: '12K', hashtags: '#요리 #간단레시피', growth: '↑ 380%' },
+    { rank: 3, lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '2시간 전',
+      thumb: '🍰', title: '비주얼 깡패 디저트 카페 BEST 5', creator: '@dessert_seoul',
+      views: '850K', likes: '72K', shares: '18K', hashtags: '#디저트 #카페투어', growth: '↑ 295%' },
+  ],
+  dance: [
+    { rank: 1, lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '30분 전',
+      thumb: '💃', title: '이 댄스 챌린지 아직도 안 해봤어? 🔥', creator: '@dance_king_kr',
+      views: '2.2M', likes: '240K', shares: '45K', hashtags: '#댄스챌린지 #틱톡', growth: '↑ 680%' },
+    { rank: 2, lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+      thumb: '🎤', title: 'K-pop 신곡 안무 30초 완벽 정리', creator: '@kpop_choreo',
+      views: '1.8M', likes: '195K', shares: '38K', hashtags: '#K팝 #안무', growth: '↑ 410%' },
+    { rank: 3, lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '3시간 전',
+      thumb: '🕺', title: '커플 댄스 챌린지 따라하기', creator: '@couple_moves',
+      views: '650K', likes: '54K', shares: '9K', hashtags: '#커플챌린지', growth: '↑ 220%' },
+  ],
+  lifestyle: [
+    { rank: 1, lifecycle: 'rising', platform: 'tiktok', platformLabel: 'TIKTOK', time: '40분 전',
+      thumb: '☕', title: '요즘 MZ 출근 브이로그 현실.zip', creator: '@office_life_kr',
+      views: '1.9M', likes: '180K', shares: '32K', hashtags: '#직장인 #브이로그', growth: '↑ 540%' },
+    { rank: 2, lifecycle: 'peak', platform: 'youtube', platformLabel: 'SHORTS', time: '2시간 전',
+      thumb: '🏠', title: '자취 5년차의 미니멀 정리 루틴', creator: '@solo_living_',
+      views: '720K', likes: '64K', shares: '11K', hashtags: '#자취 #정리', growth: '↑ 280%' },
+    { rank: 3, lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '4시간 전',
+      thumb: '🌅', title: '아침 6시에 일어나면 생기는 변화', creator: '@morning_routine_',
+      views: '590K', likes: '52K', shares: '8K', hashtags: '#모닝루틴', growth: '↑ 190%' },
+  ],
+  gaming: [
+    { rank: 1, lifecycle: 'rising', platform: 'youtube', platformLabel: 'SHORTS', time: '1시간 전',
+      thumb: '🎮', title: '롤 신챔 30초 완벽 가이드', creator: '@gamer_kr',
+      views: '1.4M', likes: '128K', shares: '22K', hashtags: '#롤 #게임공략', growth: '↑ 460%' },
+    { rank: 2, lifecycle: 'peak', platform: 'tiktok', platformLabel: 'TIKTOK', time: '3시간 전',
+      thumb: '🕹️', title: '레전드 게임 클립 모음', creator: '@clip_master_',
+      views: '890K', likes: '78K', shares: '15K', hashtags: '#게임클립', growth: '↑ 320%' },
+  ],
+  pets: [
+    { rank: 1, lifecycle: 'rising', platform: 'instagram', platformLabel: 'REELS', time: '2시간 전',
+      thumb: '🐶', title: '강아지가 주인 출근할 때 하는 행동 ㅋㅋ', creator: '@puppy_daily',
+      views: '870K', likes: '72K', shares: '9.5K', hashtags: '#강아지 #반려견', growth: '↑ 390%' },
+    { rank: 2, lifecycle: 'peak', platform: 'tiktok', platformLabel: 'TIKTOK', time: '4시간 전',
+      thumb: '🐱', title: '고양이가 집사 부르는 방법 BEST 5', creator: '@cat_diary_kr',
+      views: '650K', likes: '58K', shares: '12K', hashtags: '#고양이 #집사일상', growth: '↑ 240%' },
+  ],
+};
+
+const PLATFORM_LABELS = {
+  youtube: 'YouTube Shorts',
+  tiktok: 'TikTok',
+  instagram: 'Instagram Reels',
+  multi: '여러 플랫폼'
+};
+
+const CATEGORY_LABELS = {
+  food: '먹방', beauty: '뷰티', dance: '댄스',
+  lifestyle: '일상', gaming: '게임', pets: '펫'
+};
+
+// Recommendation prompts by category & persona
+function getRecommendations(category, persona) {
+  const RECO_BY_CATEGORY = {
+    beauty: [
+      { headline: '"진짜 토너 쓰는 법 알려드림" 챌린지', hashtag: '#스킨케어', platform: 'REELS', state: 'RISING',
+        reasonByTone: {
+          story: '감성 톤 + 정보 전달이 강점인 너에게 어울려. 흔한 오해를 짚어주는 포맷이라 댓글 참여율도 높아.',
+          info: '정보형 톤으로 정확한 사용 순서를 알려주는 데 최적. 비교 컷으로 신뢰도 올라감.',
+          hook: '"이거 모르고 쓰면 다 헛수고예요" 같은 강한 후킹이 잘 먹힐 포맷.'
+        }, fit: 87 },
+      { headline: '아침 vs 저녁 스킨케어 차이 시연', hashtag: '#K뷰티', platform: 'SHORTS', state: 'PEAK',
+        reasonByTone: {
+          story: '스토리형 톤으로 풀어내면 좋아. 비교 구조라 30초 이내에 핵심 전달이 가능해.',
+          info: '제품별 성분 차이를 표로 보여주면 정보 가치가 극대화돼.',
+          hook: '"아침에 이거 안 쓰면 망해요" 같은 강력한 도입이 효과적.'
+        }, fit: 74 },
+      { headline: '민감성 피부도 OK인 클렌저 솔직 후기', hashtag: '#클렌저', platform: 'TIKTOK', state: 'RISING',
+        reasonByTone: {
+          story: '솔직 리뷰는 너의 페르소나 강점이야. 단점도 짚어주면 신뢰도 폭증.',
+          info: '성분 분석 + 사용 후기를 결합하면 차별화 가능.',
+          hook: '"이거 진짜 잘 맞는데 단점은..." 같은 커브볼 도입 추천.'
+        }, fit: 65 },
+    ],
+    food: [
+      { headline: '편의점 1만원으로 한 끼 풀세팅', hashtag: '#편의점', platform: 'TIKTOK', state: 'RISING',
+        reasonByTone: {
+          story: '"가성비 = 감성"으로 풀어내면 댓글 참여 폭증.',
+          info: '가격 표시 + 영양 정보까지 더하면 정보 가치 상승.',
+          hook: '"1만원으로 진짜 가능?" 강한 의문형 후킹 추천.'
+        }, fit: 89 },
+      { headline: '3분 만에 끝나는 자취 요리 BEST', hashtag: '#자취요리', platform: 'SHORTS', state: 'PEAK',
+        reasonByTone: {
+          story: '자취생 공감 코드를 살리면 좋아.',
+          info: '단계별 시간 측정 컷이 신뢰도 핵심.',
+          hook: '"3분 안에 안 되면 책임짐" 단정형 도입 효과적.'
+        }, fit: 76 },
+      { headline: '편의점 신상 솔직 리뷰', hashtag: '#신상리뷰', platform: 'INSTAGRAM', state: 'RISING',
+        reasonByTone: {
+          story: '"이건 별로였다"까지 솔직하게 가야 신뢰감.',
+          info: '맛 평가 척도(별점·점수)를 일관되게 쓰면 시리즈화 가능.',
+          hook: '"이거 절대 사지 마세요" 역방향 후킹 강력.'
+        }, fit: 68 },
+    ],
+    dance: [
+      { headline: '신곡 안무 30초 완벽 정리', hashtag: '#K팝안무', platform: 'TIKTOK', state: 'RISING',
+        reasonByTone: {
+          story: '"처음 배울 때 어려웠던 부분" 스토리 더하면 좋아.',
+          info: '동작별 카운트 자막으로 정보성 강화.',
+          hook: '"이거 못 따라하면 댄스 포기" 강한 도전 후킹.'
+        }, fit: 91 },
+      { headline: '커플 댄스 챌린지 따라하기', hashtag: '#커플챌린지', platform: 'REELS', state: 'PEAK',
+        reasonByTone: {
+          story: '커플 케미 살리는 비하인드가 핵심.',
+          info: '동작 분해 가이드를 추가하면 시청 시간 늘어남.',
+          hook: '"솔로는 못 만드는 영상" 자극적 도입.'
+        }, fit: 72 },
+      { headline: '5분 안에 배우는 트렌드 안무', hashtag: '#안무챌린지', platform: 'SHORTS', state: 'RISING',
+        reasonByTone: {
+          story: '"내가 처음 배웠을 때 헷갈렸던 부분" 공유.',
+          info: '단계별 분해 컷이 정보 가치 핵심.',
+          hook: '"5분 도전" 시간 압박 후킹 강력.'
+        }, fit: 64 },
+    ],
+    lifestyle: [
+      { headline: '직장인 모닝 루틴 - 진짜 현실편', hashtag: '#모닝루틴', platform: 'TIKTOK', state: 'RISING',
+        reasonByTone: {
+          story: '"이상 vs 현실" 구조가 너의 페르소나에 잘 맞아.',
+          info: '시간대별 시간 표시로 정보성 강화.',
+          hook: '"인스타 모닝루틴 다 거짓말" 강한 도발 도입.'
+        }, fit: 88 },
+      { headline: '자취 5년차의 정리 노하우', hashtag: '#자취', platform: 'SHORTS', state: 'PEAK',
+        reasonByTone: {
+          story: '실패 경험 공유가 공감 폭발 포인트.',
+          info: '비포·애프터 측정값으로 정보성 강화.',
+          hook: '"5년차 노하우 1분만에" 압축형 도입.'
+        }, fit: 75 },
+      { headline: '하루 1분 미니멀리스트 챌린지', hashtag: '#미니멀', platform: 'REELS', state: 'RISING',
+        reasonByTone: {
+          story: '버린 물건의 사연 살리면 감정선 살아남.',
+          info: '주차별 변화 측정으로 시리즈화.',
+          hook: '"30일 후 충격" 변화 강조 후킹.'
+        }, fit: 67 },
+    ],
+    gaming: [
+      { headline: '신챔 가이드 30초 정리', hashtag: '#게임공략', platform: 'SHORTS', state: 'RISING',
+        reasonByTone: {
+          story: '"내가 처음 했을 때 망한 이유" 스토리.',
+          info: '스킬 배율·아이템 빌드 정보가 핵심.',
+          hook: '"이거 모르면 매판 진다" 강력 후킹.'
+        }, fit: 86 },
+      { headline: '레전드 클러치 모음', hashtag: '#게임클립', platform: 'TIKTOK', state: 'PEAK',
+        reasonByTone: {
+          story: '클립별 상황 설명이 몰입도 핵심.',
+          info: '상황 해설 자막으로 신규 시청자 끌기.',
+          hook: '"마지막 1초에 무슨 일?" 미스터리 후킹.'
+        }, fit: 71 },
+    ],
+    pets: [
+      { headline: '강아지가 주인 알아보는 신호 5가지', hashtag: '#강아지', platform: 'REELS', state: 'RISING',
+        reasonByTone: {
+          story: '"우리 애도 그래요" 댓글 폭발 포맷.',
+          info: '행동학 근거 자막으로 신뢰도 상승.',
+          hook: '"이런 행동하면 사랑 표현이래요" 정보형 후킹.'
+        }, fit: 90 },
+      { headline: '고양이 집사 부르는 방식 BEST', hashtag: '#고양이', platform: 'TIKTOK', state: 'PEAK',
+        reasonByTone: {
+          story: '집사 vs 고양이 케미 비하인드.',
+          info: '울음소리 종류별 의미 정보.',
+          hook: '"이 소리 들으면 즉시 가야 함" 경고형 후킹.'
+        }, fit: 73 },
+    ],
+  };
+
+  return (RECO_BY_CATEGORY[category] || RECO_BY_CATEGORY.beauty).map(item => ({
+    ...item,
+    reason: item.reasonByTone[persona.tone] || item.reasonByTone.story
+  }));
+}
+
+// ============================================================
+// STATE
+// ============================================================
+
+let state = {
+  currentScreen: 'welcome',
+  currentQuestion: 0,
+  answers: {},
+  persona: null,
+  filterPlatform: 'all',
+  filterCategory: null,
+};
+
+// ============================================================
+// SCREEN TRANSITIONS
+// ============================================================
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    if (s.id === id) {
+      s.classList.add('active');
+      s.classList.remove('exit-left');
+    } else if (s.classList.contains('active')) {
+      s.classList.remove('active');
+      s.classList.add('exit-left');
+      setTimeout(() => s.classList.remove('exit-left'), 350);
+    } else {
+      s.classList.remove('active', 'exit-left');
+    }
+  });
+  state.currentScreen = id.replace('screen-', '');
+}
+
+function showAppShell() {
+  document.getElementById('appHeader').style.display = 'flex';
+  document.getElementById('tabBar').classList.remove('hidden');
+}
+
+function hideAppShell() {
+  document.getElementById('appHeader').style.display = 'none';
+  document.getElementById('tabBar').classList.add('hidden');
+}
+
+// ============================================================
+// SURVEY FLOW
+// ============================================================
+
+function startSurvey() {
+  state.currentQuestion = 0;
+  state.answers = {};
+  renderProgressBar();
+  renderQuestion();
+  showScreen('screen-survey');
+}
+
+function renderProgressBar() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'progress-segment';
+    if (i < state.currentQuestion) seg.classList.add('done');
+    else if (i === state.currentQuestion) seg.classList.add('current');
+    bar.appendChild(seg);
+  }
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[state.currentQuestion];
+  document.getElementById('stepNum').textContent = `QUESTION ${String(state.currentQuestion + 1).padStart(2, '0')} / 07`;
+  document.getElementById('questionText').innerHTML = q.title;
+  document.getElementById('questionHint').textContent = q.hint;
+  renderProgressBar();
+
+  const body = document.getElementById('questionBody');
+  body.innerHTML = '';
+
+  if (q.type === 'single' || q.type === 'multi') {
+    const grid = document.createElement('div');
+    grid.className = 'option-grid';
+    const currentVal = state.answers[q.id];
+
+    q.options.forEach(opt => {
+      const div = document.createElement('div');
+      div.className = `option ${q.type === 'multi' ? 'multi' : ''}`;
+
+      const isSelected = q.type === 'multi'
+        ? (currentVal || []).includes(opt.value)
+        : currentVal === opt.value;
+      if (isSelected) div.classList.add('selected');
+
+      div.innerHTML = `
+        <div class="option-emoji">${opt.emoji}</div>
+        <div class="option-label">${opt.label}</div>
+        <div class="option-check"></div>
+      `;
+
+      div.addEventListener('click', () => {
+        if (q.type === 'multi') {
+          let arr = state.answers[q.id] || [];
+          if (arr.includes(opt.value)) {
+            arr = arr.filter(v => v !== opt.value);
+          } else {
+            if (arr.length >= q.max) return;
+            arr = [...arr, opt.value];
+          }
+          state.answers[q.id] = arr;
+        } else {
+          state.answers[q.id] = opt.value;
+        }
+        renderQuestion();
+        updateNextButton();
+      });
+      grid.appendChild(div);
+    });
+    body.appendChild(grid);
+
+  } else if (q.type === 'slider') {
+    if (state.answers[q.id] === undefined) state.answers[q.id] = q.default;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'slider-wrap';
+    const val = state.answers[q.id];
+    const labelText = q.labels ? q.labels[val] : (q.suffix || '');
+
+    wrap.innerHTML = `
+      <div class="slider-value">${q.suffix ? val : (q.labels ? val : val)}<span style="font-size: 22px; color: var(--text-dim); margin-left: 8px;">${q.suffix || ''}</span></div>
+      <div class="slider-value-label">${q.labels ? q.labels[val] : '주당 업로드 목표'}</div>
+      <input type="range" class="slider-input" min="${q.min}" max="${q.max}" value="${val}" />
+      <div class="slider-scale">
+        <span>${q.labels ? q.labels[q.min] : q.min + (q.suffix || '')}</span>
+        <span>${q.labels ? q.labels[q.max] : q.max + (q.suffix || '')}</span>
+      </div>
+    `;
+    body.appendChild(wrap);
+
+    const input = wrap.querySelector('.slider-input');
+    input.addEventListener('input', e => {
+      state.answers[q.id] = parseInt(e.target.value);
+      renderQuestion();
+      updateNextButton();
+    });
+  }
+
+  updateNextButton();
+  document.getElementById('backBtn').disabled = state.currentQuestion === 0;
+}
+
+function updateNextButton() {
+  const q = QUESTIONS[state.currentQuestion];
+  const val = state.answers[q.id];
+  const nextBtn = document.getElementById('nextBtn');
+  let valid = false;
+
+  if (q.type === 'single') valid = !!val;
+  else if (q.type === 'multi') valid = val && val.length >= 1;
+  else if (q.type === 'slider') valid = val !== undefined;
+
+  nextBtn.disabled = !valid;
+
+  // Last question => "분석 시작"
+  if (state.currentQuestion === QUESTIONS.length - 1) {
+    nextBtn.textContent = '분석 시작 →';
+  } else {
+    nextBtn.textContent = 'NEXT →';
+  }
+}
+
+function nextQuestion() {
+  if (state.currentQuestion < QUESTIONS.length - 1) {
+    state.currentQuestion++;
+    renderQuestion();
+  } else {
+    runAnalysis();
+  }
+}
+
+function prevQuestion() {
+  if (state.currentQuestion > 0) {
+    state.currentQuestion--;
+    renderQuestion();
+  }
+}
+
+// ============================================================
+// LOADING + ANALYSIS
+// ============================================================
+
+function runAnalysis() {
+  showScreen('screen-loading');
+
+  const steps = [
+    '설문 응답 분석 중',
+    '페르소나 매핑 중',
+    '트렌드 데이터 매칭 중',
+    '개인화 추천 생성 중',
+  ];
+
+  let i = 0;
+  const stepEl = document.getElementById('loadingStep');
+  stepEl.textContent = steps[0];
+
+  const interval = setInterval(() => {
+    i++;
+    if (i < steps.length) {
+      stepEl.textContent = steps[i];
+    } else {
+      clearInterval(interval);
+      finishAnalysis();
+    }
+  }, 700);
+}
+
+function finishAnalysis() {
+  state.persona = determinePersona(state.answers);
+  state.filterCategory = state.answers.category;
+  showAppShell();
+  renderDashboard();
+  switchTab('dashboard');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+
+function renderDashboard() {
+  const c = document.getElementById('dashboardContent');
+  const userCategory = state.answers.category || 'beauty';
+  const trends = TRENDS_BY_CATEGORY[state.filterCategory || userCategory] || TRENDS_BY_CATEGORY[userCategory];
+
+  // Filter by platform if selected
+  const filteredTrends = state.filterPlatform === 'all'
+    ? trends
+    : trends.filter(t => t.platform === state.filterPlatform);
+
+  const totalViews = filteredTrends.reduce((sum, t) => {
+    const v = parseFloat(t.views.replace('M', '').replace('K', ''));
+    return sum + (t.views.includes('M') ? v : v / 1000);
+  }, 0);
+
+  // Get user context for chips
+  const platformLabel = PLATFORM_LABELS[state.answers.platform] || '멀티';
+  const categoryLabel = CATEGORY_LABELS[userCategory] || '뷰티';
+  const expLabels = QUESTIONS.find(q => q.id === 'experience').labels;
+  const expLabel = expLabels[state.answers.experience] || '';
+
+  c.innerHTML = `
+    <!-- PERSONA HERO — 사용자에게 "이건 너를 위한 화면이야"를 명확히 -->
+    <div class="persona-hero">
+      <div class="persona-hero-top">
+        <div class="persona-hero-eyebrow">YOUR PERSONA</div>
+        <div class="persona-hero-greeting">06 MAY · LIVE</div>
+      </div>
+      <div class="persona-hero-name">${state.persona.type}</div>
+      <div class="persona-hero-tagline">${state.persona.tagline}</div>
+
+      <div class="persona-hero-divider"></div>
+
+      <div class="persona-hero-context">
+        <span class="context-chip">
+          <span class="context-chip-key">CATEGORY</span>
+          <span class="context-chip-val">${categoryLabel}</span>
+        </span>
+        <span class="context-chip">
+          <span class="context-chip-key">PLATFORM</span>
+          <span class="context-chip-val">${platformLabel}</span>
+        </span>
+        ${expLabel ? `<span class="context-chip">
+          <span class="context-chip-key">CAREER</span>
+          <span class="context-chip-val">${expLabel}</span>
+        </span>` : ''}
+      </div>
+    </div>
+
+    <!-- FEED INTRO — 페르소나 → 피드로 연결 -->
+    <div class="feed-intro">
+      <div class="feed-intro-text">
+        <div class="feed-intro-eyebrow">CURATED FOR YOU</div>
+        <div class="feed-intro-title"><span class="accent">${state.persona.type.replace('THE ', '')}</span>를<br/>위한 오늘의 트렌드</div>
+      </div>
+      <div class="feed-intro-meta">${filteredTrends.length} 건</div>
+    </div>
+
+    <div class="filter-row">
+      ${renderPlatformPill('all', '🔥', '전체')}
+      ${renderPlatformPill('youtube', '▶', 'YouTube Shorts')}
+      ${renderPlatformPill('tiktok', '♪', 'TikTok')}
+      ${renderPlatformPill('instagram', '◎', 'Reels')}
+    </div>
+
+    <div class="chip-row">
+      ${Object.keys(TRENDS_BY_CATEGORY).map(cat => `
+        <button class="chip ${state.filterCategory === cat ? 'active' : ''}" onclick="setFilterCategory('${cat}')">${CATEGORY_LABELS[cat]}</button>
+      `).join('')}
+    </div>
+
+    <div class="stats-strip">
+      <div class="stat">
+        <div class="stat-label">총 조회수</div>
+        <div class="stat-value lime">${totalViews.toFixed(1)}M</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">평균 성장률</div>
+        <div class="stat-value pink">${calcAvgGrowth(filteredTrends)}%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">신규 트렌드</div>
+        <div class="stat-value">${filteredTrends.length * 11}</div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <div class="section-title">RISING NOW</div>
+      <div class="section-subtitle">최근 24시간</div>
+    </div>
+
+    <div class="trend-list">
+      ${filteredTrends.length === 0 ? `
+        <div class="empty-message">
+          <div class="empty-message-emoji">🔍</div>
+          <div class="empty-message-text">선택한 필터에 맞는<br/>트렌드가 없어요</div>
+        </div>
+      ` : filteredTrends.map(t => renderTrendCard(t)).join('')}
+    </div>
+  `;
+
+  // Re-attach platform pill handlers (innerHTML wipes them)
+  document.querySelectorAll('#dashboardContent .platform-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      state.filterPlatform = pill.dataset.platform;
+      renderDashboard();
+    });
+  });
+}
+
+function renderPlatformPill(platform, emoji, label) {
+  const active = state.filterPlatform === platform ? 'active' : '';
+  return `<button class="platform-pill ${active}" data-platform="${platform}"><span class="pill-emoji">${emoji}</span>${label}</button>`;
+}
+
+function setFilterCategory(cat) {
+  state.filterCategory = state.filterCategory === cat ? null : cat;
+  renderDashboard();
+}
+
+function calcAvgGrowth(trends) {
+  if (trends.length === 0) return '0';
+  const total = trends.reduce((sum, t) => {
+    const match = t.growth.match(/(\d+)/);
+    return sum + (match ? parseInt(match[1]) : 0);
+  }, 0);
+  return Math.round(total / trends.length);
+}
+
+function renderTrendCard(t) {
+  const fadeClass = t.growth.includes('↓') ? 'fade' : '';
+  return `
+    <div class="trend-card">
+      <div class="trend-rank ${t.lifecycle === 'peak' ? 'peak' : t.lifecycle === 'fading' ? 'fading' : ''}">#${t.rank}</div>
+      <div class="trend-meta">
+        <span class="platform-badge ${t.platform}">${t.platformLabel}</span>
+        <span class="trend-time">${t.time}</span>
+      </div>
+      <div class="trend-body">
+        <div class="trend-thumb">${t.thumb}</div>
+        <div class="trend-info">
+          <div class="trend-title">${t.title}</div>
+          <div class="trend-creator">${t.creator}</div>
+          <div class="trend-stats">
+            <div>👁 ${t.views}</div>
+            <div>♥ ${t.likes}</div>
+            <div>↗ ${t.shares}</div>
+          </div>
+        </div>
+      </div>
+      <div class="trend-growth">
+        <span class="hashtags">${t.hashtags}</span>
+        <span class="growth-tag ${fadeClass}">${t.growth}</span>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// RECOMMENDATION
+// ============================================================
+
+function renderReco() {
+  const c = document.getElementById('recoContent');
+  const userCategory = state.answers.category || 'beauty';
+  const recos = getRecommendations(userCategory, state.persona);
+  const categoryLabel = CATEGORY_LABELS[userCategory] || '뷰티';
+
+  c.innerHTML = `
+    <div class="reco-header">
+      <div class="reco-eyebrow">● PERSONALIZED · ${categoryLabel}</div>
+      <div class="reco-title">너에게 맞는<br/>오늘의 추천</div>
+    </div>
+
+    <div class="persona-card">
+      <div class="persona-eyebrow">YOUR PERSONA</div>
+      <div class="persona-name">${state.persona.type}</div>
+      <div class="persona-tagline">${state.persona.tagline}</div>
+    </div>
+
+    <div class="reco-prompts">
+      ${recos.map((r, i) => `
+        <div class="reco-prompt-card">
+          <div class="prompt-num">${String(i + 1).padStart(2, '0')} / ${String(recos.length).padStart(2, '0')}</div>
+          <div class="prompt-fit">
+            <div class="fit-bar"><div class="fit-fill" style="width: ${r.fit}%"></div></div>
+            <span class="fit-score">FIT ${r.fit}%</span>
+          </div>
+          <div class="prompt-headline">${r.headline}</div>
+          <div class="prompt-meta">
+            <span class="prompt-meta-tag">${r.hashtag}</span>
+            <span class="prompt-meta-tag">${r.platform}</span>
+            <span class="prompt-meta-tag">${r.state}</span>
+          </div>
+          <div class="prompt-reason">${r.reason}</div>
+          <div class="prompt-cta">
+            <span class="prompt-cta-text">대본 만들기</span>
+            <span class="prompt-arrow">→</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="tbd-note">
+      <div class="tbd-icon">TBD</div>
+      <div class="tbd-text">페르소나 기반 추천 로직과 Fit Score 계산식은 다음 팀 미팅에서 확정합니다. 현재 화면은 가설 데이터.</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// PROFILE
+// ============================================================
+
+function renderProfile() {
+  const c = document.getElementById('profileContent');
+  const a = state.answers;
+
+  const platformLabel = PLATFORM_LABELS[a.platform] || '-';
+  const categoryLabel = CATEGORY_LABELS[a.category] || '-';
+  const expLabels = QUESTIONS.find(q => q.id === 'experience').labels;
+  const goalLabel = QUESTIONS.find(q => q.id === 'goal').options.find(o => o.value === a.goal)?.label || '-';
+  const concernLabel = QUESTIONS.find(q => q.id === 'concern').options.find(o => o.value === a.concern)?.label || '-';
+  const styleOpts = QUESTIONS.find(q => q.id === 'styles').options;
+  const styleLabels = (a.styles || []).map(v => styleOpts.find(o => o.value === v)?.label).filter(Boolean);
+
+  c.innerHTML = `
+    <div class="profile-card" style="background: linear-gradient(135deg, rgba(200, 255, 87, 0.1), rgba(255, 61, 127, 0.06)); position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -40px; right: -40px; width: 120px; height: 120px; background: radial-gradient(circle, rgba(200, 255, 87, 0.2), transparent 70%); border-radius: 50%;"></div>
+      <div class="profile-label" style="position: relative;">YOUR PERSONA</div>
+      <div class="profile-value persona" style="position: relative;">${state.persona.type}</div>
+      <div style="font-size: 12px; color: var(--text); margin-top: 4px; position: relative;">${state.persona.tagline}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">활동 플랫폼</div>
+      <div class="profile-value">${platformLabel}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">카테고리</div>
+      <div class="profile-value">${categoryLabel}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">경력</div>
+      <div class="profile-value">${expLabels[a.experience] || '-'}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">목표</div>
+      <div class="profile-value">${goalLabel}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">콘텐츠 스타일</div>
+      <div class="profile-tags">
+        ${styleLabels.map(l => `<span class="profile-tag">${l}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">가장 큰 고민</div>
+      <div class="profile-value" style="font-size: 14px;">${concernLabel}</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-label">목표 업로드 빈도</div>
+      <div class="profile-value">${a.frequency || '-'} 편 / 주</div>
+    </div>
+
+    <button class="reset-btn" onclick="resetApp()">처음부터 다시 시작</button>
+  `;
+}
+
+function resetApp() {
+  if (!confirm('정말 처음부터 다시 시작하시겠어요?')) return;
+  state = {
+    currentScreen: 'welcome',
+    currentQuestion: 0,
+    answers: {},
+    persona: null,
+    filterPlatform: 'all',
+    filterCategory: null,
+  };
+  hideAppShell();
+  showScreen('screen-welcome');
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+
+  if (tab === 'dashboard') {
+    renderDashboard();
+    showScreen('screen-dashboard');
+    document.getElementById('headerRight').textContent = 'LIVE';
+  } else if (tab === 'reco') {
+    renderReco();
+    showScreen('screen-reco');
+    document.getElementById('headerRight').textContent = 'FOR YOU';
+  } else if (tab === 'profile') {
+    renderProfile();
+    showScreen('screen-profile');
+    document.getElementById('headerRight').textContent = 'PROFILE';
+  }
+}
+</script>
+
+</body>
+</html>

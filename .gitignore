@@ -1,7 +1,7 @@
 # gstack 도구 로컬 메타
 .gstack/
 
-# 시스템 파일
+# 시스템 파일 / macOS
 .DS_Store
 Thumbs.db
 
@@ -10,5 +10,13 @@ Thumbs.db
 .idea/
 *.swp
 
-# 의존성 (예비)
+# 의존성
 node_modules/
+
+# env files
+.env
+.env.local
+.env*.local
+
+# logs
+*.log

@@ -31,7 +31,7 @@ Onboarding          Dashboard         Production
 
 ## Docs
 
-- [SPEC.md](docs/SPEC.md) — 제품 명세서 v6.5
+- [SPEC.md](https://github.com/seu-seo/trendingshorts/blob/main/SPEC.md) — 제품 명세서 v6.5
 - [MANIFEST.md](docs/MANIFEST.md) — 프로젝트 핵심 가치 및 원칙
 - [WHYTREE.md](docs/WHYTREE.md) — Why Tree 분석 결과
 - [PREMORTEM.md](docs/PREMORTEM.md) — 프리모텀 분석 결과

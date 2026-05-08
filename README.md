@@ -45,3 +45,4 @@ Onboarding          Dashboard         Production
 ## Team
 
 KAIST BIZ 699911 Group Project · 규동 · 승연 · 지은 · 경재
+*Last updated: 2026-05-08*

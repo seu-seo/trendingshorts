@@ -25,7 +25,7 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
       ? 'bg-fading text-text'
       : 'bg-accent-lime text-bg';
 
-  const fadeClass = trend.growth.includes('↓');
+  const fadeClass = trend.growth < 0;
 
   const handleClick = () => {
     setSelectedTrendId(trend.id);

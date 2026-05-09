@@ -21,7 +21,7 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
 
-  const fadeClass = trend.growth.includes('↓');
+  const fadeClass = trend.growth < 0;
   const rising = trend.lifecycle === 'rising';
 
   const handleClick = () => {

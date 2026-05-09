@@ -47,14 +47,6 @@ export interface Persona {
   styles: string[];
 }
 
-export interface ProductionPrompt {
-  toneClass: 'tone-emotional' | 'tone-info' | 'tone-trend';
-  toneLabel: string;
-  headline: string;
-  meta: string[];
-  reason: string;
-}
-
 export type Tab = 'dashboard' | 'recommend' | 'production';
 
 export type SortOrder = 'trending' | 'recent';

@@ -935,67 +935,274 @@ function wireInputs() {
 // Script generation
 // ============================================================
 
-// Dynamic demo script builder — uses input data so output actually changes
-// when user edits the form. Not a real LLM call (that needs an API key),
-// but each field appears verbatim in the result so demos feel alive.
+// ============================================================
+// Dramatic demo script builder
+// ----------------------------------------------------------------
+// Output is composed from input data along multiple orthogonal axes:
+//   - category vocabulary (뷰티 / 먹방 / 일상 / 펫 / 테크 / 교육 / 유머 / 운동)
+//   - persona style voice (education / emotion / humor / authenticity / impact / aesthetic)
+//   - active signals (ER bonus / growth burst / discussion ratio / niche follower)
+//   - platform convention (YouTube Shorts / TikTok / Reels)
+//   - follower segment (<1K / 1K-10K / 10K+)
+// Hooks are picked from per-tone pattern banks; bodies are assembled
+// from tone-specific scaffolds; CTAs branch on follower segment ×
+// platform × (discussion-active or not). A deterministic seed derived
+// from inputs picks variants so equal inputs → equal output, different
+// inputs → visibly different output across hook/body/cta.
+// ============================================================
+
+function hashString(s) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h;
+}
+function makePicker(seed) {
+  let s = seed >>> 0 || 1;
+  return (arr, salt = 0) => {
+    s = (Math.imul(s ^ (salt + 0x9e3779b1), 2654435761) ^ (s >>> 13)) >>> 0;
+    return arr[s % arr.length];
+  };
+}
 
 function extractTopic(direction, title) {
   const src = (direction || title || '').trim();
   if (!src) return '이 주제';
-  // strip trailing josa-like fragments to get a cleaner noun phrase
   return src.replace(/[을를이가은는에서의로으로에]+$/g, '').slice(0, 40) || src.slice(0, 40);
 }
 
-function ctaForFollowers(n, topic) {
-  if (n > 0 && n < 1000) return `"${topic}" 궁금한 점 댓글로 남겨주세요. 다음 편에 답해드릴게요!`;
-  if (n < 10000) return `도움 됐다면 저장·공유 한 번씩 부탁드려요. 더 많은 분들께 닿도록.`;
-  return `구독자 분들이 가장 궁금해하는 포인트, 댓글로 알려주세요. 다음 시리즈에 반영합니다.`;
+const CATEGORY_VOCAB = {
+  '뷰티':   { unit: '제품', metric: '발색·지속력', concern: '내 피부톤에 맞을지', peers: '뷰티 크리에이터들', verb: '직접 발라봤' },
+  '먹방':   { unit: '메뉴', metric: '맛·양·가성비', concern: '배달비 빼면 남는 게 있을지', peers: '먹방 채널들', verb: '한 끼에 다 먹어봤' },
+  '일상':   { unit: '루틴', metric: '하루 흐름·텐션', concern: '꾸준히 갈 수 있을지', peers: '브이로거들', verb: '일주일 따라 해봤' },
+  '펫':     { unit: '제품·놀이', metric: '반려동물 반응·교감', concern: '우리 애도 좋아할지', peers: '펫 채널들', verb: '집사가 직접 시켜봤' },
+  '테크':   { unit: '스펙', metric: '성능·전력·체감', concern: '내 워크플로에 맞을지', peers: '테크 리뷰어들', verb: '벤치 돌려봤' },
+  '교육':   { unit: '개념', metric: '이해도·체화 속도', concern: '5분 안에 잡힐지', peers: '교육 채널들', verb: '직접 풀어봤' },
+  '유머':   { unit: '드립', metric: '반응·반전 타이밍', concern: '재탕인지 신선한지', peers: '유머 채널들', verb: '직접 쳐봤' },
+  '운동':   { unit: '동작', metric: '강도·자세 정확도', concern: '무릎·허리에 무리 갈지', peers: '운동 크리에이터들', verb: '4주 따라 해봤' },
+};
+function vocabFor(cat) {
+  return CATEGORY_VOCAB[cat] || { unit: '아이템', metric: '효과·반응', concern: '정말 효과 있을지', peers: '관련 채널들', verb: '직접 해봤' };
 }
 
-function pickStyleFlavor(styles) {
+function styleVoice(styles) {
   const s = styles || [];
-  if (s.includes('education')) return '정확한 기준';
-  if (s.includes('emotion')) return '솔직한 느낌';
-  if (s.includes('humor')) return '웃긴 포인트';
-  if (s.includes('authenticity')) return '있는 그대로의 후기';
-  if (s.includes('impact')) return '핵심 한 방';
-  if (s.includes('aesthetic')) return '보기 좋은 정리';
-  return '경험담';
+  if (s.includes('education'))     return { adjective: '정확한',     filler: '핵심만 짚어서',  closingFeel: '근거 위주' };
+  if (s.includes('emotion'))       return { adjective: '진심이 담긴', filler: '솔직히 말하면',  closingFeel: '감정 그대로' };
+  if (s.includes('humor'))         return { adjective: '웃긴',       filler: '진지 빼고',     closingFeel: '드립 한 스푼' };
+  if (s.includes('authenticity'))  return { adjective: '있는 그대로의', filler: '꾸미지 않고', closingFeel: '날 것 그대로' };
+  if (s.includes('impact'))        return { adjective: '강렬한',     filler: '단도직입적으로', closingFeel: '한 방' };
+  if (s.includes('aesthetic'))     return { adjective: '보기 좋은',  filler: '톤·구도 정리해서', closingFeel: '비주얼 우선' };
+  return { adjective: '솔직한', filler: '있는 그대로', closingFeel: '리얼 후기' };
+}
+
+function platformLine(platform) {
+  if (platform === 'tiktok')    return '15초 안에 끝장 보는 TikTok 호흡';
+  if (platform === 'instagram') return '저장 유도 가능한 Reels 구성';
+  return 'YouTube Shorts 60초 호흡';
+}
+
+function ctaDramatic(opts) {
+  const { followers, topic, platform, ctlActive, growthBurst } = opts;
+  const tail = platform === 'tiktok' ? '듀엣/스티치로 의견 주세요.'
+              : platform === 'instagram' ? '스토리에 공유해주시면 바로 답방 갑니다.'
+              : '댓글에 한 줄만 남겨주세요.';
+  if (followers > 0 && followers < 1000) {
+    if (ctlActive) return `"${topic}" 어떻게 생각하세요? ${tail} 다음 편에서 답글 영상으로 답해드릴게요.`;
+    return `${topic} 처음 보시는 분도 환영! 한 줄 댓글이 가장 큰 힘입니다. ${tail}`;
+  }
+  if (followers < 10000) {
+    if (growthBurst) return `지금 이 주제가 ‘오를 때’예요. 저장해두고 비슷한 상황 만나면 다시 꺼내 보세요. ${tail}`;
+    return `도움 됐다면 저장·공유 한 번씩 부탁드려요. 알고리즘이 비슷한 분들께 닿게 해줍니다. ${tail}`;
+  }
+  if (ctlActive) return `구독자 분들이 가장 궁금해하는 포인트, 한 줄로 적어주세요. 다음 시리즈에 그대로 반영합니다.`;
+  return `이번 주제 더 깊게 다뤘으면 하는 부분 있으면 ${tail} 시즌2 큐에 넣겠습니다.`;
+}
+
+function activeSignalSet(signals) {
+  const set = new Set();
+  for (const s of signals || []) if (s.active) set.add(s.id);
+  return set;
+}
+
+// ----- Hook banks (tone × signal) ------------------------------------
+const HOOK_BANK = {
+  informative: {
+    erBonus: [
+      (v, topic) => `${topic} — 평균 대비 폭발한 이유, 데이터로만 설명합니다.`,
+      (v, topic) => `${v.peers}이 놓친 ${topic} 포인트, 숫자 3개로 압축.`,
+    ],
+    growthBurst: [
+      (v, topic) => `지금 ${topic} 검색량이 튀는 이유, 5초 안에 정리.`,
+      (v, topic) => `${topic}, 24시간 안에 알아둬야 할 핵심 ${v.metric}.`,
+    ],
+    discussion: [
+      (v, topic) => `${topic} 댓글창이 갈라진 이유, 기준부터 다릅니다.`,
+      (v, topic) => `의견 갈리는 ${topic}, 헷갈리는 분들 위해 기준표 만들었어요.`,
+    ],
+    base: [
+      (v, topic) => `${topic} ${v.unit}, 사기 전에 확인할 ${v.metric} 3가지.`,
+      (v, topic) => `${topic} 정확히 알려드립니다 — 5분 컷.`,
+      (v, topic) => `검색해도 안 나오는 ${topic} ${v.metric}, 한 번에 정리.`,
+    ],
+  },
+  story: {
+    erBonus: [
+      (v, topic) => `${topic} 영상 하나 보고 진짜 ${v.verb}어요.`,
+      (v, topic) => `평균 인게이지먼트 두 배 영상 따라 해본 후기, 들어보실래요?`,
+    ],
+    growthBurst: [
+      (v, topic) => `요즘 다들 ${topic} 한다길래 어제 바로 ${v.verb}어요.`,
+      (v, topic) => `${topic} 트렌드, 직접 발 담가본 24시간.`,
+    ],
+    discussion: [
+      (v, topic) => `${topic} 가지고 친구랑 한 시간 다퉜습니다.`,
+      (v, topic) => `${topic} 솔직 후기 — 댓글에서 본 의견과 제 경험이 갈렸어요.`,
+    ],
+    base: [
+      (v, topic) => `사실 저, ${topic} 처음에 별로였거든요.`,
+      (v, topic) => `${topic}, 어제 처음 ${v.verb}는데 좀 달랐어요.`,
+      (v, topic) => `${v.peers} 보고 따라 한 ${topic}, 제 솔직한 후기.`,
+    ],
+  },
+  hooking: {
+    erBonus: [
+      (v, topic) => `${topic}, 평균 두 배 터진 영상 본 적 있나요? 이유 압니다.`,
+      (v, topic) => `이 ${v.unit} 모르고 ${topic} 한다? 손해예요.`,
+    ],
+    growthBurst: [
+      (v, topic) => `${topic}, 지금 안 잡으면 다음 주엔 늦습니다.`,
+      (v, topic) => `24시간 안에 끝나는 ${topic} 윈도우.`,
+    ],
+    discussion: [
+      (v, topic) => `${topic}, 의견 갈리는 진짜 이유 알려드릴게요.`,
+      (v, topic) => `${topic} 댓글 싸움 보다가 결론 났습니다.`,
+    ],
+    base: [
+      (v, topic) => `${topic}, 이거 하나만 알면 됩니다.`,
+      (v, topic) => `사람들이 ${topic} 안 알려주는 이유.`,
+      (v, topic) => `${topic}, 3초 안에 결정되는 거 아세요?`,
+    ],
+  },
+};
+
+// ----- Body builders --------------------------------------------------
+function bodyInformative(ctx) {
+  const { v, topic, voice, t, signals, platform, refTitle } = ctx;
+  const lines = [];
+  lines.push(`참고 영상 "${refTitle}" — 조회수 ${t.viewsTxt} · 좋아요 ${t.likesTxt} · 댓글 ${t.commentsTxt}.`);
+  if (signals.has('er-bonus')) {
+    lines.push(`이 영상의 인게이지먼트는 ${t.cat} 카테고리 평균 대비 ${t.erDeltaTxt}. 즉 일반 패턴이 아닌 바이럴 패턴입니다.`);
+  } else {
+    lines.push(`${t.cat} 카테고리 평균 인게이지먼트와 비슷한 범위 — 변동성보다는 ‘기준선’으로 활용하기 좋습니다.`);
+  }
+  lines.push(`기준 1. ${v.metric} 중 가장 먼저 봐야 할 항목.`);
+  lines.push(`기준 2. ${voice.adjective} 표현으로 짧게 — ${v.concern}을 30초 안에 해소.`);
+  lines.push(`기준 3. 화면 하단 자막에 핵심 수치 고정. ${platformLine(platform)}에 맞춰 컷 빠르게.`);
+  lines.push(`정리: 감정 톤 최소화, ${voice.closingFeel} 위주로 마무리.`);
+  return lines.join('\n');
+}
+function bodyStory(ctx) {
+  const { v, topic, voice, t, signals, persona } = ctx;
+  const lines = [];
+  lines.push(`${voice.filler}, 처음엔 저도 ${topic}에 큰 기대 없었어요.`);
+  lines.push(`그러다 "${t.refTitle}" 영상 — 조회수 ${t.viewsTxt} 찍힌 거 보고 마음 바뀌었습니다.`);
+  if (signals.has('growth')) {
+    lines.push(`24시간 만에 ${t.growthTxt} — 흐름 타고 있을 때 직접 ${v.verb}어요.`);
+  } else {
+    lines.push(`그래서 시간 들여 ${v.verb}어요. 급하게가 아니라, 꼼꼼히.`);
+  }
+  if (signals.has('ctl-ratio')) {
+    lines.push(`댓글 비율이 좋아요 대비 ${t.ctlPct}% — 사람들도 같은 고민 많았다는 거잖아요.`);
+  }
+  lines.push(`결과: ${v.metric} 측면에서 제 기대치보다 살짝 위. ${persona.type} 입장에선 ${voice.closingFeel}이 가장 통했어요.`);
+  return lines.join('\n');
+}
+function bodyHooking(ctx) {
+  const { v, topic, voice, t, signals, persona, platform } = ctx;
+  const lines = [];
+  lines.push(`${topic}, 결론부터.`);
+  if (signals.has('er-bonus')) {
+    lines.push(`평균 대비 ${t.erDeltaTxt} 인게이지먼트가 우연일 거 같으세요? 절대 아니에요.`);
+  } else {
+    lines.push(`평범해 보이는 ${v.unit} 안에, 사람들이 못 보고 지나치는 한 가지가 있습니다.`);
+  }
+  lines.push(`그게 바로 ${v.metric} — 특히 ${voice.adjective} 부분.`);
+  if (signals.has('growth')) {
+    lines.push(`24h ${t.growthTxt} 신호 — emerging 트렌드는 보통 48시간이면 식어요. 지금 안 만들면 늦어요.`);
+  }
+  lines.push(`${persona.segmentLabel} 단계에서 이걸 잡으면, 다음 영상이 알고리즘 타기 훨씬 쉬워집니다.`);
+  lines.push(`${platformLine(platform)}으로 끊어 만들면 끝까지 봅니다. 보장.`);
+  return lines.join('\n');
 }
 
 function buildDemoScripts(inputs, rec) {
   const t = inputs.trend, p = inputs.persona;
   const topic = extractTopic(inputs.direction, t.title);
-  const cat = t.category || '콘텐츠';
-  const personaType = (p.personaType || '크리에이터').trim();
-  const styleFlavor = pickStyleFlavor(p.styles);
+  const refTitle = (t.title || '').slice(0, 32) || topic;
+  const cat = t.category || '';
+  const v = vocabFor(cat);
+  const voice = styleVoice(p.styles);
+
   const erDelta = t.category_avg_engagement > 0
     ? Math.round((t.engagement_rate / t.category_avg_engagement - 1) * 100)
     : 0;
-  const erDeltaTxt = erDelta >= 0 ? `+${erDelta}%` : `${erDelta}%`;
   const growth = +t.growth || 0;
-  const views = (+t.views || 0).toLocaleString();
-  const likes = (+t.likes || 0).toLocaleString();
-  const comments = (+t.comments || 0).toLocaleString();
-  const cta = ctaForFollowers(+p.followerCount || 0, topic);
-  const refTitle = (t.title || '').slice(0, 30) || topic;
+  const ctlPct = t.likes > 0 ? Math.round((t.comments / t.likes) * 100) : 0;
+  const followers = +p.followerCount || 0;
+  const segmentLabel = followers < 1000 ? '1K 미만 (어텐션 확보)'
+                     : followers < 10000 ? '1K-10K (저장·공유 단계)'
+                     : '10K+ (커뮤니티 단계)';
+
+  const tCtx = {
+    cat,
+    refTitle,
+    viewsTxt: (+t.views || 0).toLocaleString(),
+    likesTxt: (+t.likes || 0).toLocaleString(),
+    commentsTxt: (+t.comments || 0).toLocaleString(),
+    erDeltaTxt: erDelta >= 0 ? `+${erDelta}%` : `${erDelta}%`,
+    growthTxt: growth >= 0 ? `+${growth}%` : `${growth}%`,
+    ctlPct,
+  };
+  const persona = {
+    type: (p.personaType || '크리에이터').trim(),
+    segmentLabel,
+  };
+  const signals = activeSignalSet(rec && rec.signals);
+  const platform = t.platform || 'youtube';
+
+  // deterministic variant selection
+  const seed = hashString([
+    topic, cat, platform, t.views|0, t.likes|0, t.comments|0,
+    t.engagement_rate, t.category_avg_engagement, growth,
+    persona.type, followers, (p.styles||[]).slice().sort().join('|'),
+  ].join('::'));
+  const pick = makePicker(seed);
+
+  function chooseHook(tone) {
+    const bank = HOOK_BANK[tone];
+    if (signals.has('er-bonus')) return pick(bank.erBonus, 1)(v, topic);
+    if (signals.has('growth'))   return pick(bank.growthBurst, 2)(v, topic);
+    if (signals.has('ctl-ratio'))return pick(bank.discussion, 3)(v, topic);
+    return pick(bank.base, 4)(v, topic);
+  }
+
+  const ctaCommon = ctaDramatic({
+    followers,
+    topic,
+    platform,
+    ctlActive: signals.has('ctl-ratio'),
+    growthBurst: signals.has('growth') && growth > 30,
+  });
+
+  const ctx = { v, topic, voice, t: tCtx, signals, persona, platform, refTitle };
 
   return {
-    informative: {
-      hook: `${topic} — 핵심 기준 3가지로 정리합니다.`,
-      body: `참고 영상 "${refTitle}"는 조회수 ${views}, 좋아요 ${likes}, 댓글 ${comments}로 ${cat} 카테고리 평균보다 ${erDeltaTxt} 높은 인게이지먼트를 기록했습니다.\n첫째, ${cat} 카테고리에서 가장 자주 언급되는 ${styleFlavor}.\n둘째, ${topic} 관련 데이터·근거 한 줄.\n셋째, 시청자가 바로 적용할 수 있는 체크리스트.\n팩트 위주, 감정 톤 최소화 — ${personaType} 페르소나에 맞춘 설명형 구성입니다.`,
-      cta,
-    },
-    story: {
-      hook: `${topic} 직접 해봤더니 좀 달랐어요.`,
-      body: `처음엔 저도 그냥 ${cat} 트렌드 따라갈까 싶었는데요.\n${refTitle} 보고 ${styleFlavor} 위주로 한번 시도해봤습니다.\n결과: 24시간 사이 ${growth >= 0 ? '+' : ''}${growth}% 정도 반응이 움직였고, 댓글에서 ${comments}건 정도 비슷한 경험담이 올라왔어요.\n${personaType}으로서 느낀 점은 — 화려한 편집보다 ${styleFlavor}이 더 잘 먹힌다는 것.\n${topic}에 관심 있는 분이라면 한 번쯤 시도해볼 만합니다.`,
-      cta,
-    },
-    hooking: {
-      hook: `${topic}, 이거 모르면 손해입니다.`,
-      body: `${cat} 영상이 평균 대비 ${erDeltaTxt} 인게이지먼트를 찍은 이유 — 결론부터 말씀드릴게요.\n핵심은 ${styleFlavor} 하나입니다.\n조회수 ${views}짜리 ${refTitle}이 그걸 증명했어요.\n24h 성장 ${growth >= 0 ? '+' : ''}${growth}% — emerging 신호가 살아있을 때 ${topic} 콘텐츠 만드는 게 정답.\n${personaType} 단계라면 지금이 타이밍입니다. 끝까지 보세요.`,
-      cta,
-    },
+    informative: { hook: chooseHook('informative'), body: bodyInformative(ctx), cta: ctaCommon },
+    story:       { hook: chooseHook('story'),       body: bodyStory(ctx),       cta: ctaCommon },
+    hooking:     { hook: chooseHook('hooking'),     body: bodyHooking(ctx),     cta: ctaCommon },
   };
 }
 

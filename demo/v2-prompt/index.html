@@ -649,7 +649,7 @@
         </div>
         <button class="generate" id="generateBtn">대본 3종 생성</button>
         <div class="alert info" style="margin-top:10px; display:none" id="demoNotice">
-          ℹ️ 데모 모드 — API 키 없이 미리 생성해둔 샘플 대본이 표시됩니다. 실제 생성은 키 입력 후.
+          ℹ️ 데모 모드 — 입력값을 그대로 인용한 템플릿 대본입니다. 실제 LLM 생성은 API 키 입력 후.
         </div>
       </div>
     </section>
@@ -935,23 +935,69 @@ function wireInputs() {
 // Script generation
 // ============================================================
 
-const DEMO_SCRIPTS = {
-  informative: {
-    hook: '3000원 차이로 효과 2배 달라지는 치약, 진짜일까요?',
-    body: '시중 치약 5종을 직접 비교해봤습니다.\n첫째, 1500원대 일반 치약 — 불소 농도 1000ppm.\n둘째, 4500원대 프리미엄 — 불소 1450ppm + 인산칼슘.\n셋째, 가격 대비 가성비 위너는 어디일까요.\n핵심은 "성분표를 직접 읽는 능력"입니다.',
-    cta: '치약 고를 때 꼭 확인하는 성분 있다면 댓글로 공유해주세요!'
-  },
-  story: {
-    hook: '어제 처음 치약 5개 비교해봤는데요',
-    body: '그동안 그냥 익숙한 거 사 쓰던 저였어요.\n근데 막상 비교하니까 가격 차이가 효과 차이는 아니더라구요.\n특히 어린이 치약은 다른 기준으로 봐야 한다는 걸 알았어요.\n부모님이 알려주지 않은 진짜 정보예요.',
-    cta: '어떤 치약 쓰고 계신지 댓글로 알려주세요. 다음 영상에 답해드릴게요.'
-  },
-  hooking: {
-    hook: '이거 모르고 치약 사면 진짜 손해예요',
-    body: '치약 3000원 차이가 무슨 차이일까 — 아세요?\n결론부터: 가격이 아니라 "이 한 줄"이 중요합니다.\n치약 뒷면 성분표 첫째 줄.\n불소 농도 ppm이 1000 이하면 어른 효과 부족.\n어린이는 또 완전 다른 기준 — 영상 끝까지 보세요.',
-    cta: '치약 추천 더 알고 싶은 분 "치약" 댓글 남겨주세요!'
-  }
-};
+// Dynamic demo script builder — uses input data so output actually changes
+// when user edits the form. Not a real LLM call (that needs an API key),
+// but each field appears verbatim in the result so demos feel alive.
+
+function extractTopic(direction, title) {
+  const src = (direction || title || '').trim();
+  if (!src) return '이 주제';
+  // strip trailing josa-like fragments to get a cleaner noun phrase
+  return src.replace(/[을를이가은는에서의로으로에]+$/g, '').slice(0, 40) || src.slice(0, 40);
+}
+
+function ctaForFollowers(n, topic) {
+  if (n > 0 && n < 1000) return `"${topic}" 궁금한 점 댓글로 남겨주세요. 다음 편에 답해드릴게요!`;
+  if (n < 10000) return `도움 됐다면 저장·공유 한 번씩 부탁드려요. 더 많은 분들께 닿도록.`;
+  return `구독자 분들이 가장 궁금해하는 포인트, 댓글로 알려주세요. 다음 시리즈에 반영합니다.`;
+}
+
+function pickStyleFlavor(styles) {
+  const s = styles || [];
+  if (s.includes('education')) return '정확한 기준';
+  if (s.includes('emotion')) return '솔직한 느낌';
+  if (s.includes('humor')) return '웃긴 포인트';
+  if (s.includes('authenticity')) return '있는 그대로의 후기';
+  if (s.includes('impact')) return '핵심 한 방';
+  if (s.includes('aesthetic')) return '보기 좋은 정리';
+  return '경험담';
+}
+
+function buildDemoScripts(inputs, rec) {
+  const t = inputs.trend, p = inputs.persona;
+  const topic = extractTopic(inputs.direction, t.title);
+  const cat = t.category || '콘텐츠';
+  const personaType = (p.personaType || '크리에이터').trim();
+  const styleFlavor = pickStyleFlavor(p.styles);
+  const erDelta = t.category_avg_engagement > 0
+    ? Math.round((t.engagement_rate / t.category_avg_engagement - 1) * 100)
+    : 0;
+  const erDeltaTxt = erDelta >= 0 ? `+${erDelta}%` : `${erDelta}%`;
+  const growth = +t.growth || 0;
+  const views = (+t.views || 0).toLocaleString();
+  const likes = (+t.likes || 0).toLocaleString();
+  const comments = (+t.comments || 0).toLocaleString();
+  const cta = ctaForFollowers(+p.followerCount || 0, topic);
+  const refTitle = (t.title || '').slice(0, 30) || topic;
+
+  return {
+    informative: {
+      hook: `${topic} — 핵심 기준 3가지로 정리합니다.`,
+      body: `참고 영상 "${refTitle}"는 조회수 ${views}, 좋아요 ${likes}, 댓글 ${comments}로 ${cat} 카테고리 평균보다 ${erDeltaTxt} 높은 인게이지먼트를 기록했습니다.\n첫째, ${cat} 카테고리에서 가장 자주 언급되는 ${styleFlavor}.\n둘째, ${topic} 관련 데이터·근거 한 줄.\n셋째, 시청자가 바로 적용할 수 있는 체크리스트.\n팩트 위주, 감정 톤 최소화 — ${personaType} 페르소나에 맞춘 설명형 구성입니다.`,
+      cta,
+    },
+    story: {
+      hook: `${topic} 직접 해봤더니 좀 달랐어요.`,
+      body: `처음엔 저도 그냥 ${cat} 트렌드 따라갈까 싶었는데요.\n${refTitle} 보고 ${styleFlavor} 위주로 한번 시도해봤습니다.\n결과: 24시간 사이 ${growth >= 0 ? '+' : ''}${growth}% 정도 반응이 움직였고, 댓글에서 ${comments}건 정도 비슷한 경험담이 올라왔어요.\n${personaType}으로서 느낀 점은 — 화려한 편집보다 ${styleFlavor}이 더 잘 먹힌다는 것.\n${topic}에 관심 있는 분이라면 한 번쯤 시도해볼 만합니다.`,
+      cta,
+    },
+    hooking: {
+      hook: `${topic}, 이거 모르면 손해입니다.`,
+      body: `${cat} 영상이 평균 대비 ${erDeltaTxt} 인게이지먼트를 찍은 이유 — 결론부터 말씀드릴게요.\n핵심은 ${styleFlavor} 하나입니다.\n조회수 ${views}짜리 ${refTitle}이 그걸 증명했어요.\n24h 성장 ${growth >= 0 ? '+' : ''}${growth}% — emerging 신호가 살아있을 때 ${topic} 콘텐츠 만드는 게 정답.\n${personaType} 단계라면 지금이 타이밍입니다. 끝까지 보세요.`,
+      cta,
+    },
+  };
+}
 
 async function generateScripts() {
   const { inputs, rec } = render();
@@ -974,9 +1020,9 @@ async function generateScripts() {
       // real API call
       scripts = await callAnthropic(inputs, rec, apiKey);
     } else {
-      // demo mode — pre-canned scripts
-      await new Promise(r => setTimeout(r, 800)); // simulate latency
-      scripts = DEMO_SCRIPTS;
+      // demo mode — dynamic scripts built from current inputs
+      await new Promise(r => setTimeout(r, 600)); // simulate latency
+      scripts = buildDemoScripts(inputs, rec);
       demoNotice.style.display = 'block';
     }
 

@@ -23,6 +23,7 @@ interface AppState {
   modalDraft: PersonaDraft;
   setModalDraft: (d: PersonaDraft) => void;
   toggleDraftStyle: (s: string) => void;
+  setDraftBrandPitch: (v: string) => void;
 
   // Modals
   filterModalOpen: boolean;
@@ -50,7 +51,7 @@ export const useStore = create<AppState>((set, get) => ({
   persona: null,
   setPersona: (p) => set({ persona: p }),
 
-  modalDraft: { category: null, styles: [] },
+  modalDraft: { category: null, styles: [], brandPitch: '' },
   setModalDraft: (d) => set({ modalDraft: d }),
   toggleDraftStyle: (s) => {
     const draft = get().modalDraft;
@@ -61,6 +62,7 @@ export const useStore = create<AppState>((set, get) => ({
       : [...draft.styles, s];
     set({ modalDraft: { ...draft, styles } });
   },
+  setDraftBrandPitch: (v) => set({ modalDraft: { ...get().modalDraft, brandPitch: v } }),
 
   filterModalOpen: false,
   personaModalOpen: false,

@@ -1,4 +1,4 @@
-# Shortform Pulse — Web (Sample)
+# Shortform Pulse — Web V2 (Sample)
 
 ver.2 (대시보드 진입형) 데모를 Next.js 14 구조로 변환한 샘플 프로젝트입니다.
 

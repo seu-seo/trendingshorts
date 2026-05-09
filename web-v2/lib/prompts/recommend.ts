@@ -19,21 +19,21 @@ export function recommendTone(
   let scoreStory = 0;
   let scoreHooking = 0;
 
-  // --- 신호 1: 24h 성장률 (growthNum) ---
+  // --- 신호 1: 24h 성장률 (growth) ---
   // emerging 트렌드(>500%) → 후킹형, 안정 구간(0-300%) → 스토리, 음수(fading) → 후킹 + 주의
-  if (trend.growthNum >= 500) {
+  if (trend.growth >= 500) {
     scoreHooking += 25;
-    signals.push(`24h 성장률 +${trend.growthNum}% (바이럴 패턴 — 빠른 어그로 필요)`);
-  } else if (trend.growthNum >= 300) {
+    signals.push(`24h 성장률 +${trend.growth}% (바이럴 패턴 — 빠른 어그로 필요)`);
+  } else if (trend.growth >= 300) {
     scoreHooking += 15;
     scoreInformative += 5;
-    signals.push(`24h 성장률 +${trend.growthNum}% (강한 상승)`);
-  } else if (trend.growthNum > 0) {
+    signals.push(`24h 성장률 +${trend.growth}% (강한 상승)`);
+  } else if (trend.growth > 0) {
     scoreStory += 10;
-    signals.push(`성장률 +${trend.growthNum}% (안정 구간 — 스토리 전개에 유리)`);
-  } else if (trend.growthNum <= 0) {
+    signals.push(`성장률 +${trend.growth}% (안정 구간 — 스토리 전개에 유리)`);
+  } else if (trend.growth <= 0) {
     scoreHooking += 10;
-    signals.push(`성장률 ${trend.growthNum}% (fading — 차별화된 훅 필요)`);
+    signals.push(`성장률 ${trend.growth}% (fading — 차별화된 훅 필요)`);
   }
 
   // --- 신호 2: lifecycle ---

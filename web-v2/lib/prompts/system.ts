@@ -49,7 +49,7 @@ export function buildSystemPrompt(args: {
 - 카테고리: ${category}
 - 플랫폼: ${platform}
 - 메트릭: 조회수 ${trend.views} · 좋아요 ${trend.likes} · 공유 ${trend.shares}
-- 24h 성장률: ${trend.growth} (${trend.growthNum >= 0 ? '+' : ''}${trend.growthNum}%)
+- 24h 성장률: ${trend.growth >= 0 ? '+' : ''}${trend.growth}%
 - 라이프사이클: ${lifecycleHint}
 - 해시태그: ${trend.hashtags}
 - 크리에이터: ${trend.creator}

@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TrendingShorts · 대본 생성 v2 — 데이터 기반 톤 결정</title>
+<meta name="description" content="숏폼 트렌드 분석 기반 AI 대본 생성기. 데이터 신호로 말투를 결정하는 v2 프롬프트 시연." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@400;600;800&family=Pretendard&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+<style>
+  :root {
+    --bg: #0e0d0c;
+    --bg-2: #1a1817;
+    --bg-3: #232120;
+    --line: #2e2b29;
+    --text: #f5f1ea;
+    --text-mute: #8c8680;
+    --text-dim: #5a5651;
+    --accent: #ff6b4a;       /* informative */
+    --accent-2: #c9a76a;      /* story */
+    --accent-3: #5fb4d9;      /* hooky */
+    --signal-on: #b8e0a8;
+    --signal-off: #3a3835;
+    --warn: #f0b942;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.55;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ========= Layout ========= */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+  @media (max-width: 720px) {
+    .page { padding: 20px 16px 60px; }
+  }
+
+  /* ========= Header ========= */
+  header {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Hahmlet', serif;
+    font-weight: 800;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  h1 .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.4em;
+    font-weight: 500;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 12px;
+    letter-spacing: 0.05em;
+  }
+  .lede {
+    color: var(--text-mute);
+    font-size: 15px;
+    max-width: 60ch;
+    margin-bottom: 16px;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .meta-row a { color: var(--text-mute); text-decoration: none; border-bottom: 1px dotted var(--text-dim); }
+  .meta-row a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ========= Grid ========= */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 880px) {
+    .grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+
+  /* ========= Cards ========= */
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 24px;
+  }
+  .card-title {
+    font-family: 'Hahmlet', serif;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .card-sub {
+    color: var(--text-mute);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  /* ========= Form ========= */
+  .field { margin-bottom: 14px; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-mute);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 150ms;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+  input[type="number"] { font-family: 'JetBrains Mono', monospace; }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slider-row input[type="range"] {
+    flex: 1;
+    accent-color: var(--accent);
+  }
+  .slider-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--text-mute);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: 'Pretendard', sans-serif;
+  }
+  .chip:hover { border-color: var(--text-mute); color: var(--text); }
+  .chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+  }
+
+  /* ========= Signals ========= */
+  .signals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .signal {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-3);
+    border-radius: 6px;
+    border-left: 3px solid var(--signal-off);
+    font-size: 13px;
+    transition: all 250ms;
+    opacity: 0.45;
+  }
+  .signal.active {
+    border-left-color: var(--signal-on);
+    opacity: 1;
+    background: rgba(184, 224, 168, 0.04);
+  }
+  .signal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal-off);
+    margin-top: 6px;
+    flex-shrink: 0;
+    transition: background 250ms;
+  }
+  .signal.active .signal-dot {
+    background: var(--signal-on);
+    box-shadow: 0 0 8px rgba(184, 224, 168, 0.5);
+  }
+  .signal-content { flex: 1; }
+  .signal-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+  }
+  .signal-text { color: var(--text); }
+  .signal-effect {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-top: 4px;
+  }
+
+  /* ========= Tone scores ========= */
+  .scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .score-card {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    transition: all 250ms;
+  }
+  .score-card.winner {
+    border-color: currentColor;
+    background: rgba(255, 107, 74, 0.06);
+  }
+  .score-card[data-tone="informative"] { color: var(--accent); }
+  .score-card[data-tone="story"] { color: var(--accent-2); }
+  .score-card[data-tone="hooking"] { color: var(--accent-3); }
+  .score-card .label {
+    font-family: 'Hahmlet', serif;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .score-card .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  .score-card.winner .value { font-weight: 700; }
+  .score-card .winner-badge {
+    display: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+    color: currentColor;
+  }
+  .score-card.winner .winner-badge { display: block; }
+
+  .recommendation-summary {
+    padding: 14px;
+    background: var(--bg-3);
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--text-mute);
+    line-height: 1.6;
+  }
+  .recommendation-summary strong { color: var(--text); }
+
+  /* ========= Generate Button ========= */
+  .generate-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .api-key-toggle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+    margin-bottom: 8px;
+    user-select: none;
+  }
+  .api-key-toggle:hover { color: var(--text-mute); }
+  .api-key-input { display: none; margin-bottom: 12px; }
+  .api-key-input.visible { display: block; }
+  .api-key-input input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .api-key-input small {
+    display: block;
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  button.generate {
+    width: 100%;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-family: 'Hahmlet', serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 150ms;
+  }
+  button.generate:hover { background: #ff8868; }
+  button.generate:disabled {
+    background: var(--line);
+    color: var(--text-dim);
+    cursor: not-allowed;
+  }
+
+  /* ========= Scripts output ========= */
+  .scripts-section {
+    margin-top: 32px;
+    display: none;
+  }
+  .scripts-section.visible { display: block; }
+  .scripts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 880px) {
+    .scripts-grid { grid-template-columns: 1fr; }
+  }
+  .script-card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 250ms;
+  }
+  .script-card.recommended {
+    border-color: var(--text);
+    box-shadow: 0 0 0 1px var(--text);
+  }
+  .script-card[data-tone="informative"].recommended { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .script-card[data-tone="story"].recommended { border-color: var(--accent-2); box-shadow: 0 0 0 1px var(--accent-2); }
+  .script-card[data-tone="hooking"].recommended { border-color: var(--accent-3); box-shadow: 0 0 0 1px var(--accent-3); }
+
+  .script-tone-label {
+    font-family: 'Hahmlet', serif;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .script-tone-label .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg-3);
+    color: var(--text-mute);
+    text-transform: uppercase;
+  }
+  .script-card.recommended .badge {
+    background: currentColor;
+    color: var(--bg);
+  }
+
+  .script-section {
+    margin-bottom: 14px;
+  }
+  .script-section .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .script-section .content {
+    color: var(--text);
+    font-size: 14px;
+    white-space: pre-wrap;
+  }
+  .script-section.hook .content { font-weight: 600; }
+  .script-section.cta .content { color: var(--text-mute); font-style: italic; }
+
+  /* ========= Loading ========= */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-mute);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .loading.visible { display: block; }
+  .loading::after {
+    content: '...';
+    display: inline-block;
+    animation: dots 1.4s steps(4) infinite;
+    width: 1em;
+    text-align: left;
+    overflow: hidden;
+  }
+  @keyframes dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+
+  /* ========= Error/info ========= */
+  .alert {
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .alert.warn { background: rgba(240, 185, 66, 0.08); color: var(--warn); border: 1px solid rgba(240, 185, 66, 0.3); }
+  .alert.info { background: rgba(95, 180, 217, 0.08); color: var(--accent-3); border: 1px solid rgba(95, 180, 217, 0.3); }
+
+  /* ========= Footer ========= */
+  footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  footer a { color: var(--text-mute); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="eyebrow">KAIST IMMS / TrendingShorts · 7조 / Peer Review 5월 16일</div>
+    <h1>대본 생성 프롬프트 v2<span class="tag">DATA-DRIVEN</span></h1>
+    <p class="lede">
+      트렌드 영상 데이터와 크리에이터 페르소나를 분석해 한국 숏폼 컨벤션에 맞는 대본 초안을 생성합니다.
+      v1의 임의 매핑을 6가지 데이터 신호 기반 결정으로 전면 교체했습니다.
+    </p>
+    <div class="meta-row">
+      <span>VERSION 2.0.0</span>
+      <a href="https://github.com/seu-seo/trendingshorts/pull/13" target="_blank" rel="noopener">PR #13 ↗</a>
+      <a href="https://github.com/seu-seo/trendingshorts" target="_blank" rel="noopener">REPO ↗</a>
+      <span style="margin-left:auto">@조경재</span>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ============ STEP 1: INPUT ============ -->
+    <section class="card">
+      <div class="card-title"><span class="card-num">01</span>입력 데이터</div>
+      <div class="card-sub">트렌드 영상과 크리에이터 정보 — 슬라이더 움직이면 우측 톤 추천이 즉시 갱신됩니다.</div>
+
+      <h3 style="font-family:'Hahmlet'; font-size:13px; color:var(--text-mute); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.08em;">트렌드 영상</h3>
+
+      <div class="field">
+        <label>제목</label>
+        <input type="text" id="trendTitle" value="3000원 차이로 효과 2배인 치약 비교" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>카테고리</label>
+          <select id="trendCategory">
+            <option value="뷰티">뷰티</option>
+            <option value="먹방">먹방</option>
+            <option value="일상">일상 브이로그</option>
+            <option value="펫">펫</option>
+            <option value="테크">테크</option>
+            <option value="교육">교육</option>
+            <option value="유머">유머</option>
+            <option value="운동">운동</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>플랫폼</label>
+          <select id="trendPlatform">
+            <option value="youtube">YouTube Shorts</option>
+            <option value="tiktok">TikTok</option>
+            <option value="instagram">Instagram Reels</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>조회수</label>
+          <input type="number" id="trendViews" value="184000" />
+        </div>
+        <div class="field">
+          <label>좋아요</label>
+          <input type="number" id="trendLikes" value="12400" />
+        </div>
+        <div class="field">
+          <label>댓글</label>
+          <input type="number" id="trendComments" value="2100" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>인게이지먼트율 / 카테고리 평균 (%)</label>
+        <div class="slider-row">
+          <input type="range" id="trendER" min="0" max="20" step="0.1" value="7.9" />
+          <span class="slider-value"><span id="trendERVal">7.9</span>%</span>
+        </div>
+        <div class="slider-row" style="margin-top:6px">
+          <input type="range" id="trendCatER" min="0" max="20" step="0.1" value="4.2" />
+          <span class="slider-value">평균 <span id="trendCatERVal">4.2</span>%</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>24시간 성장률 (%)</label>
+        <div class="slider-row">
+          <input type="range" id="trendGrowth" min="-20" max="200" step="1" value="42" />
+          <span class="slider-value">+<span id="trendGrowthVal">42</span>%</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Hahmlet'; font-size:13px; color:var(--text-mute); margin:24px 0 12px; text-transform:uppercase; letter-spacing:0.08em;">크리에이터 페르소나</h3>
+
+      <div class="field-row">
+        <div class="field">
+          <label>페르소나 타입</label>
+          <input type="text" id="personaType" value="THE NICHE KING" />
+        </div>
+        <div class="field">
+          <label>팔로워 수</label>
+          <input type="number" id="personaFollowers" value="3200" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>콘텐츠 스타일 (복수 선택)</label>
+        <div class="chips" id="personaStyles">
+          <div class="chip active" data-style="education">교육</div>
+          <div class="chip" data-style="emotion">감성</div>
+          <div class="chip" data-style="humor">유머</div>
+          <div class="chip active" data-style="authenticity">진정성</div>
+          <div class="chip" data-style="impact">임팩트</div>
+          <div class="chip" data-style="aesthetic">미적</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>콘텐츠 방향 (사용자 입력)</label>
+        <input type="text" id="direction" value="에이카랩스 어린이 치약을 트렌드에 맞춰 소개" />
+      </div>
+    </section>
+
+    <!-- ============ STEP 2: TONE RECOMMENDATION ============ -->
+    <section class="card">
+      <div class="card-title"><span class="card-num">02</span>톤 추천 (실시간)</div>
+      <div class="card-sub">6가지 데이터 신호가 점수에 영향을 줍니다. 임의 매핑이 아니라 입력 값에서 바로 도출.</div>
+
+      <div class="signals" id="signalsList">
+        <!-- populated by JS -->
+      </div>
+
+      <h3 style="font-family:'Hahmlet'; font-size:13px; color:var(--text-mute); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.08em;">톤 점수</h3>
+      <div class="scores" id="scoresGrid">
+        <div class="score-card" data-tone="informative">
+          <div class="label">정보형</div>
+          <div class="value" id="scoreInformative">0</div>
+          <div class="winner-badge">권장</div>
+        </div>
+        <div class="score-card" data-tone="story">
+          <div class="label">스토리형</div>
+          <div class="value" id="scoreStory">0</div>
+          <div class="winner-badge">권장</div>
+        </div>
+        <div class="score-card" data-tone="hooking">
+          <div class="label">후킹형</div>
+          <div class="value" id="scoreHooking">0</div>
+          <div class="winner-badge">권장</div>
+        </div>
+      </div>
+
+      <div class="recommendation-summary" id="recommendationSummary">
+        입력을 시작하면 추천이 표시됩니다.
+      </div>
+
+      <div class="generate-section">
+        <div class="api-key-toggle" id="apiKeyToggle">+ Anthropic API 키 입력 (실제 대본 생성)</div>
+        <div class="api-key-input" id="apiKeyInput">
+          <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+          <small>⚠️ 키는 이 브라우저 세션에만 저장되며 어디로도 전송되지 않습니다 (Anthropic API 제외).</small>
+        </div>
+        <button class="generate" id="generateBtn">대본 3종 생성</button>
+        <div class="alert info" style="margin-top:10px; display:none" id="demoNotice">
+          ℹ️ 데모 모드 — API 키 없이 미리 생성해둔 샘플 대본이 표시됩니다. 실제 생성은 키 입력 후.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ STEP 3: GENERATED SCRIPTS ============ -->
+  <div class="loading" id="loading">생성 중</div>
+
+  <section class="scripts-section" id="scriptsSection">
+    <div class="card-title" style="margin-bottom:16px"><span class="card-num">03</span>생성된 대본 (3톤)</div>
+    <div class="scripts-grid" id="scriptsGrid">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <footer>
+    <div>TrendingShorts · KAIST IMMS AI 기반 비즈니스 진화 7조</div>
+    <div style="margin-top:6px">
+      Prompt version 2.0.0 · 5/16 피어리뷰 시연용
+      · Built with vanilla JS
+      · <a href="https://github.com/seu-seo/trendingshorts/pull/13">PR #13</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// Tone recommendation logic — mirrors web/src/lib/script.ts
+// ============================================================
+
+const SIGNAL_DEFS = [
+  { id: 'er-bonus',  name: 'ER vs CATEGORY AVG' },
+  { id: 'ctl-ratio', name: 'COMMENT/LIKE RATIO' },
+  { id: 'growth',    name: '24H GROWTH' },
+  { id: 'category',  name: 'CATEGORY MATCH' },
+  { id: 'styles',    name: 'PERSONA STYLES' },
+  { id: 'follower',  name: 'FOLLOWER SEGMENT' },
+];
+
+function getInputs() {
+  const styles = [...document.querySelectorAll('#personaStyles .chip.active')]
+    .map(c => c.dataset.style);
+  return {
+    trend: {
+      title: document.getElementById('trendTitle').value,
+      category: document.getElementById('trendCategory').value,
+      platform: document.getElementById('trendPlatform').value,
+      views: +document.getElementById('trendViews').value,
+      likes: +document.getElementById('trendLikes').value,
+      comments: +document.getElementById('trendComments').value,
+      engagement_rate: +document.getElementById('trendER').value,
+      category_avg_engagement: +document.getElementById('trendCatER').value,
+      growth: +document.getElementById('trendGrowth').value,
+    },
+    persona: {
+      personaType: document.getElementById('personaType').value,
+      followerCount: +document.getElementById('personaFollowers').value,
+      styles: styles,
+    },
+    direction: document.getElementById('direction').value,
+  };
+}
+
+function recommendTone(reference, persona) {
+  const signals = [];
+  let scoreInformative = 0, scoreStory = 0, scoreHooking = 0;
+
+  // signal 1: ER vs avg
+  const er = reference.engagement_rate || 0;
+  const avgEr = reference.category_avg_engagement || 0;
+  const erDelta = avgEr > 0 ? er / avgEr - 1 : 0;
+  if (erDelta > 0.3) {
+    scoreHooking += 25;
+    signals.push({
+      id: 'er-bonus', active: true,
+      text: `인게이지먼트가 카테고리 평균 대비 +${Math.round(erDelta * 100)}% (바이럴 패턴)`,
+      effect: 'hooking +25',
+    });
+  } else {
+    signals.push({ id: 'er-bonus', active: false, text: 'ER vs 평균 — 일반 범위', effect: '효과 없음' });
+  }
+
+  // signal 2: comment/like ratio
+  if (reference.likes > 0) {
+    const ctlRatio = reference.comments / reference.likes;
+    if (ctlRatio >= 0.15) {
+      scoreInformative += 20;
+      signals.push({
+        id: 'ctl-ratio', active: true,
+        text: `댓글/좋아요 비율 ${(ctlRatio * 100).toFixed(0)}% (토론·질문 신호)`,
+        effect: 'informative +20',
+      });
+    } else {
+      signals.push({ id: 'ctl-ratio', active: false, text: `댓글/좋아요 비율 ${(ctlRatio*100).toFixed(0)}% — 임계 미만`, effect: '효과 없음' });
+    }
+  }
+
+  // signal 3: growth
+  const growth = reference.growth || 0;
+  if (growth > 30) {
+    scoreHooking += 20;
+    signals.push({
+      id: 'growth', active: true,
+      text: `24h 성장률 +${growth}% (emerging 트렌드 → 빠른 어그로 필요)`,
+      effect: 'hooking +20',
+    });
+  } else if (growth > 0) {
+    scoreStory += 10;
+    signals.push({
+      id: 'growth', active: true,
+      text: `성장률 +${growth}% 안정 구간 (스토리 전개에 유리)`,
+      effect: 'story +10',
+    });
+  } else {
+    signals.push({ id: 'growth', active: false, text: `성장률 ${growth}% — 정체/하락`, effect: '효과 없음' });
+  }
+
+  // signal 4: category
+  const cat = reference.category || '';
+  if (/(테크|교육|뷰티)/.test(cat)) {
+    scoreInformative += 15;
+    signals.push({
+      id: 'category', active: true,
+      text: `카테고리 '${cat}' — 정보형 친화`,
+      effect: 'informative +15',
+    });
+  } else if (/(일상|브이로그|펫|먹방)/.test(cat)) {
+    scoreStory += 15;
+    signals.push({
+      id: 'category', active: true,
+      text: `카테고리 '${cat}' — 스토리형 친화`,
+      effect: 'story +15',
+    });
+  } else {
+    signals.push({ id: 'category', active: false, text: `카테고리 '${cat}' — 중립`, effect: '효과 없음' });
+  }
+
+  // signal 5: styles
+  const styles = persona.styles || [];
+  let stylesEffects = [];
+  if (styles.includes('education')) { scoreInformative += 15; stylesEffects.push('informative +15'); }
+  if (styles.includes('emotion') || styles.includes('authenticity')) { scoreStory += 15; stylesEffects.push('story +15'); }
+  if (styles.includes('humor') || styles.includes('impact')) { scoreHooking += 15; stylesEffects.push('hooking +15'); }
+  if (stylesEffects.length > 0) {
+    signals.push({
+      id: 'styles', active: true,
+      text: `페르소나 스타일: ${styles.join(', ')}`,
+      effect: stylesEffects.join(' · '),
+    });
+  } else {
+    signals.push({ id: 'styles', active: false, text: '페르소나 스타일 미선택', effect: '효과 없음' });
+  }
+
+  // signal 6: follower segment
+  const followers = persona.followerCount || 0;
+  if (followers > 0 && followers < 1000) {
+    scoreHooking += 10;
+    signals.push({
+      id: 'follower', active: true,
+      text: `팔로워 ${followers.toLocaleString()} (어텐션 확보 단계 → 후킹형)`,
+      effect: 'hooking +10',
+    });
+  } else {
+    const segment = followers < 10000 ? '1K-10K (저장·공유 유도 단계)' : '10K+';
+    signals.push({ id: 'follower', active: false, text: `팔로워 ${followers.toLocaleString()} — ${segment}`, effect: '효과 없음' });
+  }
+
+  // decide
+  const scores = { informative: scoreInformative, story: scoreStory, hooking: scoreHooking };
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const [topTone, topScore] = sorted[0];
+  const [, secondScore] = sorted[1];
+  const total = topScore + secondScore + sorted[2][1];
+  const confidence = total > 0
+    ? Math.min(100, Math.max(0, Math.round(((topScore - secondScore) / Math.max(total, 1)) * 100 + 50)))
+    : 50;
+
+  return {
+    tone: topScore > 0 ? topTone : 'hooking',
+    confidence,
+    signals,
+    scores,
+  };
+}
+
+// ============================================================
+// UI rendering
+// ============================================================
+
+const TONE_LABEL_KO = {
+  informative: '정보형',
+  story: '스토리형',
+  hooking: '후킹형',
+};
+
+function render() {
+  const inputs = getInputs();
+  const rec = recommendTone(inputs.trend, inputs.persona);
+
+  // signals
+  const signalsList = document.getElementById('signalsList');
+  // sort signals to match SIGNAL_DEFS order
+  const sortedSignals = SIGNAL_DEFS.map(def => rec.signals.find(s => s.id === def.id) || { id: def.id, active: false, text: '—', effect: '' });
+  signalsList.innerHTML = sortedSignals.map(s => {
+    const def = SIGNAL_DEFS.find(d => d.id === s.id);
+    return `
+      <div class="signal ${s.active ? 'active' : ''}">
+        <div class="signal-dot"></div>
+        <div class="signal-content">
+          <div class="signal-name">${def.name}</div>
+          <div class="signal-text">${escapeHtml(s.text)}</div>
+          <div class="signal-effect">${escapeHtml(s.effect)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // scores
+  document.getElementById('scoreInformative').textContent = rec.scores.informative;
+  document.getElementById('scoreStory').textContent = rec.scores.story;
+  document.getElementById('scoreHooking').textContent = rec.scores.hooking;
+
+  document.querySelectorAll('.score-card').forEach(c => {
+    c.classList.toggle('winner', c.dataset.tone === rec.tone);
+  });
+
+  // summary
+  const summary = document.getElementById('recommendationSummary');
+  const activeSignals = rec.signals.filter(s => s.active).length;
+  summary.innerHTML = `
+    권장 톤: <strong>${TONE_LABEL_KO[rec.tone]}</strong>
+    · 신뢰도 <strong>${rec.confidence}%</strong>
+    · 활성 신호 <strong>${activeSignals}</strong>/6<br/>
+    근거: ${rec.signals.filter(s => s.active).map(s => s.text).join(' / ') || '신호 부족 — 기본 후킹형'}
+  `;
+
+  return { inputs, rec };
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+// Event wiring
+// ============================================================
+
+function wireInputs() {
+  const ids = ['trendTitle','trendCategory','trendPlatform','trendViews','trendLikes','trendComments','trendER','trendCatER','trendGrowth','personaType','personaFollowers','direction'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
+  // slider value displays
+  const sliderMap = { trendER: 'trendERVal', trendCatER: 'trendCatERVal', trendGrowth: 'trendGrowthVal' };
+  Object.entries(sliderMap).forEach(([sliderId, valId]) => {
+    const slider = document.getElementById(sliderId);
+    const val = document.getElementById(valId);
+    slider.addEventListener('input', () => { val.textContent = slider.value; });
+  });
+
+  // chips
+  document.querySelectorAll('#personaStyles .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('active');
+      render();
+    });
+  });
+
+  // api key toggle
+  document.getElementById('apiKeyToggle').addEventListener('click', () => {
+    document.getElementById('apiKeyInput').classList.toggle('visible');
+  });
+
+  // generate button
+  document.getElementById('generateBtn').addEventListener('click', generateScripts);
+}
+
+// ============================================================
+// Script generation
+// ============================================================
+
+const DEMO_SCRIPTS = {
+  informative: {
+    hook: '3000원 차이로 효과 2배 달라지는 치약, 진짜일까요?',
+    body: '시중 치약 5종을 직접 비교해봤습니다.\n첫째, 1500원대 일반 치약 — 불소 농도 1000ppm.\n둘째, 4500원대 프리미엄 — 불소 1450ppm + 인산칼슘.\n셋째, 가격 대비 가성비 위너는 어디일까요.\n핵심은 "성분표를 직접 읽는 능력"입니다.',
+    cta: '치약 고를 때 꼭 확인하는 성분 있다면 댓글로 공유해주세요!'
+  },
+  story: {
+    hook: '어제 처음 치약 5개 비교해봤는데요',
+    body: '그동안 그냥 익숙한 거 사 쓰던 저였어요.\n근데 막상 비교하니까 가격 차이가 효과 차이는 아니더라구요.\n특히 어린이 치약은 다른 기준으로 봐야 한다는 걸 알았어요.\n부모님이 알려주지 않은 진짜 정보예요.',
+    cta: '어떤 치약 쓰고 계신지 댓글로 알려주세요. 다음 영상에 답해드릴게요.'
+  },
+  hooking: {
+    hook: '이거 모르고 치약 사면 진짜 손해예요',
+    body: '치약 3000원 차이가 무슨 차이일까 — 아세요?\n결론부터: 가격이 아니라 "이 한 줄"이 중요합니다.\n치약 뒷면 성분표 첫째 줄.\n불소 농도 ppm이 1000 이하면 어른 효과 부족.\n어린이는 또 완전 다른 기준 — 영상 끝까지 보세요.',
+    cta: '치약 추천 더 알고 싶은 분 "치약" 댓글 남겨주세요!'
+  }
+};
+
+async function generateScripts() {
+  const { inputs, rec } = render();
+  const apiKey = document.getElementById('apiKey').value.trim();
+
+  const btn = document.getElementById('generateBtn');
+  const loading = document.getElementById('loading');
+  const scriptsSection = document.getElementById('scriptsSection');
+  const demoNotice = document.getElementById('demoNotice');
+
+  btn.disabled = true;
+  loading.classList.add('visible');
+  scriptsSection.classList.remove('visible');
+  demoNotice.style.display = 'none';
+
+  try {
+    let scripts;
+
+    if (apiKey && apiKey.startsWith('sk-ant-')) {
+      // real API call
+      scripts = await callAnthropic(inputs, rec, apiKey);
+    } else {
+      // demo mode — pre-canned scripts
+      await new Promise(r => setTimeout(r, 800)); // simulate latency
+      scripts = DEMO_SCRIPTS;
+      demoNotice.style.display = 'block';
+    }
+
+    renderScripts(scripts, rec.tone);
+    scriptsSection.classList.add('visible');
+    setTimeout(() => scriptsSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+  } catch (e) {
+    alert('대본 생성 실패: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('visible');
+  }
+}
+
+function renderScripts(scripts, recommendedTone) {
+  const grid = document.getElementById('scriptsGrid');
+  const order = ['informative', 'story', 'hooking'];
+  // put recommended first
+  order.sort((a, b) => (a === recommendedTone ? -1 : (b === recommendedTone ? 1 : 0)));
+
+  grid.innerHTML = order.map(tone => {
+    const s = scripts[tone];
+    if (!s) return '';
+    const isRec = tone === recommendedTone;
+    return `
+      <div class="script-card ${isRec ? 'recommended' : ''}" data-tone="${tone}">
+        <div class="script-tone-label">
+          ${TONE_LABEL_KO[tone]}
+          ${isRec ? '<span class="badge">권장</span>' : '<span class="badge">대안</span>'}
+        </div>
+        <div class="script-section hook">
+          <div class="label">HOOK · 첫 3초</div>
+          <div class="content">${escapeHtml(s.hook)}</div>
+        </div>
+        <div class="script-section">
+          <div class="label">BODY · 본문</div>
+          <div class="content">${escapeHtml(s.body)}</div>
+        </div>
+        <div class="script-section cta">
+          <div class="label">CTA · 콜 투 액션</div>
+          <div class="content">${escapeHtml(s.cta)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function callAnthropic(inputs, rec, apiKey) {
+  // build system prompt — mirrors backend
+  const systemPrompt = buildSystemPrompt(inputs, rec);
+  const userPrompt = '위 컨텍스트를 바탕으로 informative / story / hooking 3가지 톤 대본을 JSON 스키마에 맞춰 한 번에 생성하세요.';
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 2400,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`API ${res.status}: ${errText.slice(0, 200)}`);
+  }
+
+  const data = await res.json();
+  const text = data.content?.[0]?.text || '';
+  return parseScripts(text);
+}
+
+function parseScripts(raw) {
+  let cleaned = raw.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+  const start = cleaned.indexOf('{');
+  if (start < 0) throw new Error('응답에서 JSON을 찾을 수 없습니다');
+  const parsed = JSON.parse(cleaned.slice(start));
+  const result = {};
+  for (const tone of ['informative', 'story', 'hooking']) {
+    const v = parsed[tone];
+    if (!v) throw new Error(`톤 '${tone}' 누락`);
+    const body = Array.isArray(v.body) ? v.body.join('\n') : v.body;
+    result[tone] = { hook: v.hook, body, cta: v.cta };
+  }
+  return result;
+}
+
+function buildSystemPrompt(inputs, rec) {
+  const t = inputs.trend, p = inputs.persona;
+  const erDelta = t.category_avg_engagement > 0
+    ? `${((t.engagement_rate / t.category_avg_engagement - 1) * 100).toFixed(0)}%`
+    : '정보 없음';
+  const followerSeg = p.followerCount < 1000 ? '1K 미만' : p.followerCount < 10000 ? '1K-10K' : '10K+';
+
+  return `당신은 한국 숏폼 콘텐츠 전략가입니다. YouTube Shorts(주력), Instagram Reels, TikTok 알고리즘과 한국 크리에이터 이코노미에 전문성이 있습니다.
+
+[작업 컨텍스트]
+- 대상: 팔로워 1만 미만 emerging creator
+- 주력 플랫폼: YouTube Shorts (60초 이내), 한국어 콘텐츠
+
+[레퍼런스 트렌딩 영상]
+- 제목: ${t.title}
+- 카테고리: ${t.category}
+- 메트릭: 조회수 ${t.views.toLocaleString()} · 좋아요 ${t.likes.toLocaleString()} · 댓글 ${t.comments.toLocaleString()}
+- 인게이지먼트: ${t.engagement_rate.toFixed(1)}% (카테고리 평균 ${t.category_avg_engagement.toFixed(1)}% 대비 ${erDelta})
+- 24h 성장률: +${t.growth}%
+
+[크리에이터 페르소나]
+- 타입: ${p.personaType}
+- 콘텐츠 스타일: ${(p.styles || []).join(', ') || '(미지정)'}
+- 팔로워 구간: ${followerSeg}
+
+[콘텐츠 방향]
+${inputs.direction}
+
+[프리컴퓨트된 톤 추천]
+권장 톤: ${rec.tone} (confidence ${rec.confidence})
+근거: ${rec.signals.filter(s => s.active).map(s => s.text).join(' / ')}
+
+[훅 규칙]
+- 첫 문장 13음절 이하 권장 (최대 16)
+- 정보형: 숫자·기준 제시 / 스토리형: 1인칭 시작 / 후킹형: 의문/충격
+
+[CTA 규칙]
+- 1K 미만: 댓글 유도 / 1K-10K: 저장·공유 유도
+
+[출력] JSON만:
+{
+  "informative": { "hook": "...", "body": "...", "cta": "..." },
+  "story":       { "hook": "...", "body": "...", "cta": "..." },
+  "hooking":     { "hook": "...", "body": "...", "cta": "..." }
+}
+
+본문은 각 300~400자, 한국어, JSON 외 텍스트 금지.`;
+}
+
+// ============================================================
+// Init
+// ============================================================
+wireInputs();
+render();
+</script>
+
+</body>
+</html>

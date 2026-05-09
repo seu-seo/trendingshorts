@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-darker: #050507;
+  --bg: #0A0A0B;
+  --surface-1: #111114;
+  --surface-2: #18181C;
+  --surface-3: #25252B;
+  --border: #2A2A30;
+  --border-bright: #3A3A42;
+  --text: #F2F0EB;
+  --text-dim: #8A8A92;
+  --text-faint: #5A5A62;
+  --accent-lime: #C8FF57;
+  --accent-pink: #FF3D7F;
+  --accent-blue: #57C8FF;
+  --accent-orange: #FF8657;
+  --accent-purple: #C857FF;
+  --rising: #C8FF57;
+  --peak: #FFD700;
+  --fading: #6A6A72;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: #000;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Hide scrollbar but keep scrollable */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Animation utilities */
+.animate-pulse-dot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}

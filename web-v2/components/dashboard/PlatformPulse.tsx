@@ -31,7 +31,7 @@ export default function PlatformPulse() {
   const topPerPlatform = PLATFORMS.map((p) => {
     const top = ALL_TRENDS
       .filter((t) => t.platform === p.key)
-      .sort((a, b) => b.growthNum - a.growthNum)[0];
+      .sort((a, b) => b.growth - a.growth)[0];
     return { ...p, top };
   });
 

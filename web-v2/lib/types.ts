@@ -15,12 +15,14 @@ export interface Trend {
   thumb: string;
   title: string;
   creator: string;
-  views: string;
-  likes: string;
-  shares: string;
+  views: number;
+  likes: number;
+  comments: number;
+  shares: number;
   hashtags: string;
-  growth: string;
-  growthNum: number;
+  growth: number;
+  duration: string;
+  videoUrl?: string;
 }
 
 export interface CategoryOption {

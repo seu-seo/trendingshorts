@@ -22,7 +22,7 @@ export default function RecommendPage() {
     if (!persona) return [];
     return [...ALL_TRENDS]
       .filter((t) => t.category === persona.category)
-      .sort((a, b) => b.growthNum - a.growthNum)
+      .sort((a, b) => b.growth - a.growth)
       .slice(0, 3);
   }, [persona]);
 

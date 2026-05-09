@@ -15,7 +15,7 @@ const CAT_EMOJIS: Record<Category, string> = {
 function getIntensity(cat: Category, platform: Platform): number {
   const matching = ALL_TRENDS.filter((t) => t.category === cat && t.platform === platform);
   if (matching.length === 0) return 0;
-  return matching.reduce((sum, t) => sum + Math.max(0, t.growthNum), 0) / matching.length;
+  return matching.reduce((sum, t) => sum + Math.max(0, t.growth), 0) / matching.length;
 }
 
 export default function Heatmap() {

@@ -40,7 +40,7 @@ export default function DashboardPage() {
       );
     }
 
-    return [...result].sort((a, b) => b.growthNum - a.growthNum);
+    return [...result].sort((a, b) => b.growth - a.growth);
   }, [filterPlatform, filterCategory, searchQuery]);
 
   const featured = filtered[0];

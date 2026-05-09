@@ -1,22 +1,27 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
 import { ALL_TRENDS } from '@/lib/data/trends';
-import { PRODUCTION_PROMPTS } from '@/lib/data/prompts';
+import { buildPrompts } from '@/lib/recommend';
 import SelectedTrendBanner from '@/components/production/SelectedTrendBanner';
 import PromptCard from '@/components/production/PromptCard';
 
 export default function ProductionPage() {
   const setTab = useStore((s) => s.setTab);
   const selectedTrendId = useStore((s) => s.selectedTrendId);
+  const persona = useStore((s) => s.persona);
 
   useEffect(() => {
     setTab('production');
   }, [setTab]);
 
   const trend = selectedTrendId ? ALL_TRENDS.find((t) => t.id === selectedTrendId) : null;
+  const prompts = useMemo(
+    () => (trend ? buildPrompts(trend, persona) : []),
+    [trend, persona]
+  );
 
   // No trend selected — empty state
   if (!trend) {
@@ -85,8 +90,8 @@ export default function ProductionPage() {
       </div>
 
       <div className="px-6 flex flex-col gap-3.5">
-        {PRODUCTION_PROMPTS.map((p, i) => (
-          <PromptCard key={i} prompt={p} index={i + 1} total={PRODUCTION_PROMPTS.length} />
+        {prompts.map((p, i) => (
+          <PromptCard key={p.toneClass} prompt={p} index={i + 1} total={prompts.length} />
         ))}
       </div>
 

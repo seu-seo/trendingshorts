@@ -29,6 +29,15 @@ npm run build
 npm run start
 ```
 
+## Deploy (Vercel)
+
+`vercel.json` 포함 — Seoul 리전(icn1) + `/api/generate` 함수 maxDuration 60s.
+
+1. https://vercel.com/new → `seu-seo/trendingshorts` import
+2. **Root Directory = `web-v2`** (필수)
+3. Environment Variables: `ANTHROPIC_API_KEY` 추가 (없으면 mock fallback)
+4. Deploy
+
 ## Structure
 
 ```

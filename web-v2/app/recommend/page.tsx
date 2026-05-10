@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
-import { ALL_TRENDS } from '@/lib/data/trends';
 import { CATEGORY_LABELS } from '@/lib/data/categories';
 import PersonaSetupCard from '@/components/recommend/PersonaSetupCard';
 import PersonaModal from '@/components/recommend/PersonaModal';
@@ -10,6 +9,7 @@ import RecoTrendCard from '@/components/recommend/RecoTrendCard';
 
 export default function RecommendPage() {
   const setTab = useStore((s) => s.setTab);
+  const trends = useStore((s) => s.trends);
   const persona = useStore((s) => s.persona);
   const setPersonaModalOpen = useStore((s) => s.setPersonaModalOpen);
   const setModalDraft = useStore((s) => s.setModalDraft);
@@ -20,11 +20,11 @@ export default function RecommendPage() {
 
   const recos = useMemo(() => {
     if (!persona) return [];
-    return [...ALL_TRENDS]
+    return [...trends]
       .filter((t) => t.category === persona.category)
       .sort((a, b) => b.growth - a.growth)
       .slice(0, 3);
-  }, [persona]);
+  }, [trends, persona]);
 
   const openEdit = () => {
     if (persona) {

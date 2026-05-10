@@ -1,9 +1,8 @@
 'use client';
 
-import { ALL_TRENDS } from '@/lib/data/trends';
 import { CATEGORY_LABELS } from '@/lib/data/categories';
 import { useStore } from '@/lib/store';
-import type { Category, Platform } from '@/lib/types';
+import type { Category, Platform, Trend } from '@/lib/types';
 
 const CATS: Category[] = ['food', 'beauty', 'dance', 'lifestyle', 'gaming', 'pets'];
 const PLATFORMS: Platform[] = ['youtube', 'tiktok', 'instagram'];
@@ -12,18 +11,19 @@ const CAT_EMOJIS: Record<Category, string> = {
   food: '🍔', beauty: '💄', dance: '💃', lifestyle: '📹', gaming: '🎮', pets: '🐶',
 };
 
-function getIntensity(cat: Category, platform: Platform): number {
-  const matching = ALL_TRENDS.filter((t) => t.category === cat && t.platform === platform);
+function getIntensity(trends: Trend[], cat: Category, platform: Platform): number {
+  const matching = trends.filter((t) => t.category === cat && t.platform === platform);
   if (matching.length === 0) return 0;
   return matching.reduce((sum, t) => sum + Math.max(0, t.growth), 0) / matching.length;
 }
 
 export default function Heatmap() {
+  const trends = useStore((s) => s.trends);
   const setFilterCategory = useStore((s) => s.setFilterCategory);
   const setFilterPlatform = useStore((s) => s.setFilterPlatform);
 
   const allIntensities: number[] = [];
-  CATS.forEach((c) => PLATFORMS.forEach((p) => allIntensities.push(getIntensity(c, p))));
+  CATS.forEach((c) => PLATFORMS.forEach((p) => allIntensities.push(getIntensity(trends, c, p))));
   const maxIntensity = Math.max(...allIntensities);
 
   const intensityClass = (value: number) => {
@@ -95,7 +95,7 @@ export default function Heatmap() {
                 <span>{CATEGORY_LABELS[cat]}</span>
               </div>
               {PLATFORMS.map((p) => {
-                const intensity = getIntensity(cat, p);
+                const intensity = getIntensity(trends, cat, p);
                 const lvl = intensityClass(intensity);
                 return (
                   <div key={p} className="py-1.5 px-1 flex items-center justify-center">

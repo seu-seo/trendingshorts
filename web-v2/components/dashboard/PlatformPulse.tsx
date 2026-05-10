@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ALL_TRENDS } from '@/lib/data/trends';
 import { useStore } from '@/lib/store';
 import type { Platform } from '@/lib/types';
 
@@ -25,11 +24,12 @@ const PLATFORM_TEXT_COLORS: Record<Platform, string> = {
 
 export default function PlatformPulse() {
   const router = useRouter();
+  const trends = useStore((s) => s.trends);
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
 
   const topPerPlatform = PLATFORMS.map((p) => {
-    const top = ALL_TRENDS
+    const top = trends
       .filter((t) => t.platform === p.key)
       .sort((a, b) => b.growth - a.growth)[0];
     return { ...p, top };
@@ -93,7 +93,7 @@ export default function PlatformPulse() {
               {top.title}
             </div>
             <div className="font-mono text-[11px] font-bold text-accent-lime mt-auto">
-              {top.growth}
+              {top.growth >= 0 ? '+' : ''}{top.growth}%
             </div>
           </button>
         ))}

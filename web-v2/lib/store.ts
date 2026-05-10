@@ -1,10 +1,15 @@
 import { create } from 'zustand';
-import type { PlatformFilter, Category, Persona, PersonaDraft, Tab } from './types';
+import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab } from './types';
+import { ALL_TRENDS } from './data/trends';
 
 interface AppState {
   // Tab
   currentTab: Tab;
   setTab: (tab: Tab) => void;
+
+  // Live trends (seeded with mock, replaced by API fetch)
+  trends: Trend[];
+  setTrends: (t: Trend[]) => void;
 
   // Dashboard filters
   filterPlatform: PlatformFilter;
@@ -38,6 +43,9 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   currentTab: 'dashboard',
   setTab: (tab) => set({ currentTab: tab }),
+
+  trends: ALL_TRENDS,
+  setTrends: (t) => set({ trends: t }),
 
   filterPlatform: 'all',
   filterCategory: null,

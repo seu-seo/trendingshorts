@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
-import { ALL_TRENDS } from '@/lib/data/trends';
 import PlatformPulse from '@/components/dashboard/PlatformPulse';
 import Heatmap from '@/components/dashboard/Heatmap';
 import SearchBar from '@/components/dashboard/SearchBar';
@@ -13,6 +12,8 @@ import TrendRow from '@/components/dashboard/TrendRow';
 
 export default function DashboardPage() {
   const setTab = useStore((s) => s.setTab);
+  const trends = useStore((s) => s.trends);
+  const setTrends = useStore((s) => s.setTrends);
   const filterPlatform = useStore((s) => s.filterPlatform);
   const filterCategory = useStore((s) => s.filterCategory);
   const searchQuery = useStore((s) => s.searchQuery);
@@ -21,8 +22,15 @@ export default function DashboardPage() {
     setTab('dashboard');
   }, [setTab]);
 
+  useEffect(() => {
+    fetch('/api/trends')
+      .then((r) => r.json())
+      .then((json) => { if (json.data?.length) setTrends(json.data); })
+      .catch(() => {});
+  }, [setTrends]);
+
   const filtered = useMemo(() => {
-    let result = ALL_TRENDS;
+    let result = trends;
 
     if (filterPlatform !== 'all') {
       result = result.filter((t) => t.platform === filterPlatform);
@@ -41,7 +49,7 @@ export default function DashboardPage() {
     }
 
     return [...result].sort((a, b) => b.growth - a.growth);
-  }, [filterPlatform, filterCategory, searchQuery]);
+  }, [trends, filterPlatform, filterCategory, searchQuery]);
 
   const featured = filtered[0];
   const rest = filtered.slice(1);

@@ -26,10 +26,22 @@ export default function DashboardPage() {
   }, [setTab]);
 
   useEffect(() => {
-    fetch('/api/trends')
-      .then((r) => r.json())
-      .then((json) => { if (json.data?.length) setTrends(json.data); })
-      .catch(() => {});
+    // YouTube 먼저 빠르게 로드, TikTok·Instagram 이후 순차 추가
+    const platforms = ['youtube', 'tiktok', 'instagram'] as const;
+    let accumulated: typeof trends = [];
+
+    (async () => {
+      for (const platform of platforms) {
+        try {
+          const res = await fetch(`/api/trends?platform=${platform}`);
+          const json = await res.json();
+          if (json.data?.length) {
+            accumulated = [...accumulated, ...json.data];
+            setTrends([...accumulated]);
+          }
+        } catch {}
+      }
+    })();
   }, [setTrends]);
 
   const filtered = useMemo(() => {

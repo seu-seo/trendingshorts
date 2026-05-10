@@ -5,6 +5,9 @@
   "functions": {
     "app/api/generate/route.ts": {
       "maxDuration": 60
+    },
+    "app/api/trends/route.ts": {
+      "maxDuration": 60
     }
   }
 }

@@ -57,7 +57,7 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
             {PLATFORM_SHORT[trend.platform]}
           </span>
           <span>·</span>
-          <span>{trend.views}</span>
+          <span>{trend.views.toLocaleString()}</span>
           <span>·</span>
           <span>{trend.time}</span>
         </div>

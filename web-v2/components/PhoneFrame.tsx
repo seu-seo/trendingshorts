@@ -1,6 +1,5 @@
 'use client';
 
-import StatusBar from './StatusBar';
 import AppHeader from './AppHeader';
 import TabBar from './TabBar';
 
@@ -26,7 +25,6 @@ export default function PhoneFrame({ children }: { children: React.ReactNode }) 
           `,
         }}
       >
-        <StatusBar />
         <AppHeader />
         <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin pb-24">
           {children}

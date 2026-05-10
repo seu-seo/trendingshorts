@@ -75,9 +75,9 @@ export default function FeaturedCard({ trend }: { trend: Trend }) {
             {trend.creator} · {trend.time}
           </div>
           <div className="flex gap-4 pt-3 border-t border-border text-xs text-text-dim">
-            <div className="flex items-center gap-1">👁 {trend.views}</div>
-            <div className="flex items-center gap-1">♥ {trend.likes}</div>
-            <div className="flex items-center gap-1">↗ {trend.shares}</div>
+            <div className="flex items-center gap-1">👁 {trend.views.toLocaleString()}</div>
+            <div className="flex items-center gap-1">♥ {trend.likes.toLocaleString()}</div>
+            <div className="flex items-center gap-1">↗ {trend.shares.toLocaleString()}</div>
           </div>
         </div>
       </button>

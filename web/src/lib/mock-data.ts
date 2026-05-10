@@ -1,23 +1,5 @@
-export type Platform = "youtube" | "tiktok" | "instagram";
-
-export interface TrendItem {
-  id: number;
-  platform: Platform;
-  title: string;
-  creator: string;
-  views: number;
-  likes: number;
-  comments: number;
-  shares: number;
-  category: string;
-  subcategory?: string;
-  growth: number;
-  duration: string;
-  thumbnail: string;
-  trending_since: string;
-  tags: string[];
-  videoUrl?: string;
-}
+import type { Platform, TrendItem } from "@/lib/types";
+export type { Platform, TrendItem };
 
 export interface PlatformInfo {
   label: string;

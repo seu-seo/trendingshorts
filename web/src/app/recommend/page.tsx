@@ -2,26 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { loadPersona, Persona } from "@/lib/persona";
+import { loadPersona } from "@/lib/persona";
+import type { PersonaInput } from "@/lib/types";
 import { TrendItem, formatNumber } from "@/lib/mock-data";
 import BottomNav from "@/components/BottomNav";
 
-const GOAL_LABEL: Record<Persona["goal"], string> = {
-  growth: "팔로워 성장",
-  monetization: "수익화",
-  hobby: "취미·즐거움",
+// TODO (feature/recommend): 이 파일 전체를 3단계 파이프라인으로 교체 예정
+
+const GOAL_LABEL: Record<PersonaInput["goal"], string> = {
+  growth:    "팔로워 성장",
+  monetize:  "수익화",
+  brand:     "브랜드 인지도",
+  community: "팬덤/커뮤니티",
 };
 
-const PLATFORM_LABEL: Record<Persona["platform"], string> = {
-  youtube: "YouTube Shorts",
-  tiktok: "TikTok",
+const PLATFORM_LABEL: Record<PersonaInput["platform"], string> = {
+  youtube:   "YouTube Shorts",
+  tiktok:    "TikTok",
   instagram: "Instagram Reels",
-  all: "전 플랫폼",
+  multi:     "전 플랫폼",
 };
 
-function makePrompts(item: TrendItem, goal: Persona["goal"]): string[] {
+function makePrompts(item: TrendItem, goal: PersonaInput["goal"]): string[] {
   const base = `"${item.title.slice(0, 30)}"`;
-  const goalLine = goal === "growth" ? "팔로워가 공유하고 싶어지는" : goal === "monetization" ? "클릭·전환을 유도하는" : "내가 즐기면서 만드는";
+  const goalLine = goal === "growth" ? "팔로워가 공유하고 싶어지는" : goal === "monetize" ? "클릭·전환을 유도하는" : "내가 즐기면서 만드는";
   return [
     `[HOOK] ${base} 트렌드를 활용해 처음 3초 안에 시선을 잡는 오프닝 만들기`,
     `[BODY] ${goalLine} 관점에서 ${item.category} 콘텐츠 구성하기`,
@@ -31,21 +35,22 @@ function makePrompts(item: TrendItem, goal: Persona["goal"]): string[] {
 
 export default function RecommendPage() {
   const router = useRouter();
-  const [persona, setPersona] = useState<Persona | null>(null);
+  const [persona, setPersona] = useState<PersonaInput | null>(null);
   const [picks, setPicks] = useState<TrendItem[]>([]);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const p = loadPersona();
-    if (!p) { router.push("/onboarding"); return; }
+    const stored = loadPersona();
+    if (!stored) { router.push("/onboarding"); return; }
+    const p = stored.input;
     setPersona(p);
 
-    fetch(`/api/trends?platform=${p.platform === "all" ? "all" : p.platform}`)
+    fetch(`/api/trends?platform=${p.platform === "multi" ? "all" : p.platform}`)
       .then(r => r.json())
       .then(({ data }: { data: TrendItem[] }) => {
         const matched = data
-          .filter(item => p.categories.some(cat => item.category === cat))
+          .filter(item => item.category === p.category)
           .sort((a, b) => b.views - a.views)
           .slice(0, 3);
         setPicks(matched.length > 0 ? matched : data.slice(0, 3));
@@ -67,7 +72,7 @@ export default function RecommendPage() {
       <div style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", padding: "28px 20px 24px", color: "#fff" }}>
         <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 4 }}>나의 트렌드 추천</div>
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>
-          {PLATFORM_LABEL[persona.platform]} · {persona.categories.join(", ")}
+          {PLATFORM_LABEL[persona.platform]} · {persona.category}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <span style={{ background: "rgba(255,255,255,0.2)", borderRadius: 12, padding: "4px 10px", fontSize: 12 }}>

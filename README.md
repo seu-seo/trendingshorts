@@ -1,76 +1,49 @@
 # Shortform Pulse
 
-**팔로워 1만 명 미만의 초기 크리에이터에게 "오늘 뭘 찍을지"를 알려주는 도구.**
+팔로워 1만 명 미만 초기 크리에이터를 위한 숏폼 트렌드 가이드.
 
-기존 도구(VidIQ, TubeBuddy 등)가 *"무엇이 인기인가"* 까지만 보여주는 것과 달리, Shortform Pulse는 *"그래서 너는 뭘 만들어야 하는가"* 까지 워크플로우를 확장합니다.
+## What
 
----
+YouTube Shorts · TikTok · Instagram Reels의 트렌드를 한 곳에서 비교하고, 자기 채널에 맞는 트렌드를 발견해, AI 대본 초안까지 받아볼 수 있는 도구입니다. 기존 도구가 "무엇이 인기인가" 까지만 보여주는 것과 달리, 본 제품은 "그래서 너는 뭘 만들어야 하는가" 까지 워크플로우를 확장합니다.
 
-## 왜 이 제품이 필요한가
+## Why
 
-플랫폼의 개인화 알고리즘은 소비자에게는 최적화되어 있지만, 크리에이터에게는 정보 비대칭을 만듭니다.
+소비자 모드에서 크리에이터로 전환하는 시점에 구조적 정보 격차가 발생합니다. 개인화 알고리즘은 본인의 소비 패턴만 반영할 뿐, 대중의 집계된 행동을 보여주지 않기 때문입니다.
+
+자체 데이터 인프라를 갖춘 기성 크리에이터(10만+)는 자체 해결 가능하지만, **팔로워 1만 명 미만의 초기 크리에이터**는 이 격차를 해소할 수단이 없습니다. 본 제품은 이들을 대상으로 합니다.
+
+## How
 
 ```
-소비자 모드                       크리에이터 모드
-─────────────                    ────────────────
-개인 선호 콘텐츠                   대중 선호 콘텐츠
-      ↓                                  ↓
-알고리즘이 노출                     알고리즘이 노출 안 함
-      ↓                                  ↓
-최적화된 노출                       정보 비대칭 발생
+Onboarding          Dashboard         Production
+──────────   →    ──────────────  →   ──────────
+설문 기반           크로스플랫폼          트렌드·페르소나
+페르소나 설정        트렌드 비교          기반 대본 초안
 ```
 
-자체 데이터팀을 가진 대형 크리에이터(10만+ 팔로워)는 이 격차를 자체 해결할 수 있지만, **팔로워 1만 명 미만의 초기 크리에이터**는 해소 수단이 없습니다.
+## Stack
 
-**시장 데이터:**
-- 한국 스마트폰 이용자가 주 5일 이상 소비하는 콘텐츠 1위: **숏폼 41.8%** (KCC, 2024)
-- OTT 내 숏폼 이용: 58.1% → 70.7% (전년 대비 +12.6%p)
-- 한국 숏폼 영상 편집 단가의 53.9%가 1만~1.5만 원 (커넥스페이스, 2025)
-
----
-
-## 타겟 사용자
-
-팔로워 1만 명 미만 초기 크리에이터
-- 콘텐츠 제작 경력 3년 미만, 월 0~10편 산출
-- 부업 또는 풀타임 전환 초기
-- 1만 명은 광고 수익 진입선이자 자체 데이터 인프라 구축 임계
-
----
-
-## Core Features
-
-- **온보딩 설문** — 7문항으로 크리에이터 페르소나 도출 (Claude API)
-- **트렌드 대시보드** — YouTube Shorts·TikTok·Instagram Reels 크로스플랫폼 트렌드 조감
-- **개인화 추천** — 페르소나 기반 콘텐츠 레퍼런스 제시 + LLM 방향 추천
-- **대본 초안 생성** — Hook + 본문 + CTA 3-part 구조, 페르소나 기반 톤 추천
-
----
-
-## Product Goals
-
-- 사용자가 "오늘 찍을 것"을 정하는 데 걸리는 시간 단축 (현재 베이스라인 30~90분)
-- 트렌드 추천이 사용자 카테고리·페르소나에 정합적
-- Onboarding → Dashboard → Recommend → Production 무중단 플로우
-
----
+- Frontend / Backend: Next.js 14 (App Router + API Routes)
+- 외부 데이터: YouTube Data API v3, Apify (TikTok·Instagram 유료 플랜)
+- AI: Anthropic Claude
 
 ## Docs
 
-- [spec_main.md](spec_main.md) — 제품 워킹 스펙 (플로우·기능 요구사항·API 계약)
+- [SPEC.md](https://github.com/seu-seo/trendingshorts/blob/main/SPEC.md) — 제품 명세서 v6.5
 - [MANIFEST.md](docs/MANIFEST.md) — 프로젝트 핵심 가치 및 원칙
 - [WHYTREE.md](docs/WHYTREE.md) — Why Tree 분석 결과
 - [PREMORTEM.md](docs/PREMORTEM.md) — 프리모텀 분석 결과
 - [project_approach.md](docs/project_approach.md) — 프로젝트 방향
 
----
+## Demo (Sample)
 
-## Demo
+비교 검토용 디자인 샘플입니다. 구체적인 페르소나 분류, 추천 로직, 카테고리 통합 등은 향후 팀 합의 후 확정합니다.
 
-[https://seu-seo.github.io/trendingshorts/](https://seu-seo.github.io/trendingshorts/)
-
----
+- [Sample 1](https://seu-seo.github.io/trendingshorts/demo/v2/) — 페르소나 설문 진입형
+- [Sample 2](https://seu-seo.github.io/trendingshorts/demo/v3/) — 대시보드 진입형 + 시각화
 
 ## Team
 
-KAIST BIZ 699911 Group Project
+KAIST BIZ 699911 Group Project · 규동 · 승연 · 지은 · 경재
+
+*Last updated: 2026-05-08*

@@ -8,6 +8,7 @@ export default function SelectedTrendBanner({ trend }: { trend: Trend }) {
   const router = useRouter();
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
+  const persona = useStore((s) => s.persona);
 
   const goBack = () => {
     setSelectedTrendId(null);
@@ -52,8 +53,13 @@ export default function SelectedTrendBanner({ trend }: { trend: Trend }) {
               className="w-[5px] h-[5px] rounded-full bg-accent-lime"
               style={{ boxShadow: '0 0 6px var(--accent-lime)' }}
             />
-            SELECTED TREND · {trend.platformLabel}
+            {persona?.brandPitch ? 'YOUR BRAND × TREND' : 'SELECTED TREND'} · {trend.platformLabel}
           </div>
+          {persona?.brandPitch && (
+            <div className="text-[11px] text-text-dim leading-snug mb-1 line-clamp-1">
+              💼 {persona.brandPitch}
+            </div>
+          )}
           <div className="text-sm font-semibold leading-snug line-clamp-2">{trend.title}</div>
         </div>
       </div>

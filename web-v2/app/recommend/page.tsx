@@ -28,9 +28,13 @@ export default function RecommendPage() {
 
   const openEdit = () => {
     if (persona) {
-      setModalDraft({ category: persona.category, styles: [...persona.styles] });
+      setModalDraft({
+        category: persona.category,
+        styles: [...persona.styles],
+        brandPitch: persona.brandPitch ?? '',
+      });
     } else {
-      setModalDraft({ category: null, styles: [] });
+      setModalDraft({ category: null, styles: [], brandPitch: '' });
     }
     setPersonaModalOpen(true);
   };
@@ -74,18 +78,23 @@ export default function RecommendPage() {
                 'radial-gradient(circle, rgba(200, 255, 87, 0.2), transparent 70%)',
             }}
           />
-          <div className="flex justify-between items-center relative">
-            <div className="flex-1">
+          <div className="flex justify-between items-start relative gap-3">
+            <div className="flex-1 min-w-0">
               <div className="font-mono text-[9px] text-text-faint tracking-widest uppercase mb-1">
-                YOUR FOCUS
+                YOUR BRAND · {CATEGORY_LABELS[persona.category]}
               </div>
-              <div className="font-display text-[22px] leading-none tracking-wide text-accent-lime">
-                {CATEGORY_LABELS[persona.category]}
+              <div className="text-[15px] leading-snug text-text font-medium mb-1">
+                {persona.brandPitch || '(브랜드 한 줄 미설정 — EDIT으로 추가)'}
               </div>
+              {persona.styles.length > 0 && (
+                <div className="font-mono text-[9px] text-accent-lime tracking-wider uppercase">
+                  {persona.styles.join(' · ')}
+                </div>
+              )}
             </div>
             <button
               onClick={openEdit}
-              className="bg-transparent border border-border-bright text-text-dim py-1.5 px-2.5 rounded-full font-mono text-[9px] tracking-wider cursor-pointer uppercase hover:text-text hover:border-text"
+              className="bg-transparent border border-border-bright text-text-dim py-1.5 px-2.5 rounded-full font-mono text-[9px] tracking-wider cursor-pointer uppercase hover:text-text hover:border-text flex-shrink-0"
             >
               EDIT
             </button>

@@ -11,3 +11,8 @@ dist/
 
 *.log
 .DS_Store
+.vercel
+
+# Next.js / TypeScript autogen
+next-env.d.ts
+*.tsbuildinfo

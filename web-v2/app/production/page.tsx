@@ -27,6 +27,8 @@ export default function ProductionPage() {
     ? ALL_TRENDS.find((t) => t.id === selectedTrendId)
     : null;
 
+  const hasBrandPitch = !!persona?.brandPitch?.trim();
+
   const generate = async () => {
     if (!trend) return;
     setLoading(true);
@@ -50,14 +52,16 @@ export default function ProductionPage() {
     }
   };
 
-  // 트렌드가 바뀌면 자동으로 한 번 생성
+  // 트렌드 + 브랜드 페어 변경 시 자동 생성. 브랜드 미설정이면 호출 보류.
   useEffect(() => {
-    if (trend) {
+    if (trend && hasBrandPitch) {
       setData(null);
       generate();
+    } else {
+      setData(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTrendId]);
+  }, [selectedTrendId, persona?.brandPitch]);
 
   // No trend selected — empty state
   if (!trend) {
@@ -123,8 +127,12 @@ export default function ProductionPage() {
           아이디어
         </div>
         <div className="text-[13px] text-text-dim flex items-center justify-between gap-3">
-          <span>이 트렌드로 만들 수 있는 대본 스타일 3종</span>
-          {data && !loading && (
+          <span>
+            {hasBrandPitch
+              ? '이 트렌드를 활용해 내 제품을 판매하는 대본 3종'
+              : '브랜드 설정 후 이 트렌드 × 내 제품 판매 대본 3종 자동 생성'}
+          </span>
+          {data && !loading && hasBrandPitch && (
             <button
               type="button"
               onClick={generate}
@@ -135,6 +143,35 @@ export default function ProductionPage() {
           )}
         </div>
       </div>
+
+      {/* 브랜드 미설정 게이트 */}
+      {!hasBrandPitch && (
+        <div
+          className="mx-6 mb-4 p-5 rounded-2xl border border-dashed"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(255, 61, 127, 0.06), rgba(200, 255, 87, 0.06))',
+            borderColor: 'var(--accent-pink)',
+          }}
+        >
+          <div className="font-mono text-[10px] tracking-widest uppercase mb-2" style={{ color: 'var(--accent-pink)' }}>
+            BRAND REQUIRED
+          </div>
+          <div className="font-display text-[20px] leading-tight mb-2">
+            먼저 어떤 제품을<br />
+            마케팅하는지 알려주세요
+          </div>
+          <div className="text-[12px] text-text-dim leading-relaxed mb-3.5">
+            제품/브랜드 한 줄을 입력하면, 이 트렌드를 활용해 <span className="text-accent-lime">내 제품을 자연스럽게 녹인 대본 3종</span>이 자동으로 생성됩니다. 30초면 끝납니다.
+          </div>
+          <Link
+            href="/recommend"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-accent-lime text-bg border-none rounded-full font-mono text-[11px] font-semibold tracking-wider uppercase cursor-pointer transition-all hover:translate-x-0.5 no-underline"
+          >
+            브랜드 설정하기 →
+          </Link>
+        </div>
+      )}
 
       {/* Tone signals (LLM 결정 근거) */}
       {data && data.meta.toneSignals.length > 0 && (

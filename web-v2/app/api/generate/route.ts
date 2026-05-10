@@ -44,14 +44,15 @@ export async function POST(req: Request) {
   }
 
   const recommendation = recommendTone(trend, persona ?? null);
-  const finalDirection = direction?.trim() || buildDefaultDirection(trend);
+  const finalDirection =
+    direction?.trim() || buildDefaultDirection(trend, persona ?? null);
 
   // API 키 미설정 → mock fallback (데모/리뷰 환경에서 사용)
   if (!process.env.ANTHROPIC_API_KEY) {
     const response: GenerateResponse = {
       recommendedTone: recommendation.tone,
       toneScore: 5,
-      scripts: buildFallbackScripts(),
+      scripts: buildFallbackScripts(persona?.brandPitch),
       meta: {
         promptVersion: PROMPT_METADATA.version,
         toneSignals: recommendation.signals,
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
     scripts = parseAllScripts(text);
   } catch (e) {
     console.error('[/api/generate] LLM call failed:', e);
-    scripts = buildFallbackScripts();
+    scripts = buildFallbackScripts(persona?.brandPitch);
     success = false;
   }
 

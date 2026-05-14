@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
+import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
 import {
   recommendTone,
   buildSystemPrompt,
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON in request body.' }, { status: 400 });
   }
 
-  const { trend, persona, direction } = body;
+  const { trend, persona, direction, surveyAnswers, concept } = body as GenerateRequest & { surveyAnswers?: SurveyAnswers; concept?: RecommendConcept };
   if (!trend) {
     return NextResponse.json({ error: 'Missing required field: trend.' }, { status: 400 });
   }
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
   try {
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
-      system: buildSystemPrompt({ trend, persona: persona ?? null, direction: finalDirection, recommendation }),
+      system: buildSystemPrompt({ trend, persona: persona ?? null, direction: finalDirection, recommendation, surveyAnswers, concept }),
       prompt: '위 컨텍스트를 바탕으로 informative / story / hooking 3가지 톤 대본을 JSON 스키마에 맞춰 한 번에 생성하세요.',
     });
     scripts = parseAllScripts(text);

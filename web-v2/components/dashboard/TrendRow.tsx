@@ -26,8 +26,8 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
 
   const handleClick = () => {
     setSelectedTrendId(trend.id);
-    setTab('production');
-    router.push('/production');
+    setTab('recommend');
+    router.push('/recommend');
   };
 
   return (

@@ -1,4 +1,4 @@
-import type { Trend, Persona } from '@/lib/types';
+import type { Trend, Persona, SurveyAnswers, RecommendConcept } from '@/lib/types';
 import type { ToneRecommendation } from './types';
 
 const PLATFORM_LABEL: Record<Trend['platform'], string> = {
@@ -21,8 +21,10 @@ export function buildSystemPrompt(args: {
   persona: Persona | null;
   direction: string;
   recommendation: ToneRecommendation;
+  surveyAnswers?: SurveyAnswers | null;
+  concept?: RecommendConcept | null;
 }): string {
-  const { trend, persona, direction, recommendation } = args;
+  const { trend, persona, direction, recommendation, surveyAnswers, concept } = args;
 
   const platform = PLATFORM_LABEL[trend.platform];
   const category = CATEGORY_LABEL[trend.category] ?? trend.category;
@@ -63,7 +65,15 @@ export function buildSystemPrompt(args: {
 - 팔로워 구간: 1만 미만 (어텐션 확보 단계)
 
 [콘텐츠 방향]
-${direction}
+${concept ? `- 영상 컨셉: ${concept.title}
+- 트렌드 근거: ${concept.trendBasis}
+- 첫 훅 아이디어: ${concept.hook}
+- 추천 키워드: ${concept.keywords.join(', ')}` : direction}${surveyAnswers ? `
+
+[크리에이터 설문 응답]
+- 트렌드 활용도: ${surveyAnswers.trendUsage}
+- 영상 에너지: ${surveyAnswers.energy}
+- 타겟 오디언스: ${surveyAnswers.targetAudience}` : ''}
 
 [프리컴퓨트된 톤 추천 — 데이터 신호 기반]
 권장 톤: ${recommendation.tone} (confidence ${recommendation.confidence})

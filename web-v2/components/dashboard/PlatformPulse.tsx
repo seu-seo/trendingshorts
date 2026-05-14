@@ -37,8 +37,8 @@ export default function PlatformPulse() {
 
   const goToProduction = (id: number) => {
     setSelectedTrendId(id);
-    setTab('production');
-    router.push('/production');
+    setTab('recommend');
+    router.push('/recommend');
   };
 
   return (

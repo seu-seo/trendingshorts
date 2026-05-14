@@ -39,11 +39,9 @@ export interface StyleOption {
 
 export type AppPurpose = 'trend' | 'influencer' | 'production';
 
-export type VideoFormat = 'vlog' | 'info' | 'review' | 'challenge' | 'story';
-
 export interface SurveyAnswers {
-  mood: string;
-  format: VideoFormat;
+  trendUsage: string;
+  energy: string;
   targetAudience: string;
 }
 

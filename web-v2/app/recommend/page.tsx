@@ -3,17 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
-import type { SurveyAnswers, VideoFormat, RecommendConcept } from '@/lib/types';
+import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
 
-const FORMAT_OPTIONS: { value: VideoFormat; label: string; sub: string }[] = [
-  { value: 'vlog', label: '브이로그', sub: '일상 기록' },
-  { value: 'info', label: '정보·튜토리얼', sub: '지식 전달' },
-  { value: 'review', label: '리뷰·후기', sub: '경험 평가' },
-  { value: 'challenge', label: '챌린지·트렌드', sub: '참여 유도' },
-  { value: 'story', label: '스토리텔링', sub: '에피소드 중심' },
+const TREND_OPTIONS: { value: string; label: string; sub: string }[] = [
+  { value: 'trend-full', label: '트렌드 그대로', sub: '지금 유행 편승' },
+  { value: 'trend-mix', label: '트렌드 + 내 색깔', sub: '유행 + 개성 믹스' },
+  { value: 'trend-none', label: '내 스타일로', sub: '트렌드 상관없이' },
 ];
 
-const MOOD_OPTIONS = ['정보 전달', '감성·공감', '유머·웃음', '챌린지·트렌드', '일상 브이로그'];
+const ENERGY_OPTIONS: { value: string; label: string; sub: string }[] = [
+  { value: 'funny', label: '웃기고 가볍게', sub: '유머·공감' },
+  { value: 'emotional', label: '공감·감성', sub: '진심·스토리' },
+  { value: 'informative', label: '실용 정보', sub: '도움되는 내용' },
+  { value: 'challenge', label: '새로운 시도', sub: '도전·실험' },
+];
 
 export default function RecommendPage() {
   const router = useRouter();
@@ -27,8 +30,8 @@ export default function RecommendPage() {
   const setSelectedConceptIndex = useStore((s) => s.setSelectedConceptIndex);
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
 
-  const [mood, setMood] = useState(surveyAnswers?.mood ?? '');
-  const [format, setFormat] = useState<VideoFormat>(surveyAnswers?.format ?? 'vlog');
+  const [trendUsage, setTrendUsage] = useState(surveyAnswers?.trendUsage ?? '');
+  const [energy, setEnergy] = useState(surveyAnswers?.energy ?? '');
   const [targetAudience, setTargetAudience] = useState(surveyAnswers?.targetAudience ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,11 +40,11 @@ export default function RecommendPage() {
     setTab('recommend');
   }, [setTab]);
 
-  const canSubmit = mood.trim().length > 0 && targetAudience.trim().length > 0;
+  const canSubmit = trendUsage.length > 0 && energy.length > 0 && targetAudience.trim().length > 0;
 
   const handleRecommend = async () => {
     if (!canSubmit) return;
-    const answers: SurveyAnswers = { mood: mood.trim(), format, targetAudience: targetAudience.trim() };
+    const answers: SurveyAnswers = { trendUsage, energy, targetAudience: targetAudience.trim() };
     setSurveyAnswers(answers);
     setRecommendResult(null);
     setLoading(true);
@@ -86,65 +89,82 @@ export default function RecommendPage() {
       </div>
 
       {/* 설문 */}
-      <div className="px-6 flex flex-col gap-5">
-        {/* Q1: 분위기 */}
-        <div>
-          <div className="font-mono text-[10px] tracking-wider text-text-faint uppercase mb-2.5">
-            Q1 · 어떤 분위기의 영상을 만들고 싶나요?
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {MOOD_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setMood(opt)}
-                className={`px-3 py-1.5 rounded-full font-mono text-[11px] tracking-wide border transition-all ${
-                  mood === opt
-                    ? 'bg-accent-pink/10 border-accent-pink text-accent-pink'
-                    : 'bg-surface-1 border-border text-text-dim hover:border-border-bright'
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
+      <div className="px-6 flex flex-col gap-6">
+
+        {/* Q1: 트렌드 활용도 */}
+        <div
+          className="rounded-2xl p-4"
+          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
+        >
+          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q1</div>
+          <div className="text-[15px] font-semibold text-text mb-3">이번 영상, 유행을 얼마나 탈 건가요?</div>
+          <div className="grid grid-cols-3 gap-2">
+            {TREND_OPTIONS.map((opt) => {
+              const selected = trendUsage === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setTrendUsage(opt.value)}
+                  className="py-3 px-2 rounded-xl border text-center transition-all"
+                  style={selected
+                    ? { background: 'rgba(200,255,87,0.18)', border: '1px solid rgba(200,255,87,0.7)' }
+                    : { background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }
+                  }
+                >
+                  <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'rgb(200,255,87)' : 'rgba(255,255,255,0.9)' }}>
+                    {opt.label}
+                  </div>
+                  <div className="font-mono text-[9px]" style={{ color: selected ? 'rgba(200,255,87,0.55)' : 'rgba(255,255,255,0.4)' }}>{opt.sub}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Q2: 포맷 */}
-        <div>
-          <div className="font-mono text-[10px] tracking-wider text-text-faint uppercase mb-2.5">
-            Q2 · 영상 포맷
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {FORMAT_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setFormat(opt.value)}
-                className={`py-3 px-2 rounded-xl border text-center transition-all ${
-                  format === opt.value
-                    ? 'bg-accent-lime/8 border-accent-lime'
-                    : 'bg-surface-1 border-border hover:border-border-bright'
-                }`}
-              >
-                <div className={`text-[13px] font-semibold mb-0.5 ${format === opt.value ? 'text-accent-lime' : 'text-text'}`}>
-                  {opt.label}
-                </div>
-                <div className="font-mono text-[9px] text-text-faint">{opt.sub}</div>
-              </button>
-            ))}
+        {/* Q2: 영상 에너지 */}
+        <div
+          className="rounded-2xl p-4"
+          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
+        >
+          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q2</div>
+          <div className="text-[15px] font-semibold text-text mb-3">어떤 느낌의 영상으로 갈 건가요?</div>
+          <div className="grid grid-cols-2 gap-2">
+            {ENERGY_OPTIONS.map((opt) => {
+              const selected = energy === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setEnergy(opt.value)}
+                  className="py-3 px-3 rounded-xl border text-center transition-all"
+                  style={selected
+                    ? { background: 'rgba(200,255,87,0.18)', border: '1px solid rgba(200,255,87,0.7)' }
+                    : { background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }
+                  }
+                >
+                  <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'rgb(200,255,87)' : 'rgba(255,255,255,0.9)' }}>
+                    {opt.label}
+                  </div>
+                  <div className="font-mono text-[9px]" style={{ color: selected ? 'rgba(200,255,87,0.55)' : 'rgba(255,255,255,0.4)' }}>{opt.sub}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Q3: 타겟 오디언스 */}
-        <div>
-          <div className="font-mono text-[10px] tracking-wider text-text-faint uppercase mb-2.5">
-            Q3 · 타겟 오디언스
-          </div>
+        <div
+          className="rounded-2xl p-4"
+          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
+        >
+          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q3</div>
+          <div className="text-[15px] font-semibold text-text mb-3">누구를 위한 영상인가요?</div>
           <textarea
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
-            placeholder="예) 20대 직장인, 요리 배우고 싶은 입문자, 운동에 관심 있는 학생..."
+            placeholder="예) 20대 직장인, 요리 배우고 싶은 입문자, 운동 관심 있는 학생..."
             rows={3}
-            className="w-full bg-surface-1 border border-border rounded-xl px-4 py-3 text-[13px] text-text placeholder:text-text-faint resize-none focus:outline-none focus:border-border-bright transition-colors"
+            className="w-full rounded-xl px-4 py-3 text-[13px] text-text placeholder:text-text-dim resize-none focus:outline-none transition-colors"
+            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)' }}
           />
         </div>
 
@@ -152,11 +172,11 @@ export default function RecommendPage() {
         <button
           onClick={handleRecommend}
           disabled={!canSubmit || loading}
-          className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all flex items-center justify-center gap-2"
           style={{
-            background: canSubmit && !loading ? 'var(--accent-lime)' : undefined,
-            backgroundColor: (!canSubmit || loading) ? 'rgba(200,255,87,0.15)' : undefined,
-            color: canSubmit && !loading ? '#0a0a0a' : 'rgba(200,255,87,0.5)',
+            background: canSubmit && !loading ? 'var(--accent-lime)' : 'rgba(200,255,87,0.12)',
+            color: canSubmit && !loading ? '#0a0a0a' : 'rgba(200,255,87,0.4)',
+            cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
           }}
         >
           {loading ? (
@@ -186,7 +206,7 @@ export default function RecommendPage() {
               <span className="font-mono text-[8px] text-text-faint border border-border px-2 py-0.5 rounded-full">MOCK</span>
             )}
           </div>
-          <div className="text-[11px] text-text-faint mb-4">
+          <div className="text-[11px] text-text-dim mb-4">
             트렌드 + 키워드 + 내 스타일 기반 맞춤 영상 컨셉 {recommendResult.concepts.length}가지
           </div>
           <div className="flex flex-col gap-3">
@@ -226,7 +246,7 @@ function ConceptCard({
         <span className="font-mono text-[9px] text-text-faint tracking-widest mt-0.5 flex-shrink-0">
           0{index + 1}
         </span>
-        <div className="text-[15px] font-semibold leading-snug">{concept.title}</div>
+        <div className="text-[15px] font-semibold leading-snug text-text">{concept.title}</div>
       </div>
 
       {/* 트렌드 근거 */}
@@ -235,18 +255,18 @@ function ConceptCard({
         style={{ background: 'rgba(138,180,248,0.06)', border: '1px solid rgba(138,180,248,0.15)' }}
       >
         <span className="font-mono text-[8px] text-[#8ab4f8] tracking-widest uppercase mt-0.5 flex-shrink-0">근거</span>
-        <div className="text-[11px] text-text-dim leading-relaxed">{concept.trendBasis}</div>
+        <div className="text-[11px] text-text leading-relaxed">{concept.trendBasis}</div>
       </div>
 
       {/* 훅 */}
-      <div className="text-[12px] text-text-dim italic mb-2.5 leading-relaxed pl-1">
+      <div className="text-[12px] text-text italic mb-2.5 leading-relaxed pl-1">
         {concept.hook}
       </div>
 
       {/* 키워드 */}
       <div className="flex flex-wrap gap-1 mb-3">
         {concept.keywords.map((kw) => (
-          <span key={kw} className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-faint">
+          <span key={kw} className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-dim">
             {kw}
           </span>
         ))}

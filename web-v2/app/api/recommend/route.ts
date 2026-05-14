@@ -9,12 +9,17 @@ interface RecommendRequest {
   trends: Trend[];
 }
 
-const FORMAT_LABEL: Record<string, string> = {
-  vlog: '브이로그 (일상 기록)',
-  info: '정보·튜토리얼 (지식 전달)',
-  review: '리뷰·후기 (경험 평가)',
-  challenge: '챌린지·트렌드 (참여 유도)',
-  story: '스토리텔링 (에피소드 중심)',
+const TREND_LABEL: Record<string, string> = {
+  'trend-full': '트렌드 그대로 편승',
+  'trend-mix': '트렌드 + 내 색깔 믹스',
+  'trend-none': '내 스타일 독립적으로',
+};
+
+const ENERGY_LABEL: Record<string, string> = {
+  funny: '웃기고 가볍게 (유머·공감)',
+  emotional: '공감·감성 (진심·스토리)',
+  informative: '실용 정보 중심',
+  challenge: '새로운 시도·도전',
 };
 
 const MOCK_CONCEPTS: RecommendConcept[] = [
@@ -56,15 +61,16 @@ function buildPrompt(persona: Persona | null, surveyAnswers: SurveyAnswers, tren
 
   const category = persona?.category ?? '일반';
   const styles = persona?.styles?.join(', ') ?? '없음';
-  const format = FORMAT_LABEL[surveyAnswers.format] ?? surveyAnswers.format;
+  const trendUsage = TREND_LABEL[surveyAnswers.trendUsage] ?? surveyAnswers.trendUsage;
+  const energy = ENERGY_LABEL[surveyAnswers.energy] ?? surveyAnswers.energy;
 
   return `당신은 숏폼 크리에이터 영상 기획 전문가입니다.
 
 ## 크리에이터 정보
 - 채널 카테고리: ${category}
 - 콘텐츠 스타일: ${styles}
-- 원하는 분위기: ${surveyAnswers.mood}
-- 영상 포맷: ${format}
+- 트렌드 활용도: ${trendUsage}
+- 영상 에너지: ${energy}
 - 타겟 오디언스: ${surveyAnswers.targetAudience}
 
 ## 이번 주 트렌딩 영상 TOP 8

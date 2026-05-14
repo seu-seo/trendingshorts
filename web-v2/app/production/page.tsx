@@ -14,6 +14,8 @@ export default function ProductionPage() {
   const setTab = useStore((s) => s.setTab);
   const selectedTrendId = useStore((s) => s.selectedTrendId);
   const persona = useStore((s) => s.persona);
+  const recommendResult = useStore((s) => s.recommendResult);
+  const selectedConceptIndex = useStore((s) => s.selectedConceptIndex);
 
   const [data, setData] = useState<GenerateResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,10 @@ export default function ProductionPage() {
     ? ALL_TRENDS.find((t) => t.id === selectedTrendId)
     : null;
 
-  const hasBrandPitch = !!persona?.brandPitch?.trim();
+  const selectedConcept =
+    recommendResult && selectedConceptIndex != null
+      ? recommendResult.concepts[selectedConceptIndex]
+      : null;
 
   const generate = async () => {
     if (!trend) return;
@@ -37,7 +42,7 @@ export default function ProductionPage() {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trend, persona }),
+        body: JSON.stringify({ trend, persona, direction: selectedConcept?.hook }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -52,16 +57,15 @@ export default function ProductionPage() {
     }
   };
 
-  // 트렌드 + 브랜드 페어 변경 시 자동 생성. 브랜드 미설정이면 호출 보류.
   useEffect(() => {
-    if (trend && hasBrandPitch) {
+    if (trend) {
       setData(null);
       generate();
     } else {
       setData(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTrendId, persona?.brandPitch]);
+  }, [selectedTrendId, selectedConceptIndex]);
 
   // No trend selected — empty state
   if (!trend) {
@@ -128,11 +132,9 @@ export default function ProductionPage() {
         </div>
         <div className="text-[13px] text-text-dim flex items-center justify-between gap-3">
           <span>
-            {hasBrandPitch
-              ? '이 트렌드를 활용해 내 제품을 판매하는 대본 3종'
-              : '브랜드 설정 후 이 트렌드 × 내 제품 판매 대본 3종 자동 생성'}
+            {selectedConcept ? `"${selectedConcept.title}" 소재 기반 대본 3종` : '트렌드 기반 대본 3종 자동 생성'}
           </span>
-          {data && !loading && hasBrandPitch && (
+          {data && !loading && (
             <button
               type="button"
               onClick={generate}
@@ -144,32 +146,15 @@ export default function ProductionPage() {
         </div>
       </div>
 
-      {/* 브랜드 미설정 게이트 */}
-      {!hasBrandPitch && (
+      {/* 선택된 소재 배너 */}
+      {selectedConcept && (
         <div
-          className="mx-6 mb-4 p-5 rounded-2xl border border-dashed"
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255, 61, 127, 0.06), rgba(200, 255, 87, 0.06))',
-            borderColor: 'var(--accent-pink)',
-          }}
+          className="mx-6 mb-4 p-3.5 rounded-xl border"
+          style={{ background: 'rgba(200,255,87,0.05)', borderColor: 'rgba(200,255,87,0.2)' }}
         >
-          <div className="font-mono text-[10px] tracking-widest uppercase mb-2" style={{ color: 'var(--accent-pink)' }}>
-            BRAND REQUIRED
-          </div>
-          <div className="font-display text-[20px] leading-tight mb-2">
-            먼저 어떤 제품을<br />
-            마케팅하는지 알려주세요
-          </div>
-          <div className="text-[12px] text-text-dim leading-relaxed mb-3.5">
-            제품/브랜드 한 줄을 입력하면, 이 트렌드를 활용해 <span className="text-accent-lime">내 제품을 자연스럽게 녹인 대본 3종</span>이 자동으로 생성됩니다. 30초면 끝납니다.
-          </div>
-          <Link
-            href="/recommend"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-accent-lime text-bg border-none rounded-full font-mono text-[11px] font-semibold tracking-wider uppercase cursor-pointer transition-all hover:translate-x-0.5 no-underline"
-          >
-            브랜드 설정하기 →
-          </Link>
+          <div className="font-mono text-[9px] tracking-widest text-accent-lime uppercase mb-1">선택한 소재</div>
+          <div className="text-[13px] font-semibold mb-0.5">{selectedConcept.title}</div>
+          <div className="text-[11px] text-text-dim italic">{selectedConcept.hook}</div>
         </div>
       )}
 

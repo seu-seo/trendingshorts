@@ -37,17 +37,38 @@ export interface StyleOption {
   label: string;
 }
 
+export type AppPurpose = 'trend' | 'influencer' | 'production';
+
+export type VideoFormat = 'vlog' | 'info' | 'review' | 'challenge' | 'story';
+
+export interface SurveyAnswers {
+  mood: string;
+  format: VideoFormat;
+  targetAudience: string;
+}
+
+export interface RecommendConcept {
+  title: string;        // 영상 제목/컨셉 (크리에이터가 만들 영상)
+  trendBasis: string;   // 어떤 트렌드·키워드를 근거로 했는지
+  hook: string;         // 첫 3초 훅 대사
+  keywords: string[];   // 추천 해시태그
+  expectedReaction: string; // 예상 시청자 반응
+}
+
+export interface RecommendResponse {
+  concepts: RecommendConcept[];
+  source: 'live' | 'mock';
+}
+
 export interface PersonaDraft {
   category: Category | null;
   styles: string[];
-  brandPitch: string;
 }
 
 export interface Persona {
   category: Category;
   styles: string[];
-  /** 한 줄 브랜드/제품 소개. 예) "민감잇몸용 토너치약 — 30대 직장인 타겟 D2C". */
-  brandPitch: string;
+  purpose?: AppPurpose;
 }
 
 export type Tab = 'dashboard' | 'recommend' | 'production';

@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const filterCategory = useStore((s) => s.filterCategory);
   const searchQuery = useStore((s) => s.searchQuery);
   const persona = useStore((s) => s.persona);
-  const hasBrand = !!persona?.brandPitch?.trim();
+  const hasPersona = !!persona;
 
   useEffect(() => {
     setTab('dashboard');
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {!hasBrand && (
+      {!hasPersona && (
         <Link
           href="/recommend"
           className="mx-6 mb-4 mt-1 px-3.5 py-3 rounded-xl border border-dashed flex items-center justify-between gap-3 no-underline transition-all hover:translate-y-[-1px]"
@@ -92,48 +92,20 @@ export default function DashboardPage() {
           }}
         >
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="text-base">💼</div>
+            <div className="text-base">✨</div>
             <div className="min-w-0">
               <div className="font-mono text-[9px] tracking-widest text-accent-lime uppercase mb-0.5">
-                STEP 1 — BRAND
+                소재 추천
               </div>
               <div className="text-[12px] text-text leading-tight">
-                내 제품 한 줄 입력 → 트렌드별 판매 대본 자동 생성
+                영상 방향 설문 → 맞춤 소재 + 대본 자동 생성
               </div>
             </div>
           </div>
           <div className="font-mono text-[10px] text-accent-lime tracking-wider uppercase whitespace-nowrap flex-shrink-0">
-            설정 →
+            시작 →
           </div>
         </Link>
-      )}
-
-      {hasBrand && (
-        <div
-          className="mx-6 mb-4 mt-1 px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3"
-          style={{
-            background: 'rgba(200, 255, 87, 0.05)',
-            borderColor: 'rgba(200, 255, 87, 0.25)',
-          }}
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="text-base flex-shrink-0">✓</div>
-            <div className="min-w-0">
-              <div className="font-mono text-[9px] tracking-widest text-accent-lime uppercase mb-0.5">
-                MARKETING FOR
-              </div>
-              <div className="text-[12px] text-text leading-tight truncate">
-                {persona!.brandPitch}
-              </div>
-            </div>
-          </div>
-          <Link
-            href="/recommend"
-            className="font-mono text-[9px] text-text-faint tracking-wider uppercase whitespace-nowrap flex-shrink-0 no-underline hover:text-text"
-          >
-            EDIT
-          </Link>
-        </div>
       )}
 
       <PlatformPulse />

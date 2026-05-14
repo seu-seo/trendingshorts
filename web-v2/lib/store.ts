@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab } from './types';
+import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse } from './types';
 import { ALL_TRENDS } from './data/trends';
 
 interface AppState {
@@ -28,7 +28,14 @@ interface AppState {
   modalDraft: PersonaDraft;
   setModalDraft: (d: PersonaDraft) => void;
   toggleDraftStyle: (s: string) => void;
-  setDraftBrandPitch: (v: string) => void;
+
+  // 추천·제작 탭 상태
+  surveyAnswers: SurveyAnswers | null;
+  setSurveyAnswers: (a: SurveyAnswers | null) => void;
+  recommendResult: RecommendResponse | null;
+  setRecommendResult: (r: RecommendResponse | null) => void;
+  selectedConceptIndex: number | null;
+  setSelectedConceptIndex: (i: number | null) => void;
 
   // Modals
   filterModalOpen: boolean;
@@ -59,7 +66,7 @@ export const useStore = create<AppState>((set, get) => ({
   persona: null,
   setPersona: (p) => set({ persona: p }),
 
-  modalDraft: { category: null, styles: [], brandPitch: '' },
+  modalDraft: { category: null, styles: [] },
   setModalDraft: (d) => set({ modalDraft: d }),
   toggleDraftStyle: (s) => {
     const draft = get().modalDraft;
@@ -70,7 +77,13 @@ export const useStore = create<AppState>((set, get) => ({
       : [...draft.styles, s];
     set({ modalDraft: { ...draft, styles } });
   },
-  setDraftBrandPitch: (v) => set({ modalDraft: { ...get().modalDraft, brandPitch: v } }),
+
+  surveyAnswers: null,
+  setSurveyAnswers: (a) => set({ surveyAnswers: a }),
+  recommendResult: null,
+  setRecommendResult: (r) => set({ recommendResult: r }),
+  selectedConceptIndex: null,
+  setSelectedConceptIndex: (i) => set({ selectedConceptIndex: i }),
 
   filterModalOpen: false,
   personaModalOpen: false,

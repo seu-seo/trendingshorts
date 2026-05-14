@@ -7,7 +7,7 @@ export default function PersonaSetupCard() {
   const setModalDraft = useStore((s) => s.setModalDraft);
 
   const open = () => {
-    setModalDraft({ category: null, styles: [], brandPitch: '' });
+    setModalDraft({ category: null, styles: [] });
     setPersonaModalOpen(true);
   };
 

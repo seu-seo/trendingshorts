@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     const response: GenerateResponse = {
       recommendedTone: recommendation.tone,
       toneScore: 5,
-      scripts: buildFallbackScripts(persona?.brandPitch),
+      scripts: buildFallbackScripts(),
       meta: { promptVersion: PROMPT_METADATA.version, toneSignals: recommendation.signals, source: 'mock' },
     };
     return NextResponse.json(response);
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     scripts = parseAllScripts(text);
   } catch (e) {
     console.error('[/api/generate] Gemini call failed:', e);
-    scripts = buildFallbackScripts(persona?.brandPitch);
+    scripts = buildFallbackScripts();
     success = false;
   }
 

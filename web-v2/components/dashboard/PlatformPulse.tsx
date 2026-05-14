@@ -57,7 +57,7 @@ export default function PlatformPulse() {
       </div>
 
       <div className="grid grid-cols-3 gap-2">
-        {topPerPlatform.map(({ key, label, top }) => (
+        {topPerPlatform.filter(({ top }) => !!top).map(({ key, label, top }) => (
           <button
             key={key}
             onClick={() => goToProduction(top.id)}

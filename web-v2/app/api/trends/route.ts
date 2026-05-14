@@ -2,9 +2,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { fetchYouTubeTrends } from '@/lib/youtube';
 import { fetchTikTokTrends } from '@/lib/tiktok';
 import { fetchInstagramTrends } from '@/lib/instagram';
+import { ALL_TRENDS } from '@/lib/data/trends';
 import type { Trend } from '@/lib/types';
 
-const CACHE_TTL_MS = 30 * 60 * 1000; // 30분
+const APIFY_DISABLED = process.env.DISABLE_APIFY === 'true';
+
+// Vercel Edge Cache: 30분마다 재검증
+export const revalidate = 1800;
+
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24시간
 
 interface CacheEntry {
   data: Trend[];
@@ -42,8 +48,9 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category');
 
   const needsYT = !platform || platform === 'all' || platform === 'youtube';
-  const needsTT = !platform || platform === 'all' || platform === 'tiktok';
-  const needsIG = !platform || platform === 'all' || platform === 'instagram';
+  // DISABLE_APIFY=true 이면 TikTok·Instagram은 mock fallback
+  const needsTT = !APIFY_DISABLED && (!platform || platform === 'all' || platform === 'tiktok');
+  const needsIG = !APIFY_DISABLED && (!platform || platform === 'all' || platform === 'instagram');
 
   // 캐시 있으면 즉시 반환 + 백그라운드 갱신 트리거
   if (
@@ -57,8 +64,8 @@ export async function GET(request: NextRequest) {
 
     let results: Trend[] = [
       ...(needsYT ? cache.yt!.data : []),
-      ...(needsTT ? cache.tt!.data : []),
-      ...(needsIG ? cache.ig!.data : []),
+      ...(needsTT ? cache.tt!.data : ALL_TRENDS.filter((t) => t.platform === 'tiktok')),
+      ...(needsIG ? cache.ig!.data : ALL_TRENDS.filter((t) => t.platform === 'instagram')),
     ];
     if (category) results = results.filter((t) => t.category === category);
     return NextResponse.json({ data: results, source: 'live' });
@@ -72,8 +79,12 @@ export async function GET(request: NextRequest) {
   ]);
 
   const ytData = ytResult.status === 'fulfilled' ? ytResult.value : (cache.yt?.data ?? []);
-  const ttData = ttResult.status === 'fulfilled' ? ttResult.value : (cache.tt?.data ?? []);
-  const igData = igResult.status === 'fulfilled' ? igResult.value : (cache.ig?.data ?? []);
+  const ttData = needsTT
+    ? (ttResult.status === 'fulfilled' ? ttResult.value : (cache.tt?.data ?? []))
+    : ALL_TRENDS.filter((t) => t.platform === 'tiktok');
+  const igData = needsIG
+    ? (igResult.status === 'fulfilled' ? igResult.value : (cache.ig?.data ?? []))
+    : ALL_TRENDS.filter((t) => t.platform === 'instagram');
 
   let results: Trend[] = [...ytData, ...ttData, ...igData];
   if (category) results = results.filter((t) => t.category === category);

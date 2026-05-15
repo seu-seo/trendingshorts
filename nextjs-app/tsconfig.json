@@ -1,125 +1,21 @@
-# Shortform Pulse
-
-크리에이터를 위한 페르소나 기반 콘텐츠 추천 데모.
-
-7개의 질문으로 사용자의 페르소나를 진단하고, 페르소나·트렌드·인플루언서·콘티 추천을 제공합니다.
-
----
-
-## 빠른 시작
-
-```bash
-npm install
-npm run dev
-# → http://localhost:3000
-```
-
-## 빌드 & 정적 export (GitHub Pages 등)
-
-```bash
-npm run build
-# → out/ 폴더에 정적 파일 생성됨
-```
-
-### GitHub Pages 배포
-
-루트 도메인이 아니라 `https://<username>.github.io/<repo>/` 형태로 배포할 경우, `next.config.js`의 `basePath`와 `assetPrefix` 주석을 풀고 레포명으로 설정하세요.
-
-```js
-basePath: '/your-repo-name',
-assetPrefix: '/your-repo-name/',
-```
-
-빌드 후 `out/` 폴더 내용을 `gh-pages` 브랜치로 푸시하거나, GitHub Actions로 자동화하면 됩니다.
-
----
-
-## 구조
-
-```
-shortform-pulse/
-├── app/
-│   ├── layout.tsx        # 루트 레이아웃
-│   ├── page.tsx          # 메인 페이지 (단일 SPA, 모든 화면 포함)
-│   └── globals.css       # 전역 스타일 (디자인 시스템)
-├── lib/
-│   ├── types.ts          # 공통 타입 정의
-│   ├── personas.ts       # 페르소나 정의 + 매칭 로직
-│   ├── questions.ts      # 7개 설문 데이터
-│   ├── categoryData.ts   # 카테고리별 mock 데이터 (영상/키워드/인플루언서/대본/콘티)
-│   └── SurveyContext.tsx # 설문 응답 전역 상태 (React Context)
-├── components/           # (현재 비어 있음, 추후 분리용)
-├── app/api/              # (현재 비어 있음, Gemini API 등 추가 예정)
-├── next.config.js        # 정적 export 설정
-├── tsconfig.json
-└── package.json
-```
-
-### 현재 구현 노트
-
-v1은 단일 클라이언트 컴포넌트(`app/page.tsx`)가 기존 vanilla JS mockup을 그대로 호스팅하는 형태입니다. 빠른 데모용이며, 추후 다음 단계로 리팩터링 가능합니다:
-
-- 각 화면을 React 컴포넌트로 분리 (`components/Splash.tsx`, `components/Survey.tsx` 등)
-- 화면 라우팅을 Next.js App Router로 (`app/onboarding/`, `app/result/`, `app/dashboard/` 등)
-- 상태 관리는 `lib/SurveyContext.tsx` 활용
-- `lib/` 데이터 파일은 이미 분리되어 있어 그대로 import 가능
-
----
-
-## API 통합 (Gemini)
-
-`app/api/` 폴더에 Route Handler를 추가하면 됩니다.
-
-```ts
-// app/api/recommend/route.ts
-export async function POST(req: Request) {
-  const { persona, category, intent } = await req.json();
-  // Gemini API 호출 로직
-  return Response.json({ recommendations: [...] });
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": { "@/*": ["./*"] }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
-```
-
-클라이언트에서:
-
-```ts
-const res = await fetch('/api/recommend', {
-  method: 'POST',
-  body: JSON.stringify({ persona, category, intent }),
-});
-```
-
----
-
-## 디자인 시스템
-
-- 다크 모드 기반 (`#0A0A0B` 배경)
-- 액센트 컬러: 라임 (`#C8FF57`), 핑크 (`#FF3D7F`), 블루 (`#57C8FF`)
-- 폰트: Bebas Neue (디스플레이), Instrument Sans (본문), JetBrains Mono (모노)
-- CSS 변수는 `app/globals.css`의 `:root` 블록 참고
-
----
-
-## 페르소나 (lib/personas.ts)
-
-| Type | Name              | Color   | Tag                          |
-|------|-------------------|---------|------------------------------|
-| 00   | THE TRENDSETTER   | Lime    | 트렌드 감각으로 선점하는 타입 |
-| 01   | THE NICHE KING    | Blue    | 깊이 있는 전문성으로 차별화   |
-| 02   | THE HOOKER        | Orange  | 첫 3초로 사로잡는 타입        |
-| 03   | THE EXPERIMENTER  | Purple  | 독창적인 실험으로 차별화      |
-
-페르소나는 설문 Q5 (스타일 키워드) 응답을 기반으로 자동 매칭됩니다. `derivePersona()` 참고.
-
----
-
-## 화면 흐름
-
-1. **Splash** — 로고 + 펄스 (2.5초 자동 전환)
-2. **Survey** — 7개 질문 (Q1-Q7)
-3. **Loading** — 페르소나 매칭 중 (분석 애니메이션)
-4. **Result** — 페르소나 카드 + 의도 칩 3개
-5. 의도 칩 클릭 시 분기:
-   - 🟢 **숏폼 트렌드** → Dashboard (TOP 3 영상 + 키워드 + 인사이트)
-   - 🩷 **인플루언서** → Trends (히어로 카드 + Other matches)
-   - 🔵 **콘티 추천** → Conti (3문항 추가 설문 → 대본 3종 + 6컷 콘티)
-6. 하단 탭바로 자유 이동

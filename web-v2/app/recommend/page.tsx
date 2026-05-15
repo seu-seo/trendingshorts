@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '@/lib/store';
 import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
+import type { GenerateResponse } from '@/lib/prompts';
+import GeneratedScriptCard from '@/components/production/GeneratedScriptCard';
 
 const TREND_OPTIONS: { value: string; label: string; sub: string }[] = [
   { value: 'trend-full', label: '트렌드 그대로', sub: '지금 유행 편승' },
@@ -18,8 +19,9 @@ const ENERGY_OPTIONS: { value: string; label: string; sub: string }[] = [
   { value: 'challenge', label: '새로운 시도', sub: '도전·실험' },
 ];
 
+const TONE_ORDER = ['informative', 'story', 'hooking'] as const;
+
 export default function RecommendPage() {
-  const router = useRouter();
   const setTab = useStore((s) => s.setTab);
   const trends = useStore((s) => s.trends);
   const persona = useStore((s) => s.persona);
@@ -27,14 +29,20 @@ export default function RecommendPage() {
   const setSurveyAnswers = useStore((s) => s.setSurveyAnswers);
   const recommendResult = useStore((s) => s.recommendResult);
   const setRecommendResult = useStore((s) => s.setRecommendResult);
-  const setSelectedConceptIndex = useStore((s) => s.setSelectedConceptIndex);
-  const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
 
   const [trendUsage, setTrendUsage] = useState(surveyAnswers?.trendUsage ?? '');
   const [energy, setEnergy] = useState(surveyAnswers?.energy ?? '');
   const [targetAudience, setTargetAudience] = useState(surveyAnswers?.targetAudience ?? '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [activeConceptIndex, setActiveConceptIndex] = useState<number | null>(null);
+  const [activeConcept, setActiveConcept] = useState<import('@/lib/types').RecommendConcept | null>(null);
+  const [scriptData, setScriptData] = useState<GenerateResponse | null>(null);
+  const [scriptLoading, setScriptLoading] = useState(false);
+  const [scriptError, setScriptError] = useState<string | null>(null);
+
+  const scriptRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setTab('recommend');
@@ -47,6 +55,8 @@ export default function RecommendPage() {
     const answers: SurveyAnswers = { trendUsage, energy, targetAudience: targetAudience.trim() };
     setSurveyAnswers(answers);
     setRecommendResult(null);
+    setActiveConceptIndex(null);
+    setScriptData(null);
     setLoading(true);
     setError(null);
     try {
@@ -65,11 +75,41 @@ export default function RecommendPage() {
     }
   };
 
-  const handlePickConcept = (index: number) => {
-    setSelectedConceptIndex(index);
+  const handlePickConcept = async (index: number, concept: RecommendConcept) => {
+    setActiveConceptIndex(index);
+    setActiveConcept(concept);
+    setScriptData(null);
+    setScriptLoading(true);
+    setScriptError(null);
+
+    setTimeout(() => scriptRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
     const topTrend = trends[0];
-    if (topTrend) setSelectedTrendId(topTrend.id);
-    router.push('/production');
+    if (!topTrend) {
+      setScriptError('트렌드 데이터가 없습니다. 대시보드에서 트렌드를 먼저 로드해주세요.');
+      setScriptLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trend: topTrend,
+          persona,
+          surveyAnswers: { trendUsage, energy, targetAudience },
+          concept,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: GenerateResponse = await res.json();
+      setScriptData(data);
+    } catch (e) {
+      setScriptError(e instanceof Error ? e.message : '대본 생성 중 오류가 발생했습니다.');
+    } finally {
+      setScriptLoading(false);
+    }
   };
 
   return (
@@ -194,7 +234,7 @@ export default function RecommendPage() {
         )}
       </div>
 
-      {/* 추천 결과 */}
+      {/* ── STEP 2: 컨셉 카드 ── */}
       {recommendResult && (
         <div className="px-6 mt-8">
           <div className="flex items-center justify-between mb-1">
@@ -207,7 +247,7 @@ export default function RecommendPage() {
             )}
           </div>
           <div className="text-[11px] text-text-dim mb-4">
-            트렌드 + 키워드 + 내 스타일 기반 맞춤 영상 컨셉 {recommendResult.concepts.length}가지
+            컨셉을 선택하면 바로 대본 3종을 생성해드려요
           </div>
           <div className="flex flex-col gap-3">
             {recommendResult.concepts.map((concept, i) => (
@@ -215,10 +255,82 @@ export default function RecommendPage() {
                 key={i}
                 concept={concept}
                 index={i}
-                onSelect={() => handlePickConcept(i)}
+                active={activeConceptIndex === i}
+                onSelect={() => handlePickConcept(i, concept)}
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── STEP 3: 대본 생성 ── */}
+      {(scriptLoading || scriptData || scriptError) && (
+        <div ref={scriptRef} className="px-6 mt-8">
+          <div className="font-mono text-[10px] tracking-widest text-accent-blue uppercase flex items-center gap-2 mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue" style={{ boxShadow: '0 0 8px var(--accent-blue)' }} />
+            대본 생성
+          </div>
+
+          {activeConceptIndex != null && recommendResult && (
+            <div className="text-[11px] text-text-dim mb-4">
+              &ldquo;{recommendResult.concepts[activeConceptIndex].title}&rdquo; 기반 대본 3종
+            </div>
+          )}
+
+          {scriptLoading && (
+            <div className="flex flex-col gap-3">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="bg-surface-1 border border-border rounded-[18px] p-[18px] animate-pulse">
+                  <div className="h-3 w-24 bg-border rounded mb-3" />
+                  <div className="h-4 w-full bg-border rounded mb-2" />
+                  <div className="h-4 w-5/6 bg-border rounded mb-4" />
+                  <div className="h-3 w-full bg-border rounded mb-1.5" />
+                  <div className="h-3 w-2/3 bg-border rounded" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {scriptError && !scriptLoading && (
+            <div className="p-4 border border-dashed rounded-xl mb-4"
+              style={{ borderColor: 'rgba(255,61,127,0.4)', background: 'rgba(255,61,127,0.05)' }}
+            >
+              <div className="font-mono text-[10px] uppercase tracking-widest mb-1 text-accent-pink">FAILED</div>
+              <div className="text-[12px] text-text-dim">{scriptError}</div>
+            </div>
+          )}
+
+          {scriptData && !scriptLoading && (
+            <div className="flex flex-col gap-3.5">
+              {TONE_ORDER.map((tone, i) => (
+                <GeneratedScriptCard
+                  key={tone}
+                  tone={tone}
+                  script={scriptData.scripts[tone]}
+                  index={i + 1}
+                  total={3}
+                  recommended={scriptData.recommendedTone === tone}
+                  concept={activeConcept}
+                />
+              ))}
+              <div
+                className="p-3 px-3.5 border border-dashed rounded-[10px] flex gap-2.5 items-start mt-1"
+                style={{ background: 'rgba(255,215,0,0.06)', borderColor: 'rgba(255,215,0,0.3)' }}
+              >
+                <div
+                  className="font-mono text-[11px] font-bold py-0.5 px-1.5 rounded flex-shrink-0"
+                  style={{ color: 'var(--peak)', background: 'rgba(255,215,0,0.15)' }}
+                >
+                  {scriptData.meta.source === 'live' ? 'LIVE' : 'MOCK'}
+                </div>
+                <div className="text-[11px] text-text-dim leading-relaxed">
+                  {scriptData.meta.source === 'live'
+                    ? `Gemini 단일 호출로 3톤 동시 생성. prompt v${scriptData.meta.promptVersion}.`
+                    : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — mock fallback.'}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -228,20 +340,27 @@ export default function RecommendPage() {
 function ConceptCard({
   concept,
   index,
+  active,
   onSelect,
 }: {
   concept: RecommendConcept;
   index: number;
+  active: boolean;
   onSelect: () => void;
 }) {
   return (
-    <div className="bg-surface-1 border border-border rounded-2xl p-4 relative overflow-hidden">
+    <div
+      className="border rounded-2xl p-4 relative overflow-hidden transition-all"
+      style={active
+        ? { background: 'rgba(87,200,255,0.06)', border: '1px solid rgba(87,200,255,0.35)' }
+        : { background: 'var(--surface-1)', border: '1px solid var(--border)' }
+      }
+    >
       <div
         className="absolute top-0 left-0 right-0 h-[2px] opacity-60"
         style={{ background: 'linear-gradient(to right, var(--accent-lime), var(--accent-pink))' }}
       />
 
-      {/* 컨셉 번호 + 제목 */}
       <div className="flex items-start gap-2.5 mt-1 mb-2">
         <span className="font-mono text-[9px] text-text-faint tracking-widest mt-0.5 flex-shrink-0">
           0{index + 1}
@@ -249,7 +368,6 @@ function ConceptCard({
         <div className="text-[15px] font-semibold leading-snug text-text">{concept.title}</div>
       </div>
 
-      {/* 트렌드 근거 */}
       <div
         className="rounded-lg px-3 py-2 mb-2.5 flex items-start gap-2"
         style={{ background: 'rgba(138,180,248,0.06)', border: '1px solid rgba(138,180,248,0.15)' }}
@@ -258,12 +376,8 @@ function ConceptCard({
         <div className="text-[11px] text-text leading-relaxed">{concept.trendBasis}</div>
       </div>
 
-      {/* 훅 */}
-      <div className="text-[12px] text-text italic mb-2.5 leading-relaxed pl-1">
-        {concept.hook}
-      </div>
+      <div className="text-[12px] text-text italic mb-2.5 leading-relaxed pl-1">{concept.hook}</div>
 
-      {/* 키워드 */}
       <div className="flex flex-wrap gap-1 mb-3">
         {concept.keywords.map((kw) => (
           <span key={kw} className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-dim">
@@ -272,14 +386,17 @@ function ConceptCard({
         ))}
       </div>
 
-      {/* 예상 반응 + CTA */}
       <div className="flex items-center justify-between">
         <div className="font-mono text-[10px] text-accent-lime">예상: {concept.expectedReaction}</div>
         <button
           onClick={onSelect}
-          className="bg-accent-lime text-[#0a0a0a] font-semibold text-[11px] px-3 py-1.5 rounded-full hover:opacity-90 transition-opacity"
+          className="font-semibold text-[11px] px-3 py-1.5 rounded-full transition-all"
+          style={active
+            ? { background: 'rgba(87,200,255,0.2)', color: 'var(--accent-blue)', border: '1px solid rgba(87,200,255,0.4)' }
+            : { background: 'var(--accent-lime)', color: '#0a0a0a' }
+          }
         >
-          대본 생성 →
+          {active ? '생성 중 / 재생성 →' : '대본 생성 →'}
         </button>
       </div>
     </div>

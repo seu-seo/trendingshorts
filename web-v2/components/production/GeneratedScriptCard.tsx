@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import type { ScriptOutput, ScriptTone } from '@/lib/prompts';
+import type { RecommendConcept } from '@/lib/types';
+import type { StoryboardShot } from '@/app/api/storyboard/route';
+import StoryboardPanel from './StoryboardPanel';
 
 const TONE_META: Record<
   ScriptTone,
@@ -24,15 +27,43 @@ export default function GeneratedScriptCard({
   index,
   total,
   recommended,
+  concept,
 }: {
   tone: ScriptTone;
   script: ScriptOutput;
   index: number;
   total: number;
   recommended: boolean;
+  concept?: RecommendConcept | null;
 }) {
   const [copied, setCopied] = useState(false);
+  const [storyboardShots, setStoryboardShots] = useState<StoryboardShot[] | null>(null);
+  const [storyboardSource, setStoryboardSource] = useState<'live' | 'mock'>('mock');
+  const [storyboardLoading, setStoryboardLoading] = useState(false);
   const meta = TONE_META[tone];
+
+  const handleStoryboard = async () => {
+    if (storyboardShots) {
+      setStoryboardShots(null);
+      return;
+    }
+    setStoryboardLoading(true);
+    try {
+      const res = await fetch('/api/storyboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ script, tone, concept: concept ?? null }),
+      });
+      if (!res.ok) throw new Error('storyboard api error');
+      const data = await res.json() as { shots: StoryboardShot[]; source: 'live' | 'mock' };
+      setStoryboardShots(data.shots);
+      setStoryboardSource(data.source);
+    } catch {
+      /* fallback: ignore */
+    } finally {
+      setStoryboardLoading(false);
+    }
+  };
 
   const handleCopy = async () => {
     const fullText = `[${meta.label}]\n\n훅: ${script.hook}\n\n본문:\n${script.body}\n\nCTA: ${script.cta}`;
@@ -104,10 +135,33 @@ export default function GeneratedScriptCard({
         >
           {copied ? '✓ 복사됨' : '대본 복사'}
         </button>
-        <span className="w-7 h-7 rounded-full bg-accent-blue text-bg grid place-items-center text-sm">
-          ✎
-        </span>
+        <button
+          type="button"
+          onClick={handleStoryboard}
+          disabled={storyboardLoading}
+          className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider uppercase cursor-pointer transition-colors disabled:opacity-50"
+          style={{ color: storyboardShots ? 'var(--text-faint)' : 'var(--accent-lime)' }}
+        >
+          {storyboardLoading ? (
+            <>
+              <span className="w-3 h-3 border border-border border-t-accent-lime rounded-full animate-spin" />
+              생성 중...
+            </>
+          ) : storyboardShots ? (
+            '콘티 닫기'
+          ) : (
+            '콘티 생성'
+          )}
+        </button>
       </div>
+
+      {storyboardShots && (
+        <StoryboardPanel
+          shots={storyboardShots}
+          source={storyboardSource}
+          onClose={() => setStoryboardShots(null)}
+        />
+      )}
     </div>
   );
 }

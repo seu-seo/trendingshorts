@@ -27,18 +27,8 @@ const TABS: TabItem[] = [
   },
   {
     key: 'recommend',
-    label: '추천',
-    href: '/recommend',
-    icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8 5.8 21.3l2.4-7.4L2 9.4h7.6L12 2z" />
-      </svg>
-    ),
-  },
-  {
-    key: 'production',
     label: '제작',
-    href: '/production',
+    href: '/recommend',
     icon: (
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -50,7 +40,6 @@ const TABS: TabItem[] = [
 export default function TabBar() {
   const currentTab = useStore((s) => s.currentTab);
   const setTab = useStore((s) => s.setTab);
-  const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
 
   return (
     <div
@@ -67,13 +56,7 @@ export default function TabBar() {
           <Link
             key={t.key}
             href={t.href}
-            onClick={() => {
-              setTab(t.key);
-              // If clicking production tab directly via tab bar, clear selection
-              if (t.key === 'production') {
-                setSelectedTrendId(null);
-              }
-            }}
+            onClick={() => setTab(t.key)}
             className={`flex flex-col items-center gap-1 px-3 py-1 transition-colors ${
               active ? 'text-accent-lime' : 'text-text-faint hover:text-text'
             }`}

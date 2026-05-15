@@ -29,8 +29,8 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
 
   const handleClick = () => {
     setSelectedTrendId(trend.id);
-    setTab('production');
-    router.push('/production');
+    setTab('recommend');
+    router.push('/recommend');
   };
 
   return (

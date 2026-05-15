@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
-import PlatformPulse from '@/components/dashboard/PlatformPulse';
-import Heatmap from '@/components/dashboard/Heatmap';
+import CategoryTabs from '@/components/dashboard/CategoryTabs';
+import Top3Cards from '@/components/dashboard/Top3Cards';
+import KeywordInsight from '@/components/dashboard/KeywordInsight';
 import SearchBar from '@/components/dashboard/SearchBar';
-import FilterSummary from '@/components/dashboard/FilterSummary';
-import FilterModal from '@/components/dashboard/FilterModal';
-import FeaturedCard from '@/components/dashboard/FeaturedCard';
 import TrendRow from '@/components/dashboard/TrendRow';
 
 export default function DashboardPage() {
@@ -20,6 +18,14 @@ export default function DashboardPage() {
   const searchQuery = useStore((s) => s.searchQuery);
   const persona = useStore((s) => s.persona);
   const hasPersona = !!persona;
+  const personaResult = useStore((s) => s.personaResult);
+  const personaInput = useStore((s) => s.personaInput);
+
+  const CATEGORY_LABEL: Record<string, string> = {
+    food: '요리/먹방', beauty: '뷰티/패션', lifestyle: '라이프스타일',
+    edu: '정보/자기계발', gaming: '게임', fitness: '운동/건강', art: '예술',
+    dance: '댄스', pets: '반려동물',
+  };
 
   useEffect(() => {
     setTab('dashboard');
@@ -66,9 +72,6 @@ export default function DashboardPage() {
     return [...result].sort((a, b) => b.growth - a.growth);
   }, [trends, filterPlatform, filterCategory, searchQuery]);
 
-  const featured = filtered[0];
-  const rest = filtered.slice(1);
-
   return (
     <>
       <div className="px-6 pb-3.5 flex justify-between items-end">
@@ -82,7 +85,30 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {!hasPersona && (
+      {/* 온보딩 기반 카테고리 뱃지 */}
+      {personaResult && personaInput && (
+        <div className="mx-6 mb-4 px-3.5 py-2.5 rounded-xl flex items-center justify-between"
+          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.2)' }}>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[8px] tracking-widest uppercase" style={{ color: 'rgba(200,255,87,0.6)' }}>
+              내 카테고리
+            </span>
+            <span className="font-semibold text-[12px] text-text">
+              {CATEGORY_LABEL[personaInput.category] ?? personaInput.category}
+            </span>
+            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded"
+              style={{ background: 'rgba(200,255,87,0.12)', color: 'var(--accent-lime)' }}>
+              {personaResult.personaType}
+            </span>
+          </div>
+          <Link href="/onboarding"
+            className="font-mono text-[9px] text-text-faint hover:text-text transition-colors no-underline">
+            변경
+          </Link>
+        </div>
+      )}
+
+      {!hasPersona && !personaResult && (
         <Link
           href="/recommend"
           className="mx-6 mb-4 mt-1 px-3.5 py-3 rounded-xl border border-dashed flex items-center justify-between gap-3 no-underline transition-all hover:translate-y-[-1px]"
@@ -108,10 +134,10 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      <PlatformPulse />
-      <Heatmap />
+      <CategoryTabs />
+      <Top3Cards trends={filtered} />
+      <KeywordInsight trends={filtered} category={filterCategory} />
       <SearchBar />
-      <FilterSummary count={filtered.length} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 px-8 text-text-faint">
@@ -122,24 +148,19 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : (
-        <>
-          {featured && <FeaturedCard trend={featured} />}
-          {rest.length > 0 && (
-            <>
-              <div className="px-6 pt-1 pb-3 font-mono text-[10px] tracking-widest text-text-faint uppercase">
-                이어지는 {rest.length}개 트렌드
-              </div>
-              <div className="px-6">
-                {rest.map((t, i) => (
-                  <TrendRow key={t.id} trend={t} rank={i + 2} />
-                ))}
-              </div>
-            </>
-          )}
-        </>
+        filtered.length > 3 && (
+          <>
+            <div className="px-6 pt-1 pb-3 font-mono text-[10px] tracking-widest text-text-faint uppercase">
+              더 보기 {filtered.length - 3}개 트렌드
+            </div>
+            <div className="px-6">
+              {filtered.slice(3).map((t, i) => (
+                <TrendRow key={t.id} trend={t} rank={i + 4} />
+              ))}
+            </div>
+          </>
+        )
       )}
-
-      <FilterModal />
     </>
   );
 }

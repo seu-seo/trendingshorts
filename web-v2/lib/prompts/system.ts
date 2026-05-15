@@ -14,6 +14,9 @@ const CATEGORY_LABEL: Record<Trend['category'], string> = {
   lifestyle: '라이프스타일',
   gaming: '게이밍',
   pets: '펫',
+  edu: '정보/자기계발',
+  fitness: '운동/건강',
+  art: '예술',
 };
 
 export function buildSystemPrompt(args: {

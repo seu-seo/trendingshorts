@@ -27,4 +27,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   lifestyle: '일상',
   gaming: '게임',
   pets: '펫',
+  edu: '자기계발',
+  fitness: '운동',
+  art: '예술',
 };

@@ -1,7 +1,7 @@
 export type Platform = 'youtube' | 'tiktok' | 'instagram';
 export type PlatformFilter = Platform | 'all';
 
-export type Category = 'food' | 'beauty' | 'dance' | 'lifestyle' | 'gaming' | 'pets';
+export type Category = 'food' | 'beauty' | 'dance' | 'lifestyle' | 'gaming' | 'pets' | 'edu' | 'fitness' | 'art';
 
 export type Lifecycle = 'rising' | 'peak' | 'fading';
 
@@ -72,3 +72,41 @@ export interface Persona {
 export type Tab = 'dashboard' | 'recommend';
 
 export type SortOrder = 'trending' | 'recent';
+
+// ── 온보딩 설문 & 페르소나 ──────────────────────────────────
+
+export type OnboardingCategory = 'food' | 'beauty' | 'lifestyle' | 'edu' | 'gaming' | 'fitness' | 'art';
+
+export interface PersonaInput {
+  platform: Platform | 'multi';
+  category: OnboardingCategory;
+  experience: 0 | 1 | 2 | 3 | 4 | 5;
+  goal: 'growth' | 'monetize' | 'brand' | 'community';
+  styles: string[];
+  pain: 'idea' | 'trend' | 'reach' | 'consistency';
+  uploadFreq: number;
+}
+
+export interface PersonaResult {
+  personaType: string;
+  personaTagline: string;
+  personaSummary: string;
+  topTrends: {
+    keyword: string;
+    state: 'rising' | 'peak' | 'fading';
+    fitScore: number;
+    reason: string;
+  }[];
+  hookPatterns: {
+    type: string;
+    example: string;
+  }[];
+  actionItems: {
+    title: string;
+    desc: string;
+  }[];
+  weeklyPlan: string;
+  typeIndex: 0 | 1 | 2 | 3;
+}
+
+export type AppIntent = 'explore' | 'produce';

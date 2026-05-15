@@ -1,6 +1,20 @@
 import { create } from 'zustand';
-import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse } from './types';
+import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent } from './types';
 import { ALL_TRENDS } from './data/trends';
+
+const LS_KEY = 'sfp_onboarding';
+
+function loadOnboarding(): { input: PersonaInput; result: PersonaResult } | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveOnboarding(input: PersonaInput, result: PersonaResult) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ input, result })); } catch {}
+}
 
 interface AppState {
   // Tab
@@ -20,7 +34,15 @@ interface AppState {
   setSearchQuery: (q: string) => void;
   clearAllFilters: () => void;
 
-  // Persona
+  // Onboarding
+  onboardingDone: boolean;
+  personaInput: PersonaInput | null;
+  personaResult: PersonaResult | null;
+  appIntent: AppIntent | null;
+  completeOnboarding: (input: PersonaInput, result: PersonaResult, intent: AppIntent) => void;
+  resetOnboarding: () => void;
+
+  // Persona (기존 간단 버전 — PersonaModal용)
   persona: Persona | null;
   setPersona: (p: Persona) => void;
 
@@ -48,7 +70,9 @@ interface AppState {
   setSelectedTrendId: (id: number | null) => void;
 }
 
-export const useStore = create<AppState>((set, get) => ({
+export const useStore = create<AppState>((set, get) => {
+  const saved = loadOnboarding();
+  return {
   currentTab: 'dashboard',
   setTab: (tab) => set({ currentTab: tab }),
 
@@ -56,12 +80,31 @@ export const useStore = create<AppState>((set, get) => ({
   setTrends: (t) => set({ trends: t }),
 
   filterPlatform: 'all',
-  filterCategory: null,
+  filterCategory: saved ? (saved.input.category as Category) : null,
   searchQuery: '',
   setFilterPlatform: (p) => set({ filterPlatform: p }),
   setFilterCategory: (c) => set({ filterCategory: c }),
   setSearchQuery: (q) => set({ searchQuery: q }),
   clearAllFilters: () => set({ filterPlatform: 'all', filterCategory: null }),
+
+  onboardingDone: !!saved,
+  personaInput: saved?.input ?? null,
+  personaResult: saved?.result ?? null,
+  appIntent: null,
+  completeOnboarding: (input, result, intent) => {
+    saveOnboarding(input, result);
+    set({
+      onboardingDone: true,
+      personaInput: input,
+      personaResult: result,
+      appIntent: intent,
+      filterCategory: input.category as Category,
+    });
+  },
+  resetOnboarding: () => {
+    try { localStorage.removeItem(LS_KEY); } catch {}
+    set({ onboardingDone: false, personaInput: null, personaResult: null, appIntent: null, filterCategory: null });
+  },
 
   persona: null,
   setPersona: (p) => set({ persona: p }),
@@ -92,4 +135,5 @@ export const useStore = create<AppState>((set, get) => ({
 
   selectedTrendId: null,
   setSelectedTrendId: (id) => set({ selectedTrendId: id }),
-}));
+  };
+});

@@ -1,499 +1,151 @@
-{
-  "name": "shortform-pulse",
-  "version": "0.1.0",
-  "lockfileVersion": 3,
-  "requires": true,
-  "packages": {
-    "": {
-      "name": "shortform-pulse",
-      "version": "0.1.0",
-      "dependencies": {
-        "next": "14.2.0",
-        "react": "^18.3.1",
-        "react-dom": "^18.3.1"
-      },
-      "devDependencies": {
-        "@types/node": "^20",
-        "@types/react": "^18",
-        "@types/react-dom": "^18",
-        "typescript": "^5"
-      }
-    },
-    "node_modules/@next/env": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/env/-/env-14.2.0.tgz",
-      "integrity": "sha512-4+70ELtSbRtYUuyRpAJmKC8NHBW2x1HMje9KO2Xd7IkoyucmV9SjgO+qeWMC0JWkRQXgydv1O7yKOK8nu/rITQ==",
-      "license": "MIT"
-    },
-    "node_modules/@next/swc-darwin-arm64": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-14.2.0.tgz",
-      "integrity": "sha512-kHktLlw0AceuDnkVljJ/4lTJagLzDiO3klR1Fzl2APDFZ8r+aTxNaNcPmpp0xLMkgRwwk6sggYeqq0Rz9K4zzA==",
-      "cpu": [
-        "arm64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "darwin"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-darwin-x64": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-14.2.0.tgz",
-      "integrity": "sha512-HFSDu7lb1U3RDxXNeKH3NGRR5KyTPBSUTuIOr9jXoAso7i76gNYvnTjbuzGVWt2X5izpH908gmOYWtI7un+JrA==",
-      "cpu": [
-        "x64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "darwin"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-linux-arm64-gnu": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-14.2.0.tgz",
-      "integrity": "sha512-iQsoWziO5ZMxDWZ4ZTCAc7hbJ1C9UDj/gATSqTaMjW2bJFwAsvf9UM79AKnljBl73uPZ+V0kH4rvnHTco4Ps2w==",
-      "cpu": [
-        "arm64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-linux-arm64-musl": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-14.2.0.tgz",
-      "integrity": "sha512-0JOk2uzLUt8fJK5LpsKKZa74zAch7bJjjgJzR9aOMs231AlE4gPYzsSm430ckZitjPGKeH5bgDZjqwqJQKIS2w==",
-      "cpu": [
-        "arm64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-linux-x64-gnu": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-14.2.0.tgz",
-      "integrity": "sha512-uYHkuTzX0NM6biKNp7hdKTf+BF0iMV254SxO0B8PgrQkxUBKGmk5ysHKB+FYBfdf9xei/t8OIKlXJs9ckD943A==",
-      "cpu": [
-        "x64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-linux-x64-musl": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-14.2.0.tgz",
-      "integrity": "sha512-paN89nLs2dTBDtfXWty1/NVPit+q6ldwdktixYSVwiiAz647QDCd+EIYqoiS+/rPG3oXs/A7rWcJK9HVqfnMVg==",
-      "cpu": [
-        "x64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "linux"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-win32-arm64-msvc": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-14.2.0.tgz",
-      "integrity": "sha512-j1oiidZisnymYjawFqEfeGNcE22ZQ7lGUaa4pGOCVWrWeIDkPSj8zYgS9TzMNlg17Q3wSWCQC/F5uJAhSh7qcA==",
-      "cpu": [
-        "arm64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "win32"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-win32-ia32-msvc": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-win32-ia32-msvc/-/swc-win32-ia32-msvc-14.2.0.tgz",
-      "integrity": "sha512-6ff6F4xb+QGD1jhx/dOT9Ot7PQ/GAYekV9ykwEh2EFS/cLTyU4Y3cXkX5cNtNIhpctS5NvyjW9gIksRNErYE0A==",
-      "cpu": [
-        "ia32"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "win32"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@next/swc-win32-x64-msvc": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-14.2.0.tgz",
-      "integrity": "sha512-09DbG5vXAxz0eTFSf1uebWD36GF3D5toynRkgo2AlSrxwGZkWtJ1RhmrczRYQ17eD5bdo4FZ0ibiffdq5kc4vg==",
-      "cpu": [
-        "x64"
-      ],
-      "license": "MIT",
-      "optional": true,
-      "os": [
-        "win32"
-      ],
-      "engines": {
-        "node": ">= 10"
-      }
-    },
-    "node_modules/@swc/counter": {
-      "version": "0.1.3",
-      "resolved": "https://registry.npmjs.org/@swc/counter/-/counter-0.1.3.tgz",
-      "integrity": "sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==",
-      "license": "Apache-2.0"
-    },
-    "node_modules/@swc/helpers": {
-      "version": "0.5.5",
-      "resolved": "https://registry.npmjs.org/@swc/helpers/-/helpers-0.5.5.tgz",
-      "integrity": "sha512-KGYxvIOXcceOAbEk4bi/dVLEK9z8sZ0uBB3Il5b1rhfClSpcX0yfRO0KmTkqR2cnQDymwLB+25ZyMzICg/cm/A==",
-      "license": "Apache-2.0",
-      "dependencies": {
-        "@swc/counter": "^0.1.3",
-        "tslib": "^2.4.0"
-      }
-    },
-    "node_modules/@types/node": {
-      "version": "20.19.41",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-20.19.41.tgz",
-      "integrity": "sha512-ECymXOukMnOoVkC2bb1Vc/w/836DXncOg5m8Xj1RH7xSHZJWNYY6Zh7EH477vcnD5egKNNfy2RpNOmuChhFPgQ==",
-      "dev": true,
-      "license": "MIT",
-      "dependencies": {
-        "undici-types": "~6.21.0"
-      }
-    },
-    "node_modules/@types/prop-types": {
-      "version": "15.7.15",
-      "resolved": "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.15.tgz",
-      "integrity": "sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==",
-      "dev": true,
-      "license": "MIT"
-    },
-    "node_modules/@types/react": {
-      "version": "18.3.28",
-      "resolved": "https://registry.npmjs.org/@types/react/-/react-18.3.28.tgz",
-      "integrity": "sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==",
-      "dev": true,
-      "license": "MIT",
-      "dependencies": {
-        "@types/prop-types": "*",
-        "csstype": "^3.2.2"
-      }
-    },
-    "node_modules/@types/react-dom": {
-      "version": "18.3.7",
-      "resolved": "https://registry.npmjs.org/@types/react-dom/-/react-dom-18.3.7.tgz",
-      "integrity": "sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==",
-      "dev": true,
-      "license": "MIT",
-      "peerDependencies": {
-        "@types/react": "^18.0.0"
-      }
-    },
-    "node_modules/busboy": {
-      "version": "1.6.0",
-      "resolved": "https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz",
-      "integrity": "sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==",
-      "dependencies": {
-        "streamsearch": "^1.1.0"
-      },
-      "engines": {
-        "node": ">=10.16.0"
-      }
-    },
-    "node_modules/caniuse-lite": {
-      "version": "1.0.30001792",
-      "resolved": "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001792.tgz",
-      "integrity": "sha512-hVLMUZFgR4JJ6ACt1uEESvQN1/dBVqPAKY0hgrV70eN3391K6juAfTjKZLKvOMsx8PxA7gsY1/tLMMTcfFLLpw==",
-      "funding": [
-        {
-          "type": "opencollective",
-          "url": "https://opencollective.com/browserslist"
-        },
-        {
-          "type": "tidelift",
-          "url": "https://tidelift.com/funding/github/npm/caniuse-lite"
-        },
-        {
-          "type": "github",
-          "url": "https://github.com/sponsors/ai"
-        }
-      ],
-      "license": "CC-BY-4.0"
-    },
-    "node_modules/client-only": {
-      "version": "0.0.1",
-      "resolved": "https://registry.npmjs.org/client-only/-/client-only-0.0.1.tgz",
-      "integrity": "sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==",
-      "license": "MIT"
-    },
-    "node_modules/csstype": {
-      "version": "3.2.3",
-      "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
-      "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
-      "dev": true,
-      "license": "MIT"
-    },
-    "node_modules/graceful-fs": {
-      "version": "4.2.11",
-      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.11.tgz",
-      "integrity": "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==",
-      "license": "ISC"
-    },
-    "node_modules/js-tokens": {
-      "version": "4.0.0",
-      "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
-      "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==",
-      "license": "MIT"
-    },
-    "node_modules/loose-envify": {
-      "version": "1.4.0",
-      "resolved": "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz",
-      "integrity": "sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==",
-      "license": "MIT",
-      "dependencies": {
-        "js-tokens": "^3.0.0 || ^4.0.0"
-      },
-      "bin": {
-        "loose-envify": "cli.js"
-      }
-    },
-    "node_modules/nanoid": {
-      "version": "3.3.12",
-      "resolved": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.12.tgz",
-      "integrity": "sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==",
-      "funding": [
-        {
-          "type": "github",
-          "url": "https://github.com/sponsors/ai"
-        }
-      ],
-      "license": "MIT",
-      "bin": {
-        "nanoid": "bin/nanoid.cjs"
-      },
-      "engines": {
-        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
-      }
-    },
-    "node_modules/next": {
-      "version": "14.2.0",
-      "resolved": "https://registry.npmjs.org/next/-/next-14.2.0.tgz",
-      "integrity": "sha512-2T41HqJdKPqheR27ll7MFZ3gtTYvGew7cUc0PwPSyK9Ao5vvwpf9bYfP4V5YBGLckHF2kEGvrLte5BqLSv0s8g==",
-      "deprecated": "This version has a security vulnerability. Please upgrade to a patched version. See https://nextjs.org/blog/security-update-2025-12-11 for more details.",
-      "license": "MIT",
-      "dependencies": {
-        "@next/env": "14.2.0",
-        "@swc/helpers": "0.5.5",
-        "busboy": "1.6.0",
-        "caniuse-lite": "^1.0.30001579",
-        "graceful-fs": "^4.2.11",
-        "postcss": "8.4.31",
-        "styled-jsx": "5.1.1"
-      },
-      "bin": {
-        "next": "dist/bin/next"
-      },
-      "engines": {
-        "node": ">=18.17.0"
-      },
-      "optionalDependencies": {
-        "@next/swc-darwin-arm64": "14.2.0",
-        "@next/swc-darwin-x64": "14.2.0",
-        "@next/swc-linux-arm64-gnu": "14.2.0",
-        "@next/swc-linux-arm64-musl": "14.2.0",
-        "@next/swc-linux-x64-gnu": "14.2.0",
-        "@next/swc-linux-x64-musl": "14.2.0",
-        "@next/swc-win32-arm64-msvc": "14.2.0",
-        "@next/swc-win32-ia32-msvc": "14.2.0",
-        "@next/swc-win32-x64-msvc": "14.2.0"
-      },
-      "peerDependencies": {
-        "@opentelemetry/api": "^1.1.0",
-        "@playwright/test": "^1.41.2",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "sass": "^1.3.0"
-      },
-      "peerDependenciesMeta": {
-        "@opentelemetry/api": {
-          "optional": true
-        },
-        "@playwright/test": {
-          "optional": true
-        },
-        "sass": {
-          "optional": true
-        }
-      }
-    },
-    "node_modules/picocolors": {
-      "version": "1.1.1",
-      "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
-      "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==",
-      "license": "ISC"
-    },
-    "node_modules/postcss": {
-      "version": "8.4.31",
-      "resolved": "https://registry.npmjs.org/postcss/-/postcss-8.4.31.tgz",
-      "integrity": "sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==",
-      "funding": [
-        {
-          "type": "opencollective",
-          "url": "https://opencollective.com/postcss/"
-        },
-        {
-          "type": "tidelift",
-          "url": "https://tidelift.com/funding/github/npm/postcss"
-        },
-        {
-          "type": "github",
-          "url": "https://github.com/sponsors/ai"
-        }
-      ],
-      "license": "MIT",
-      "dependencies": {
-        "nanoid": "^3.3.6",
-        "picocolors": "^1.0.0",
-        "source-map-js": "^1.0.2"
-      },
-      "engines": {
-        "node": "^10 || ^12 || >=14"
-      }
-    },
-    "node_modules/react": {
-      "version": "18.3.1",
-      "resolved": "https://registry.npmjs.org/react/-/react-18.3.1.tgz",
-      "integrity": "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==",
-      "license": "MIT",
-      "dependencies": {
-        "loose-envify": "^1.1.0"
-      },
-      "engines": {
-        "node": ">=0.10.0"
-      }
-    },
-    "node_modules/react-dom": {
-      "version": "18.3.1",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz",
-      "integrity": "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==",
-      "license": "MIT",
-      "dependencies": {
-        "loose-envify": "^1.1.0",
-        "scheduler": "^0.23.2"
-      },
-      "peerDependencies": {
-        "react": "^18.3.1"
-      }
-    },
-    "node_modules/scheduler": {
-      "version": "0.23.2",
-      "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.23.2.tgz",
-      "integrity": "sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==",
-      "license": "MIT",
-      "dependencies": {
-        "loose-envify": "^1.1.0"
-      }
-    },
-    "node_modules/source-map-js": {
-      "version": "1.2.1",
-      "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
-      "integrity": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==",
-      "license": "BSD-3-Clause",
-      "engines": {
-        "node": ">=0.10.0"
-      }
-    },
-    "node_modules/streamsearch": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz",
-      "integrity": "sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==",
-      "engines": {
-        "node": ">=10.0.0"
-      }
-    },
-    "node_modules/styled-jsx": {
-      "version": "5.1.1",
-      "resolved": "https://registry.npmjs.org/styled-jsx/-/styled-jsx-5.1.1.tgz",
-      "integrity": "sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==",
-      "license": "MIT",
-      "dependencies": {
-        "client-only": "0.0.1"
-      },
-      "engines": {
-        "node": ">= 12.0.0"
-      },
-      "peerDependencies": {
-        "react": ">= 16.8.0 || 17.x.x || ^18.0.0-0"
-      },
-      "peerDependenciesMeta": {
-        "@babel/core": {
-          "optional": true
-        },
-        "babel-plugin-macros": {
-          "optional": true
-        }
-      }
-    },
-    "node_modules/tslib": {
-      "version": "2.8.1",
-      "resolved": "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
-      "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
-      "license": "0BSD"
-    },
-    "node_modules/typescript": {
-      "version": "5.9.3",
-      "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
-      "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
-      "dev": true,
-      "license": "Apache-2.0",
-      "bin": {
-        "tsc": "bin/tsc",
-        "tsserver": "bin/tsserver"
-      },
-      "engines": {
-        "node": ">=14.17"
-      }
-    },
-    "node_modules/undici-types": {
-      "version": "6.21.0",
-      "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz",
-      "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==",
-      "dev": true,
-      "license": "MIT"
-    }
-  }
+# Shortform Pulse
+
+> 크리에이터를 위한 페르소나 기반 콘텐츠 추천 데모  
+> 7개 질문으로 페르소나를 진단하고, 트렌드·인플루언서·콘티를 한 번에 추천합니다.
+
+**🎯 타겟**: 30대 직장인 · 구독자 1만 이하 스몰 크리에이터
+
+---
+
+## 🧭 화면 흐름
+
+```
+스플래시
+  ↓ (자동, 2.5초)
+7개 설문 (Q1~Q7)
+  ↓
+페르소나 매칭 로딩
+  ↓
+페르소나 결과 화면 + 의도 선택
+  ↓
+┌──────────────┬──────────────┬──────────────┐
+│ 🟢 숏폼 트렌드 │ 🩷 인플루언서  │ 🔵 콘티 추천   │
+│ → Dashboard │ → Trends     │ → Conti      │
+└──────────────┴──────────────┴──────────────┘
+```
+
+각 탭은 하단 탭바로 자유롭게 이동 가능합니다.
+
+---
+
+## 📋 7개 설문 항목
+
+| Q | 항목 | 타입 |
+|---|------|------|
+| Q1 | 주력 플랫폼 (YouTube / TikTok / Instagram / 멀티) | 단일 선택 |
+| Q2 | 채널 카테고리 (요리·뷰티·라이프·정보·게임·운동·예술) | 단일 선택 |
+| Q3 | 크리에이터 경력 | 슬라이더 (0–5+) |
+| Q4 | 가장 큰 목표 (팔로워·수익화·브랜드·팬덤) | 단일 선택 |
+| Q5 | 콘텐츠 스타일 키워드 | 다중 선택 (최대 3) |
+| Q6 | 가장 큰 고민 (아이디어·꾸준함·퀄리티·시간) | 단일 선택 |
+| Q7 | 주당 업로드 빈도 | 슬라이더 (1–7편) |
+
+---
+
+## 🎭 페르소나 4종
+
+| Type | Name | Color | 특징 |
+|------|------|-------|------|
+| 00 | THE TRENDSETTER | 🟢 라임 | 트렌드 감각으로 선점하는 타입 |
+| 01 | THE NICHE KING | 🔵 블루 | 깊이 있는 전문성으로 차별화 |
+| 02 | THE HOOKER | 🟠 오렌지 | 첫 3초로 사로잡는 타입 |
+| 03 | THE EXPERIMENTER | 🟣 퍼플 | 독창적인 실험으로 차별화 |
+
+페르소나는 **Q5 스타일 키워드**를 기반으로 자동 매칭됩니다.
+
+---
+
+## 📱 주요 화면
+
+### 1. Dashboard — 카테고리 트렌드
+- 카테고리 TOP 3 영상 (조회수 · 좋아요 · 해시태그)
+- 주요 키워드 분석 (HOT · RISING 표시)
+- Gemini AI 트렌드 인사이트
+
+### 2. Trends — 인플루언서 추천
+- ⭐ BEST MATCH 히어로 카드 (1위)
+  - 매칭 점수 · 팔로워 · 업로드 빈도 · 7일 성장세 · 매칭 이유
+- 컴팩트 리스트 (2~4위)
+
+### 3. Conti — 콘티 추천
+- 3문항 추가 설문 (분위기 / 영상 길이 / 강조 포인트)
+- Gemini AI 생성 로딩
+- 대본 3종 (정보형 · 감성형 · 유머형)
+- 6컷 콘티 (시간대별 가이드)
+
+---
+
+## 🛠 기술 스택
+
+- **Next.js 14** (App Router)
+- **TypeScript**
+- **React Context** (상태 관리)
+- **글로벌 CSS** (디자인 시스템)
+
+### 디자인 시스템
+- 다크 모드 (`#0A0A0B`)
+- 액센트: 라임 `#C8FF57` · 핑크 `#FF3D7F` · 블루 `#57C8FF`
+- 폰트: Bebas Neue (디스플레이) · Instrument Sans (본문) · JetBrains Mono (모노)
+
+---
+
+## 🚀 실행 방법
+
+```bash
+npm install
+npm run dev
+# → http://localhost:3000
+```
+
+### 빌드 (정적 export)
+
+```bash
+npm run build
+# → out/ 폴더에 정적 파일 생성
+```
+
+---
+
+## 📂 프로젝트 구조
+
+```
+shortform-pulse/
+├── app/
+│   ├── layout.tsx        # 루트 레이아웃
+│   ├── page.tsx          # 메인 페이지 (모든 화면 통합)
+│   └── globals.css       # 전역 스타일
+├── lib/
+│   ├── types.ts          # 공통 타입 정의
+│   ├── personas.ts       # 페르소나 + 매칭 로직
+│   ├── questions.ts      # 7개 설문 데이터
+│   ├── categoryData.ts   # 카테고리별 mock 데이터
+│   └── SurveyContext.tsx # 설문 응답 상태
+├── components/           # (추후 분리용)
+└── app/api/              # (Gemini API 통합 예정)
+```
+
+---
+
+## 🔗 API 통합 가이드 (Gemini)
+
+`app/api/recommend/route.ts` 형태로 Route Handler 추가:
+
+```ts
+export async function POST(req: Request) {
+  const { persona, category, intent } = await req.json();
+  // Gemini API 호출
+  return Response.json({ recommendations: [...] });
 }
+```
+
+**Gemini API 호출 시점 (총 3회):**
+1. 키워드 분석 (Dashboard 진입 시)
+2. 영상 소재·컨셉 추천 (Conti CTA 클릭 시)
+3. 대본·콘티 생성 (위와 통합 가능)
+
+---
+
+## 👥 팀
+
+KAIST BIZ 699911 그룹 프로젝트  
+2026.05.16 발표

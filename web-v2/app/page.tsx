@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
-import PlatformPulse from '@/components/dashboard/PlatformPulse';
-import Heatmap from '@/components/dashboard/Heatmap';
+import CategoryTabs from '@/components/dashboard/CategoryTabs';
+import Top3Cards from '@/components/dashboard/Top3Cards';
+import KeywordInsight from '@/components/dashboard/KeywordInsight';
 import SearchBar from '@/components/dashboard/SearchBar';
-import FilterSummary from '@/components/dashboard/FilterSummary';
-import FilterModal from '@/components/dashboard/FilterModal';
-import FeaturedCard from '@/components/dashboard/FeaturedCard';
 import TrendRow from '@/components/dashboard/TrendRow';
 
 export default function DashboardPage() {
@@ -74,9 +72,6 @@ export default function DashboardPage() {
     return [...result].sort((a, b) => b.growth - a.growth);
   }, [trends, filterPlatform, filterCategory, searchQuery]);
 
-  const featured = filtered[0];
-  const rest = filtered.slice(1);
-
   return (
     <>
       <div className="px-6 pb-3.5 flex justify-between items-end">
@@ -139,10 +134,10 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      <PlatformPulse />
-      <Heatmap />
+      <CategoryTabs />
+      <Top3Cards trends={filtered} />
+      <KeywordInsight trends={filtered} category={filterCategory} />
       <SearchBar />
-      <FilterSummary count={filtered.length} />
 
       {filtered.length === 0 ? (
         <div className="text-center py-16 px-8 text-text-faint">
@@ -153,24 +148,19 @@ export default function DashboardPage() {
           </div>
         </div>
       ) : (
-        <>
-          {featured && <FeaturedCard trend={featured} />}
-          {rest.length > 0 && (
-            <>
-              <div className="px-6 pt-1 pb-3 font-mono text-[10px] tracking-widest text-text-faint uppercase">
-                이어지는 {rest.length}개 트렌드
-              </div>
-              <div className="px-6">
-                {rest.map((t, i) => (
-                  <TrendRow key={t.id} trend={t} rank={i + 2} />
-                ))}
-              </div>
-            </>
-          )}
-        </>
+        filtered.length > 3 && (
+          <>
+            <div className="px-6 pt-1 pb-3 font-mono text-[10px] tracking-widest text-text-faint uppercase">
+              더 보기 {filtered.length - 3}개 트렌드
+            </div>
+            <div className="px-6">
+              {filtered.slice(3).map((t, i) => (
+                <TrendRow key={t.id} trend={t} rank={i + 4} />
+              ))}
+            </div>
+          </>
+        )
       )}
-
-      <FilterModal />
     </>
   );
 }

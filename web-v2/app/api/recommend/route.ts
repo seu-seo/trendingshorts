@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { google } from '@ai-sdk/google';
 import { generateText } from 'ai';
-import type { Persona, SurveyAnswers, Trend, RecommendConcept, RecommendResponse } from '@/lib/types';
+import type { Persona, PersonaResult, SurveyAnswers, Trend, RecommendConcept, RecommendResponse } from '@/lib/types';
 
 interface RecommendRequest {
   persona: Persona | null;
+  personaResult?: PersonaResult | null;
   surveyAnswers: SurveyAnswers;
   trends: Trend[];
 }
@@ -46,7 +47,7 @@ const MOCK_CONCEPTS: RecommendConcept[] = [
   },
 ];
 
-function buildPrompt(persona: Persona | null, surveyAnswers: SurveyAnswers, trends: Trend[]): string {
+function buildPrompt(persona: Persona | null, surveyAnswers: SurveyAnswers, trends: Trend[], personaResult?: PersonaResult | null): string {
   const topTrends = trends
     .slice(0, 8)
     .map((t) => `- "${t.title}" (${t.platform}, 조회수 ${t.views?.toLocaleString() ?? '?'}, 해시태그: ${t.hashtags})`)
@@ -64,6 +65,13 @@ function buildPrompt(persona: Persona | null, surveyAnswers: SurveyAnswers, tren
   const trendUsage = TREND_LABEL[surveyAnswers.trendUsage] ?? surveyAnswers.trendUsage;
   const energy = ENERGY_LABEL[surveyAnswers.energy] ?? surveyAnswers.energy;
 
+  const personaSection = personaResult ? `
+## 페르소나 분석 결과
+- 유형: ${personaResult.personaType} — ${personaResult.personaTagline}
+- 특성: ${personaResult.personaSummary}
+- 효과적인 훅 패턴: ${personaResult.hookPatterns.map((h) => `"${h.example}"`).join(', ')}
+- 이번 주 추천 키워드: ${personaResult.topTrends.map((t) => t.keyword).join(', ')}` : '';
+
   return `당신은 숏폼 크리에이터 영상 기획 전문가입니다.
 
 ## 크리에이터 정보
@@ -71,7 +79,7 @@ function buildPrompt(persona: Persona | null, surveyAnswers: SurveyAnswers, tren
 - 콘텐츠 스타일: ${styles}
 - 트렌드 활용도: ${trendUsage}
 - 영상 에너지: ${energy}
-- 타겟 오디언스: ${surveyAnswers.targetAudience}
+- 타겟 오디언스: ${surveyAnswers.targetAudience}${personaSection}
 
 ## 이번 주 트렌딩 영상 TOP 8
 ${topTrends}
@@ -106,7 +114,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { persona, surveyAnswers, trends } = body;
+  const { persona, personaResult, surveyAnswers, trends } = body;
   if (!surveyAnswers) {
     return NextResponse.json({ error: 'Missing surveyAnswers' }, { status: 400 });
   }
@@ -119,7 +127,7 @@ export async function POST(req: Request) {
   try {
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
-      prompt: buildPrompt(persona, surveyAnswers, trends ?? []),
+      prompt: buildPrompt(persona, surveyAnswers, trends ?? [], personaResult),
     });
 
     const jsonMatch = text.match(/\[[\s\S]*\]/);

@@ -97,9 +97,8 @@ const LIFECYCLE = {
 } as const;
 
 const INTENT_OPTIONS: { value: AppIntent; emoji: string; label: string; sub: string }[] = [
-  { value: 'explore',    emoji: '📊', label: '트렌드 확인',     sub: '내 카테고리 트렌드 탐색' },
-  { value: 'influencer', emoji: '🌟', label: '인플루언서 추천', sub: '참고할 채널 찾기' },
-  { value: 'produce',    emoji: '🎬', label: '제작 도움',       sub: '대본·콘티 바로 생성' },
+  { value: 'explore', emoji: '📊', label: '트렌드 확인', sub: '내 카테고리 트렌드 탐색' },
+  { value: 'produce', emoji: '🎬', label: '제작 도움',   sub: '대본·콘티 바로 생성' },
 ];
 
 type Screen = 'intro' | 'survey' | 'loading' | 'result';
@@ -200,7 +199,7 @@ export default function OnboardingPage() {
 
   // ── 설문 ───────────────────────────────────────────────────
   if (screen === 'survey') return (
-    <div className="min-h-screen flex flex-col px-6 py-8" style={{ background: 'var(--bg)' }}>
+    <div className="px-6 py-8 pb-10" style={{ background: 'var(--bg)' }}>
       {/* 진행 바 */}
       <div className="mb-6">
         <div className="flex justify-between font-mono text-[9px] text-text-faint mb-2">
@@ -218,7 +217,7 @@ export default function OnboardingPage() {
 
       {/* 단일 선택 */}
       {'options' in q && q.type === 'single' && (
-        <div className="flex flex-col gap-2.5 flex-1">
+        <div className="flex flex-col gap-2.5 mb-8">
           {q.options.map(opt => {
             const sel = val === opt.value;
             return (
@@ -239,7 +238,7 @@ export default function OnboardingPage() {
 
       {/* 다중 선택 */}
       {'options' in q && q.type === 'multi' && (
-        <div className="grid grid-cols-2 gap-2.5 flex-1">
+        <div className="grid grid-cols-2 gap-2.5 mb-8">
           {q.options.map(opt => {
             const sel = (val as string[])?.includes(opt.value);
             return (
@@ -261,7 +260,7 @@ export default function OnboardingPage() {
 
       {/* 슬라이더 */}
       {'slider' in q && q.type === 'slider' && (
-        <div className="flex-1">
+        <div className="mb-8">
           <input type="range" min={q.slider.min} max={q.slider.max} value={val as number}
             onChange={e => setAnswer(q.id, Number(e.target.value))}
             className="w-full cursor-pointer"
@@ -279,7 +278,7 @@ export default function OnboardingPage() {
       )}
 
       <button onClick={next} disabled={!canProceed()}
-        className="mt-8 w-full py-4 rounded-2xl font-semibold text-[15px] transition-all"
+        className="w-full py-4 rounded-2xl font-semibold text-[15px] transition-all"
         style={{
           background: canProceed() ? ACCENT[0] : 'rgba(255,255,255,0.08)',
           color: canProceed() ? '#0a0a0a' : 'rgba(255,255,255,0.3)',

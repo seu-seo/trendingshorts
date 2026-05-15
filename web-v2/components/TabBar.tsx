@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { Tab } from '@/lib/types';
 
@@ -40,6 +41,9 @@ const TABS: TabItem[] = [
 export default function TabBar() {
   const currentTab = useStore((s) => s.currentTab);
   const setTab = useStore((s) => s.setTab);
+  const pathname = usePathname();
+
+  if (pathname === '/onboarding') return null;
 
   return (
     <div

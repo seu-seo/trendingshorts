@@ -25,6 +25,9 @@ export default function RecommendPage() {
   const setTab = useStore((s) => s.setTab);
   const trends = useStore((s) => s.trends);
   const persona = useStore((s) => s.persona);
+  const personaInput = useStore((s) => s.personaInput);
+  const personaResult = useStore((s) => s.personaResult);
+  const filterCategory = useStore((s) => s.filterCategory);
   const surveyAnswers = useStore((s) => s.surveyAnswers);
   const setSurveyAnswers = useStore((s) => s.setSurveyAnswers);
   const recommendResult = useStore((s) => s.recommendResult);
@@ -59,11 +62,27 @@ export default function RecommendPage() {
     setScriptData(null);
     setLoading(true);
     setError(null);
+
+    // 온보딩 페르소나 우선 사용, 없으면 구형 persona fallback
+    const effectivePersona = persona ?? (personaInput
+      ? { category: personaInput.category, styles: personaInput.styles }
+      : null);
+
+    // 카테고리 필터된 트렌드 우선 전달 (없으면 전체)
+    const relevantTrends = filterCategory
+      ? trends.filter((t) => t.category === filterCategory)
+      : trends;
+
     try {
       const res = await fetch('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ persona, surveyAnswers: answers, trends }),
+        body: JSON.stringify({
+          persona: effectivePersona,
+          personaResult,
+          surveyAnswers: answers,
+          trends: relevantTrends,
+        }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();

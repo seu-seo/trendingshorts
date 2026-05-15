@@ -1,9 +1,12 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import AppHeader from './AppHeader';
 import TabBar from './TabBar';
 
 export default function PhoneFrame({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isOnboarding = pathname === '/onboarding';
   return (
     <div
       className="h-screen w-screen grid place-items-center p-5"
@@ -26,7 +29,7 @@ export default function PhoneFrame({ children }: { children: React.ReactNode }) 
         }}
       >
         <AppHeader />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin pb-24">
+        <div className={`flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin ${isOnboarding ? '' : 'pb-24'}`}>
           {children}
         </div>
         <TabBar />

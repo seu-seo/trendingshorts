@@ -20,6 +20,14 @@ export default function DashboardPage() {
   const searchQuery = useStore((s) => s.searchQuery);
   const persona = useStore((s) => s.persona);
   const hasPersona = !!persona;
+  const personaResult = useStore((s) => s.personaResult);
+  const personaInput = useStore((s) => s.personaInput);
+
+  const CATEGORY_LABEL: Record<string, string> = {
+    food: '요리/먹방', beauty: '뷰티/패션', lifestyle: '라이프스타일',
+    edu: '정보/자기계발', gaming: '게임', fitness: '운동/건강', art: '예술',
+    dance: '댄스', pets: '반려동물',
+  };
 
   useEffect(() => {
     setTab('dashboard');
@@ -82,7 +90,30 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {!hasPersona && (
+      {/* 온보딩 기반 카테고리 뱃지 */}
+      {personaResult && personaInput && (
+        <div className="mx-6 mb-4 px-3.5 py-2.5 rounded-xl flex items-center justify-between"
+          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.2)' }}>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[8px] tracking-widest uppercase" style={{ color: 'rgba(200,255,87,0.6)' }}>
+              내 카테고리
+            </span>
+            <span className="font-semibold text-[12px] text-text">
+              {CATEGORY_LABEL[personaInput.category] ?? personaInput.category}
+            </span>
+            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded"
+              style={{ background: 'rgba(200,255,87,0.12)', color: 'var(--accent-lime)' }}>
+              {personaResult.personaType}
+            </span>
+          </div>
+          <Link href="/onboarding"
+            className="font-mono text-[9px] text-text-faint hover:text-text transition-colors no-underline">
+            변경
+          </Link>
+        </div>
+      )}
+
+      {!hasPersona && !personaResult && (
         <Link
           href="/recommend"
           className="mx-6 mb-4 mt-1 px-3.5 py-3 rounded-xl border border-dashed flex items-center justify-between gap-3 no-underline transition-all hover:translate-y-[-1px]"

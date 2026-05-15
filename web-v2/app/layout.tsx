@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import PhoneFrame from '@/components/PhoneFrame';
+import OnboardingGate from '@/components/OnboardingGate';
 
 export const metadata: Metadata = {
   title: 'Shortform Pulse',
@@ -8,15 +9,13 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <body>
-        <PhoneFrame>{children}</PhoneFrame>
+        <PhoneFrame>
+          <OnboardingGate>{children}</OnboardingGate>
+        </PhoneFrame>
       </body>
     </html>
   );

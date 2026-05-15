@@ -37,6 +37,7 @@ export default function RecommendPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [activeConceptIndex, setActiveConceptIndex] = useState<number | null>(null);
+  const [activeConcept, setActiveConcept] = useState<import('@/lib/types').RecommendConcept | null>(null);
   const [scriptData, setScriptData] = useState<GenerateResponse | null>(null);
   const [scriptLoading, setScriptLoading] = useState(false);
   const [scriptError, setScriptError] = useState<string | null>(null);
@@ -76,6 +77,7 @@ export default function RecommendPage() {
 
   const handlePickConcept = async (index: number, concept: RecommendConcept) => {
     setActiveConceptIndex(index);
+    setActiveConcept(concept);
     setScriptData(null);
     setScriptLoading(true);
     setScriptError(null);
@@ -308,6 +310,7 @@ export default function RecommendPage() {
                   index={i + 1}
                   total={3}
                   recommended={scriptData.recommendedTone === tone}
+                  concept={activeConcept}
                 />
               ))}
               <div

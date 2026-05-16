@@ -15,7 +15,7 @@ export interface KeywordItem {
 
 export interface InsightsResponse {
   keywords: KeywordItem[];
-  insight: string;
+  bullets: string[];
   source: 'live' | 'mock';
 }
 
@@ -41,11 +41,15 @@ ${tagCloud}
     {"text": "#키워드", "type": "rising"},
     {"text": "#키워드", "type": ""}
   ],
-  "insight": "이번 주 트렌드 핵심 인사이트를 2문장으로 (한국어, 구체적 수치 포함)"
+  "bullets": [
+    "수치로 시작하는 충격적인 첫 번째 인사이트 — 크리에이터가 바로 쓸 수 있는 액션 포인트",
+    "트렌드 패턴을 짚는 두 번째 인사이트 — 지금 해야 하는 이유",
+    "놓치면 손해인 세 번째 팁 — 구체적인 실행 방법"
+  ]
 }
 
 - keywords: 6개, type은 hot(1~2위 급상승), rising(상승 중), ''(보통)
-- insight: 크리에이터가 바로 활용할 수 있는 구체적 포인트`;
+- bullets: 2~3개, 각 항목은 구체적 수치/사실로 시작해 후킹하게, 한국어`;
 }
 
 function buildFallback(category: string): InsightsResponse {
@@ -59,7 +63,11 @@ function buildFallback(category: string): InsightsResponse {
         { text: '#습관만들기', type: '' },
         { text: '#브이로그', type: '' },
       ],
-      insight: '"루틴" 키워드가 2주 연속 상위권. 미라클 모닝과 저녁 루틴 콘텐츠가 강세이며, 한 달 챌린지 형식 영상의 완주율이 평균 대비 1.8배 높습니다.',
+      bullets: [
+        '#루틴 2주 연속 상위권 — 미라클모닝·저녁 루틴 즉시 제작 권장',
+        '챌린지 시리즈 완주율 1.8배 — 구독자 락인 최적 포맷',
+        '자취 + 자기계발 조합 — 20대 알고리즘 공략 공식',
+      ],
       source: 'mock',
     },
     beauty: {
@@ -71,7 +79,11 @@ function buildFallback(category: string): InsightsResponse {
         { text: '#여름메이크업', type: '' },
         { text: '#쿨톤', type: '' },
       ],
-      insight: '여름 시즌 진입과 함께 "글로우/물광 피부" 관련 콘텐츠가 급상승. Before-After 변화를 보여주는 영상 포맷이 평균 조회수 3.1배 높습니다.',
+      bullets: [
+        'Before-After 포맷 조회수 3.1배 — 변화 비교 영상 즉시 촬영 권장',
+        '#글로우메이크업 3주 연속 급등 — 여름 시즌 최대 기회',
+        '5분 이내 튜토리얼 완주율 67% — 긴 영상 대비 압도적 우위',
+      ],
       source: 'mock',
     },
     food: {
@@ -83,7 +95,11 @@ function buildFallback(category: string): InsightsResponse {
         { text: '#한식', type: '' },
         { text: '#편의점', type: '' },
       ],
-      insight: '"혼자 빠르게 만들 수 있는 요리"가 폭발적으로 상승 중. 직장인 타깃 콘텐츠가 강세이고, 30초 내외 영상이 평균 조회수 2.3배 더 높습니다.',
+      bullets: [
+        '30초 이내 레시피 조회수 2.3배 — 속도 압축이 핵심',
+        '직장인 타깃 5분 요리 — 현재 최대 블루오션',
+        '편의점 신상 조합 리뷰 — 24시간 내 바이럴 확률 1위 포맷',
+      ],
       source: 'mock',
     },
   };
@@ -96,7 +112,11 @@ function buildFallback(category: string): InsightsResponse {
       { text: '#일상', type: '' },
       { text: '#viral', type: '' },
     ],
-    insight: `${category} 카테고리에서 짧고 임팩트 있는 콘텐츠가 강세입니다. 첫 3초 훅을 강화하면 이탈률을 크게 낮출 수 있습니다.`,
+    bullets: [
+      '첫 3초 훅 강화 시 이탈률 40% 감소 — 오프닝 문장이 핵심',
+      `${category} 카테고리 — 짧고 임팩트 있는 콘텐츠가 알고리즘 상위 독점`,
+      '일정한 업로드 주기 — 불규칙 채널 대비 노출 2.1배 우위',
+    ],
     source: 'mock',
   };
 }

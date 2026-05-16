@@ -8,8 +8,8 @@ import type { Trend } from '@/lib/types';
 // Apify 토큰 없거나 명시적으로 비활성화된 경우 mock 데이터 사용
 const APIFY_DISABLED = process.env.DISABLE_APIFY === 'true' || !process.env.APIFY_API_TOKEN;
 
-// Vercel Edge Cache: 30분마다 재검증
-export const revalidate = 1800;
+// Vercel Edge Cache: 24시간마다 재검증
+export const revalidate = 86400;
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24시간
 

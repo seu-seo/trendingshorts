@@ -25,7 +25,6 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
       ? 'bg-fading text-text'
       : 'bg-accent-lime text-bg';
 
-  const fadeClass = trend.growth < 0;
 
   const handleClick = () => {
     setSelectedTrendId(trend.id);
@@ -70,12 +69,9 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
       </div>
       <div className="mt-2.5 pt-2.5 border-t border-dashed border-border flex justify-between items-center">
         <span className="font-mono text-[10px] text-text-faint">{trend.hashtags}</span>
-        <span
-          className={`font-mono text-[11px] font-bold flex items-center gap-1 ${
-            fadeClass ? 'text-text-faint' : 'text-accent-lime'
-          }`}
-        >
-          {trend.growth}
+        <span className="font-mono text-[10px] font-bold"
+          style={{ color: trend.lifecycle === 'rising' ? '#C8FF57' : trend.lifecycle === 'peak' ? '#57C8FF' : '#666' }}>
+          {trend.lifecycle === 'rising' ? '▲ RISING' : trend.lifecycle === 'peak' ? '◆ PEAK' : '▼ FADING'}
         </span>
       </div>
     </button>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
 import CategoryTabs from '@/components/dashboard/CategoryTabs';
-import Top3Cards from '@/components/dashboard/Top3Cards';
+import PlatformPulse from '@/components/dashboard/PlatformPulse';
 import KeywordInsight from '@/components/dashboard/KeywordInsight';
 import SearchBar from '@/components/dashboard/SearchBar';
 import TrendRow from '@/components/dashboard/TrendRow';
@@ -69,7 +69,12 @@ export default function DashboardPage() {
       );
     }
 
-    return [...result].sort((a, b) => b.growth - a.growth);
+    const LIFECYCLE_ORDER = { rising: 0, peak: 1, fading: 2 };
+    return [...result].sort((a, b) => {
+      const lc = LIFECYCLE_ORDER[a.lifecycle] - LIFECYCLE_ORDER[b.lifecycle];
+      if (lc !== 0) return lc;
+      return b.growth - a.growth;
+    });
   }, [trends, filterPlatform, filterCategory, searchQuery]);
 
   return (
@@ -135,7 +140,7 @@ export default function DashboardPage() {
       )}
 
       <CategoryTabs />
-      <Top3Cards trends={filtered} />
+      <PlatformPulse />
       <KeywordInsight trends={filtered} category={filterCategory} />
       <SearchBar />
 

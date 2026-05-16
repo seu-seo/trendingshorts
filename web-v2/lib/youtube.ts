@@ -1,5 +1,6 @@
 import type { Trend } from './types';
-import { deriveLifecycle, mapCategory, PLATFORM_LABEL } from './utils';
+import { deriveLifecycle, PLATFORM_LABEL } from './utils';
+import type { Category } from './types';
 
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 const HANGUL_RE = /[가-힣]/;
@@ -29,16 +30,27 @@ function timeAgo(publishedAt: string): string {
   return `${Math.floor(hours / 24)}일 전`;
 }
 
-const CATEGORY_MAP: Record<string, string> = {
-  '1': '콘텐츠', '10': '음악', '15': '펫', '17': '운동', '19': '여행',
-  '20': '게임', '22': '일상 브이로그', '23': '유머', '24': '댄스',
-  '25': '일상 브이로그', '26': '뷰티', '27': 'DIY', '28': '테크',
+// YouTube Data API v3 categoryId → 온보딩 카테고리 직접 매핑
+const CATEGORY_MAP: Record<string, Category> = {
+  '1':  'art',       // Film & Animation
+  '10': 'art',       // Music
+  '15': 'lifestyle', // Pets & Animals (온보딩에 pets 없음 → lifestyle)
+  '17': 'fitness',   // Sports
+  '19': 'lifestyle', // Travel & Events
+  '20': 'gaming',    // Gaming
+  '22': 'lifestyle', // People & Blogs
+  '23': 'lifestyle', // Comedy
+  '24': 'lifestyle', // Entertainment
+  '25': 'edu',       // News & Politics
+  '26': 'beauty',    // Howto & Style
+  '27': 'edu',       // Education
+  '28': 'edu',       // Science & Technology
 };
 
 const THUMBNAIL_MAP: Record<string, string> = {
-  '1': '🎬', '10': '🎵', '15': '🐾', '17': '🏃', '19': '✈️',
-  '20': '🎮', '22': '☀️', '23': '😂', '24': '🎭', '25': '📺',
-  '26': '💄', '27': '🔨', '28': '💻',
+  '1': '🎬', '10': '🎵', '15': '🐾', '17': '💪', '19': '✈️',
+  '20': '🎮', '22': '📹', '23': '😂', '24': '🎭', '25': '📰',
+  '26': '💄', '27': '💡', '28': '🖥️',
 };
 
 interface VideoDetail {
@@ -110,22 +122,21 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
     const views = parseInt(video.statistics.viewCount || '0');
     const likes = parseInt(video.statistics.likeCount || '0');
     const comments = parseInt(video.statistics.commentCount || '0');
-    const krCategory = CATEGORY_MAP[video.snippet.categoryId] || '일상 브이로그';
     const tags = (video.snippet.tags ?? []).filter((t) => t.startsWith('#')).slice(0, 4);
 
     return {
       id: index + 1,
       platform: 'youtube' as const,
       platformLabel: PLATFORM_LABEL.youtube,
-      category: mapCategory(krCategory),
-      lifecycle: deriveLifecycle(views),
+      category: CATEGORY_MAP[video.snippet.categoryId] ?? 'lifestyle',
+      lifecycle: deriveLifecycle(views > 0 ? Math.round((likes + comments) / views * 1000) : 0),
       title: video.snippet.title,
       creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,
       views,
       likes,
       comments,
       shares: 0,
-      growth: 0,
+      growth: views > 0 ? Math.round((likes + comments) / views * 1000) : 0,
       duration: formatDuration(seconds),
       thumb: THUMBNAIL_MAP[video.snippet.categoryId] || '🎬',
       time: timeAgo(video.snippet.publishedAt),

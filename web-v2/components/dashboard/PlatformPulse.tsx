@@ -92,8 +92,9 @@ export default function PlatformPulse() {
             <div className="text-[11px] font-semibold leading-snug line-clamp-2 min-h-[28px]">
               {top.title}
             </div>
-            <div className="font-mono text-[11px] font-bold text-accent-lime mt-auto">
-              {top.growth >= 0 ? '+' : ''}{top.growth}%
+            <div className="font-mono text-[10px] font-bold mt-auto"
+              style={{ color: top.lifecycle === 'rising' ? '#C8FF57' : top.lifecycle === 'peak' ? '#57C8FF' : '#666' }}>
+              {top.lifecycle === 'rising' ? '▲ RISING' : top.lifecycle === 'peak' ? '◆ PEAK' : '▼ FADING'}
             </div>
           </button>
         ))}

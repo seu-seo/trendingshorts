@@ -19,21 +19,21 @@ export function recommendTone(
   let scoreStory = 0;
   let scoreHooking = 0;
 
-  // --- 신호 1: 24h 성장률 (growth) ---
-  // emerging 트렌드(>500%) → 후킹형, 안정 구간(0-300%) → 스토리, 음수(fading) → 후킹 + 주의
-  if (trend.growth >= 500) {
+  // --- 신호 1: 참여율 지수 (likes+comments / views × 1000) ---
+  // 높을수록 바이럴 → 후킹형, 낮으면 fading → 차별화 훅 필요
+  if (trend.growth >= 150) {
     scoreHooking += 25;
-    signals.push(`24h 성장률 +${trend.growth}% (바이럴 패턴 — 빠른 어그로 필요)`);
-  } else if (trend.growth >= 300) {
+    signals.push(`참여율 지수 ${trend.growth} (바이럴 패턴 — 빠른 어그로 필요)`);
+  } else if (trend.growth >= 80) {
     scoreHooking += 15;
     scoreInformative += 5;
-    signals.push(`24h 성장률 +${trend.growth}% (강한 상승)`);
-  } else if (trend.growth > 0) {
+    signals.push(`참여율 지수 ${trend.growth} (높은 참여 — 강한 반응 유도)`);
+  } else if (trend.growth >= 30) {
     scoreStory += 10;
-    signals.push(`성장률 +${trend.growth}% (안정 구간 — 스토리 전개에 유리)`);
-  } else if (trend.growth <= 0) {
+    signals.push(`참여율 지수 ${trend.growth} (보통 — 스토리 전개에 유리)`);
+  } else {
     scoreHooking += 10;
-    signals.push(`성장률 ${trend.growth}% (fading — 차별화된 훅 필요)`);
+    signals.push(`참여율 지수 ${trend.growth} (낮음 — 차별화된 훅 필요)`);
   }
 
   // --- 신호 2: lifecycle ---

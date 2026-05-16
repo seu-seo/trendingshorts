@@ -84,7 +84,7 @@ export interface PersonaInput {
   goal: 'growth' | 'monetize' | 'brand' | 'community';
   styles: string[];
   pain: 'idea' | 'trend' | 'reach' | 'consistency';
-  uploadFreq: number;
+  uploadFreq: 'low' | 'mid' | 'high' | 'undecided';
 }
 
 export interface PersonaResult {

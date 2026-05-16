@@ -4,11 +4,11 @@ import { CATEGORY_LABELS } from '@/lib/data/categories';
 import { useStore } from '@/lib/store';
 import type { Category, Platform, Trend } from '@/lib/types';
 
-const CATS: Category[] = ['food', 'beauty', 'dance', 'lifestyle', 'gaming', 'pets', 'edu', 'fitness', 'art'];
+const CATS: Category[] = ['food', 'beauty', 'lifestyle', 'gaming', 'edu', 'fitness', 'art'];
 const PLATFORMS: Platform[] = ['youtube', 'tiktok', 'instagram'];
 const PLATFORM_SHORT: Record<Platform, string> = { youtube: 'YT', tiktok: 'TT', instagram: 'IG' };
 const CAT_EMOJIS: Record<Category, string> = {
-  food: '🍔', beauty: '💄', dance: '💃', lifestyle: '📹', gaming: '🎮', pets: '🐶',
+  food: '🍔', beauty: '💄', lifestyle: '📹', gaming: '🎮',
   edu: '💡', fitness: '💪', art: '🎨',
 };
 

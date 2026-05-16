@@ -1,12 +1,13 @@
 import type { CategoryOption, StyleOption, Category } from '../types';
 
 export const CATEGORIES: CategoryOption[] = [
-  { value: 'food', emoji: '🍔', label: '먹방 / 요리' },
+  { value: 'food', emoji: '🍔', label: '요리 / 먹방' },
   { value: 'beauty', emoji: '💄', label: '뷰티 / 패션' },
-  { value: 'dance', emoji: '💃', label: '댄스 / 챌린지' },
-  { value: 'lifestyle', emoji: '📹', label: '일상 브이로그' },
+  { value: 'lifestyle', emoji: '📹', label: '라이프스타일' },
   { value: 'gaming', emoji: '🎮', label: '게임 / 엔터' },
-  { value: 'pets', emoji: '🐶', label: '펫 / 동물' },
+  { value: 'edu', emoji: '💡', label: '자기계발 / 정보' },
+  { value: 'fitness', emoji: '💪', label: '운동 / 건강' },
+  { value: 'art', emoji: '🎨', label: '예술 / 음악' },
 ];
 
 export const STYLES: StyleOption[] = [
@@ -21,13 +22,11 @@ export const STYLES: StyleOption[] = [
 ];
 
 export const CATEGORY_LABELS: Record<Category, string> = {
-  food: '먹방',
-  beauty: '뷰티',
-  dance: '댄스',
-  lifestyle: '일상',
+  food: '요리/먹방',
+  beauty: '뷰티/패션',
+  lifestyle: '라이프스타일',
   gaming: '게임',
-  pets: '펫',
   edu: '자기계발',
-  fitness: '운동',
-  art: '예술',
+  fitness: '운동/건강',
+  art: '예술/음악',
 };

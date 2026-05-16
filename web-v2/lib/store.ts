@@ -68,6 +68,10 @@ interface AppState {
   // Production — selected trend
   selectedTrendId: number | null;
   setSelectedTrendId: (id: number | null) => void;
+
+  // Action sheet
+  actionSheetTrend: Trend | null;
+  setActionSheetTrend: (trend: Trend | null) => void;
 }
 
 export const useStore = create<AppState>((set, get) => {
@@ -79,13 +83,13 @@ export const useStore = create<AppState>((set, get) => {
   trends: ALL_TRENDS,
   setTrends: (t) => set({ trends: t }),
 
-  filterPlatform: 'all',
+  filterPlatform: 'youtube',
   filterCategory: saved ? (saved.input.category as Category) : null,
   searchQuery: '',
   setFilterPlatform: (p) => set({ filterPlatform: p }),
   setFilterCategory: (c) => set({ filterCategory: c }),
   setSearchQuery: (q) => set({ searchQuery: q }),
-  clearAllFilters: () => set({ filterPlatform: 'all', filterCategory: null }),
+  clearAllFilters: () => set({ filterPlatform: 'youtube', filterCategory: null }),
 
   onboardingDone: !!saved,
   personaInput: saved?.input ?? null,
@@ -135,5 +139,8 @@ export const useStore = create<AppState>((set, get) => {
 
   selectedTrendId: null,
   setSelectedTrendId: (id) => set({ selectedTrendId: id }),
+
+  actionSheetTrend: null,
+  setActionSheetTrend: (trend) => set({ actionSheetTrend: trend }),
   };
 });

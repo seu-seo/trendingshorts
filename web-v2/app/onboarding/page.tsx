@@ -80,14 +80,19 @@ const QUESTIONS = [
   {
     id: 'uploadFreq' as keyof PersonaInput,
     label: '앞으로 주당 몇 편을 올리고 싶나요?',
-    type: 'slider' as const,
-    slider: { min: 1, max: 14, labels: [] },
+    type: 'single' as const,
+    options: [
+      { value: 'low', label: '1편 이하' },
+      { value: 'mid', label: '1~2편' },
+      { value: 'high', label: '3편 이상' },
+      { value: 'undecided', label: '미정' },
+    ],
   },
 ] as const;
 
 const DEFAULT: PersonaInput = {
   platform: 'youtube', category: 'lifestyle', experience: 0,
-  goal: 'growth', styles: [], pain: 'idea', uploadFreq: 3,
+  goal: 'growth', styles: [], pain: 'idea', uploadFreq: 'mid',
 };
 
 const LIFECYCLE = {

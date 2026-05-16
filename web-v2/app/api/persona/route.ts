@@ -3,6 +3,10 @@ import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import type { PersonaInput, PersonaResult } from '@/lib/types';
 
+const UPLOAD_FREQ_LABEL: Record<string, string> = {
+  low: '주 1편 이하', mid: '주 1~2편', high: '주 3편 이상', undecided: '미정',
+};
+
 function buildPrompt(input: PersonaInput): string {
   const platformLabel: Record<string, string> = {
     youtube: 'YouTube Shorts', tiktok: 'TikTok',
@@ -32,7 +36,7 @@ function buildPrompt(input: PersonaInput): string {
 - 목표: ${goalLabel[input.goal] ?? input.goal}
 - 콘텐츠 스타일: ${input.styles.join(', ')}
 - 가장 큰 고민: ${painLabel[input.pain] ?? input.pain}
-- 주당 목표 업로드: ${input.uploadFreq}편
+- 주당 목표 업로드: ${UPLOAD_FREQ_LABEL[input.uploadFreq] ?? input.uploadFreq}
 
 다음 JSON 스키마로만 응답하세요. 마크다운 코드블록 및 설명 텍스트 금지, 순수 JSON만:
 {
@@ -77,7 +81,7 @@ function buildFallback(input: PersonaInput): PersonaResult {
       { title: '트렌드 3개 저장하기', desc: '오늘 대시보드에서 내 카테고리 트렌드 3개를 북마크하세요.' },
       { title: '같은 카테고리 채널 5개 분석', desc: '잘 되는 채널의 훅 패턴을 메모해두세요.' },
     ],
-    weeklyPlan: `이번 주는 ${input.category} 카테고리의 트렌딩 콘텐츠를 참고해 ${input.uploadFreq}편 업로드를 목표로 합니다.`,
+    weeklyPlan: `이번 주는 ${input.category} 카테고리의 트렌딩 콘텐츠를 참고해 ${UPLOAD_FREQ_LABEL[input.uploadFreq] ?? input.uploadFreq} 업로드를 목표로 합니다.`,
     typeIndex: 0,
   };
 }

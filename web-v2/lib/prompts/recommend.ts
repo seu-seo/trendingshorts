@@ -54,13 +54,13 @@ export function recommendTone(
     scoreInformative += 15;
     signals.push(`카테고리 '${cat}' — 정보형 친화 (튜토리얼/공략 포맷)`);
   }
-  if (cat === 'food' || cat === 'lifestyle' || cat === 'pets') {
+  if (cat === 'food' || cat === 'lifestyle') {
     scoreStory += 15;
     signals.push(`카테고리 '${cat}' — 스토리형 친화 (일상 내러티브)`);
   }
-  if (cat === 'dance') {
+  if (cat === 'fitness' || cat === 'art') {
     scoreHooking += 15;
-    signals.push(`카테고리 'dance' — 후킹형 친화 (챌린지 포맷)`);
+    signals.push(`카테고리 '${cat}' — 후킹형 친화 (챌린지/비주얼 포맷)`);
   }
 
   // --- 신호 4: 페르소나 styles (있을 때만) ---

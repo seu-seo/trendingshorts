@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
 import CategoryTabs from '@/components/dashboard/CategoryTabs';
+import PlatformTabs from '@/components/dashboard/PlatformTabs';
 import PlatformPulse from '@/components/dashboard/PlatformPulse';
 import KeywordInsight from '@/components/dashboard/KeywordInsight';
-import SearchBar from '@/components/dashboard/SearchBar';
 import TrendRow from '@/components/dashboard/TrendRow';
+import TrendActionSheet from '@/components/dashboard/TrendActionSheet';
 
 export default function DashboardPage() {
   const setTab = useStore((s) => s.setTab);
@@ -15,7 +16,6 @@ export default function DashboardPage() {
   const setTrends = useStore((s) => s.setTrends);
   const filterPlatform = useStore((s) => s.filterPlatform);
   const filterCategory = useStore((s) => s.filterCategory);
-  const searchQuery = useStore((s) => s.searchQuery);
   const persona = useStore((s) => s.persona);
   const hasPersona = !!persona;
   const personaResult = useStore((s) => s.personaResult);
@@ -23,8 +23,7 @@ export default function DashboardPage() {
 
   const CATEGORY_LABEL: Record<string, string> = {
     food: '요리/먹방', beauty: '뷰티/패션', lifestyle: '라이프스타일',
-    edu: '정보/자기계발', gaming: '게임', fitness: '운동/건강', art: '예술',
-    dance: '댄스', pets: '반려동물',
+    edu: '정보/자기계발', gaming: '게임', fitness: '운동/건강', art: '예술/음악',
   };
 
   useEffect(() => {
@@ -32,7 +31,6 @@ export default function DashboardPage() {
   }, [setTab]);
 
   useEffect(() => {
-    // YouTube 먼저 빠르게 로드, TikTok·Instagram 이후 순차 추가
     const platforms = ['youtube', 'tiktok', 'instagram'] as const;
     let accumulated: typeof trends = [];
 
@@ -50,32 +48,25 @@ export default function DashboardPage() {
     })();
   }, [setTrends]);
 
-  const filtered = useMemo(() => {
-    let result = trends;
+  const LIFECYCLE_ORDER = { rising: 0, peak: 1, fading: 2 } as const;
 
-    if (filterPlatform !== 'all') {
-      result = result.filter((t) => t.platform === filterPlatform);
-    }
+  // 카테고리 필터만 적용 — PlatformPulse·KeywordInsight에 사용 (3개 플랫폼 전체)
+  const categoryFiltered = useMemo(() => {
+    let result = trends;
     if (filterCategory) {
       result = result.filter((t) => t.category === filterCategory);
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (t) =>
-          t.title.toLowerCase().includes(q) ||
-          t.creator.toLowerCase().includes(q) ||
-          t.hashtags.toLowerCase().includes(q)
-      );
-    }
-
-    const LIFECYCLE_ORDER = { rising: 0, peak: 1, fading: 2 };
     return [...result].sort((a, b) => {
       const lc = LIFECYCLE_ORDER[a.lifecycle] - LIFECYCLE_ORDER[b.lifecycle];
       if (lc !== 0) return lc;
       return b.growth - a.growth;
     });
-  }, [trends, filterPlatform, filterCategory, searchQuery]);
+  }, [trends, filterCategory]);
+
+  // 카테고리 + 플랫폼 필터 — 트렌드 목록에 사용
+  const platformFiltered = useMemo(() => {
+    return categoryFiltered.filter((t) => t.platform === filterPlatform);
+  }, [categoryFiltered, filterPlatform]);
 
   return (
     <>
@@ -90,7 +81,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 온보딩 기반 카테고리 뱃지 */}
       {personaResult && personaInput && (
         <div className="mx-6 mb-4 px-3.5 py-2.5 rounded-xl flex items-center justify-between"
           style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.2)' }}>
@@ -139,33 +129,43 @@ export default function DashboardPage() {
         </Link>
       )}
 
+      {/* ── 1. 카테고리 탭 ─────────────────────────────── */}
       <CategoryTabs />
-      <PlatformPulse />
-      <KeywordInsight trends={filtered} category={filterCategory} />
-      <SearchBar />
 
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 px-8 text-text-faint">
-          <div className="text-4xl mb-4 opacity-50">🔍</div>
-          <div className="font-display text-xl text-text-dim mb-2 tracking-tight">결과 없음</div>
+      {/* ── 2. 플랫폼별 TOP 1 (카테고리 기준, 3개 플랫폼 항상 표시) ── */}
+      <PlatformPulse />
+
+      {/* ── 3. 키워드 트렌드 (카테고리 기준, 전체 플랫폼) ─── */}
+      <KeywordInsight trends={categoryFiltered} category={filterCategory} />
+
+      {/* ── 4. 트렌드 목록 (카테고리 + 플랫폼 선택) ──────── */}
+      <div className="px-6 pt-2 pb-2 flex items-baseline justify-between">
+        <div className="font-mono text-[10px] tracking-widest text-text-faint uppercase">
+          트렌드 목록
+        </div>
+        <div className="font-mono text-[9px] text-text-faint">
+          {platformFiltered.length}개
+        </div>
+      </div>
+      <PlatformTabs />
+
+      {platformFiltered.length === 0 ? (
+        <div className="text-center py-14 px-8 text-text-faint">
+          <div className="text-4xl mb-4 opacity-40">📭</div>
+          <div className="font-display text-lg text-text-dim mb-1 tracking-tight">데이터 없음</div>
           <div className="text-xs leading-relaxed text-text-faint">
-            검색어나 필터를 조정해보세요
+            다른 플랫폼을 선택해보세요
           </div>
         </div>
       ) : (
-        filtered.length > 3 && (
-          <>
-            <div className="px-6 pt-1 pb-3 font-mono text-[10px] tracking-widest text-text-faint uppercase">
-              더 보기 {filtered.length - 3}개 트렌드
-            </div>
-            <div className="px-6">
-              {filtered.slice(3).map((t, i) => (
-                <TrendRow key={t.id} trend={t} rank={i + 4} />
-              ))}
-            </div>
-          </>
-        )
+        <div className="px-6 pb-6">
+          {platformFiltered.map((t, i) => (
+            <TrendRow key={t.id} trend={t} rank={i + 1} />
+          ))}
+        </div>
       )}
+
+      <TrendActionSheet />
     </>
   );
 }

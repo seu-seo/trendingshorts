@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { Platform } from '@/lib/types';
 
@@ -23,23 +22,16 @@ const PLATFORM_TEXT_COLORS: Record<Platform, string> = {
 };
 
 export default function PlatformPulse() {
-  const router = useRouter();
   const trends = useStore((s) => s.trends);
-  const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
-  const setTab = useStore((s) => s.setTab);
+  const filterCategory = useStore((s) => s.filterCategory);
+  const setActionSheetTrend = useStore((s) => s.setActionSheetTrend);
 
   const topPerPlatform = PLATFORMS.map((p) => {
     const top = trends
-      .filter((t) => t.platform === p.key)
+      .filter((t) => t.platform === p.key && (filterCategory === null || t.category === filterCategory))
       .sort((a, b) => b.growth - a.growth)[0];
     return { ...p, top };
   });
-
-  const goToProduction = (id: number) => {
-    setSelectedTrendId(id);
-    setTab('recommend');
-    router.push('/recommend');
-  };
 
   return (
     <div className="px-6 pb-6">
@@ -60,7 +52,7 @@ export default function PlatformPulse() {
         {topPerPlatform.filter(({ top }) => !!top).map(({ key, label, top }) => (
           <button
             key={key}
-            onClick={() => goToProduction(top.id)}
+            onClick={() => setActionSheetTrend(top)}
             className="bg-surface-1 border border-border rounded-2xl p-3 cursor-pointer transition-all hover:border-border-bright hover:-translate-y-0.5 relative overflow-hidden flex flex-col gap-2 text-left"
           >
             <div

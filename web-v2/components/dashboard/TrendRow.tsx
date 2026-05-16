@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { Trend } from '@/lib/types';
 
@@ -17,17 +16,11 @@ const PLATFORM_TEXT_COLORS: Record<string, string> = {
 };
 
 export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }) {
-  const router = useRouter();
-  const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
-  const setTab = useStore((s) => s.setTab);
+  const setActionSheetTrend = useStore((s) => s.setActionSheetTrend);
 
   const rising = trend.lifecycle === 'rising';
 
-  const handleClick = () => {
-    setSelectedTrendId(trend.id);
-    setTab('recommend');
-    router.push('/recommend');
-  };
+  const handleClick = () => setActionSheetTrend(trend);
 
   return (
     <button

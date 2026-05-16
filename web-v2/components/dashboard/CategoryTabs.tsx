@@ -5,24 +5,21 @@ import { useStore } from '@/lib/store';
 import type { Category, Trend } from '@/lib/types';
 
 const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
-  food:      { emoji: '🍔', label: '먹방' },
-  beauty:    { emoji: '💄', label: '뷰티' },
-  dance:     { emoji: '💃', label: '댄스' },
-  lifestyle: { emoji: '📹', label: '일상' },
+  food:      { emoji: '🍔', label: '요리/먹방' },
+  beauty:    { emoji: '💄', label: '뷰티/패션' },
+  lifestyle: { emoji: '📹', label: '라이프스타일' },
   gaming:    { emoji: '🎮', label: '게임' },
-  pets:      { emoji: '🐶', label: '펫' },
   edu:       { emoji: '💡', label: '자기계발' },
-  fitness:   { emoji: '💪', label: '운동' },
-  art:       { emoji: '🎨', label: '예술' },
+  fitness:   { emoji: '💪', label: '운동/건강' },
+  art:       { emoji: '🎨', label: '예술/음악' },
 };
+
+const CATEGORY_ORDER: Category[] = ['lifestyle', 'beauty', 'food', 'fitness', 'gaming', 'edu', 'art'];
 
 function getActiveCats(trends: Trend[]): Category[] {
   const seen = new Set<Category>();
   trends.forEach(t => seen.add(t.category as Category));
-  return Array.from(seen).sort((a, b) => {
-    const order = ['lifestyle', 'dance', 'beauty', 'food', 'gaming', 'pets', 'edu', 'fitness', 'art'];
-    return order.indexOf(a) - order.indexOf(b);
-  });
+  return CATEGORY_ORDER.filter(c => seen.has(c));
 }
 
 export default function CategoryTabs() {

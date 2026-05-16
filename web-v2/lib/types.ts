@@ -1,7 +1,7 @@
 export type Platform = 'youtube' | 'tiktok' | 'instagram';
 export type PlatformFilter = Platform | 'all';
 
-export type Category = 'food' | 'beauty' | 'dance' | 'lifestyle' | 'gaming' | 'pets' | 'edu' | 'fitness' | 'art';
+export type Category = 'food' | 'beauty' | 'lifestyle' | 'edu' | 'gaming' | 'fitness' | 'art';
 
 export type Lifecycle = 'rising' | 'peak' | 'fading';
 
@@ -75,7 +75,7 @@ export type SortOrder = 'trending' | 'recent';
 
 // ── 온보딩 설문 & 페르소나 ──────────────────────────────────
 
-export type OnboardingCategory = 'food' | 'beauty' | 'lifestyle' | 'edu' | 'gaming' | 'fitness' | 'art';
+export type OnboardingCategory = Category;
 
 export interface PersonaInput {
   platform: Platform | 'multi';

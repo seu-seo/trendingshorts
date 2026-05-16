@@ -88,7 +88,7 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
   if (!API_KEY) return [];
 
   const categoryResults = await Promise.all(
-    SHORTS_CATEGORY_IDS.map((cid) => {
+    SHORTS_CATEGORY_IDS.map(async (cid) => {
       const params = new URLSearchParams({
         part: 'snippet,statistics,contentDetails',
         chart: 'mostPopular',
@@ -97,15 +97,16 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
         maxResults: '50',
         key: API_KEY,
       });
-      return get<{ items: VideoDetail[] }>(`${BASE_URL}/videos?${params}`);
+      const data = await get<{ items: VideoDetail[] }>(`${BASE_URL}/videos?${params}`);
+      return { cid, items: data?.items ?? [] };
     })
   );
 
   const seen = new Set<string>();
-  const allVideos: VideoDetail[] = [];
-  for (const data of categoryResults) {
-    for (const video of data?.items ?? []) {
-      if (!seen.has(video.id)) { seen.add(video.id); allVideos.push(video); }
+  const allVideos: (VideoDetail & { requestedCid: string })[] = [];
+  for (const { cid, items } of categoryResults) {
+    for (const video of items) {
+      if (!seen.has(video.id)) { seen.add(video.id); allVideos.push({ ...video, requestedCid: cid }); }
     }
   }
 
@@ -128,7 +129,7 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
       id: index + 1,
       platform: 'youtube' as const,
       platformLabel: PLATFORM_LABEL.youtube,
-      category: CATEGORY_MAP[video.snippet.categoryId] ?? 'lifestyle',
+      category: CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
       lifecycle: deriveLifecycle(views > 0 ? Math.round((likes + comments) / views * 1000) : 0),
       title: video.snippet.title,
       creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,
@@ -138,7 +139,7 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
       shares: 0,
       growth: views > 0 ? Math.round((likes + comments) / views * 1000) : 0,
       duration: formatDuration(seconds),
-      thumb: THUMBNAIL_MAP[video.snippet.categoryId] || '🎬',
+      thumb: THUMBNAIL_MAP[video.requestedCid] || '🎬',
       time: timeAgo(video.snippet.publishedAt),
       hashtags: tags.length ? tags.join(' ') : '#shorts',
       videoUrl: `https://www.youtube.com/shorts/${video.id}`,

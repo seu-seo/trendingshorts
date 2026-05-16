@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { KeywordItem, InsightsResponse } from '@/app/api/insights/route';
 import type { Trend } from '@/lib/types';
+import { useStore } from '@/lib/store';
 
 const BUBBLE: Record<string, { size: number; bg: string; border: string; color: string; glow: string; fs: number }> = {
   hot:    { size: 84, bg: 'rgba(255,61,127,0.22)',  border: 'rgba(255,61,127,0.6)',   color: '#FF3D7F', glow: '0 0 20px rgba(255,61,127,0.4)',  fs: 11 },
@@ -23,13 +24,15 @@ const POS = [
 ];
 
 export default function KeywordInsight({ trends, category }: { trends: Trend[]; category: string | null }) {
-  const [data, setData] = useState<InsightsResponse | null>(null);
+  const insightsCache = useStore((s) => s.insightsCache);
+  const setInsightsCache = useStore((s) => s.setInsightsCache);
+  const cat = category ?? 'general';
   const [loading, setLoading] = useState(false);
+  const data = insightsCache.get(cat) ?? null;
 
   useEffect(() => {
-    if (trends.length === 0) return;
+    if (trends.length === 0 || insightsCache.has(cat)) return;
 
-    const cat = category ?? 'general';
     const titles = trends.slice(0, 20).map((t) => t.title);
     const hashtags = trends.flatMap((t) => t.hashtags.split(' ').filter(Boolean));
 
@@ -40,7 +43,7 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
       body: JSON.stringify({ category: cat, titles, hashtags }),
     })
       .then((r) => r.json())
-      .then((d: InsightsResponse) => setData(d))
+      .then((d: InsightsResponse) => setInsightsCache(cat, d))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [trends, category]);

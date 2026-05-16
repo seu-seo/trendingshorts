@@ -1,8 +1,9 @@
 import type { Category, Lifecycle, Platform } from './types';
 
-export function deriveLifecycle(views: number): Lifecycle {
-  if (views > 3_000_000) return 'rising';
-  if (views > 500_000) return 'peak';
+// engagement = (likes + comments) / views × 1000
+export function deriveLifecycle(engagement: number): Lifecycle {
+  if (engagement >= 100) return 'rising';
+  if (engagement >= 30)  return 'peak';
   return 'fading';
 }
 

@@ -21,7 +21,6 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
 
-  const fadeClass = trend.growth < 0;
   const rising = trend.lifecycle === 'rising';
 
   const handleClick = () => {
@@ -62,12 +61,9 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
           <span>{trend.time}</span>
         </div>
       </div>
-      <div
-        className={`font-mono text-[11px] font-bold flex-shrink-0 ${
-          fadeClass ? 'text-text-faint' : 'text-accent-lime'
-        }`}
-      >
-        {trend.growth}
+      <div className="font-mono text-[11px] font-bold flex-shrink-0"
+        style={{ color: trend.lifecycle === 'rising' ? '#C8FF57' : trend.lifecycle === 'peak' ? '#57C8FF' : '#555' }}>
+        {trend.lifecycle === 'rising' ? '▲' : trend.lifecycle === 'peak' ? '◆' : '▼'}
       </div>
     </button>
   );

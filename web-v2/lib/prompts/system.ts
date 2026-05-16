@@ -59,7 +59,7 @@ ${concept
 - 카테고리: ${category}
 - 플랫폼: ${platform}
 - 메트릭: 조회수 ${trend.views} · 좋아요 ${trend.likes} · 공유 ${trend.shares}
-- 24h 성장률: ${trend.growth >= 0 ? '+' : ''}${trend.growth}%
+- 참여율 지수: ${trend.growth} (좋아요+댓글/조회수 × 1000)
 - 라이프사이클: ${lifecycleHint}
 - 해시태그: ${trend.hashtags}
 - 크리에이터: ${trend.creator}

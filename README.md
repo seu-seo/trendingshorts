@@ -15,35 +15,43 @@ YouTube Shorts · TikTok · Instagram Reels의 트렌드를 한 곳에서 비교
 ## How
 
 ```
-Onboarding          Dashboard         Production
-──────────   →    ──────────────  →   ──────────
-설문 기반           크로스플랫폼          트렌드·페르소나
-페르소나 설정        트렌드 비교          기반 대본 초안
+Onboarding          Dashboard              Production
+──────────   →    ──────────────────  →   ──────────
+설문 7문항           카테고리 필터            트렌드·페르소나
+Gemini 페르소나      플랫폼별 TOP 1           기반 소재 추천
+설정               AI 키워드 분석            대본 초안 생성
+                  트렌드 목록
 ```
 
 ## Stack
 
-- Frontend / Backend: Next.js 14 (App Router + API Routes)
-- 외부 데이터: YouTube Data API v3, Apify (TikTok·Instagram 유료 플랜)
-- AI: Anthropic Claude
+- **Frontend / Backend:** Next.js 14 (App Router + API Routes)
+- **상태 관리:** Zustand
+- **외부 데이터:** YouTube Data API v3, Apify (TikTok·Instagram)
+- **AI:** Google Gemini 2.5 Flash (`@ai-sdk/google`)
+- **호스팅:** Vercel
+
+## Live Demo
+
+**https://web-v2-sand.vercel.app**
+
+## Features
+
+- **온보딩** — 7문항 설문 → Gemini 페르소나 분석 (카테고리·스타일·목표 기반)
+- **대시보드** — 카테고리 탭 → 플랫폼별 TOP 1 → AI 키워드 버블맵 → 트렌드 목록
+- **AI 키워드 분석** — 카테고리별 HOT/RISING 키워드 버블맵 + 수치 기반 인사이트 불릿 (24h 캐싱)
+- **추천·제작** — 페르소나 기반 소재 추천 → 대본 3종(Hook + Body + CTA) 생성
+- **Mock fallback** — Apify 비활성 시 mock 데이터로 데모 유지
 
 ## Docs
 
-- [SPEC.md](https://github.com/seu-seo/trendingshorts/blob/main/SPEC.md) — 제품 명세서 v6.5
-- [MANIFEST.md](docs/MANIFEST.md) — 프로젝트 핵심 가치 및 원칙
-- [WHYTREE.md](docs/WHYTREE.md) — Why Tree 분석 결과
-- [PREMORTEM.md](docs/PREMORTEM.md) — 프리모텀 분석 결과
-- [project_approach.md](docs/project_approach.md) — 프로젝트 방향
-
-## Demo (Sample)
-
-비교 검토용 디자인 샘플입니다. 구체적인 페르소나 분류, 추천 로직, 카테고리 통합 등은 향후 팀 합의 후 확정합니다.
-
-- [Sample 1](https://seu-seo.github.io/trendingshorts/demo/v2/) — 페르소나 설문 진입형
-- [Sample 2](https://seu-seo.github.io/trendingshorts/demo/v3/) — 대시보드 진입형 + 시각화
+- [spec.md](spec.md) — 제품 명세서 (현재 구현 기준)
+- [MANIFEST_v2.md](MANIFEST_v2.md) — 프로젝트 핵심 가치 및 원칙
+- [WHYTREE_v2.md](WHYTREE_v2.md) — Why Tree 분석 결과
+- [PREMORTEM_v2.md](PREMORTEM_v2.md) — 프리모텀 분석 결과
 
 ## Team
 
 KAIST BIZ 699911 Group Project · 규동 · 승연 · 지은 · 경재
 
-*Last updated: 2026-05-08*
+*Last updated: 2026-05-16*

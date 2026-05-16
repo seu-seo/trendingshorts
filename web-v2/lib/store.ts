@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent } from './types';
+import type { InsightsResponse } from '@/app/api/insights/route';
 import { ALL_TRENDS } from './data/trends';
 
 const LS_KEY = 'sfp_onboarding';
@@ -72,6 +73,10 @@ interface AppState {
   // Action sheet
   actionSheetTrend: Trend | null;
   setActionSheetTrend: (trend: Trend | null) => void;
+
+  // Insights cache (카테고리별, 페이지 이동 후에도 유지)
+  insightsCache: Map<string, InsightsResponse>;
+  setInsightsCache: (key: string, value: InsightsResponse) => void;
 }
 
 export const useStore = create<AppState>((set, get) => {
@@ -142,5 +147,12 @@ export const useStore = create<AppState>((set, get) => {
 
   actionSheetTrend: null,
   setActionSheetTrend: (trend) => set({ actionSheetTrend: trend }),
+
+  insightsCache: new Map(),
+  setInsightsCache: (key, value) => set((s) => {
+    const next = new Map(s.insightsCache);
+    next.set(key, value);
+    return { insightsCache: next };
+  }),
   };
 });

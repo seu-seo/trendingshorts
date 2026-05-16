@@ -121,9 +121,19 @@ function buildFallback(category: string): InsightsResponse {
   };
 }
 
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+interface CacheEntry { data: InsightsResponse; fetchedAt: number }
+const insightCache = new Map<string, CacheEntry>();
+
 export async function POST(req: Request) {
   const body: InsightsRequest = await req.json();
   const { category, titles, hashtags } = body;
+
+  // 서버 캐시: 카테고리별 24시간
+  const cached = insightCache.get(category);
+  if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
+    return NextResponse.json(cached.data);
+  }
 
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY || titles.length === 0) {
     return NextResponse.json(buildFallback(category));
@@ -136,7 +146,9 @@ export async function POST(req: Request) {
     });
     const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
     const parsed = JSON.parse(cleaned.slice(cleaned.indexOf('{'))) as Omit<InsightsResponse, 'source'>;
-    return NextResponse.json({ ...parsed, source: 'live' } satisfies InsightsResponse);
+    const result: InsightsResponse = { ...parsed, source: 'live' };
+    insightCache.set(category, { data: result, fetchedAt: Date.now() });
+    return NextResponse.json(result);
   } catch {
     return NextResponse.json(buildFallback(category));
   }

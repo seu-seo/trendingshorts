@@ -87,7 +87,7 @@ export async function fetchTikTokTrends(): Promise<Trend[]> {
 
     for (const post of posts) {
       if (post.isAd || post.isSponsored) continue;
-      if (!HANGUL_RE.test(post.text || '')) continue;
+      // 한글 해시태그로 검색하므로 본문 한글 필터 제거 — 설명이 영어여도 한국 콘텐츠일 수 있음
       if (seen.has(post.id)) continue;
       seen.add(post.id);
 

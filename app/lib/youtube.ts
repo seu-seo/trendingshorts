@@ -70,19 +70,6 @@ async function get<T>(url: string): Promise<T | null> {
   }
 }
 
-async function isShort(videoId: string): Promise<boolean> {
-  try {
-    const res = await fetch(`https://www.youtube.com/shorts/${videoId}`, {
-      redirect: 'manual',
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      cache: 'force-cache',
-    });
-    return res.status < 300;
-  } catch {
-    return true;
-  }
-}
-
 export async function fetchYouTubeTrends(): Promise<Trend[]> {
   const API_KEY = process.env.YOUTUBE_API_KEY;
   if (!API_KEY) return [];
@@ -94,7 +81,7 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
         chart: 'mostPopular',
         regionCode: 'KR',
         videoCategoryId: cid,
-        maxResults: '50',
+        maxResults: '10',
         key: API_KEY,
       });
       const data = await get<{ items: VideoDetail[] }>(`${BASE_URL}/videos?${params}`);
@@ -110,13 +97,12 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
     }
   }
 
-  const candidates = allVideos.filter((v) => {
+  // isShort() HTTP 체크 제거 — 개별 요청 수백 개로 타임아웃 발생
+  // 60초 이하 = Shorts, 61~180초 = 짧은 영상도 포함
+  const actualShorts = allVideos.filter((v) => {
     const s = parseDuration(v.contentDetails.duration);
     return s > 0 && s <= 180 && HANGUL_RE.test(v.snippet.title);
   });
-
-  const shortFlags = await Promise.all(candidates.map((v) => isShort(v.id)));
-  const actualShorts = candidates.filter((_, i) => shortFlags[i]);
 
   return actualShorts.map((video, index) => {
     const seconds = parseDuration(video.contentDetails.duration);

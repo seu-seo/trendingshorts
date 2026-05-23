@@ -134,19 +134,22 @@
 
 | 플랫폼 | 데이터 소스 | 갱신 주기 | 수집량 |
 |---|---|---|---|
-| YouTube Shorts | YouTube Data API v3 (공식) | 24시간 (Edge Cache) | 7카테고리 × N개 |
-| TikTok | Apify `clockworks~free-tiktok-scraper` | 24시간 (Edge Cache) | 15 해시태그 × 6 = 90개 |
-| Instagram Reels | Apify `apify~instagram-scraper` | 24시간 (Edge Cache) | 15 URL × 12 = 180개 |
+| YouTube Shorts | YouTube Data API v3 (공식) | 24시간 (Edge Cache) | 7카테고리 × 10개 |
+| TikTok | Apify `clockworks~free-tiktok-scraper` | 수동 갱신 (`npm run snapshot`) | 15 해시태그 × 6 = 90개 → 30일 필터 후 ~32개 |
+| Instagram Reels | Apify `apify~instagram-scraper` | 수동 갱신 (`npm run snapshot`) | 15 URL × 12 = 180개 → 30일 필터 후 ~125개 |
 
-**현재 운영 상태:** `DISABLE_APIFY=true` — TikTok·Instagram은 mock 데이터(28개: 7카테고리 × 플랫폼별 2개) 사용 중. YouTube API는 live 데이터.
+**현재 운영 상태:** `DISABLE_APIFY=true` (Vercel 환경변수) — TikTok·Instagram은 **스냅샷 JSON** (`app/lib/data/tiktok-snapshot.json`, `app/lib/data/instagram-snapshot.json`) 사용. YouTube API는 live 데이터.
+
+스냅샷 JSON은 Apify 실데이터를 1회 수집 후 저장한 파일. `npm run snapshot`으로 수동 갱신. 30일 이내 게시물만 표시 (오래된 바이럴 영상 제거).
 
 **캐싱 전략:**
 - Vercel Edge Cache `revalidate = 86400` (24시간) — 서버리스 콜드 스타트 무관하게 유지
-- 서버 인메모리 캐시는 warm 인스턴스 재사용 시 보조 역할
+- 서버 인메모리 캐시 (24시간): 동일 인스턴스 재요청 시 Apify 재호출 방지
+- 캐시 히트 시 백그라운드에서 조용히 갱신 (응답 블로킹 없음)
 
 **Trending 기준:**
-- YouTube: 공식 trending 차트 (`chart=mostPopular`) + `videoCategoryId`로 카테고리 매핑
-- TikTok·Instagram: 한국 해시태그 기반 최신 게시물 수집 (간접적)
+- YouTube: 공식 trending 차트 (`chart=mostPopular`) + `videoCategoryId` 카테고리 매핑. 재생 시간 ≤ 180초 필터 (Shorts 판별).
+- TikTok·Instagram: 한국 해시태그 기반 최신 게시물 수집 (간접적), 30일 이내만 표시
 
 ### 7.2 카테고리 체계
 
@@ -181,16 +184,20 @@
 └──────────────────────────┬───────────────────────────────────┘
                            ▼
 ┌──────────────────────────────────────────────────────────────┐
-│                     Next.js API Routes                       │
+│                     Next.js API Routes (app/)                │
 │  GET /api/trends   POST /api/insights   POST /api/persona    │
 │  POST /api/recommend   POST /api/generate   POST /api/storyboard │
 └──────┬──────────────────────┬──────────────────────┬─────────┘
        ▼                      ▼                      ▼
 ┌────────────┐    ┌──────────────────────┐    ┌────────────────┐
 │  YouTube   │    │  Apify (TikTok·IG)   │    │ Gemini 2.5     │
-│  Data API  │    │  현재 DISABLED        │    │ Flash          │
-│  (live)    │    │  → mock fallback     │    │ (4 endpoints)  │
+│  Data API  │    │  DISABLE_APIFY=true  │    │ Flash          │
+│  (live)    │    │  → 스냅샷 JSON 사용   │    │ (4 endpoints)  │
 └────────────┘    └──────────────────────┘    └────────────────┘
+
+스냅샷 JSON 위치: app/lib/data/tiktok-snapshot.json
+                  app/lib/data/instagram-snapshot.json
+갱신 방법: APIFY_API_TOKEN=... npm run snapshot (app/ 디렉토리)
 ```
 
 **Gemini 호출 엔드포인트 4개:**
@@ -212,11 +219,13 @@
 
 ### GET /api/trends
 
-**Query params:** `platform` (youtube·tiktok·instagram·all), `category`
+**Query params:** `platform` (youtube·tiktok·instagram·all)
+
+> `category` 파라미터는 의도적으로 제거됨 — Apify 캐시 키 폭발 방지. 카테고리 필터는 클라이언트에서 처리.
 
 **Response:**
 ```json
-{ "data": [TrendItem], "source": "live | mock" }
+{ "data": [TrendItem], "source": "live | snapshot" }
 ```
 
 **TrendItem 스키마:**
@@ -253,7 +262,7 @@
 
 ## 10. Security and Privacy
 
-- 모든 외부 API 키(Google, YouTube, Apify)는 서버 사이드에서만 호출, `.gitignore` 설정 완료
+- 모든 외부 API 키(Google, YouTube, Apify)는 서버 사이드에서만 호출, `.env` 및 `.vercel` 디렉토리 `.gitignore` 설정 완료
 - V1 사용자 계정·로그인 없음 (익명 사용), 식별 정보 저장 안 함
 - 온보딩 데이터는 `localStorage`에만 저장 (서버 전송 없음)
 - 트렌드 영상은 메타데이터(제목, 통계, URL)만 캐시; 영상 파일 저장 안 함
@@ -278,19 +287,23 @@
 ### 완료
 - 온보딩 설문 7문항 + Gemini 페르소나 생성 + 결과 화면
 - 대시보드 카테고리 위계 구조 (카테고리 → PlatformPulse → KeywordInsight → 플랫폼탭+목록)
-- YouTube Data API live 연동 + 카테고리 매핑 (`requestedCid` 기반)
-- Apify TikTok·Instagram 연동 모듈 (현재 `DISABLE_APIFY=true`, mock fallback)
-- Mock 데이터 28개 (TikTok 14 + Instagram 14, 7카테고리 × 플랫폼별 2개)
+- YouTube Data API live 연동 + 카테고리 매핑 (`requestedCid` 기반), duration ≤ 180s Shorts 필터
+- Apify TikTok·Instagram 연동 모듈 + 스냅샷 JSON 방식 도입
+  - `app/lib/data/tiktok-snapshot.json` / `instagram-snapshot.json` — 실데이터 1회 수집 후 저장
+  - `npm run snapshot` 스크립트로 수동 갱신
+  - `DISABLE_APIFY=true` 시 스냅샷 JSON 사용, `false` 시 Apify live 호출
+  - 30일 이내 게시물만 표시 (오래된 바이럴 영상 필터링)
 - AI 키워드 분석 버블맵 UI + 명사형 불릿 인사이트
 - 인사이트 캐싱: 서버 24h + Zustand 클라이언트 영구 유지
 - TrendActionSheet (트렌드 카드 액션 시트)
 - 소재·컨셉 추천 탭 + 대본 생성 탭
-- Vercel 배포 (`web-v2-sand.vercel.app`)
-- Edge Cache 24시간 (`revalidate = 86400`)
+- Vercel 배포 (`web-v2-sand.vercel.app`), Edge Cache 24시간
+- 프로젝트 구조: `web-v2/` → `app/` 리네임, 구버전 폴더 `old/`로 이동
+- `DISABLE_APIFY` 환경변수: `printf` 방식으로 줄바꿈 없이 설정 (`echo` 사용 시 `"true\n"` 버그 발생)
 
 ### 향후 작업
-- Apify 실데이터 활성화 (`DISABLE_APIFY=false`)
-- TikTok·Instagram live 데이터 검증
+- 스냅샷 정기 갱신 자동화 (현재 수동)
+- TikTok·Instagram live 데이터 상시 운영 (`DISABLE_APIFY=false`) 검토
 - 팔로워 1만 명 미만 크리에이터 대상 파일럿 테스트
 - BGM·비전 모델 연동 (V2)
 

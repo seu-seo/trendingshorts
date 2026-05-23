@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { fetchYouTubeTrends } from '@/lib/youtube';
-import { fetchTikTokTrends } from '@/lib/tiktok';
-import { fetchInstagramTrends } from '@/lib/instagram';
-import { ALL_TRENDS } from '@/lib/data/trends';
+import { fetchTikTokTrends, fetchTikTokFromSnapshot } from '@/lib/tiktok';
+import { fetchInstagramTrends, fetchInstagramFromSnapshot } from '@/lib/instagram';
 import type { Trend } from '@/lib/types';
 
 // Apify 토큰 없거나 명시적으로 비활성화된 경우 mock 데이터 사용
@@ -68,13 +67,16 @@ export async function GET(request: NextRequest) {
     if (fetchTT) refreshInBackground('tt', fetchTikTokTrends);
     if (fetchIG) refreshInBackground('ig', fetchInstagramTrends);
 
-    let results: Trend[] = [
+    const [ttSnap, igSnap] = await Promise.all([
+      wantsTT && !fetchTT ? fetchTikTokFromSnapshot() : Promise.resolve([] as Trend[]),
+      wantsIG && !fetchIG ? fetchInstagramFromSnapshot() : Promise.resolve([] as Trend[]),
+    ]);
+    const results: Trend[] = [
       ...(wantsYT ? (cache.yt?.data ?? []) : []),
-      ...(wantsTT ? (fetchTT ? cache.tt!.data : ALL_TRENDS.filter((t) => t.platform === 'tiktok')) : []),
-      ...(wantsIG ? (fetchIG ? cache.ig!.data : ALL_TRENDS.filter((t) => t.platform === 'instagram')) : []),
+      ...(wantsTT ? (fetchTT ? cache.tt!.data : ttSnap) : []),
+      ...(wantsIG ? (fetchIG ? cache.ig!.data : igSnap) : []),
     ];
-    if (category) results = results.filter((t) => t.category === category);
-    return NextResponse.json({ data: results, source: 'live' });
+    return NextResponse.json({ data: results, source: 'snapshot' });
   }
 
   // 캐시 없으면 실제 fetch (병렬)
@@ -87,19 +89,18 @@ export async function GET(request: NextRequest) {
   const ytData = wantsYT
     ? (ytResult.status === 'fulfilled' ? ytResult.value : (cache.yt?.data ?? []))
     : [];
-  const ttMock = ALL_TRENDS.filter((t) => t.platform === 'tiktok');
-  const igMock = ALL_TRENDS.filter((t) => t.platform === 'instagram');
 
   const ttLive = fetchTT && ttResult.status === 'fulfilled' ? ttResult.value : (cache.tt?.data ?? []);
   const igLive = fetchIG && igResult.status === 'fulfilled' ? igResult.value : (cache.ig?.data ?? []);
 
-  // Apify 결과가 비어 있으면 mock으로 fallback
-  const ttData = wantsTT ? (ttLive.length > 0 ? ttLive : ttMock) : [];
-  const igData = wantsIG ? (igLive.length > 0 ? igLive : igMock) : [];
+  const [ttSnap, igSnap] = await Promise.all([
+    wantsTT && !fetchTT ? fetchTikTokFromSnapshot() : Promise.resolve([] as Trend[]),
+    wantsIG && !fetchIG ? fetchInstagramFromSnapshot() : Promise.resolve([] as Trend[]),
+  ]);
 
-  let results: Trend[] = [...ytData, ...ttData, ...igData];
-  if (category) results = results.filter((t) => t.category === category);
+  const ttData = wantsTT ? (ttLive.length > 0 ? ttLive : ttSnap) : [];
+  const igData = wantsIG ? (igLive.length > 0 ? igLive : igSnap) : [];
 
-  const source = results.length > 0 ? 'live' : 'mock';
-  return NextResponse.json({ data: results, source });
+  const results: Trend[] = [...ytData, ...ttData, ...igData];
+  return NextResponse.json({ data: results, source: APIFY_DISABLED ? 'snapshot' : 'live' });
 }

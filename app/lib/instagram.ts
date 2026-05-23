@@ -78,6 +78,50 @@ function krCategoryFromHashtags(tags: string[]): string {
   return '일상 브이로그';
 }
 
+function processPosts(posts: ApifyPost[]): Trend[] {
+  const seen = new Set<string>();
+  const results: Trend[] = [];
+  for (const post of posts) {
+    if (post.type !== 'Video') continue;
+    if ((post.hashtags ?? []).some((t) => ['광고', 'ad', 'sponsored'].includes(t))) continue;
+    if (/광고|협찬|유료광고|제품제공|PR\b/i.test(post.caption || '')) continue;
+    if (seen.has(post.id)) continue;
+    seen.add(post.id);
+    const views = post.videoViewCount ?? post.igPlayCount ?? post.videoPlayCount ?? 0;
+    const tags = post.hashtags ?? [];
+    const krCategory = krCategoryFromHashtags(tags);
+    results.push({
+      id: results.length + 1,
+      platform: 'instagram' as const,
+      platformLabel: PLATFORM_LABEL.instagram,
+      category: mapCategory(krCategory),
+      lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0),
+      title: (post.caption ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'Instagram Reel',
+      creator: `@${post.ownerUsername}`,
+      views,
+      likes: post.likesCount ?? 0,
+      comments: post.commentsCount ?? 0,
+      shares: 0,
+      growth: views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0,
+      duration: '0:30',
+      thumb: THUMBNAIL_MAP[krCategory] ?? '📱',
+      time: timeAgo(post.timestamp),
+      hashtags: tags.map((t) => `#${t}`).slice(0, 4).join(' ') || '#릴스',
+      videoUrl: post.url,
+    });
+  }
+  return results;
+}
+
+export async function fetchInstagramFromSnapshot(): Promise<Trend[]> {
+  try {
+    const raw = (await import('./data/instagram-snapshot.json')).default as unknown as ApifyPost[];
+    return processPosts(raw);
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchInstagramTrends(): Promise<Trend[]> {
   const API_TOKEN = process.env.APIFY_API_TOKEN;
   if (!API_TOKEN) return [];
@@ -94,44 +138,7 @@ export async function fetchInstagramTrends(): Promise<Trend[]> {
 
     if (!res.ok) return [];
 
-    const posts: ApifyPost[] = await res.json();
-    const seen = new Set<string>();
-    const results: Trend[] = [];
-
-    for (const post of posts) {
-      if (post.type !== 'Video') continue;
-      if (!HANGUL_RE.test(post.caption || '')) continue;
-      if ((post.hashtags ?? []).some((t) => ['광고', 'ad', 'sponsored'].includes(t))) continue;
-      if (/광고|협찬|유료광고|제품제공|PR\b/i.test(post.caption || '')) continue;
-      if (seen.has(post.id)) continue;
-      seen.add(post.id);
-
-      const views = post.videoViewCount ?? post.igPlayCount ?? post.videoPlayCount ?? 0;
-      const tags = post.hashtags ?? [];
-      const krCategory = krCategoryFromHashtags(tags);
-
-      results.push({
-        id: results.length + 1,
-        platform: 'instagram' as const,
-        platformLabel: PLATFORM_LABEL.instagram,
-        category: mapCategory(krCategory),
-        lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0),
-        title: (post.caption ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'Instagram Reel',
-        creator: `@${post.ownerUsername}`,
-        views,
-        likes: post.likesCount ?? 0,
-        comments: post.commentsCount ?? 0,
-        shares: 0,
-        growth: views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0,
-        duration: '0:30',
-        thumb: THUMBNAIL_MAP[krCategory] ?? '📱',
-        time: timeAgo(post.timestamp),
-        hashtags: tags.map((t) => `#${t}`).slice(0, 4).join(' ') || '#릴스',
-        videoUrl: post.url,
-      });
-    }
-
-    return results;
+    return processPosts(await res.json());
   } catch {
     return [];
   }

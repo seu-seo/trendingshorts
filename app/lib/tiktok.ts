@@ -74,63 +74,62 @@ function krCategoryFromHashtags(tags: string[]): string {
   return '일상 브이로그';
 }
 
+function processPosts(posts: TikTokPost[]): Trend[] {
+  const seen = new Set<string>();
+  const results: Trend[] = [];
+  for (const post of posts) {
+    if (post.isAd || post.isSponsored) continue;
+    if (seen.has(post.id)) continue;
+    seen.add(post.id);
+    const tagNames = (post.hashtags ?? []).map((h) => h.name);
+    const krCategory = krCategoryFromHashtags(tagNames);
+    const views = post.playCount ?? 0;
+    results.push({
+      id: results.length + 1,
+      platform: 'tiktok' as const,
+      platformLabel: PLATFORM_LABEL.tiktok,
+      category: mapCategory(krCategory),
+      lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0),
+      title: (post.text ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'TikTok',
+      creator: `@${post.authorMeta?.name ?? 'unknown'}`,
+      views,
+      likes: post.diggCount ?? 0,
+      comments: post.commentCount ?? 0,
+      shares: post.shareCount ?? 0,
+      growth: views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0,
+      duration: formatDuration(post.videoMeta?.duration),
+      thumb: THUMBNAIL_MAP[krCategory] ?? '♪',
+      time: timeAgo(post.createTimeISO),
+      hashtags: tagNames.map((t) => `#${t}`).slice(0, 4).join(' ') || '#틱톡',
+      videoUrl: post.webVideoUrl,
+    });
+  }
+  return results;
+}
+
+// DISABLE_APIFY=true 시 스냅샷 JSON을 fallback으로 사용
+export async function fetchTikTokFromSnapshot(): Promise<Trend[]> {
+  try {
+    const raw = (await import('./data/tiktok-snapshot.json')).default as unknown as TikTokPost[];
+    return processPosts(raw);
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchTikTokTrends(): Promise<Trend[]> {
   const API_TOKEN = process.env.APIFY_API_TOKEN;
   if (!API_TOKEN) return [];
-
   const url = `https://api.apify.com/v2/acts/clockworks~free-tiktok-scraper/run-sync-get-dataset-items?token=${API_TOKEN}&memory=256`;
-
   try {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        hashtags: HASHTAGS,
-        resultsPerPage: 6,
-        shouldDownloadVideos: false,
-        shouldDownloadCovers: false,
-      }),
+      body: JSON.stringify({ hashtags: HASHTAGS, resultsPerPage: 6, shouldDownloadVideos: false, shouldDownloadCovers: false }),
       next: { revalidate: 86400 },
     });
-
     if (!res.ok) return [];
-
-    const posts: TikTokPost[] = await res.json();
-    const seen = new Set<string>();
-    const results: Trend[] = [];
-
-    for (const post of posts) {
-      if (post.isAd || post.isSponsored) continue;
-      // 한글 해시태그로 검색하므로 본문 한글 필터 제거 — 설명이 영어여도 한국 콘텐츠일 수 있음
-      if (seen.has(post.id)) continue;
-      seen.add(post.id);
-
-      const tagNames = (post.hashtags ?? []).map((h) => h.name);
-      const krCategory = krCategoryFromHashtags(tagNames);
-      const views = post.playCount ?? 0;
-
-      results.push({
-        id: results.length + 1,
-        platform: 'tiktok' as const,
-        platformLabel: PLATFORM_LABEL.tiktok,
-        category: mapCategory(krCategory),
-        lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0),
-        title: (post.text ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'TikTok',
-        creator: `@${post.authorMeta?.name ?? 'unknown'}`,
-        views,
-        likes: post.diggCount ?? 0,
-        comments: post.commentCount ?? 0,
-        shares: post.shareCount ?? 0,
-        growth: views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0,
-        duration: formatDuration(post.videoMeta?.duration),
-        thumb: THUMBNAIL_MAP[krCategory] ?? '♪',
-        time: timeAgo(post.createTimeISO),
-        hashtags: tagNames.map((t) => `#${t}`).slice(0, 4).join(' ') || '#틱톡',
-        videoUrl: post.webVideoUrl,
-      });
-    }
-
-    return results;
+    return processPosts(await res.json());
   } catch {
     return [];
   }

@@ -46,7 +46,8 @@ function refreshInBackground(key: 'yt' | 'tt' | 'ig', fetcher: () => Promise<Tre
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const platform = searchParams.get('platform');
-  const category = searchParams.get('category');
+  // category 필터는 클라이언트에서 처리 — API 레벨에서 받으면 캐시 키가 폭발적으로 늘어나 Apify 중복 호출 발생
+  const category = null;
 
   // 이 요청이 각 플랫폼 데이터를 원하는지 (platform 파라미터와 무관한 판단)
   const wantsYT = !platform || platform === 'all' || platform === 'youtube';

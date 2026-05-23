@@ -74,12 +74,16 @@ function krCategoryFromHashtags(tags: string[]): string {
   return '일상 브이로그';
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 function processPosts(posts: TikTokPost[]): Trend[] {
   const seen = new Set<string>();
   const results: Trend[] = [];
+  const cutoff = Date.now() - THIRTY_DAYS_MS;
   for (const post of posts) {
     if (post.isAd || post.isSponsored) continue;
     if (seen.has(post.id)) continue;
+    if (new Date(post.createTimeISO).getTime() < cutoff) continue;
     seen.add(post.id);
     const tagNames = (post.hashtags ?? []).map((h) => h.name);
     const krCategory = krCategoryFromHashtags(tagNames);

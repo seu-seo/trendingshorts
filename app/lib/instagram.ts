@@ -78,14 +78,18 @@ function krCategoryFromHashtags(tags: string[]): string {
   return '일상 브이로그';
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 function processPosts(posts: ApifyPost[]): Trend[] {
   const seen = new Set<string>();
   const results: Trend[] = [];
+  const cutoff = Date.now() - THIRTY_DAYS_MS;
   for (const post of posts) {
     if (post.type !== 'Video') continue;
     if ((post.hashtags ?? []).some((t) => ['광고', 'ad', 'sponsored'].includes(t))) continue;
     if (/광고|협찬|유료광고|제품제공|PR\b/i.test(post.caption || '')) continue;
     if (seen.has(post.id)) continue;
+    if (new Date(post.timestamp).getTime() < cutoff) continue;
     seen.add(post.id);
     const views = post.videoViewCount ?? post.igPlayCount ?? post.videoPlayCount ?? 0;
     const tags = post.hashtags ?? [];

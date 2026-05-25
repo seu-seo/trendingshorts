@@ -5,7 +5,7 @@
 
 팔로워 1만 명 미만 초기 크리에이터를 위한 숏폼 콘텐츠 기획 도구.
 
-Live Demo: https://web-v2-sand.vercel.app
+Live Demo: https://raw.githack.com/seu-seo/trendingshorts/main/demo/v5/index.html
 
 ---
 
@@ -111,11 +111,10 @@ LLM 고충 상담 (/chat)
 | Frontend / Backend | Next.js 14 (App Router + API Routes) + TypeScript |
 | 상태 관리 | Zustand + localStorage |
 | 외부 데이터 | YouTube Data API v3, Apify (TikTok · Instagram 스냅샷) |
-| AI | Claude Sonnet 4 (Anthropic) — 앵글 추출, 콘티 생성, 인사이트 |
+| AI | Gemini 2.5 Flash (gemini-2.5-flash) — 앵글 추출, 콘티 생성, 인사이트 |
 | 호스팅 | Vercel (Seoul 리전 icn1) |
 
-> v2까지 사용한 Gemini 2.5 Flash → v3에서 Claude Sonnet 4로 전환  
-> 이유: 한국어 콘텐츠 앵글 추출 및 콘티 생성 품질
+
 
 ---
 
@@ -134,5 +133,5 @@ LLM 고충 상담 (/chat)
 
 KAIST BIZ 699911 Group Project · 규동 · 승연 · 지은 · 경재
 
-Last updated: 2026-05-25 (v3)
+Last updated: 2026-05-25 (v5)
 

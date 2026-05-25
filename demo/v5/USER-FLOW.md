@@ -1,7 +1,7 @@
-# Shortform Pulse — User Flow v3
+# Shortform Pulse — User Flow v5
 
-> AS-IS (v2): 온보딩 퍼스트 → 대시보드 → 추천 → 제작  
-> TO-BE (v3): 트렌드 퍼스트 → 선택 → LLM 상담 → 콘티 → 10개 루프
+> AS-IS : 온보딩 퍼스트 → 대시보드 → 추천 → 제작  
+> TO-BE (v5): 트렌드 퍼스트 → 선택 → LLM 상담 → 콘티 → 10개 루프
 
 ---
 
@@ -234,7 +234,7 @@ interface ChallengeState {
 
 ## 탭 구조 변경
 
-| | AS-IS (v2) | TO-BE (v3) |
+| | AS-IS | TO-BE (v5) |
 |---|---|---|
 | 탭 1 | 대시보드 (/) | 트렌드 (/) |
 | 탭 2 | 추천 (/recommend) | 콘티 (/production) |

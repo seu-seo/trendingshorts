@@ -82,4 +82,651 @@ html,body{height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif
 .tc-platform{font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:3px;flex-shrink:0}
 .tc-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .tc-stat{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.tc-reason{font-size:10px;color:var(--text2);lin
+.tc-reason{font-size:10px;color:var(--text2);line-height:1.5;padding:6px 8px;background:var(--surface);border-radius:5px;border-left:2px solid var(--border2)}
+.tc-reason-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+
+.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:flex-end}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--surface2);border-radius:20px 20px 0 0;padding:16px;width:100%;border-top:1px solid var(--border2)}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
+.sheet-trend-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.sheet-meta{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:12px}
+.sheet-reason{font-size:11px;color:var(--text2);line-height:1.6;padding:9px 10px;background:var(--surface);border-radius:6px;margin-bottom:12px}
+.sheet-reason-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.sheet-btns{display:flex;flex-direction:column;gap:8px}
+.sheet-btn{width:100%;padding:13px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.sheet-btn.primary{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
+.sheet-btn.secondary{background:transparent;border-color:var(--border2);color:var(--text2)}
+
+.chat-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.chat-trend-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:7px 10px;margin:10px 16px;display:flex;gap:7px;align-items:flex-start}
+.ctc-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;padding-top:1px}
+.ctc-v{font-size:11px;color:var(--text2);line-height:1.5}
+.chat-q{padding:10px 16px}
+.q-text{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;font-weight:500}
+.q-options{display:flex;flex-direction:column;gap:6px}
+.q-opt{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--r2);font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;line-height:1.4}
+.q-opt:hover{border-color:var(--border3);color:var(--text)}
+.q-opt.selected{border-color:var(--lime);background:var(--lime-dim);color:var(--lime)}
+.chat-divider{height:1px;background:var(--border);margin:4px 16px}
+.chat-generating{padding:12px 16px;display:none}
+.gen-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:8px}
+.gen-fill{height:100%;background:var(--lime);border-radius:1px;width:0;transition:width 1.8s ease}
+.gen-text{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.angle-result{padding:12px 16px;display:none}
+.ar-box{background:var(--lime-dim);border:1px solid rgba(200,255,87,.25);border-radius:var(--r2);padding:12px}
+.ar-label{font-size:9px;color:var(--lime2);font-family:'JetBrains Mono',monospace;letter-spacing:.07em;margin-bottom:5px}
+.ar-angle{font-size:13px;font-weight:500;color:var(--lime);line-height:1.5;margin-bottom:8px}
+.ar-hook{font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;border-top:1px solid rgba(200,255,87,.15);padding-top:8px}
+.ar-hook-l{font-size:9px;color:var(--lime2);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.chat-cta{padding:0 16px 0}
+
+.conti-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.conti-trend-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:7px 10px;margin:10px 16px}
+.ctc2-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.ctc2-v{font-size:11px;color:var(--text2);line-height:1.55}
+.cut-list{display:flex;flex-direction:column;gap:10px;padding:0 16px}
+.cut-card{border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden}
+.cut-head{background:var(--surface2);border-bottom:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;justify-content:space-between}
+.cut-label{font-size:12px;font-weight:500;color:var(--text)}
+.cut-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.cut-sketch{width:100%;aspect-ratio:16/9;background:var(--surface3);position:relative;overflow:hidden}
+.cut-sketch canvas{display:block;width:100%;height:100%}
+.cut-foot{padding:10px 12px}
+.cut-script{font-size:12px;color:var(--text);font-style:italic;line-height:1.65;margin-bottom:4px}
+.cut-note{font-size:10px;color:var(--text3);line-height:1.5}
+.conti-done{padding:12px 16px;display:flex;gap:8px}
+.done-btn{flex:1;padding:12px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.done-btn.primary{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
+.done-btn.primary:hover{background:var(--lime2)}
+
+.challenge-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin:10px 16px;overflow:hidden}
+.progress-fill{height:100%;background:var(--lime);border-radius:2px;transition:width .5s ease}
+.progress-text{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;padding:0 16px;margin-bottom:12px}
+.challenge-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 16px;margin-bottom:16px}
+.cg-cell{aspect-ratio:1;border-radius:var(--r3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);transition:all .3s}
+.cg-cell.done{background:rgba(76,175,130,.1);border-color:rgba(76,175,130,.4);color:var(--green)}
+.cg-cell.current{border-color:rgba(200,255,87,.5);color:var(--lime);background:var(--lime-dim)}
+.next-section{padding:0 16px}
+.next-label{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;margin-bottom:8px}
+.next-item{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:6px;transition:all .15s}
+.next-item:hover{border-color:var(--border3)}
+.ni-title{font-size:12px;color:var(--text);margin-bottom:1px}
+.ni-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.ni-arrow{font-size:14px;color:var(--text3)}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
+.btn.lime{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
+.btn.lime:hover{background:var(--lime2)}
+.btn:hover{border-color:var(--border3)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .25s ease both}
+</style>
+</head>
+<body>
+
+<div class="outer">
+
+<div class="sidebar">
+  <div>
+    <div class="sidebar-title">Shortform Pulse v3</div>
+    <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-top:4px">인터랙티브 데모 — 클릭으로 전체 플로우 체험</div>
+  </div>
+  <div class="step-list" id="stepList">
+    <div class="step-item active" data-step="0" onclick="goStep(0)">
+      <div class="step-dot">1</div>
+      <div><div class="step-name">트렌드 피드</div><div class="step-sub">실시간 트렌드 탐색</div></div>
+    </div>
+    <div class="step-item" data-step="1" onclick="goStep(1)">
+      <div class="step-dot">2</div>
+      <div><div class="step-name">트렌드 선택</div><div class="step-sub">포맷 선택 + 케이스스터디</div></div>
+    </div>
+    <div class="step-item" data-step="2" onclick="goStep(2)">
+      <div class="step-dot">3</div>
+      <div><div class="step-name">LLM 고충 상담</div><div class="step-sub">Why Tree 2문항</div></div>
+    </div>
+    <div class="step-item" data-step="3" onclick="goStep(3)">
+      <div class="step-dot">4</div>
+      <div><div class="step-name">콘티 생성</div><div class="step-sub">4컷 장면 기획안</div></div>
+    </div>
+    <div class="step-item" data-step="4" onclick="goStep(4)">
+      <div class="step-dot">5</div>
+      <div><div class="step-name">10개 챌린지</div><div class="step-sub">루프 + 다음 추천</div></div>
+    </div>
+  </div>
+  <div class="usp-box">
+    <div class="usp-label">USP</div>
+    <div class="usp-text">요즘 터진 영상의 키워드 패턴을 해부해서, 초보도 따라 찍을 수 있는 콘티로. <strong style="color:var(--lime)">10개만 올리면 알고리즘이 보인다.</strong></div>
+  </div>
+</div>
+
+<div class="phone-wrap">
+<div class="phone">
+  <div class="status-bar">
+    <span class="sb-left">SHORTFORM PULSE</span>
+    <span class="sb-right mono">9:41</span>
+  </div>
+  <div class="screen" id="screen">
+
+    <div class="view active" id="view0">
+      <div class="feed-header">
+        <div class="feed-eyebrow">트렌드 피드 — 실시간</div>
+        <div class="feed-title">지금 뜨는 숏폼</div>
+      </div>
+      <div class="cat-tabs">
+        <div class="cat-tab active">전체</div>
+        <div class="cat-tab">라이프</div>
+        <div class="cat-tab">뷰티</div>
+        <div class="cat-tab">정보</div>
+        <div class="cat-tab">요리</div>
+        <div class="cat-tab">게임</div>
+      </div>
+      <div class="section-label">PLATFORM PULSE — TOP 1</div>
+      <div class="platform-row">
+        <div class="platform-card" onclick="selectTrend()">
+          <div class="pc-badge" style="background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ff6464">SHORTS</div>
+          <div class="pc-title">직장인 점심 뭐먹지? 이거 보고 해결함</div>
+          <div class="pc-stat">128만 뷰</div>
+          <div class="pc-growth">↑ +340%</div>
+        </div>
+        <div class="platform-card">
+          <div class="pc-badge" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:#ddd">TIKTOK</div>
+          <div class="pc-title">출근 전 10분 루틴 공개 🌅</div>
+          <div class="pc-stat">84만 뷰</div>
+          <div class="pc-growth">↑ +218%</div>
+        </div>
+        <div class="platform-card">
+          <div class="pc-badge" style="background:rgba(255,100,150,.1);border:1px solid rgba(255,100,150,.3);color:#ff6496">REELS</div>
+          <div class="pc-title">사무실 책상 정리 GRWM 💼</div>
+          <div class="pc-stat">61만 뷰</div>
+          <div class="pc-growth">↑ +156%</div>
+        </div>
+      </div>
+      <div class="section-label">HOT 키워드</div>
+      <div class="keyword-row">
+        <div class="kw hot">#직장인일상</div>
+        <div class="kw hot">#점심추천</div>
+        <div class="kw rising">#직장인vlog</div>
+        <div class="kw rising">#출근루틴</div>
+        <div class="kw normal">#자기계발</div>
+        <div class="kw normal">#회사생활</div>
+      </div>
+      <div class="section-label">트렌드 목록</div>
+      <div class="trend-list">
+        <div class="trend-card" onclick="selectTrend()">
+          <div class="tc-top">
+            <div class="tc-title">직장인 점심 뭐먹지? 이거 보고 해결함</div>
+            <div class="tc-platform" style="background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.25);color:#ff6464">YT</div>
+          </div>
+          <div class="tc-meta">
+            <div class="tc-stat">128만 뷰</div>
+            <div class="tc-stat" style="color:var(--lime)">↑ +340%</div>
+            <div class="tc-stat">#직장인일상 #점심</div>
+          </div>
+          <div class="tc-reason">
+            <div class="tc-reason-l">트렌드 이유</div>
+            "고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중
+          </div>
+        </div>
+        <div class="trend-card">
+          <div class="tc-top">
+            <div class="tc-title">출근 전 10분 루틴 공개 🌅</div>
+            <div class="tc-platform" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);color:#ccc">TT</div>
+          </div>
+          <div class="tc-meta">
+            <div class="tc-stat">84만 뷰</div>
+            <div class="tc-stat" style="color:var(--lime)">↑ +218%</div>
+            <div class="tc-stat">#출근루틴 #직장인vlog</div>
+          </div>
+          <div class="tc-reason">
+            <div class="tc-reason-l">트렌드 이유</div>
+            "공개" 단어가 제목에 있는 숏폼이 이 카테고리에서 지속 상위권
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="view1">
+      <div class="feed-header">
+        <div class="feed-eyebrow">선택한 트렌드</div>
+        <div class="feed-title" style="font-size:14px">직장인 점심 뭐먹지?<br>이거 보고 해결함</div>
+      </div>
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;gap:10px;margin-bottom:10px">
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
+            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">뷰</div>
+            <div style="font-size:14px;font-weight:700;color:var(--lime)">128만</div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
+            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">성장</div>
+            <div style="font-size:14px;font-weight:700;color:var(--lime)">+340%</div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
+            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">플랫폼</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)">YT</div>
+          </div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:10px;margin-bottom:10px">
+          <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px">트렌드 이유 (텍스트 메타 기반 LLM 추론)</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.6">"고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중. 같은 패턴의 영상 5개 중 3개가 100만 뷰 돌파.</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:10px">
+          <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px">연관 키워드</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">
+            <span class="kw hot">#직장인일상</span>
+            <span class="kw hot">#점심추천</span>
+            <span class="kw rising">#직장인vlog</span>
+            <span class="kw normal">#회사점심</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px 16px">
+        <button class="btn lime" onclick="goStep(2)">이 포맷으로 콘티 만들기 →</button>
+        <button class="btn" style="margin-top:8px" onclick="goStep(0)">← 다른 트렌드 보기</button>
+      </div>
+    </div>
+
+    <div class="view" id="view2">
+      <div class="chat-header">
+        <div class="feed-eyebrow">LLM 고충 상담</div>
+        <div class="feed-title" style="font-size:14px">나만의 콘티 각도 찾기</div>
+      </div>
+      <div class="chat-trend-chip">
+        <span class="ctc-l">선택 트렌드</span>
+        <span class="ctc-v">직장인 점심 뭐먹지? 이거 보고 해결함</span>
+      </div>
+      <div class="chat-q" id="q1-area">
+        <div class="q-text">이 영상을 보고 가장 끌린 게 뭔가요?</div>
+        <div class="q-options">
+          <div class="q-opt" onclick="selectQ1(this,'empathy')">감성/공감이 좋았어요</div>
+          <div class="q-opt" onclick="selectQ1(this,'info')">정보가 유용했어요</div>
+          <div class="q-opt" onclick="selectQ1(this,'humor')">유머/재미가 좋았어요</div>
+          <div class="q-opt" onclick="selectQ1(this,'relatable')">나도 이런 상황이었어요</div>
+        </div>
+      </div>
+      <div class="chat-divider" id="chat-div" style="display:none"></div>
+      <div class="chat-q" id="q2-area" style="display:none">
+        <div class="q-text">지금 영상 올리는 게 가장 힘든 이유가 뭔가요?</div>
+        <div class="q-options">
+          <div class="q-opt" onclick="selectQ2(this,'no_idea')">뭘 찍어야 할지 모르겠어요</div>
+          <div class="q-opt" onclick="selectQ2(this,'no_reaction')">만들어도 반응이 없어요</div>
+          <div class="q-opt" onclick="selectQ2(this,'no_consistency')">꾸준히 못하겠어요</div>
+        </div>
+      </div>
+      <div class="chat-generating" id="generating">
+        <div class="gen-bar"><div class="gen-fill" id="gen-fill"></div></div>
+        <div class="gen-text">앵글 추출 중...</div>
+      </div>
+      <div class="angle-result fade-in" id="angleResult">
+        <div class="ar-box">
+          <div class="ar-label">추출된 콘텐츠 앵글</div>
+          <div class="ar-angle" id="ar-angle-text"></div>
+          <div class="ar-hook-l">훅 초안</div>
+          <div class="ar-hook" id="ar-hook-text"></div>
+        </div>
+      </div>
+      <div class="chat-cta" id="chatCta" style="display:none;padding:12px 16px">
+        <button class="btn lime" onclick="goStep(3)">이 앵글로 콘티 만들기 →</button>
+      </div>
+    </div>
+
+    <div class="view" id="view3">
+      <div class="conti-header">
+        <div class="feed-eyebrow">콘티 가이드 · 공감형 · 3 / 10</div>
+        <div class="feed-title" style="font-size:14px">점심 고민 → 내 해결법 공유</div>
+      </div>
+      <div class="conti-trend-chip">
+        <div class="ctc2-l">트렌드 포인트</div>
+        <div class="ctc2-v">"고민→해결" 제목 구조 + 직장인 공감 키워드 활용</div>
+      </div>
+      <div class="cut-list" id="cutList"></div>
+      <div class="conti-done">
+        <button class="done-btn primary" onclick="goStep(4)">✓ 촬영했어요</button>
+        <button class="done-btn" style="flex:0;padding:12px 14px;font-size:16px" onclick="regenConti()">↺</button>
+      </div>
+    </div>
+
+    <div class="view" id="view4">
+      <div class="challenge-header">
+        <div class="feed-eyebrow">10개 챌린지</div>
+        <div class="feed-title" style="font-size:14px">10개 올리면 알고리즘이 보인다</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+      <div class="progress-text mono">3 / 10 완료</div>
+      <div class="challenge-grid" id="challengeGrid"></div>
+      <div class="next-section">
+        <div class="next-label">다음 추천 트렌드 [B안 — 자동 추천]</div>
+        <div class="next-item" onclick="goStep(1)">
+          <div><div class="ni-title">직장인 퇴근 후 루틴 vlog</div><div class="ni-sub">라이프 · 급상승 · YT</div></div>
+          <div class="ni-arrow">→</div>
+        </div>
+        <div class="next-item" onclick="goStep(1)">
+          <div><div class="ni-title">1만원 점심 챌린지</div><div class="ni-sub">정보 · 조회수 상위 · TT</div></div>
+          <div class="ni-arrow">→</div>
+        </div>
+        <div class="next-item" onclick="goStep(0)" style="opacity:.6">
+          <div><div class="ni-title" style="color:var(--text3)">트렌드 피드로 직접 가기</div></div>
+          <div class="ni-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sheet-overlay" id="sheet" onclick="closeSheet(event)">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-trend-name">직장인 점심 뭐먹지? 이거 보고 해결함</div>
+      <div class="sheet-meta mono">YouTube Shorts · 128만 뷰 · ↑+340%</div>
+      <div class="sheet-reason">
+        <div class="sheet-reason-l">트렌드 이유</div>
+        "고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중
+      </div>
+      <div class="sheet-btns">
+        <button class="sheet-btn primary" onclick="goFromSheet()">이 포맷으로 콘티 만들기 →</button>
+        <button class="sheet-btn secondary" onclick="closeSheet()">원본 영상 보기 ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" id="tab0" onclick="goStep(0)">
+      <div class="tab-icon">⚡</div>
+      <div class="tab-label">트렌드</div>
+    </div>
+    <div class="tab" id="tab3" onclick="goStep(3)">
+      <div class="tab-icon">🎬</div>
+      <div class="tab-label">콘티</div>
+    </div>
+    <div class="tab" id="tab4" onclick="goStep(4)">
+      <div class="tab-icon">🏆</div>
+      <div class="tab-label">챌린지</div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div>
+
+<script>
+const ANGLES={
+  empathy:{angle:'나의 공감 경험으로 직장인 점심 고민 풀기',hook:'"저도 매일 점심 뭐 먹을지 진짜 모르겠더라고요."'},
+  info:{angle:'3가지 기준으로 정리한 직장인 점심 선택법',hook:'"사실 기준 없이 고르다가 맨날 후회했어요."'},
+  humor:{angle:'직장인 점심 실패담으로 웃기며 해결법 공유',hook:'"최악의 점심 선택 TOP 3을 알려드릴게요."'},
+  relatable:{angle:'나도 그랬는데 이렇게 해결했어요 – 점심 루틴',hook:'"혹시 점심 메뉴 고르는 데 10분 넘게 쓰는 분?"'},
+};
+const CUTS=[
+  {label:'CUT 1 · 훅',time:'0 — 3s',part:'hook',script:'"저도 매일 점심 뭐 먹을지 진짜 모르겠더라고요."',note:'정면 클로즈업, 고민하는 표정으로 시작'},
+  {label:'CUT 2 · 전환',time:'3 — 6s',part:'transition',script:'"그래서 저만의 기준 3가지를 만들었어요."',note:'검지 들며 자신감 있게, 살짝 후퇴'},
+  {label:'CUT 3 · 본론',time:'6 — 12s',part:'body',script:'"첫째 걸어서 5분, 둘째 웨이팅 없는 곳, 셋째 1만원 이하."',note:'설명하며 실제 음식 B-roll 교차 촬영'},
+  {label:'CUT 4 · 클로징',time:'12 — 15s',part:'closing',script:'"여러분만의 기준도 댓글에 알려주세요!"',note:'정면, 환하게 웃으며 양손 들기'},
+];
+
+let currentStep=0,q1Val=null;
+
+function goStep(n){
+  if(n===1){selectTrend();return;}
+  currentStep=n;
+  document.querySelectorAll('.view').forEach((v,i)=>v.classList.toggle('active',i===n));
+  document.getElementById('screen').scrollTop=0;
+  updateStepList(n);updateTabs(n);
+  if(n===3)renderConti();
+  if(n===4)renderChallenge();
+}
+
+function updateStepList(n){
+  document.querySelectorAll('.step-item').forEach((el,i)=>{
+    el.classList.remove('active','done');
+    if(i===n)el.classList.add('active');
+    else if(i<n)el.classList.add('done');
+  });
+  document.querySelectorAll('.step-dot').forEach((el,i)=>{el.textContent=i<n?'✓':i+1;});
+}
+
+function updateTabs(n){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(n===0)document.getElementById('tab0')?.classList.add('active');
+  if(n===3)document.getElementById('tab3')?.classList.add('active');
+  if(n===4)document.getElementById('tab4')?.classList.add('active');
+}
+
+function selectTrend(){document.getElementById('sheet').classList.add('open');}
+function closeSheet(e){if(!e||e.target===document.getElementById('sheet'))document.getElementById('sheet').classList.remove('open');}
+function goFromSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  currentStep=1;
+  document.querySelectorAll('.view').forEach((v,i)=>v.classList.toggle('active',i===1));
+  document.getElementById('screen').scrollTop=0;
+  updateStepList(1);updateTabs(1);
+}
+
+function selectQ1(el,val){
+  q1Val=val;
+  document.querySelectorAll('#q1-area .q-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('chat-div').style.display='block';
+  const q2=document.getElementById('q2-area');
+  q2.style.display='block';q2.classList.add('fade-in');
+  setTimeout(()=>document.getElementById('screen').scrollTo({top:300,behavior:'smooth'}),100);
+}
+
+function selectQ2(el,val){
+  document.querySelectorAll('#q2-area .q-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(()=>{
+    const gen=document.getElementById('generating');
+    gen.style.display='block';
+    setTimeout(()=>document.getElementById('gen-fill').style.width='100%',50);
+    setTimeout(()=>{
+      gen.style.display='none';
+      const a=ANGLES[q1Val]||ANGLES.empathy;
+      document.getElementById('ar-angle-text').textContent=a.angle;
+      document.getElementById('ar-hook-text').textContent=a.hook;
+      const result=document.getElementById('angleResult');
+      result.style.display='block';result.classList.add('fade-in');
+      document.getElementById('chatCta').style.display='block';
+      setTimeout(()=>document.getElementById('screen').scrollTo({top:600,behavior:'smooth'}),100);
+    },2000);
+  },200);
+}
+
+function renderConti(){
+  const list=document.getElementById('cutList');list.innerHTML='';
+  CUTS.forEach((cut,i)=>{
+    const card=document.createElement('div');
+    card.className='cut-card fade-in';card.style.animationDelay=`${i*.08}s`;
+    card.innerHTML=`
+      <div class="cut-head"><span class="cut-label">${cut.label}</span><span class="cut-time mono">${cut.time}</span></div>
+      <div class="cut-sketch"><canvas id="canvas${i}" width="600" height="337"></canvas></div>
+      <div class="cut-foot"><div class="cut-script">${cut.script}</div><div class="cut-note">${cut.note}</div></div>`;
+    list.appendChild(card);
+    setTimeout(()=>drawSketch(i,cut.part),i*100+50);
+  });
+}
+
+function regenConti(){renderConti();}
+
+function drawSketch(idx,part){
+  const canvas=document.getElementById('canvas'+idx);if(!canvas)return;
+  const ctx=canvas.getContext('2d');const W=600,H=337;
+  ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
+  for(let i=0;i<2000;i++){ctx.fillStyle=`rgba(255,255,255,${Math.random()*.02})`;ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
+  if(part==='hook')drawHook(ctx,W,H);
+  else if(part==='transition')drawTransition(ctx,W,H);
+  else if(part==='body')drawBody(ctx,W,H);
+  else drawClosing(ctx,W,H);
+  ctx.strokeStyle='rgba(200,255,87,0.15)';ctx.lineWidth=2;ctx.strokeRect(1,1,W-2,H-2);
+}
+
+function hatch(ctx,x,y,w,h,gap,angle,a){
+  ctx.save();ctx.strokeStyle=`rgba(220,215,200,${a})`;ctx.lineWidth=0.8;ctx.lineCap='round';
+  const r=angle*Math.PI/180,ext=Math.max(w,h)*2;
+  ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  for(let i=-ext;i<ext*2;i+=gap){ctx.moveTo(x+i,y);ctx.lineTo(x+i+ext*Math.cos(r+Math.PI/2),y+ext*Math.sin(r+Math.PI/2));}
+  ctx.stroke();ctx.restore();
+}
+
+function drawFace(ctx,cx,cy,rx,ry,expr){
+  ctx.save();
+  ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(220,215,200,0.12)';
+  ctx.beginPath();ctx.ellipse(cx,cy-ry*.25,rx*1.08,ry*.8,0,Math.PI,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx-rx*.9,cy,rx*.2,ry*.5,-0.15,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+rx*.9,cy,rx*.2,ry*.5,0.15,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(220,215,200,0.9)';ctx.lineWidth=1.8;ctx.lineCap='round';
+  if(expr==='worried'){
+    ctx.beginPath();ctx.moveTo(cx-rx*.52,cy-ry*.2);ctx.quadraticCurveTo(cx-rx*.3,cy-ry*.28,cx-rx*.08,cy-ry*.2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+rx*.08,cy-ry*.2);ctx.quadraticCurveTo(cx+rx*.3,cy-ry*.28,cx+rx*.52,cy-ry*.2);ctx.stroke();
+  } else {
+    ctx.beginPath();ctx.moveTo(cx-rx*.52,cy-ry*.24);ctx.quadraticCurveTo(cx-rx*.3,cy-ry*.3,cx-rx*.08,cy-ry*.22);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+rx*.08,cy-ry*.22);ctx.quadraticCurveTo(cx+rx*.3,cy-ry*.3,cx+rx*.52,cy-ry*.24);ctx.stroke();
+  }
+  [-1,1].forEach(s=>{
+    const ex=cx+s*rx*.3,ey=cy-ry*.05,eRx=rx*.2,eRy=expr==='smile'?ry*.08:ry*.14;
+    if(expr==='smile'){
+      ctx.strokeStyle='rgba(220,215,200,0.9)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(ex,ey+3,eRx*.85,Math.PI,Math.PI*2,true);ctx.stroke();
+    } else {
+      ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.ellipse(ex,ey,eRx,eRy,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle='rgba(220,215,200,0.9)';ctx.beginPath();ctx.arc(ex,ey,eRy*.65,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.9)';ctx.beginPath();ctx.arc(ex+eRy*.25,ey-eRy*.2,eRy*.2,0,Math.PI*2);ctx.fill();
+    }
+  });
+  ctx.strokeStyle='rgba(220,215,200,0.45)';ctx.lineWidth=1.1;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx,cy+ry*.12);ctx.quadraticCurveTo(cx+rx*.1,cy+ry*.28,cx,cy+ry*.32);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx-rx*.1,cy+ry*.32,rx*.08,0.2,Math.PI-0.2);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx+rx*.1,cy+ry*.32,rx*.08,0.2,Math.PI-0.2);ctx.stroke();
+  ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.8;ctx.lineCap='round';
+  const my=cy+ry*.55;
+  if(expr==='worried'){ctx.beginPath();ctx.moveTo(cx-rx*.28,my);ctx.quadraticCurveTo(cx,my+ry*.03,cx+rx*.28,my);ctx.stroke();}
+  else if(expr==='smile'){
+    ctx.beginPath();ctx.moveTo(cx-rx*.38,my-ry*.02);ctx.quadraticCurveTo(cx,my+ry*.2,cx+rx*.38,my-ry*.02);ctx.stroke();
+    ctx.fillStyle='rgba(220,215,200,0.08)';
+    ctx.beginPath();ctx.moveTo(cx-rx*.32,my+ry*.01);ctx.quadraticCurveTo(cx,my+ry*.16,cx+rx*.32,my+ry*.01);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx-rx*.38,my-ry*.02);ctx.quadraticCurveTo(cx-rx*.1,my-ry*.1,cx,my-ry*.07);ctx.quadraticCurveTo(cx+rx*.1,my-ry*.1,cx+rx*.38,my-ry*.02);ctx.stroke();
+  } else {ctx.beginPath();ctx.moveTo(cx-rx*.28,my+ry*.02);ctx.quadraticCurveTo(cx,my+ry*.12,cx+rx*.28,my+ry*.02);ctx.stroke();}
+  hatch(ctx,cx-rx*.95,cy-ry*.1,rx*.3,ry*.35,6,40,0.1);
+  hatch(ctx,cx+rx*.62,cy-ry*.1,rx*.3,ry*.35,6,140,0.1);
+  ctx.restore();
+}
+
+function drawBodyShape(ctx,cx,topY,W,H){
+  ctx.save();ctx.fillStyle='#181614';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(0,H);ctx.bezierCurveTo(cx-W*.32,H,cx-W*.3,topY+20,cx-W*.18,topY+8);
+  ctx.lineTo(cx+W*.18,topY+8);ctx.bezierCurveTo(cx+W*.3,topY+20,cx+W*.32,H,W,H);
+  ctx.fill();ctx.stroke();ctx.restore();
+}
+
+function drawHook(ctx,W,H){
+  ctx.fillStyle='#141210';ctx.fillRect(0,H*.55,W,H*.45);
+  ctx.strokeStyle='rgba(220,215,200,0.15)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,H*.7);ctx.lineTo(W,H*.7);ctx.stroke();
+  ctx.fillStyle='#0e0c0a';ctx.strokeStyle='rgba(220,215,200,0.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(W*.6,H*.14,W*.25,H*.28,4);ctx.fill();ctx.stroke();
+  hatch(ctx,W*.62,H*.16,W*.21,H*.22,14,0,0.05);
+  ctx.save();ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.55)';ctx.lineWidth=1.6;
+  ctx.beginPath();
+  ctx.moveTo(W*.08,H);ctx.bezierCurveTo(W*.1,H*.82,W*.14,H*.74,W*.18,H*.7);
+  ctx.bezierCurveTo(W*.2,H*.66,W*.2,H*.58,W*.22,H*.54);
+  ctx.bezierCurveTo(W*.24,H*.5,W*.26,H*.48,W*.24,H*.46);
+  ctx.lineTo(W*.2,H*.46);ctx.bezierCurveTo(W*.18,H*.5,W*.14,H*.62,W*.1,H*.7);
+  ctx.bezierCurveTo(W*.06,H*.78,W*.04,H*.9,W*.04,H);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(W*.22,H*.44,W*.04,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.restore();
+  hatch(ctx,W*.06,H*.44,W*.18,H*.28,7,35,0.12);
+  drawBodyShape(ctx,W*.42,H*.64,W,H);
+  drawFace(ctx,W*.44,H*.35,W*.2,H*.3,'worried');
+  ctx.save();ctx.font='bold 28px serif';ctx.fillStyle='rgba(220,215,200,0.1)';
+  ctx.fillText('?',W*.68,H*.28);ctx.font='bold 18px serif';ctx.fillText('?',W*.76,H*.18);ctx.restore();
+}
+
+function drawTransition(ctx,W,H){
+  ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.globalAlpha=0.04;
+  for(let i=0;i<16;i++){const a=(i/16)*Math.PI*2;ctx.strokeStyle='rgba(200,255,87,1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*.46,H*.34);ctx.lineTo(W*.46+Math.cos(a)*W,H*.34+Math.sin(a)*H);ctx.stroke();}
+  ctx.restore();
+  drawBodyShape(ctx,W*.46,H*.6,W,H);
+  ctx.save();ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.7;
+  ctx.beginPath();ctx.moveTo(W*.72,H);ctx.bezierCurveTo(W*.74,H*.78,W*.74,H*.66,W*.72,H*.56);
+  ctx.bezierCurveTo(W*.7,H*.46,W*.68,H*.38,W*.68,H*.3);ctx.lineTo(W*.64,H*.3);
+  ctx.bezierCurveTo(W*.62,H*.4,W*.62,H*.52,W*.64,H*.62);ctx.bezierCurveTo(W*.66,H*.72,W*.64,H*.84,W*.62,H);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.64,H*.32);ctx.bezierCurveTo(W*.63,H*.2,W*.64,H*.1,W*.655,H*.06);
+  ctx.bezierCurveTo(W*.67,H*.02,W*.69,H*.04,W*.695,H*.1);ctx.bezierCurveTo(W*.7,H*.18,W*.69,H*.26,W*.67,H*.32);ctx.fill();ctx.stroke();
+  ctx.restore();
+  hatch(ctx,W*.62,H*.28,W*.1,H*.42,7,40,0.12);
+  ctx.save();ctx.strokeStyle='rgba(200,255,87,0.5)';ctx.lineWidth=1.5;
+  const sx=W*.76,sy=H*.08;
+  [[sx,sy-12,sx,sy+12],[sx-12,sy,sx+12,sy],[sx-8,sy-8,sx+8,sy+8],[sx-8,sy+8,sx+8,sy-8]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
+  ctx.restore();
+  drawFace(ctx,W*.42,H*.32,W*.19,H*.28,'neutral');
+}
+
+function drawBody(ctx,W,H){
+  const mid=W*.5;
+  ctx.fillStyle='#141210';ctx.fillRect(0,0,mid,H);
+  ctx.fillStyle='#0e0d0b';ctx.fillRect(mid,0,W-mid,H);
+  ctx.strokeStyle='rgba(220,215,200,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(mid,0);ctx.lineTo(mid,H);ctx.stroke();
+  ctx.save();ctx.beginPath();ctx.rect(0,0,mid,H);ctx.clip();
+  drawBodyShape(ctx,mid*.55,H*.6,mid,H);
+  ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.55)';ctx.lineWidth=1.4;
+  ctx.beginPath();ctx.moveTo(mid*.05,H);ctx.bezierCurveTo(mid*.08,H*.8,mid*.12,H*.7,mid*.18,H*.62);
+  ctx.bezierCurveTo(mid*.22,H*.56,mid*.24,H*.5,mid*.22,H*.46);ctx.lineTo(mid*.18,H*.46);
+  ctx.bezierCurveTo(mid*.16,H*.52,mid*.12,H*.62,mid*.06,H*.72);ctx.bezierCurveTo(mid*.02,H*.82,0,H*.92,0,H);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.arc(mid*.2,H*.44,mid*.07,0,Math.PI*2);ctx.fill();ctx.stroke();
+  hatch(ctx,mid*.04,H*.42,mid*.2,H*.3,7,35,0.12);
+  drawFace(ctx,mid*.58,H*.32,mid*.3,H*.28,'neutral');ctx.restore();
+  ctx.save();ctx.beginPath();ctx.rect(mid,0,W-mid,H);ctx.clip();
+  const fc=mid+(W-mid)*.5,fy=H*.42;
+  ctx.fillStyle='#1a1815';ctx.strokeStyle='rgba(220,215,200,0.4)';ctx.lineWidth=1.4;
+  ctx.beginPath();ctx.ellipse(fc,fy+H*.12,(W-mid)*.3,H*.07,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#1e1c18';ctx.beginPath();
+  ctx.moveTo(fc-(W-mid)*.3,fy);ctx.bezierCurveTo(fc-(W-mid)*.3,fy+H*.1,fc-(W-mid)*.28,fy+H*.14,fc,fy+H*.15);
+  ctx.bezierCurveTo(fc+(W-mid)*.28,fy+H*.14,fc+(W-mid)*.3,fy+H*.1,fc+(W-mid)*.3,fy);
+  ctx.bezierCurveTo(fc+(W-mid)*.28,fy-H*.08,fc,fy-H*.1,fc-(W-mid)*.28,fy-H*.08);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(180,200,160,0.5)';ctx.beginPath();ctx.ellipse(fc+W*.05,fy-H*.04,(W-mid)*.09,H*.07,0.3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(200,100,80,0.5)';ctx.beginPath();ctx.ellipse(fc,fy-H*.06,(W-mid)*.07,H*.05,-0.1,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='rgba(180,160,120,0.5)';ctx.lineWidth=2;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(fc-(W-mid)*.28,fy-H*.18);ctx.lineTo(fc-(W-mid)*.38,fy-H*.38);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(fc-(W-mid)*.22,fy-H*.16);ctx.lineTo(fc-(W-mid)*.32,fy-H*.36);ctx.stroke();
+  ctx.save();ctx.font='500 14px monospace';ctx.fillStyle='rgba(200,255,87,0.2)';ctx.fillText('B-roll',mid+(W-mid)*.28,H*.88);ctx.restore();
+  ctx.restore();
+}
+
+function drawClosing(ctx,W,H){
+  ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
+  ctx.save();
+  [[W*.12,H*.8,W*.06,H*.56,W*.08,H*.42],[W*.88,H*.8,W*.94,H*.56,W*.92,H*.42]].forEach((pts,si)=>{
+    ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(si===0?W*.08:W*.92,H);
+    ctx.bezierCurveTo(pts[0],pts[1],pts[2],pts[3],pts[4],pts[5]);
+    ctx.bezierCurveTo(si===0?W*.22:W*.78,H*.44,si===0?W*.2:W*.8,H*.58,si===0?W*.18:W*.82,H*.78);
+    ctx.bezierCurveTo(si===0?W*.14:W*.86,H*.7,si===0?W*.12:W*.88,H*.84,si===0?W*.1:W*.9,H);
+    ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.ellipse(pts[4],pts[5],W*.04,H*.04,si===0?-0.3:0.3,0,Math.PI*2);ctx.fill();ctx.stroke();
+  });
+  ctx.restore();
+  hatch(ctx,W*.06,H*.38,W*.18,H*.45,7,35,0.1);
+  hatch(ctx,W*.76,H*.38,W*.18,H*.45,7,145,0.1);
+  drawBodyShape(ctx,W*.46,H*.6,W,H);
+  drawFace(ctx,W*.46,H*.32,W*.22,H*.32,'smile');
+}
+
+function renderChallenge(){
+  const grid=document.getElementById('challengeGrid');grid.innerHTML='';
+  for(let i=0;i<10;i++){
+    const cell=document.createElement('div');
+    cell.className='cg-cell'+(i<3?' done':i===3?' current':'');
+    cell.textContent=i<3?'✓':i+1;
+    grid.appendChild(cell);
+  }
+}
+
+goStep(0);
+</script>
+</body>
+</html>

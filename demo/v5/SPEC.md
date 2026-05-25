@@ -1,4 +1,4 @@
-# Shortform Pulse — SPEC v3
+# Shortform Pulse — SPEC v5
 
 > 기준: 현재 배포 → v5 (이번 업데이트)  
 > 표기: ✅ 완료 · ⚠️ 수정 필요 · 🆕 신규 · ❌ 제거

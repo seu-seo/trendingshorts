@@ -23,17 +23,17 @@
   }
 
   :root {
-    /* SV-grade dark system */
-    --bg: #09090B;
-    --bg-soft: #111115;
-    --bg-card: #1C1C1F;
-    --bg-hover: #27272A;
+    /* Premium dark — 30대 직장인 타겟 */
+    --bg: #1C1C1E;
+    --bg-soft: #242427;
+    --bg-card: #27272A;
+    --bg-hover: #323235;
 
-    /* Primary - 코랄 (다크에서 더 vibrant) */
-    --primary: #FF5C49;
-    --primary-soft: rgba(255, 92, 73, 0.14);
-    --primary-deep: #FF3D27;
-    --primary-glow: rgba(255, 92, 73, 0.28);
+    /* Accent — 에너제틱 레드, 핵심 요소에만 */
+    --primary: #FA5252;
+    --primary-soft: rgba(250, 82, 82, 0.12);
+    --primary-deep: #E03E3E;
+    --primary-glow: rgba(250, 82, 82, 0.22);
 
     --up: #22C55E;
     --up-soft: rgba(34, 197, 94, 0.12);
@@ -41,25 +41,25 @@
     --gold: #F59E0B;
     --gold-soft: rgba(245, 158, 11, 0.13);
 
-    --ink: #F4F4F5;
-    --ink-soft: #A1A1AA;
+    --ink: #F4F4F5;       /* Primary Text — 소프트 화이트 */
+    --ink-soft: #A1A1AA;  /* Secondary Text — 미드 그레이 */
     --gray: #71717A;
     --gray-mid: #52525B;
     --gray-light: #3F3F46;
 
-    --line: #27272A;
-    --line-strong: #3F3F46;
+    --line: #3F3F46;      /* bg #1C1C1E 위에서 구분선 */
+    --line-strong: #52525B;
     --line-bold: #F4F4F5;
 
-    /* SV signature ambient — 다크에서 더 강렬 */
-    --ambient-1: rgba(255, 92, 73, 0.07);
-    --ambient-2: rgba(139, 92, 246, 0.05);
+    /* Ambient — 레드 기반 */
+    --ambient-1: rgba(250, 82, 82, 0.06);
+    --ambient-2: rgba(139, 92, 246, 0.04);
 
-    /* Dark elevations — 그림자 더 강하게 */
-    --elev-1: 0 1px 2px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
-    --elev-2: 0 4px 12px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
-    --elev-3: 0 8px 24px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5);
-    --elev-floating: 0 16px 48px rgba(0,0,0,0.8), 0 6px 16px rgba(0,0,0,0.5);
+    /* Elevation — #1C1C1E 배경 기준, 카드 부각 */
+    --elev-1: 0 1px 3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
+    --elev-2: 0 4px 14px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.25);
+    --elev-3: 0 8px 24px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.3);
+    --elev-floating: 0 16px 40px rgba(0,0,0,0.6), 0 6px 16px rgba(0,0,0,0.35);
 
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -73,7 +73,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
-    background: #09090B;
+    background: #1C1C1E;
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -87,7 +87,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: radial-gradient(circle at 50% 30%, #16161A 0%, #0A0A0D 70%);
+    background: radial-gradient(circle at 50% 30%, #242428 0%, #141416 70%);
   }
 
   /* === PHONE === */
@@ -97,10 +97,10 @@
     background: var(--bg);
     border-radius: 48px;
     box-shadow:
-      0 0 0 12px #1C1C1F,
-      0 0 0 14px #2D2D32,
-      0 60px 120px rgba(255, 92, 73, 0.14),
-      0 30px 80px rgba(0, 0, 0, 0.95);
+      0 0 0 12px #111113,
+      0 0 0 14px #1E1E20,
+      0 60px 120px rgba(250, 82, 82, 0.1),
+      0 30px 80px rgba(0, 0, 0, 0.85);
     position: relative;
     overflow: hidden;
   }
@@ -491,7 +491,7 @@
     transform: scale(0.98);
   }
   .cta:disabled {
-    background: #27272A;
+    background: #323235;
     color: #52525B;
     cursor: not-allowed;
   }
@@ -1138,7 +1138,7 @@
   }
   .bar {
     flex: 1;
-    background: #2D2D32;
+    background: #3A3A3D;
     border-radius: 4px 4px 0 0;
     min-height: 6px;
     transform-origin: bottom;
@@ -1747,7 +1747,7 @@
     bottom: 20px; left: 20px;
     font-family: var(--font-mono);
     font-size: 10px;
-    color: rgba(0,0,0,0.4);
+    color: rgba(255,255,255,0.2);
     z-index: 10;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -1757,7 +1757,7 @@
     position: fixed;
     bottom: 20px; right: 20px;
     padding: 8px 14px;
-    background: #1C1C1F;
+    background: #27272A;
     border: 1px solid #3F3F46;
     border-radius: 100px;
     color: #71717A;
@@ -1939,7 +1939,7 @@
     border-radius: 6px;
     font-weight: 600;
   }
-  .prompt-skip:hover { background: rgba(0,0,0,0.05); color: var(--ink); }
+  .prompt-skip:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
   .prompt-question {
     font-family: var(--font-cute);
     font-size: 16px;
@@ -1982,7 +1982,7 @@
     margin: 0 16px 16px;
     padding: 20px 20px 18px;
     background:
-      linear-gradient(135deg, #1E1E22 0%, #18181B 100%);
+      linear-gradient(135deg, #2D2D30 0%, #27272A 100%);
     border: 1px solid var(--line);
     border-radius: 22px;
     box-shadow: var(--elev-floating);
@@ -2332,7 +2332,7 @@
   }
   .pulse-mini-bar {
     flex: 1;
-    background: #2D2D32;
+    background: #3A3A3D;
     border-radius: 3px 3px 0 0;
     min-height: 4px;
   }

@@ -23,39 +23,41 @@
   }
 
   :root {
-    /* Premium dark — 30대 직장인 타겟 */
-    --bg: #1C1C1E;
-    --bg-soft: #242427;
-    --bg-card: #27272A;
+    /* Finance-grade dark — 30대 직장인 데이터 앱 */
+    --bg: #1C1C1E;          /* Deep solid charcoal */
+    --bg-soft: #242426;
+    --bg-card: #27272A;     /* Card surface */
     --bg-hover: #323235;
 
-    /* Accent — 에너제틱 레드, 핵심 요소에만 */
-    --primary: #FA5252;
-    --primary-soft: rgba(250, 82, 82, 0.12);
-    --primary-deep: #E03E3E;
-    --primary-glow: rgba(250, 82, 82, 0.22);
+    /* 3-color data system */
+    --primary: #FF5050;     /* Growth / Active / Hot */
+    --primary-soft: rgba(255, 80, 80, 0.11);
+    --primary-deep: #E63939;
+    --primary-glow: rgba(255, 80, 80, 0.2);
 
-    --up: #22C55E;
-    --up-soft: rgba(34, 197, 94, 0.12);
-    --down: #EF4444;
+    --up: #FF5050;          /* 성장 지표 = 레드 */
+    --up-soft: rgba(255, 80, 80, 0.1);
+    --down: #3B82F6;        /* 하락 지표 = 일렉트릭 블루 */
+    --down-soft: rgba(59, 130, 246, 0.1);
+    --neutral: #10B981;     /* 중립 태그 = 테크 민트 */
+    --neutral-soft: rgba(16, 185, 129, 0.1);
+
     --gold: #F59E0B;
-    --gold-soft: rgba(245, 158, 11, 0.13);
+    --gold-soft: rgba(245, 158, 11, 0.1);
 
-    --ink: #F4F4F5;       /* Primary Text — 소프트 화이트 */
-    --ink-soft: #A1A1AA;  /* Secondary Text — 미드 그레이 */
+    --ink: #F4F4F5;         /* Primary Text */
+    --ink-soft: #A1A1AA;    /* Secondary Text */
     --gray: #71717A;
     --gray-mid: #52525B;
     --gray-light: #3F3F46;
 
-    --line: #3F3F46;      /* bg #1C1C1E 위에서 구분선 */
+    --line: #3F3F46;
     --line-strong: #52525B;
     --line-bold: #F4F4F5;
 
-    /* Ambient — 레드 기반 */
-    --ambient-1: rgba(250, 82, 82, 0.06);
-    --ambient-2: rgba(139, 92, 246, 0.04);
+    --ambient-1: rgba(255, 80, 80, 0.05);
+    --ambient-2: rgba(59, 130, 246, 0.04);
 
-    /* Elevation — #1C1C1E 배경 기준, 카드 부각 */
     --elev-1: 0 1px 3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
     --elev-2: 0 4px 14px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.25);
     --elev-3: 0 8px 24px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.3);
@@ -445,8 +447,8 @@
     letter-spacing: -0.005em;
   }
   .why-text .highlight {
-    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
-    padding: 0 2px;
+    color: var(--neutral);
+    font-weight: 700;
   }
 
   /* 하단 안내 */
@@ -1237,8 +1239,8 @@
     letter-spacing: -0.005em;
   }
   .headline-why-text .highlight {
-    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
-    padding: 0 2px;
+    color: var(--neutral);
+    font-weight: 700;
     color: var(--ink);
   }
 
@@ -1377,7 +1379,7 @@
   }
   .platform-name {
     font-weight: 600;
-    color: var(--ink-soft);
+    color: var(--neutral);
     text-transform: uppercase;
     font-size: 10px;
     letter-spacing: 0.06em;
@@ -1465,7 +1467,7 @@
   }
   .kw-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-deep));
+    background: var(--primary);
     border-radius: 100px;
   }
   .kw-spark {
@@ -1880,8 +1882,9 @@
   .soft-prompt {
     margin: 4px 0;
     padding: 16px;
-    background: linear-gradient(135deg, var(--primary-soft), transparent);
-    border: 1px solid var(--primary-soft);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--primary);
     border-radius: 14px;
     box-shadow: var(--elev-1);
     animation: promptIn 0.5s var(--ease-out) both;
@@ -1982,7 +1985,7 @@
     margin: 0 16px 16px;
     padding: 20px 20px 18px;
     background:
-      linear-gradient(135deg, #2D2D30 0%, #27272A 100%);
+      var(--bg-card);
     border: 1px solid var(--line);
     border-radius: 22px;
     box-shadow: var(--elev-floating);
@@ -2088,8 +2091,8 @@
     letter-spacing: -0.005em;
   }
   .briefing-summary .highlight {
-    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
-    padding: 0 2px;
+    color: var(--neutral);
+    font-weight: 700;
     color: var(--ink);
   }
   /* streaming 텍스트 효과 */
@@ -2256,12 +2259,12 @@
     margin-bottom: 8px;
   }
   .pulse-card-badge.rising {
-    background: rgba(34, 197, 94, 0.12);
-    color: #22C55E;
+    background: var(--up-soft);
+    color: var(--up);
   }
   .pulse-card-badge.cooling {
-    background: var(--bg-card);
-    color: var(--gray);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--down);
   }
   .pulse-card-title {
     font-family: var(--font-cute);
@@ -2302,8 +2305,8 @@
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-  .pulse-to.up { color: var(--primary); }
-  .pulse-to.down { color: var(--gray); }
+  .pulse-to.up { color: var(--up); }
+  .pulse-to.down { color: var(--down); }
 
   .pulse-card-detail {
     display: none;
@@ -2344,8 +2347,8 @@
     box-shadow: 0 2px 8px var(--primary-glow);
   }
   .pulse-mini-bar.tdy.down {
-    background: var(--gray-mid);
-    box-shadow: none;
+    background: var(--down);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
   }
   .pulse-detail-insight {
     font-family: var(--font-body);

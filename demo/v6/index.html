@@ -23,21 +23,21 @@
   }
 
   :root {
-    /* Finance-grade dark — 30대 직장인 데이터 앱 */
-    --bg: #1C1C1E;          /* Deep solid charcoal */
-    --bg-soft: #242426;
-    --bg-card: #27272A;     /* Card surface */
-    --bg-hover: #323235;
+    /* Kraster-style premium dark — 30대 직장인 트렌드 앱 */
+    --bg: #0A0A0A;          /* 그라디언트 없는 깊은 블랙 차콜 */
+    --bg-soft: #111111;
+    --bg-card: #1A1A1A;     /* 배경과 미묘하게 구분되는 표면 */
+    --bg-hover: #222222;
 
-    /* 3-color data system */
-    --primary: #FF5050;     /* Growth / Active / Hot */
-    --primary-soft: rgba(255, 80, 80, 0.11);
-    --primary-deep: #E63939;
-    --primary-glow: rgba(255, 80, 80, 0.2);
+    /* Vivid accent — 시선 강탈, 핵심 요소에만 */
+    --primary: #FF4274;
+    --primary-soft: rgba(255, 66, 116, 0.1);
+    --primary-deep: #E63366;
+    --primary-glow: rgba(255, 66, 116, 0.15);
 
-    --up: #FF5050;          /* 성장 지표 = 레드 */
-    --up-soft: rgba(255, 80, 80, 0.1);
-    --down: #3B82F6;        /* 하락 지표 = 일렉트릭 블루 */
+    --up: #FF4274;          /* 성장 수치 = vivid accent */
+    --up-soft: rgba(255, 66, 116, 0.1);
+    --down: #3B82F6;        /* 하락 = 일렉트릭 블루 */
     --down-soft: rgba(59, 130, 246, 0.1);
     --neutral: #10B981;     /* 중립 태그 = 테크 민트 */
     --neutral-soft: rgba(16, 185, 129, 0.1);
@@ -45,23 +45,23 @@
     --gold: #F59E0B;
     --gold-soft: rgba(245, 158, 11, 0.1);
 
-    --ink: #F4F4F5;         /* Primary Text */
-    --ink-soft: #A1A1AA;    /* Secondary Text */
-    --gray: #71717A;
-    --gray-mid: #52525B;
-    --gray-light: #3F3F46;
+    --ink: #FFFFFF;         /* 순백 메인 텍스트 */
+    --ink-soft: #A1A1AA;    /* 미드 그레이 서브 텍스트 */
+    --gray: #6B6B6B;
+    --gray-mid: #484848;
+    --gray-light: #333333;
 
-    --line: #3F3F46;
-    --line-strong: #52525B;
-    --line-bold: #F4F4F5;
+    --line: #2A2A2A;
+    --line-strong: #333333;
+    --line-bold: #FFFFFF;
 
-    --ambient-1: rgba(255, 80, 80, 0.05);
-    --ambient-2: rgba(59, 130, 246, 0.04);
+    --ambient-1: rgba(255, 66, 116, 0.03);
+    --ambient-2: rgba(59, 130, 246, 0.02);
 
-    --elev-1: 0 1px 3px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
-    --elev-2: 0 4px 14px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.25);
-    --elev-3: 0 8px 24px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.3);
-    --elev-floating: 0 16px 40px rgba(0,0,0,0.6), 0 6px 16px rgba(0,0,0,0.35);
+    --elev-1: 0 1px 3px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
+    --elev-2: 0 4px 14px rgba(0,0,0,0.7), 0 2px 6px rgba(0,0,0,0.5);
+    --elev-3: 0 8px 24px rgba(0,0,0,0.8), 0 4px 12px rgba(0,0,0,0.6);
+    --elev-floating: 0 16px 40px rgba(0,0,0,0.85), 0 6px 16px rgba(0,0,0,0.6);
 
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -70,12 +70,12 @@
     --font-cute: 'Cafe24Surround', 'Pretendard Variable', sans-serif;
     --font-pop: 'Cafe24Dangdanghae', 'Cafe24Surround', sans-serif;
     --font-body: 'Pretendard Variable', sans-serif;
-    --font-mono: 'JetBrains Mono', 'Inter', monospace;
+    --font-mono: 'Inter', 'Pretendard Variable', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
-    background: #1C1C1E;
+    background: #0A0A0A;
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -89,7 +89,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: radial-gradient(circle at 50% 30%, #242428 0%, #141416 70%);
+    background: #0D0D0D;
   }
 
   /* === PHONE === */
@@ -99,26 +99,15 @@
     background: var(--bg);
     border-radius: 48px;
     box-shadow:
-      0 0 0 12px #111113,
-      0 0 0 14px #1E1E20,
-      0 60px 120px rgba(250, 82, 82, 0.1),
-      0 30px 80px rgba(0, 0, 0, 0.85);
+      0 0 0 12px #0F0F0F,
+      0 0 0 14px #1A1A1A,
+      0 60px 120px rgba(255, 66, 116, 0.08),
+      0 30px 80px rgba(0, 0, 0, 0.98);
     position: relative;
     overflow: hidden;
   }
 
-  /* SV 시그니처 — 화면 전체에 깔리는 ambient light */
-  .phone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 600px 400px at 20% 0%, var(--ambient-1), transparent 60%),
-      radial-gradient(ellipse 500px 400px at 100% 100%, var(--ambient-2), transparent 60%);
-    pointer-events: none;
-    z-index: 1;
-    border-radius: 48px;
-  }
+  .phone::before { display: none; }
 
   .notch {
     position: absolute;
@@ -220,17 +209,7 @@
     position: relative;
     overflow: hidden;
   }
-  /* SV 시그니처 — 카드 위 미세한 ambient light */
-  .value-card::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 240px;
-    height: 240px;
-    background: radial-gradient(circle, var(--primary-glow), transparent 70%);
-    pointer-events: none;
-  }
+  .value-card::before { display: none; }
   .value-card > * {
     position: relative;
     z-index: 1;
@@ -474,8 +453,8 @@
   .cta {
     width: 100%;
     padding: 18px;
-    background: #F4F4F5;
-    color: #09090B;
+    background: var(--primary);
+    color: #FFFFFF;
     border: none;
     border-radius: 14px;
     font-size: 17px;
@@ -486,14 +465,14 @@
     letter-spacing: -0.005em;
   }
   .cta:hover:not(:disabled) {
-    background: var(--primary);
+    background: var(--primary-deep);
     color: white;
   }
   .cta:active:not(:disabled) {
     transform: scale(0.98);
   }
   .cta:disabled {
-    background: #323235;
+    background: #1A1A1A;
     color: #52525B;
     cursor: not-allowed;
   }
@@ -1003,16 +982,7 @@
     position: relative;
     overflow: hidden;
   }
-  .headline-block::before {
-    content: '';
-    position: absolute;
-    top: -120px;
-    right: -120px;
-    width: 280px;
-    height: 280px;
-    background: radial-gradient(circle, var(--primary-glow), transparent 70%);
-    pointer-events: none;
-  }
+  .headline-block::before { display: none; }
   .headline-block > * {
     position: relative;
     z-index: 1;
@@ -1140,7 +1110,7 @@
   }
   .bar {
     flex: 1;
-    background: #3A3A3D;
+    background: #242424;
     border-radius: 4px 4px 0 0;
     min-height: 6px;
     transform-origin: bottom;
@@ -1281,13 +1251,13 @@
     color: var(--ink);
   }
   .trend-action.primary {
-    background: #F4F4F5;
-    border-color: #F4F4F5;
-    color: #09090B;
-  }
-  .trend-action.primary:hover {
     background: var(--primary);
     border-color: var(--primary);
+    color: white;
+  }
+  .trend-action.primary:hover {
+    background: var(--primary-deep);
+    border-color: var(--primary-deep);
     color: white;
     box-shadow: 0 4px 12px var(--primary-glow);
   }
@@ -1512,7 +1482,7 @@
   .big-avatar {
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: #27272A;
+    background: #1A1A1A;
     color: var(--ink-soft);
     display: flex;
     align-items: center;
@@ -1574,16 +1544,7 @@
     position: relative;
     overflow: hidden;
   }
-  .insight-card::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 220px;
-    height: 220px;
-    background: radial-gradient(circle, var(--ambient-2), transparent 70%);
-    pointer-events: none;
-  }
+  .insight-card::before { display: none; }
   .insight-card > * {
     position: relative;
     z-index: 1;
@@ -1759,8 +1720,8 @@
     position: fixed;
     bottom: 20px; right: 20px;
     padding: 8px 14px;
-    background: #27272A;
-    border: 1px solid #3F3F46;
+    background: #1A1A1A;
+    border: 1px solid #2A2A2A;
     border-radius: 100px;
     color: #71717A;
     font-family: var(--font-mono);
@@ -1992,27 +1953,11 @@
     position: relative;
     overflow: hidden;
   }
-  /* AI 시그니처 — 회전하는 conic gradient */
   .ai-briefing::before {
+    display: none;
     content: '';
-    position: absolute;
-    top: -150px;
-    right: -150px;
-    width: 300px;
-    height: 300px;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      var(--primary-glow) 40deg,
-      transparent 80deg,
-      var(--ambient-2) 200deg,
-      transparent 280deg,
-      var(--primary-glow) 320deg,
-      transparent 360deg
-    );
-    animation: rotate-bg 20s linear infinite;
     pointer-events: none;
-    opacity: 0.6;
+    opacity: 0;
   }
   @keyframes rotate-bg {
     to { transform: rotate(360deg); }
@@ -2335,12 +2280,12 @@
   }
   .pulse-mini-bar {
     flex: 1;
-    background: #3A3A3D;
+    background: #242424;
     border-radius: 3px 3px 0 0;
     min-height: 4px;
   }
   .pulse-mini-bar.yst {
-    background: #52525B;
+    background: #383838;
   }
   .pulse-mini-bar.tdy {
     background: var(--primary);

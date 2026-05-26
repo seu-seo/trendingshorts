@@ -1,4 +1,4 @@
-# Pulse v6 — Silicon Valley Edition
+# Pulse v6 — 
 
 > 30대 직장인 크리에이터를 위한 트렌드 인사이트 앱  
 > 데이터가 아닌 **"왜?"**를 알려주는 트렌드 큐레이터

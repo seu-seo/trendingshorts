@@ -23,43 +23,43 @@
   }
 
   :root {
-    /* SV-grade white system */
-    --bg: #FCFCFD;             /* 미세하게 따뜻한 화이트 */
-    --bg-soft: #F7F8FA;
-    --bg-card: #F0F1F4;
-    --bg-hover: #E8EAEF;
+    /* SV-grade dark system */
+    --bg: #09090B;
+    --bg-soft: #111115;
+    --bg-card: #1C1C1F;
+    --bg-hover: #27272A;
 
-    /* Primary - 코랄 유지하되 더 vibrant */
+    /* Primary - 코랄 (다크에서 더 vibrant) */
     --primary: #FF5C49;
-    --primary-soft: #FFE9E5;
-    --primary-deep: #E54533;
-    --primary-glow: rgba(255, 92, 73, 0.18);
+    --primary-soft: rgba(255, 92, 73, 0.14);
+    --primary-deep: #FF3D27;
+    --primary-glow: rgba(255, 92, 73, 0.28);
 
-    --up: #15803D;
-    --up-soft: #DCFCE7;
-    --down: #DC2626;
-    --gold: #F0B946;
-    --gold-soft: #FFF4D9;
+    --up: #22C55E;
+    --up-soft: rgba(34, 197, 94, 0.12);
+    --down: #EF4444;
+    --gold: #F59E0B;
+    --gold-soft: rgba(245, 158, 11, 0.13);
 
-    --ink: #0E1116;            /* 더 깊은 잉크 */
-    --ink-soft: #3A414B;
-    --gray: #6E7682;
-    --gray-mid: #A8AEB9;
-    --gray-light: #D1D4DB;
+    --ink: #F4F4F5;
+    --ink-soft: #A1A1AA;
+    --gray: #71717A;
+    --gray-mid: #52525B;
+    --gray-light: #3F3F46;
 
-    --line: #EEF0F3;
-    --line-strong: #DEE1E6;
-    --line-bold: #0E1116;
+    --line: #27272A;
+    --line-strong: #3F3F46;
+    --line-bold: #F4F4F5;
 
-    /* SV signature - 사용 안 보이는 ambient */
-    --ambient-1: rgba(255, 92, 73, 0.04);
-    --ambient-2: rgba(99, 102, 241, 0.03);
+    /* SV signature ambient — 다크에서 더 강렬 */
+    --ambient-1: rgba(255, 92, 73, 0.07);
+    --ambient-2: rgba(139, 92, 246, 0.05);
 
-    /* Subtle elevations */
-    --elev-1: 0 1px 2px rgba(14, 17, 22, 0.04), 0 1px 1px rgba(14, 17, 22, 0.02);
-    --elev-2: 0 4px 12px rgba(14, 17, 22, 0.06), 0 1px 4px rgba(14, 17, 22, 0.04);
-    --elev-3: 0 8px 24px rgba(14, 17, 22, 0.08), 0 2px 8px rgba(14, 17, 22, 0.04);
-    --elev-floating: 0 12px 32px rgba(14, 17, 22, 0.1), 0 4px 12px rgba(14, 17, 22, 0.05);
+    /* Dark elevations — 그림자 더 강하게 */
+    --elev-1: 0 1px 2px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3);
+    --elev-2: 0 4px 12px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
+    --elev-3: 0 8px 24px rgba(0,0,0,0.7), 0 4px 12px rgba(0,0,0,0.5);
+    --elev-floating: 0 16px 48px rgba(0,0,0,0.8), 0 6px 16px rgba(0,0,0,0.5);
 
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -73,7 +73,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
-    background: #E8EAED;
+    background: #09090B;
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -87,7 +87,7 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    background: radial-gradient(circle at 50% 30%, #F2F4F6 0%, #C8CCD2 70%);
+    background: radial-gradient(circle at 50% 30%, #16161A 0%, #0A0A0D 70%);
   }
 
   /* === PHONE === */
@@ -97,10 +97,10 @@
     background: var(--bg);
     border-radius: 48px;
     box-shadow:
-      0 0 0 12px #0E1116,
-      0 0 0 14px #2D3036,
-      0 40px 100px rgba(255, 92, 73, 0.1),
-      0 30px 80px rgba(14, 17, 22, 0.3);
+      0 0 0 12px #1C1C1F,
+      0 0 0 14px #2D2D32,
+      0 60px 120px rgba(255, 92, 73, 0.14),
+      0 30px 80px rgba(0, 0, 0, 0.95);
     position: relative;
     overflow: hidden;
   }
@@ -209,7 +209,7 @@
 
   /* 메인 가치 카드 — Floating, Spatial */
   .value-card {
-    background: white;
+    background: var(--bg-card);
     border-radius: 22px;
     padding: 22px;
     margin-bottom: 14px;
@@ -382,7 +382,7 @@
 
   /* WHY 인사이트 카드 — AI generated 느낌 */
   .why-card {
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line-strong);
     border-radius: 18px;
     padding: 18px 20px;
@@ -472,8 +472,8 @@
   .cta {
     width: 100%;
     padding: 18px;
-    background: var(--ink);
-    color: white;
+    background: #F4F4F5;
+    color: #09090B;
     border: none;
     border-radius: 14px;
     font-size: 17px;
@@ -485,13 +485,14 @@
   }
   .cta:hover:not(:disabled) {
     background: var(--primary);
+    color: white;
   }
   .cta:active:not(:disabled) {
     transform: scale(0.98);
   }
   .cta:disabled {
-    background: var(--bg-card);
-    color: var(--gray-mid);
+    background: #27272A;
+    color: #52525B;
     cursor: not-allowed;
   }
   .cta-meta {
@@ -542,7 +543,7 @@
   }
   .progress-fill {
     height: 100%;
-    background: var(--ink);
+    background: var(--primary);
     border-radius: 100px;
     transition: width 0.5s var(--spring);
   }
@@ -653,7 +654,7 @@
     height: 22px;
     border-radius: 50%;
     border: 2px solid var(--gray-light);
-    background: white;
+    background: var(--bg-card);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -668,7 +669,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: white;
+    background: #F4F4F5;
     opacity: 0;
     transform: scale(0);
     transition: all 0.2s var(--spring);
@@ -705,7 +706,7 @@
     font-family: var(--font-cute);
     font-size: 16px;
     color: var(--ink);
-    border: 1.5px solid transparent;
+    border: 1.5px solid var(--line-strong);
     letter-spacing: -0.01em;
     display: inline-flex;
     align-items: center;
@@ -714,7 +715,7 @@
   .chip:hover { background: var(--bg-hover); }
   .chip.selected {
     background: var(--primary-soft);
-    color: var(--primary-deep);
+    color: var(--primary);
     border-color: var(--primary);
   }
   .chip-check {
@@ -796,7 +797,7 @@
     flex: 1;
     padding: 14px 0;
     background: var(--bg-card);
-    border: none;
+    border: 1.5px solid var(--line-strong);
     border-radius: 12px;
     cursor: pointer;
     text-align: center;
@@ -807,7 +808,7 @@
   }
   .age-opt:hover { background: var(--bg-hover); }
   .age-opt.selected {
-    background: var(--ink);
+    background: var(--primary);
     color: white;
   }
 
@@ -922,7 +923,7 @@
     font-family: var(--font-mono);
     font-size: 10px;
     color: var(--gray);
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line-strong);
     border-radius: 4px;
     padding: 2px 5px;
@@ -953,7 +954,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: var(--ink);
+    background: var(--primary);
     color: white;
     display: flex;
     align-items: center;
@@ -991,7 +992,7 @@
   .headline-block {
     margin: 0 16px 28px;
     padding: 22px 22px 18px;
-    background: white;
+    background: var(--bg-card);
     border-radius: 22px;
     cursor: pointer;
     transition: all 0.3s var(--ease-out);
@@ -1137,7 +1138,7 @@
   }
   .bar {
     flex: 1;
-    background: var(--bg-card);
+    background: #2D2D32;
     border-radius: 4px 4px 0 0;
     min-height: 6px;
     transform-origin: bottom;
@@ -1278,13 +1279,14 @@
     color: var(--ink);
   }
   .trend-action.primary {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: white;
+    background: #F4F4F5;
+    border-color: #F4F4F5;
+    color: #09090B;
   }
   .trend-action.primary:hover {
     background: var(--primary);
     border-color: var(--primary);
+    color: white;
     box-shadow: 0 4px 12px var(--primary-glow);
   }
   .section-head {
@@ -1327,12 +1329,12 @@
     border: 1px solid transparent;
   }
   .trend-item:hover {
-    background: white;
+    background: var(--bg-card);
     border-color: var(--line);
     box-shadow: var(--elev-1);
   }
   .trend-item.expanded {
-    background: white;
+    background: var(--bg-card);
     border-color: var(--line);
     box-shadow: var(--elev-2);
     flex-direction: column;
@@ -1417,7 +1419,7 @@
   .keyword-list {
     display: flex;
     flex-direction: column;
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: 16px;
     overflow: hidden;
@@ -1495,7 +1497,7 @@
     padding: 0 16px;
   }
   .profile-row {
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: 20px;
     padding: 20px;
@@ -1508,8 +1510,8 @@
   .big-avatar {
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: var(--ink);
-    color: white;
+    background: #27272A;
+    color: var(--ink-soft);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1563,7 +1565,7 @@
   .insight-card {
     margin: 0 16px 24px;
     padding: 22px;
-    background: white;
+    background: var(--bg-card);
     border-radius: 22px;
     border: 1px solid var(--line);
     box-shadow: var(--elev-floating);
@@ -1707,7 +1709,7 @@
     bottom: 0;
     left: 0; right: 0;
     height: 72px;
-    background: white;
+    background: var(--bg-card);
     border-top: 1px solid var(--line);
     display: flex;
     padding: 8px 0 0;
@@ -1755,10 +1757,10 @@
     position: fixed;
     bottom: 20px; right: 20px;
     padding: 8px 14px;
-    background: white;
-    border: 1px solid rgba(0,0,0,0.12);
+    background: #1C1C1F;
+    border: 1px solid #3F3F46;
     border-radius: 100px;
-    color: rgba(0,0,0,0.7);
+    color: #71717A;
     font-family: var(--font-mono);
     font-size: 10px;
     cursor: pointer;
@@ -1801,7 +1803,7 @@
   .profile-progress {
     margin: 0 16px 16px;
     padding: 14px 16px;
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: 14px;
     display: flex;
@@ -1878,7 +1880,7 @@
   .soft-prompt {
     margin: 4px 0;
     padding: 16px;
-    background: linear-gradient(135deg, var(--primary-soft), white);
+    background: linear-gradient(135deg, var(--primary-soft), transparent);
     border: 1px solid var(--primary-soft);
     border-radius: 14px;
     box-shadow: var(--elev-1);
@@ -1952,7 +1954,7 @@
   }
   .prompt-chip {
     padding: 8px 14px;
-    background: white;
+    background: var(--bg-card);
     border: 1px solid var(--line-strong);
     border-radius: 100px;
     cursor: pointer;
@@ -1968,8 +1970,8 @@
     color: var(--ink);
   }
   .prompt-chip.selected {
-    background: var(--ink);
-    border-color: var(--ink);
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
   }
 
@@ -1980,7 +1982,7 @@
     margin: 0 16px 16px;
     padding: 20px 20px 18px;
     background:
-      linear-gradient(135deg, white 0%, white 100%);
+      linear-gradient(135deg, #1E1E22 0%, #18181B 100%);
     border: 1px solid var(--line);
     border-radius: 22px;
     box-shadow: var(--elev-floating);
@@ -2182,6 +2184,179 @@
     letter-spacing: -0.01em;
   }
   .briefing-cta:hover { color: var(--primary-deep); }
+
+  /* ============================
+     LIVE PULSE MODE — 어제 본 트렌드 변화
+     ============================ */
+  .pulse-section {
+    margin: 0 16px 16px;
+  }
+  .pulse-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    margin-bottom: 12px;
+  }
+  .pulse-section-title {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .pulse-section-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .pulse-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pulse-scroll::-webkit-scrollbar { display: none; }
+  .pulse-card {
+    flex-shrink: 0;
+    width: 158px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    box-shadow: var(--elev-1);
+  }
+  .pulse-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--elev-2);
+    transform: translateY(-2px);
+  }
+  .pulse-card.expanded {
+    width: 100%;
+    border-color: var(--line-strong);
+    box-shadow: var(--elev-2);
+    transform: translateY(0);
+  }
+  .pulse-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .pulse-card-badge.rising {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22C55E;
+  }
+  .pulse-card-badge.cooling {
+    background: var(--bg-card);
+    color: var(--gray);
+  }
+  .pulse-card-title {
+    font-family: var(--font-cute);
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .pulse-card.expanded .pulse-card-title {
+    -webkit-line-clamp: unset;
+  }
+  .pulse-card-change {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .pulse-from {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-mid);
+    font-weight: 500;
+    text-decoration: line-through;
+    text-decoration-color: var(--gray-light);
+  }
+  .pulse-arrow {
+    font-size: 9px;
+    color: var(--gray-light);
+    font-family: var(--font-mono);
+  }
+  .pulse-to {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .pulse-to.up { color: var(--primary); }
+  .pulse-to.down { color: var(--gray); }
+
+  .pulse-card-detail {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .pulse-card.expanded .pulse-card-detail {
+    display: block;
+  }
+  .pulse-detail-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .pulse-mini-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+  .pulse-mini-bar {
+    flex: 1;
+    background: #2D2D32;
+    border-radius: 3px 3px 0 0;
+    min-height: 4px;
+  }
+  .pulse-mini-bar.yst {
+    background: #52525B;
+  }
+  .pulse-mini-bar.tdy {
+    background: var(--primary);
+    box-shadow: 0 2px 8px var(--primary-glow);
+  }
+  .pulse-mini-bar.tdy.down {
+    background: var(--gray-mid);
+    box-shadow: none;
+  }
+  .pulse-detail-insight {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--gray);
+    line-height: 1.55;
+  }
+  .pulse-detail-insight strong {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
@@ -2532,6 +2707,86 @@
           <div class="briefing-footer">
             <div class="briefing-source">SOURCE: 5.26 · IG + YT + TT</div>
             <button class="briefing-cta">자세히 보기 →</button>
+          </div>
+        </div>
+
+        <!-- LIVE PULSE MODE — 어제 본 트렌드의 변화 -->
+        <div class="pulse-section">
+          <div class="pulse-section-head">
+            <div class="pulse-section-title">어제 본 트렌드는?</div>
+            <div class="pulse-section-meta">YESTERDAY → TODAY</div>
+          </div>
+          <div class="pulse-scroll" id="pulse-scroll">
+
+            <div class="pulse-card" onclick="togglePulseCard(this, event)">
+              <div class="pulse-card-badge rising">더 떴어요</div>
+              <div class="pulse-card-title">커피값 절약한 돈으로 한 일</div>
+              <div class="pulse-card-change">
+                <span class="pulse-from">+312%</span>
+                <span class="pulse-arrow">→</span>
+                <span class="pulse-to up">+480%</span>
+              </div>
+              <div class="pulse-card-detail">
+                <div class="pulse-detail-label">PAST 7 DAYS</div>
+                <div class="pulse-mini-bars">
+                  <div class="pulse-mini-bar" style="height:30%"></div>
+                  <div class="pulse-mini-bar" style="height:40%"></div>
+                  <div class="pulse-mini-bar" style="height:35%"></div>
+                  <div class="pulse-mini-bar" style="height:55%"></div>
+                  <div class="pulse-mini-bar" style="height:62%"></div>
+                  <div class="pulse-mini-bar yst" style="height:75%"></div>
+                  <div class="pulse-mini-bar tdy" style="height:100%"></div>
+                </div>
+                <div class="pulse-detail-insight">절약 콘텐츠가 <strong>4일 연속</strong> 오르고 있어요. 주말 효과로 더 뜰 가능성 있어요.</div>
+              </div>
+            </div>
+
+            <div class="pulse-card" onclick="togglePulseCard(this, event)">
+              <div class="pulse-card-badge rising">상승 중</div>
+              <div class="pulse-card-title">출근길 5분 루틴</div>
+              <div class="pulse-card-change">
+                <span class="pulse-from">+205%</span>
+                <span class="pulse-arrow">→</span>
+                <span class="pulse-to up">+312%</span>
+              </div>
+              <div class="pulse-card-detail">
+                <div class="pulse-detail-label">PAST 7 DAYS</div>
+                <div class="pulse-mini-bars">
+                  <div class="pulse-mini-bar" style="height:25%"></div>
+                  <div class="pulse-mini-bar" style="height:32%"></div>
+                  <div class="pulse-mini-bar" style="height:28%"></div>
+                  <div class="pulse-mini-bar" style="height:45%"></div>
+                  <div class="pulse-mini-bar" style="height:52%"></div>
+                  <div class="pulse-mini-bar yst" style="height:68%"></div>
+                  <div class="pulse-mini-bar tdy" style="height:100%"></div>
+                </div>
+                <div class="pulse-detail-insight">직장인 콘텐츠 붐의 핵심이에요. <strong>월요일 효과</strong>로 오늘 특히 많이 떴어요.</div>
+              </div>
+            </div>
+
+            <div class="pulse-card" onclick="togglePulseCard(this, event)">
+              <div class="pulse-card-badge cooling">식었어요</div>
+              <div class="pulse-card-title">홈카페 레시피 공유</div>
+              <div class="pulse-card-change">
+                <span class="pulse-from">+180%</span>
+                <span class="pulse-arrow">→</span>
+                <span class="pulse-to down">+95%</span>
+              </div>
+              <div class="pulse-card-detail">
+                <div class="pulse-detail-label">PAST 7 DAYS</div>
+                <div class="pulse-mini-bars">
+                  <div class="pulse-mini-bar" style="height:60%"></div>
+                  <div class="pulse-mini-bar" style="height:80%"></div>
+                  <div class="pulse-mini-bar" style="height:100%"></div>
+                  <div class="pulse-mini-bar" style="height:85%"></div>
+                  <div class="pulse-mini-bar" style="height:68%"></div>
+                  <div class="pulse-mini-bar yst" style="height:52%"></div>
+                  <div class="pulse-mini-bar tdy down" style="height:35%"></div>
+                </div>
+                <div class="pulse-detail-insight">주말 피크 이후 조정 중이에요. <strong>다음 주말</strong>에 다시 뜰 가능성 있어요.</div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -3112,6 +3367,13 @@
   function switchTab(tab) {
     if (tab === 'trend') goTo('screen-trend');
     else if (tab === 'my') goTo('screen-my');
+  }
+
+  function togglePulseCard(el, event) {
+    const scroll = document.getElementById('pulse-scroll');
+    const wasExpanded = el.classList.contains('expanded');
+    scroll.querySelectorAll('.pulse-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) el.classList.add('expanded');
   }
 
   function toggleTrendItem(el, event) {

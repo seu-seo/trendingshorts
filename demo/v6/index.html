@@ -1,732 +1,3149 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
-<title>Shortform Pulse — Demo v3</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse — 트렌드</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  /* 카페24 써라운드 — 둥글둥글 친근한 헤딩 */
+  @font-face {
+    font-family: 'Cafe24Surround';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+  }
+  /* 카페24 당당해 — 강조 임팩트용 */
+  @font-face {
+    font-family: 'Cafe24Dangdanghae';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.2/Cafe24Dangdanghae.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+  }
 
-:root{
-  --bg:#0a0a0a;--surface:#111;--surface2:#171717;--surface3:#1e1e1e;
-  --border:#222;--border2:#2e2e2e;--border3:#3a3a3a;
-  --text:#e8e8e8;--text2:#999;--text3:#555;
-  --lime:#c8ff57;--lime2:#a8d840;--lime-dim:rgba(200,255,87,.08);
-  --pink:#ff4d8d;--blue:#4db8ff;--amber:#ffb84d;--purple:#b57fff;
-  --green:#4caf82;
-  --r:14px;--r2:10px;--r3:6px;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);overflow:hidden}
-.mono{font-family:'JetBrains Mono',monospace}
+  :root {
+    /* SV-grade white system */
+    --bg: #FCFCFD;             /* 미세하게 따뜻한 화이트 */
+    --bg-soft: #F7F8FA;
+    --bg-card: #F0F1F4;
+    --bg-hover: #E8EAEF;
 
-.outer{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;gap:40px}
-.sidebar{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:20px}
-.sidebar-title{font-size:11px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
-.step-list{display:flex;flex-direction:column;gap:0}
-.step-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s}
-.step-item:last-child{border-bottom:none}
-.step-dot{width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);flex-shrink:0;font-family:'JetBrains Mono',monospace;transition:all .2s}
-.step-item.active .step-dot{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
-.step-item.done .step-dot{background:var(--green);border-color:var(--green);color:#fff}
-.step-item.active .step-name{color:var(--lime)}
-.step-item.done .step-name{color:var(--green)}
-.step-name{font-size:12px;color:var(--text2);line-height:1.5;transition:color .2s}
-.step-sub{font-size:10px;color:var(--text3);margin-top:1px;font-family:'JetBrains Mono',monospace}
-.usp-box{background:var(--lime-dim);border:1px solid rgba(200,255,87,.2);border-radius:var(--r2);padding:14px}
-.usp-label{font-size:9px;color:var(--lime2);letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.usp-text{font-size:12px;color:var(--text);line-height:1.65}
+    /* Primary - 코랄 유지하되 더 vibrant */
+    --primary: #FF5C49;
+    --primary-soft: #FFE9E5;
+    --primary-deep: #E54533;
+    --primary-glow: rgba(255, 92, 73, 0.18);
 
-.phone-wrap{position:relative}
-.phone{width:340px;height:680px;background:var(--surface);border-radius:32px;border:1.5px solid var(--border2);overflow:hidden;position:relative;box-shadow:0 0 60px rgba(0,0,0,.6)}
-.status-bar{height:44px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--border);flex-shrink:0}
-.sb-left{font-size:10px;color:var(--lime);font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:.06em}
-.sb-right{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.screen{height:calc(680px - 44px - 56px);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-.screen::-webkit-scrollbar{display:none}
-.tab-bar{height:56px;background:var(--surface2);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 10px}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 12px;border-radius:8px;transition:all .15s}
-.tab-icon{font-size:18px;color:var(--text3)}
-.tab-label{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.tab.active .tab-icon,.tab.active .tab-label{color:var(--lime)}
+    --up: #15803D;
+    --up-soft: #DCFCE7;
+    --down: #DC2626;
+    --gold: #F0B946;
+    --gold-soft: #FFF4D9;
 
-.view{display:none;padding:0 0 16px}
-.view.active{display:block}
+    --ink: #0E1116;            /* 더 깊은 잉크 */
+    --ink-soft: #3A414B;
+    --gray: #6E7682;
+    --gray-mid: #A8AEB9;
+    --gray-light: #D1D4DB;
 
-.feed-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.feed-eyebrow{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.07em;margin-bottom:4px}
-.feed-title{font-size:16px;font-weight:700;color:var(--text)}
-.cat-tabs{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;border-bottom:1px solid var(--border)}
-.cat-tabs::-webkit-scrollbar{display:none}
-.cat-tab{padding:5px 12px;border-radius:20px;font-size:11px;border:1px solid var(--border2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s;font-family:'JetBrains Mono',monospace}
-.cat-tab.active{background:var(--lime-dim);border-color:rgba(200,255,87,.4);color:var(--lime)}
-.section-label{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.1em;padding:12px 16px 6px}
-.platform-row{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto}
-.platform-row::-webkit-scrollbar{display:none}
-.platform-card{min-width:130px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:10px;cursor:pointer;transition:all .15s;flex-shrink:0}
-.platform-card:hover{border-color:var(--border3)}
-.pc-badge{font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:3px;margin-bottom:6px;display:inline-block}
-.pc-title{font-size:11px;color:var(--text);line-height:1.4;margin-bottom:4px;font-weight:500}
-.pc-stat{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.pc-growth{color:var(--lime);font-size:9px;font-family:'JetBrains Mono',monospace}
-.keyword-row{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 12px}
-.kw{padding:4px 10px;border-radius:20px;font-size:10px;font-family:'JetBrains Mono',monospace;cursor:default}
-.kw.hot{background:rgba(255,77,141,.1);border:1px solid rgba(255,77,141,.3);color:var(--pink)}
-.kw.rising{background:var(--lime-dim);border:1px solid rgba(200,255,87,.3);color:var(--lime)}
-.kw.normal{background:var(--surface2);border:1px solid var(--border2);color:var(--text3)}
-.trend-list{display:flex;flex-direction:column;gap:0;padding:0 16px}
-.trend-card{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
-.trend-card:hover{border-color:var(--border3);background:var(--surface3)}
-.tc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px}
-.tc-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;flex:1;margin-right:8px}
-.tc-platform{font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:3px;flex-shrink:0}
-.tc-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.tc-stat{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.tc-reason{font-size:10px;color:var(--text2);line-height:1.5;padding:6px 8px;background:var(--surface);border-radius:5px;border-left:2px solid var(--border2)}
-.tc-reason-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+    --line: #EEF0F3;
+    --line-strong: #DEE1E6;
+    --line-bold: #0E1116;
 
-.sheet-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:flex-end}
-.sheet-overlay.open{display:flex}
-.sheet{background:var(--surface2);border-radius:20px 20px 0 0;padding:16px;width:100%;border-top:1px solid var(--border2)}
-.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 14px}
-.sheet-trend-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
-.sheet-meta{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:12px}
-.sheet-reason{font-size:11px;color:var(--text2);line-height:1.6;padding:9px 10px;background:var(--surface);border-radius:6px;margin-bottom:12px}
-.sheet-reason-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
-.sheet-btns{display:flex;flex-direction:column;gap:8px}
-.sheet-btn{width:100%;padding:13px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid;font-family:'Noto Sans KR',sans-serif;transition:all .15s}
-.sheet-btn.primary{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
-.sheet-btn.secondary{background:transparent;border-color:var(--border2);color:var(--text2)}
+    /* SV signature - 사용 안 보이는 ambient */
+    --ambient-1: rgba(255, 92, 73, 0.04);
+    --ambient-2: rgba(99, 102, 241, 0.03);
 
-.chat-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.chat-trend-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:7px 10px;margin:10px 16px;display:flex;gap:7px;align-items:flex-start}
-.ctc-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;padding-top:1px}
-.ctc-v{font-size:11px;color:var(--text2);line-height:1.5}
-.chat-q{padding:10px 16px}
-.q-text{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;font-weight:500}
-.q-options{display:flex;flex-direction:column;gap:6px}
-.q-opt{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--r2);font-size:12px;color:var(--text2);cursor:pointer;transition:all .15s;line-height:1.4}
-.q-opt:hover{border-color:var(--border3);color:var(--text)}
-.q-opt.selected{border-color:var(--lime);background:var(--lime-dim);color:var(--lime)}
-.chat-divider{height:1px;background:var(--border);margin:4px 16px}
-.chat-generating{padding:12px 16px;display:none}
-.gen-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:8px}
-.gen-fill{height:100%;background:var(--lime);border-radius:1px;width:0;transition:width 1.8s ease}
-.gen-text{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.angle-result{padding:12px 16px;display:none}
-.ar-box{background:var(--lime-dim);border:1px solid rgba(200,255,87,.25);border-radius:var(--r2);padding:12px}
-.ar-label{font-size:9px;color:var(--lime2);font-family:'JetBrains Mono',monospace;letter-spacing:.07em;margin-bottom:5px}
-.ar-angle{font-size:13px;font-weight:500;color:var(--lime);line-height:1.5;margin-bottom:8px}
-.ar-hook{font-size:11px;color:var(--text2);line-height:1.6;font-style:italic;border-top:1px solid rgba(200,255,87,.15);padding-top:8px}
-.ar-hook-l{font-size:9px;color:var(--lime2);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
-.chat-cta{padding:0 16px 0}
+    /* Subtle elevations */
+    --elev-1: 0 1px 2px rgba(14, 17, 22, 0.04), 0 1px 1px rgba(14, 17, 22, 0.02);
+    --elev-2: 0 4px 12px rgba(14, 17, 22, 0.06), 0 1px 4px rgba(14, 17, 22, 0.04);
+    --elev-3: 0 8px 24px rgba(14, 17, 22, 0.08), 0 2px 8px rgba(14, 17, 22, 0.04);
+    --elev-floating: 0 12px 32px rgba(14, 17, 22, 0.1), 0 4px 12px rgba(14, 17, 22, 0.05);
 
-.conti-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.conti-trend-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:7px 10px;margin:10px 16px}
-.ctc2-l{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
-.ctc2-v{font-size:11px;color:var(--text2);line-height:1.55}
-.cut-list{display:flex;flex-direction:column;gap:10px;padding:0 16px}
-.cut-card{border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden}
-.cut-head{background:var(--surface2);border-bottom:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;justify-content:space-between}
-.cut-label{font-size:12px;font-weight:500;color:var(--text)}
-.cut-time{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.cut-sketch{width:100%;aspect-ratio:16/9;background:var(--surface3);position:relative;overflow:hidden}
-.cut-sketch canvas{display:block;width:100%;height:100%}
-.cut-foot{padding:10px 12px}
-.cut-script{font-size:12px;color:var(--text);font-style:italic;line-height:1.65;margin-bottom:4px}
-.cut-note{font-size:10px;color:var(--text3);line-height:1.5}
-.conti-done{padding:12px 16px;display:flex;gap:8px}
-.done-btn{flex:1;padding:12px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
-.done-btn.primary{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
-.done-btn.primary:hover{background:var(--lime2)}
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-.challenge-header{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.progress-bar{height:3px;background:var(--border);border-radius:2px;margin:10px 16px;overflow:hidden}
-.progress-fill{height:100%;background:var(--lime);border-radius:2px;transition:width .5s ease}
-.progress-text{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;padding:0 16px;margin-bottom:12px}
-.challenge-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:0 16px;margin-bottom:16px}
-.cg-cell{aspect-ratio:1;border-radius:var(--r3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text3);transition:all .3s}
-.cg-cell.done{background:rgba(76,175,130,.1);border-color:rgba(76,175,130,.4);color:var(--green)}
-.cg-cell.current{border-color:rgba(200,255,87,.5);color:var(--lime);background:var(--lime-dim)}
-.next-section{padding:0 16px}
-.next-label{font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;margin-bottom:8px}
-.next-item{padding:10px 12px;border:1px solid var(--border2);border-radius:var(--r2);display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:6px;transition:all .15s}
-.next-item:hover{border-color:var(--border3)}
-.ni-title{font-size:12px;color:var(--text);margin-bottom:1px}
-.ni-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
-.ni-arrow{font-size:14px;color:var(--text3)}
+    --font-cute: 'Cafe24Surround', 'Pretendard Variable', sans-serif;
+    --font-pop: 'Cafe24Dangdanghae', 'Cafe24Surround', sans-serif;
+    --font-body: 'Pretendard Variable', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Inter', monospace;
+  }
 
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;border-radius:var(--r2);font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);font-family:'Noto Sans KR',sans-serif;transition:all .15s}
-.btn.lime{background:var(--lime);border-color:var(--lime);color:#0a0a0a}
-.btn.lime:hover{background:var(--lime2)}
-.btn:hover{border-color:var(--border3)}
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: #E8EAED;
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
 
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeIn .25s ease both}
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: radial-gradient(circle at 50% 30%, #F2F4F6 0%, #C8CCD2 70%);
+  }
+
+  /* === PHONE === */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 48px;
+    box-shadow:
+      0 0 0 12px #0E1116,
+      0 0 0 14px #2D3036,
+      0 40px 100px rgba(255, 92, 73, 0.1),
+      0 30px 80px rgba(14, 17, 22, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SV 시그니처 — 화면 전체에 깔리는 ambient light */
+  .phone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 20% 0%, var(--ambient-1), transparent 60%),
+      radial-gradient(ellipse 500px 400px at 100% 100%, var(--ambient-2), transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 48px;
+  }
+
+  .notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 32px;
+    background: #0E1116;
+    border-radius: 100px;
+    z-index: 200;
+  }
+
+  /* === SCREEN === */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    z-index: 10;
+  }
+  .screen.active {
+    display: flex;
+    animation: screenIn 0.4s var(--ease-out);
+  }
+  @keyframes screenIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .status-bar {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 24px 8px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    z-index: 50;
+    flex-shrink: 0;
+  }
+
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    position: relative;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* ============================
+     WELCOME — VALUE-FIRST
+     ============================ */
+  .welcome-screen { background: var(--bg); }
+  .welcome-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 20px 24px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .welcome-content::-webkit-scrollbar { display: none; }
+
+  /* 상단 식별자 줄 */
+  .welcome-id-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px 16px;
+  }
+  .welcome-logo {
+    font-family: var(--font-pop);
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .welcome-logo .dot { color: var(--primary); }
+  .welcome-id-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* 메인 가치 카드 — Floating, Spatial */
+  .value-card {
+    background: white;
+    border-radius: 22px;
+    padding: 22px;
+    margin-bottom: 14px;
+    box-shadow: var(--elev-floating);
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  /* SV 시그니처 — 카드 위 미세한 ambient light */
+  .value-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, var(--primary-glow), transparent 70%);
+    pointer-events: none;
+  }
+  .value-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  .value-card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .value-card-eyebrow .live-dot {
+    width: 6px; height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse-glow 1.6s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--primary);
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--primary); }
+    50% { opacity: 0.5; box-shadow: 0 0 4px var(--primary); }
+  }
+
+  .value-headline {
+    font-family: var(--font-cute);
+    font-size: 24px;
+    line-height: 1.4;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .value-headline .big-num {
+    font-family: var(--font-pop);
+    color: var(--primary);
+    font-size: 28px;
+  }
+  .value-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    margin-bottom: 18px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  /* 라이브 그래프 영역 */
+  .value-chart {
+    padding: 16px 0 4px;
+  }
+  .value-chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .value-chart-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .value-chart-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .value-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 56px;
+    margin-bottom: 8px;
+  }
+  .value-bar {
+    flex: 1;
+    background: var(--bg-card);
+    border-radius: 3px 3px 0 0;
+    min-height: 5px;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: growBar 0.7s var(--spring) both;
+  }
+  .value-bar.active { background: var(--primary); }
+  .value-bar:nth-child(1) { animation-delay: 0.4s; }
+  .value-bar:nth-child(2) { animation-delay: 0.5s; }
+  .value-bar:nth-child(3) { animation-delay: 0.6s; }
+  .value-bar:nth-child(4) { animation-delay: 0.7s; }
+  .value-bar:nth-child(5) { animation-delay: 0.8s; }
+  .value-bar:nth-child(6) { animation-delay: 0.9s; }
+  .value-bar:nth-child(7) { animation-delay: 1.0s; }
+  @keyframes growBar {
+    to { transform: scaleY(1); }
+  }
+  .value-bar-labels {
+    display: flex;
+    gap: 5px;
+  }
+  .value-bar-label {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+  }
+  .value-bar-label.active { color: var(--primary); font-weight: 800; }
+
+  /* 통계 row */
+  .value-stats {
+    display: flex;
+    padding-top: 16px;
+    margin-top: 14px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .value-stat {
+    flex: 1;
+  }
+  .value-stat + .value-stat {
+    border-left: 1px solid var(--line-strong);
+    padding-left: 14px;
+  }
+  .value-stat:not(:last-child) {
+    padding-right: 14px;
+  }
+  .value-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    margin-bottom: 5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .value-stat-num {
+    font-family: var(--font-pop);
+    font-size: 18px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .value-stat-num.up { color: var(--up); }
+  .value-stat-num.accent { color: var(--primary); }
+
+  /* WHY 인사이트 카드 — AI generated 느낌 */
+  .why-card {
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--elev-1);
+  }
+  /* SV 시그니처 — AI 생성 shimmer (Perplexity, Claude 톤) */
+  .why-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 92, 73, 0.06) 50%,
+      transparent 100%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+  }
+  .why-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  .why-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--primary-deep);
+    background: var(--primary-soft);
+    padding: 4px 10px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .why-label::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--primary);
+  }
+  .why-text {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .why-text .highlight {
+    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
+    padding: 0 2px;
+  }
+
+  /* 하단 안내 */
+  .welcome-pitch {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .welcome-pitch-title {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .welcome-pitch-sub {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+
+  /* CTA */
+  .cta {
+    width: 100%;
+    padding: 18px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    font-family: var(--font-pop);
+    font-weight: normal;
+    letter-spacing: -0.005em;
+  }
+  .cta:hover:not(:disabled) {
+    background: var(--primary);
+  }
+  .cta:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  .cta:disabled {
+    background: var(--bg-card);
+    color: var(--gray-mid);
+    cursor: not-allowed;
+  }
+  .cta-meta {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    text-align: center;
+    margin-top: 14px;
+    font-weight: 500;
+  }
+
+  /* ============================
+     QUESTION HEADER
+     ============================ */
+  .q-screen { background: var(--bg); }
+  .q-header {
+    padding: 14px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 20;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--ink);
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    margin-left: -8px;
+  }
+  .back-btn:hover { background: var(--bg-card); }
+
+  /* 토스풍 진행 바 — 얇고 세련됨 */
+  .progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--bg-card);
+    border-radius: 100px;
+    overflow: hidden;
+    margin: 0 16px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    border-radius: 100px;
+    transition: width 0.5s var(--spring);
+  }
+  .step-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 700;
+    min-width: 28px;
+    text-align: right;
+  }
+  .step-text .total {
+    color: var(--gray-mid);
+    font-weight: 500;
+  }
+
+  .skip-btn {
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    padding: 6px 8px;
+    margin-right: -8px;
+  }
+
+  /* === Question Prompt === */
+  .q-prompt {
+    padding: 32px 24px 32px;
+  }
+  .q-step-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .q-title {
+    font-family: var(--font-cute);
+    font-size: 28px;
+    font-weight: normal;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .q-helper {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--gray);
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  /* ============================
+     PLATFORM — TOSS LIST
+     ============================ */
+  .toss-list {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+  }
+  .toss-item {
+    padding: 18px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 12px;
+  }
+  .toss-item:hover { background: var(--bg-soft); }
+  .toss-item.selected { background: var(--primary-soft); }
+  .toss-item-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .toss-item-title {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .toss-item.selected .toss-item-title { color: var(--primary-deep); }
+  .toss-item-meta {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toss-item-meta .bullet {
+    width: 2px;
+    height: 2px;
+    background: var(--gray-mid);
+    border-radius: 50%;
+  }
+  .toss-item-meta .accent {
+    color: var(--up);
+    font-weight: 700;
+  }
+  .toss-radio {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-light);
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s var(--spring);
+  }
+  .toss-item.selected .toss-radio {
+    border-color: var(--primary);
+    background: var(--primary);
+  }
+  .toss-radio-inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.2s var(--spring);
+  }
+  .toss-item.selected .toss-radio-inner {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* 구분선 */
+  .toss-divider {
+    height: 1px;
+    background: var(--line);
+    margin: 0 12px;
+  }
+
+  /* ============================
+     CATEGORY — TOSS CHIPS
+     ============================ */
+  .chip-section {
+    padding: 0 24px;
+  }
+  .chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    padding: 12px 18px;
+    background: var(--bg-card);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    font-family: var(--font-cute);
+    font-size: 16px;
+    color: var(--ink);
+    border: 1.5px solid transparent;
+    letter-spacing: -0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chip:hover { background: var(--bg-hover); }
+  .chip.selected {
+    background: var(--primary-soft);
+    color: var(--primary-deep);
+    border-color: var(--primary);
+  }
+  .chip-check {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+  }
+  .chip.selected .chip-check { display: inline-flex; }
+
+  /* 선택 카운터 */
+  .selection-counter {
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: var(--bg-soft);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .counter-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .counter-num {
+    font-family: var(--font-pop);
+    font-size: 16px;
+    color: var(--primary);
+  }
+
+  /* ============================
+     AGE — TOSS BIG NUMBER
+     ============================ */
+  .age-screen { background: var(--bg); }
+  .age-display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 24px;
+  }
+  .age-big-number {
+    font-family: var(--font-pop);
+    font-size: 120px;
+    line-height: 1;
+    color: var(--gray-light);
+    letter-spacing: -0.05em;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+  }
+  .age-big-number.active { color: var(--ink); }
+  .age-big-number .suffix {
+    font-size: 60px;
+    color: var(--primary);
+  }
+  .age-helper-text {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+  .age-helper-text.active { color: var(--primary); font-weight: 700; }
+
+  .age-options-wrap { padding: 0 16px 12px; }
+  .age-options {
+    display: flex;
+    gap: 6px;
+  }
+  .age-opt {
+    flex: 1;
+    padding: 14px 0;
+    background: var(--bg-card);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--font-cute);
+    font-size: 15px;
+    color: var(--ink-soft);
+    transition: all 0.2s var(--ease);
+  }
+  .age-opt:hover { background: var(--bg-hover); }
+  .age-opt.selected {
+    background: var(--ink);
+    color: white;
+  }
+
+  /* ============================
+     LOADING
+     ============================ */
+  .loading {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+  .loading-bar {
+    width: 240px;
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 100px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .loading-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    animation: slide 1.5s linear infinite;
+  }
+  @keyframes slide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .loading-title {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    margin-bottom: 8px;
+    text-align: center;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .loading-msg {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--gray);
+    text-align: center;
+    min-height: 18px;
+    font-weight: 500;
+  }
+
+  /* ============================
+     DASHBOARD — TOSS HOME
+     ============================ */
+  .dash-screen { background: var(--bg); }
+
+  /* 상단 헤더 */
+  .dash-header {
+    padding: 16px 20px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .dash-logo {
+    font-family: var(--font-pop);
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .dash-logo .dot { color: var(--primary); }
+
+  /* SV 시그니처 — Command Palette 버튼 (⌘K) */
+  .cmd-k {
+    flex: 1;
+    height: 36px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    max-width: 200px;
+  }
+  .cmd-k:hover {
+    background: var(--bg-card);
+    border-color: var(--line-strong);
+  }
+  .cmd-k-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--gray);
+    flex-shrink: 0;
+  }
+  .cmd-k-text {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 500;
+    flex: 1;
+  }
+  .cmd-k-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .cmd-k-shortcut kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+    transition: background 0.2s ease;
+  }
+  .icon-btn:hover { background: var(--bg-hover); }
+  .avatar-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-pop);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* 큰 인사말 */
+  .dash-hero {
+    padding: 20px 24px 28px;
+  }
+  .dash-hello-line {
+    font-family: var(--font-cute);
+    font-size: 24px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+  }
+  .dash-hello-line .name {
+    font-family: var(--font-pop);
+    color: var(--primary);
+  }
+  .dash-hello-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 6px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* === HEADLINE — Spatial Layered === */
+  .headline-block {
+    margin: 0 16px 28px;
+    padding: 22px 22px 18px;
+    background: white;
+    border-radius: 22px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    border: 1px solid var(--line);
+    box-shadow: var(--elev-floating);
+    position: relative;
+    overflow: hidden;
+  }
+  .headline-block::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, var(--primary-glow), transparent 70%);
+    pointer-events: none;
+  }
+  .headline-block > * {
+    position: relative;
+    z-index: 1;
+  }
+  .headline-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(14, 17, 22, 0.12), 0 4px 16px rgba(14, 17, 22, 0.06);
+  }
+  .headline-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .headline-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse-glow 1.6s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--primary);
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .headline-time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 600;
+  }
+
+  /* 토스의 시그니처 — 큰 숫자 + 친근한 카피 */
+  .headline-big {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+  }
+  .headline-big .big-num {
+    font-family: var(--font-pop);
+    color: var(--primary);
+    font-size: 28px;
+  }
+
+  /* 통계 row */
+  .h-stats-row {
+    display: flex;
+    gap: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .h-stat {
+    flex: 1;
+    text-align: left;
+    padding-right: 12px;
+  }
+  .h-stat + .h-stat {
+    border-left: 1px solid var(--line-strong);
+    padding-left: 12px;
+  }
+  .h-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .h-stat-num {
+    font-family: var(--font-pop);
+    font-size: 17px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .h-stat-num.up { color: var(--up); }
+  .h-stat-num.accent { color: var(--primary); }
+
+  /* 막대 그래프 */
+  .bar-chart {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .bar-chart-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .bar-chart-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .bar-chart-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 56px;
+    margin-bottom: 8px;
+  }
+  .bar {
+    flex: 1;
+    background: var(--bg-card);
+    border-radius: 4px 4px 0 0;
+    min-height: 6px;
+    transform-origin: bottom;
+  }
+  .bar.active { background: var(--primary); }
+  .bar-labels {
+    display: flex;
+    gap: 6px;
+  }
+  .bar-label {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+  }
+  .bar-label.active { color: var(--primary); font-weight: 800; }
+  @keyframes growBar {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  .screen.active .bars .bar {
+    animation: growBar 0.7s var(--spring) both;
+  }
+  .screen.active .bars .bar:nth-child(1) { animation-delay: 0.1s; }
+  .screen.active .bars .bar:nth-child(2) { animation-delay: 0.15s; }
+  .screen.active .bars .bar:nth-child(3) { animation-delay: 0.2s; }
+  .screen.active .bars .bar:nth-child(4) { animation-delay: 0.25s; }
+  .screen.active .bars .bar:nth-child(5) { animation-delay: 0.3s; }
+  .screen.active .bars .bar:nth-child(6) { animation-delay: 0.35s; }
+  .screen.active .bars .bar:nth-child(7) { animation-delay: 0.4s; }
+
+  /* === SECTION === */
+  .section {
+    padding: 0 12px;
+    margin-bottom: 24px;
+  }
+
+  /* 헤드라인 안 WHY 인사이트 — AI generated */
+  .headline-why {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .headline-why::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 92, 73, 0.05) 50%,
+      transparent 100%
+    );
+    animation: shimmer 4s ease-in-out infinite;
+  }
+  .headline-why > * {
+    position: relative;
+    z-index: 1;
+  }
+  .headline-why-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--primary-deep);
+    background: var(--primary-soft);
+    padding: 3px 9px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .headline-why-label::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 4px var(--primary);
+  }
+  .headline-why-text {
+    font-family: var(--font-cute);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    letter-spacing: -0.005em;
+  }
+  .headline-why-text .highlight {
+    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
+    padding: 0 2px;
+    color: var(--ink);
+  }
+
+  /* 트렌드 아이템 확장 (액션 표시) */
+  .trend-item-main {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    width: 100%;
+  }
+  .trend-actions {
+    display: none;
+    gap: 6px;
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .trend-item.expanded .trend-actions {
+    display: flex;
+  }
+  .trend-action {
+    flex: 1;
+    padding: 10px 4px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    transition: all 0.15s ease;
+    letter-spacing: -0.01em;
+  }
+  .trend-action:hover {
+    background: var(--bg-card);
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+  .trend-action.primary {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: white;
+  }
+  .trend-action.primary:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px var(--primary-glow);
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .section-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+  }
+  .section-meta:hover { color: var(--ink); }
+
+  /* TRENDING LIST — SV refined */
+  .trend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .trend-item {
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    border-radius: 14px;
+    border: 1px solid transparent;
+  }
+  .trend-item:hover {
+    background: white;
+    border-color: var(--line);
+    box-shadow: var(--elev-1);
+  }
+  .trend-item.expanded {
+    background: white;
+    border-color: var(--line);
+    box-shadow: var(--elev-2);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  /* 랭킹 표시 — 토스 스타일 (큰 숫자) */
+  .trend-rank {
+    width: 32px;
+    flex-shrink: 0;
+    font-family: var(--font-pop);
+    font-size: 22px;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1;
+  }
+  .trend-rank.gold { color: var(--primary); }
+  .trend-rank.silver { color: #C9A04A; }
+  .trend-rank.bronze { color: #B07A4A; }
+
+  .trend-body { flex: 1; min-width: 0; }
+  .trend-title {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .trend-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .platform-name {
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+  .trend-meta .bullet {
+    width: 2px;
+    height: 2px;
+    background: var(--gray-mid);
+    border-radius: 50%;
+  }
+  .trend-meta .up {
+    color: var(--up);
+    font-weight: 700;
+    font-family: var(--font-mono);
+  }
+  .sparkline {
+    width: 50px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+  .sparkline path {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .sparkline .area {
+    fill: var(--primary);
+    opacity: 0.08;
+    stroke: none;
+  }
+  .sparkline .dot { fill: var(--primary); }
+
+  /* KEYWORDS */
+  .keywords {
+    padding: 0 12px 100px;
+  }
+  .keyword-list {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--elev-1);
+  }
+  .keyword-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .keyword-row:last-child { border-bottom: none; }
+  .keyword-row:hover { background: var(--bg-soft); }
+  .kw-rank {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray);
+    width: 22px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .keyword-row:nth-child(1) .kw-rank,
+  .keyword-row:nth-child(2) .kw-rank,
+  .keyword-row:nth-child(3) .kw-rank {
+    color: var(--primary);
+  }
+  .kw-text {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    color: var(--ink);
+    flex: 1;
+    letter-spacing: -0.01em;
+  }
+  .kw-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--bg-card);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .kw-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-deep));
+    border-radius: 100px;
+  }
+  .kw-spark {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--up);
+    font-weight: 700;
+    min-width: 52px;
+    text-align: right;
+    letter-spacing: 0.02em;
+  }
+
+  /* ============================
+     MY PAGE
+     ============================ */
+  .my-screen { background: var(--bg); }
+  .my-header {
+    padding: 16px 24px 24px;
+  }
+  .my-page-title {
+    font-family: var(--font-cute);
+    font-size: 24px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  /* 프로필 카드 */
+  .profile-section {
+    padding: 0 16px;
+  }
+  .profile-row {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    box-shadow: var(--elev-2);
+  }
+  .big-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-pop);
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .profile-info { flex: 1; }
+  .profile-name {
+    font-family: var(--font-cute);
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+  .profile-name .nim {
+    font-family: var(--font-pop);
+    color: var(--primary);
+    font-size: 14px;
+  }
+  .profile-meta {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+  .profile-arrow {
+    color: var(--gray-mid);
+    font-family: var(--font-cute);
+    font-size: 18px;
+  }
+
+  /* 태그 */
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 4px 24px;
+  }
+  .tag {
+    font-family: var(--font-body);
+    font-size: 12px;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    color: var(--ink-soft);
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  /* 토스 시그니처 — 친근한 인사이트 카드 */
+  .insight-card {
+    margin: 0 16px 24px;
+    padding: 22px;
+    background: white;
+    border-radius: 22px;
+    border: 1px solid var(--line);
+    box-shadow: var(--elev-floating);
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, var(--ambient-2), transparent 70%);
+    pointer-events: none;
+  }
+  .insight-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  .insight-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .insight-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 4px var(--primary);
+  }
+  .insight-headline {
+    font-family: var(--font-cute);
+    font-size: 20px;
+    color: var(--ink);
+    line-height: 1.45;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .insight-headline .num {
+    font-family: var(--font-pop);
+    color: var(--primary);
+    font-size: 24px;
+  }
+
+  /* 미니 통계 */
+  .mini-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .mini-stat {
+    padding: 4px 0;
+  }
+  .mini-stat:nth-child(odd) { padding-right: 16px; border-right: 1px solid var(--line-strong); }
+  .mini-stat:nth-child(even) { padding-left: 16px; }
+  .mini-stat:nth-child(n+3) { padding-top: 14px; }
+  .mini-stat:nth-child(-n+2) { padding-bottom: 14px; }
+  .mini-stat:nth-child(3) { border-top: 1px solid var(--line-strong); }
+  .mini-stat:nth-child(4) { border-top: 1px solid var(--line-strong); }
+  .mini-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .mini-stat-value {
+    font-family: var(--font-pop);
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .mini-stat-value.up { color: var(--up); }
+  .mini-stat-value.accent { color: var(--primary); }
+
+  /* Actions */
+  .actions {
+    padding: 0 12px 100px;
+  }
+  .action-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .action-item {
+    padding: 18px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-radius: 12px;
+  }
+  .action-item:hover { background: var(--bg-soft); }
+  .action-num {
+    width: 32px;
+    flex-shrink: 0;
+    font-family: var(--font-pop);
+    font-size: 20px;
+    color: var(--primary);
+    text-align: center;
+  }
+  .action-body { flex: 1; }
+  .action-title {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .action-desc {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 500;
+  }
+  .action-arrow {
+    color: var(--gray-mid);
+    font-family: var(--font-cute);
+    font-size: 18px;
+  }
+
+  /* ============================
+     TAB BAR — 토스 깔끔하게
+     ============================ */
+  .tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 72px;
+    background: white;
+    border-top: 1px solid var(--line);
+    display: flex;
+    padding: 8px 0 0;
+    z-index: 100;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--gray-mid);
+    transition: color 0.2s ease;
+  }
+  .tab-item.active { color: var(--ink); }
+  .tab-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* CONTROLS */
+  .demo-info {
+    position: fixed;
+    bottom: 20px; left: 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(0,0,0,0.4);
+    z-index: 10;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .reset-btn {
+    position: fixed;
+    bottom: 20px; right: 20px;
+    padding: 8px 14px;
+    background: white;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 100px;
+    color: rgba(0,0,0,0.7);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .reset-btn:hover { background: var(--bg-card); }
+
+  .cta-wrap { padding: 16px 24px 28px; }
+
+  /* ============================
+     SMART ONBOARDING — 점진적 개인화
+     ============================ */
+
+  /* Welcome 두 번째 CTA — ghost 스타일 */
+  .cta-secondary {
+    width: 100%;
+    padding: 16px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 10px;
+  }
+  .cta-secondary:hover {
+    background: var(--bg-soft);
+    border-color: var(--line-bold);
+  }
+
+  /* Profile progress banner — 대시보드 상단 */
+  .profile-progress {
+    margin: 0 16px 16px;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--elev-1);
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .profile-progress:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--elev-2);
+  }
+  .progress-ring {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .progress-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  .progress-ring-bg {
+    fill: none;
+    stroke: var(--bg-card);
+    stroke-width: 3.5;
+  }
+  .progress-ring-fill {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s var(--spring);
+  }
+  .progress-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .progress-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .progress-title {
+    font-family: var(--font-cute);
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+  .progress-desc {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .progress-arrow {
+    color: var(--gray-mid);
+    font-family: var(--font-cute);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Soft prompt card — 트렌드 리스트 사이 */
+  .soft-prompt {
+    margin: 4px 0;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary-soft), white);
+    border: 1px solid var(--primary-soft);
+    border-radius: 14px;
+    box-shadow: var(--elev-1);
+    animation: promptIn 0.5s var(--ease-out) both;
+  }
+  @keyframes promptIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .soft-prompt.dismissed {
+    animation: promptOut 0.4s var(--ease) forwards;
+  }
+  @keyframes promptOut {
+    to {
+      opacity: 0;
+      transform: translateY(-8px);
+      max-height: 0;
+      padding: 0;
+      margin: 0;
+      border-width: 0;
+    }
+  }
+  .prompt-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .prompt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--primary-deep);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .prompt-eyebrow::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 4px var(--primary);
+  }
+  .prompt-skip {
+    background: none;
+    border: none;
+    color: var(--gray);
+    font-family: var(--font-body);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .prompt-skip:hover { background: rgba(0,0,0,0.05); color: var(--ink); }
+  .prompt-question {
+    font-family: var(--font-cute);
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .prompt-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .prompt-chip {
+    padding: 8px 14px;
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .prompt-chip:hover {
+    background: var(--bg-soft);
+    border-color: var(--gray-mid);
+    color: var(--ink);
+  }
+  .prompt-chip.selected {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: white;
+  }
+
+  /* ============================
+     AI BRIEFING — 차별화 포인트
+     ============================ */
+  .ai-briefing {
+    margin: 0 16px 16px;
+    padding: 20px 20px 18px;
+    background:
+      linear-gradient(135deg, white 0%, white 100%);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: var(--elev-floating);
+    position: relative;
+    overflow: hidden;
+  }
+  /* AI 시그니처 — 회전하는 conic gradient */
+  .ai-briefing::before {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -150px;
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      var(--primary-glow) 40deg,
+      transparent 80deg,
+      var(--ambient-2) 200deg,
+      transparent 280deg,
+      var(--primary-glow) 320deg,
+      transparent 360deg
+    );
+    animation: rotate-bg 20s linear infinite;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+  @keyframes rotate-bg {
+    to { transform: rotate(360deg); }
+  }
+  .ai-briefing > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .briefing-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .briefing-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .briefing-tag-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 6px var(--primary);
+    position: relative;
+  }
+  .briefing-tag-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid var(--primary);
+    opacity: 0;
+    animation: ring 2s ease-out infinite;
+  }
+  @keyframes ring {
+    0% { transform: scale(0.7); opacity: 0.8; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .briefing-time {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--gray);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .briefing-greeting {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .briefing-greeting .name {
+    font-family: var(--font-pop);
+    color: var(--primary);
+  }
+
+  /* 한 줄 요약 — streaming 효과 */
+  .briefing-summary {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    margin-bottom: 18px;
+    letter-spacing: -0.005em;
+  }
+  .briefing-summary .highlight {
+    background: linear-gradient(180deg, transparent 60%, var(--gold-soft) 60%);
+    padding: 0 2px;
+    color: var(--ink);
+  }
+  /* streaming 텍스트 효과 */
+  .stream-text {
+    overflow: hidden;
+    display: inline-block;
+    animation: typewriter 1.6s var(--ease-out) both;
+    animation-delay: 0.4s;
+    white-space: nowrap;
+    width: 0;
+  }
+  @keyframes typewriter {
+    to { width: 100%; }
+  }
+  /* 한국어는 nowrap이 어색하니까 fade-in으로 대체 */
+  .briefing-summary {
+    opacity: 0;
+    animation: fadeInUp 0.8s var(--ease-out) 0.4s both;
+  }
+  .briefing-points {
+    opacity: 0;
+    animation: fadeInUp 0.8s var(--ease-out) 1.0s both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 핵심 인사이트 3개 */
+  .briefing-points {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .briefing-point {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .briefing-point-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 700;
+    flex-shrink: 0;
+    width: 18px;
+    padding-top: 1px;
+    letter-spacing: 0.05em;
+  }
+  .briefing-point-text {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .briefing-point-text strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .briefing-footer {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .briefing-source {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .briefing-cta {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: -0.01em;
+  }
+  .briefing-cta:hover { color: var(--primary-deep); }
 </style>
 </head>
 <body>
 
-<div class="outer">
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
 
-<div class="sidebar">
-  <div>
-    <div class="sidebar-title">Shortform Pulse v3</div>
-    <div style="font-size:12px;color:var(--text3);line-height:1.6;margin-top:4px">인터랙티브 데모 — 클릭으로 전체 플로우 체험</div>
-  </div>
-  <div class="step-list" id="stepList">
-    <div class="step-item active" data-step="0" onclick="goStep(0)">
-      <div class="step-dot">1</div>
-      <div><div class="step-name">트렌드 피드</div><div class="step-sub">실시간 트렌드 탐색</div></div>
+    <!-- ============ SCREEN: WELCOME ============ -->
+    <div class="screen active welcome-screen" id="screen-welcome">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="welcome-content">
+        <!-- 식별 라인 -->
+        <div class="welcome-id-row">
+          <div class="welcome-logo">Pulse<span class="dot">.</span></div>
+          <div class="welcome-id-meta">05.26 · REPORT</div>
+        </div>
+
+        <!-- 메인 가치 카드: 실제 트렌드 -->
+        <div class="value-card">
+          <div class="value-card-eyebrow">
+            <span class="live-dot"></span>
+            Today's Big Trend
+          </div>
+
+          <div class="value-headline">
+            "출근길 5분 루틴"이<br/>
+            어제보다 <span class="big-num">3배</span> 더 떴어요
+          </div>
+          <div class="value-sub">Instagram · 8.2K new posts</div>
+
+          <div class="value-chart">
+            <div class="value-chart-head">
+              <div class="value-chart-title">PAST 7 DAYS</div>
+              <div class="value-chart-meta">+312% TODAY</div>
+            </div>
+            <div class="value-bars">
+              <div class="value-bar" style="height: 22%;"></div>
+              <div class="value-bar" style="height: 30%;"></div>
+              <div class="value-bar" style="height: 26%;"></div>
+              <div class="value-bar" style="height: 42%;"></div>
+              <div class="value-bar" style="height: 50%;"></div>
+              <div class="value-bar" style="height: 66%;"></div>
+              <div class="value-bar active" style="height: 100%;"></div>
+            </div>
+            <div class="value-bar-labels">
+              <div class="value-bar-label">목</div>
+              <div class="value-bar-label">금</div>
+              <div class="value-bar-label">토</div>
+              <div class="value-bar-label">일</div>
+              <div class="value-bar-label">월</div>
+              <div class="value-bar-label">화</div>
+              <div class="value-bar-label active">오늘</div>
+            </div>
+          </div>
+
+          <div class="value-stats">
+            <div class="value-stat">
+              <div class="value-stat-label">Growth</div>
+              <div class="value-stat-num up">+312%</div>
+            </div>
+            <div class="value-stat">
+              <div class="value-stat-label">Views</div>
+              <div class="value-stat-num">2.4M</div>
+            </div>
+            <div class="value-stat">
+              <div class="value-stat-label">New Posts</div>
+              <div class="value-stat-num accent">8.2K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WHY 인사이트 — 진짜 차별화 -->
+        <div class="why-card">
+          <div class="why-label">Why now</div>
+          <div class="why-text">
+            5월 들어 출근 시간이 평균 <span class="highlight">7분 늘었어요</span>.<br/>
+            직장인들이 짧고 알찬 콘텐츠를 더 찾고 있어요.
+          </div>
+        </div>
+
+        <!-- 가입 안내 -->
+        <div class="welcome-pitch">
+          <div class="welcome-pitch-title">이런 인사이트, 매일 받아보세요</div>
+          <div class="welcome-pitch-sub">3가지만 알려주면 30초면 시작할 수 있어요</div>
+        </div>
+
+        <button class="cta" onclick="goTo('screen-q1')">시작하기</button>
+        <button class="cta-secondary" onclick="skipToSampleDashboard()">먼저 둘러보기</button>
+      </div>
     </div>
-    <div class="step-item" data-step="1" onclick="goStep(1)">
-      <div class="step-dot">2</div>
-      <div><div class="step-name">트렌드 선택</div><div class="step-sub">포맷 선택 + 케이스스터디</div></div>
+
+    <!-- ============ SCREEN: Q1 PLATFORM ============ -->
+    <div class="screen q-screen" id="screen-q1">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="q-header">
+        <button class="back-btn" onclick="goTo('screen-welcome')">←</button>
+        <div class="progress-track"><div class="progress-fill" style="width: 33%;"></div></div>
+        <div class="step-text">1<span class="total">/3</span></div>
+        <button class="skip-btn" onclick="skipToTrend()">건너뛰기</button>
+      </div>
+      <div class="screen-content">
+        <div class="q-prompt">
+          <div class="q-step-label">첫 번째 질문이에요</div>
+          <div class="q-title">어떤 플랫폼<br/>자주 보세요?</div>
+        </div>
+        <div class="toss-list">
+          <div class="toss-item" data-val="tiktok" onclick="selectPlatform(this)">
+            <div class="toss-item-left">
+              <div class="toss-item-title">틱톡</div>
+              <div class="toss-item-meta">
+                <span>TikTok</span>
+                <span class="bullet"></span>
+                <span class="accent">↑ 가장 빠른 트렌드</span>
+              </div>
+            </div>
+            <div class="toss-radio"><div class="toss-radio-inner"></div></div>
+          </div>
+          <div class="toss-divider"></div>
+
+          <div class="toss-item" data-val="instagram" onclick="selectPlatform(this)">
+            <div class="toss-item-left">
+              <div class="toss-item-title">인스타그램</div>
+              <div class="toss-item-meta">
+                <span>Instagram</span>
+                <span class="bullet"></span>
+                <span>릴스 · 스토리</span>
+              </div>
+            </div>
+            <div class="toss-radio"><div class="toss-radio-inner"></div></div>
+          </div>
+          <div class="toss-divider"></div>
+
+          <div class="toss-item" data-val="youtube" onclick="selectPlatform(this)">
+            <div class="toss-item-left">
+              <div class="toss-item-title">유튜브</div>
+              <div class="toss-item-meta">
+                <span>YouTube</span>
+                <span class="bullet"></span>
+                <span>쇼츠 · 일반 영상</span>
+              </div>
+            </div>
+            <div class="toss-radio"><div class="toss-radio-inner"></div></div>
+          </div>
+          <div class="toss-divider"></div>
+
+          <div class="toss-item" data-val="all" onclick="selectPlatform(this)">
+            <div class="toss-item-left">
+              <div class="toss-item-title">모두 다 봐요</div>
+              <div class="toss-item-meta">
+                <span>All</span>
+                <span class="bullet"></span>
+                <span class="accent">⭐ 추천</span>
+              </div>
+            </div>
+            <div class="toss-radio"><div class="toss-radio-inner"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta" id="cta-q1" disabled onclick="goTo('screen-q2')">다음</button>
+      </div>
     </div>
-    <div class="step-item" data-step="2" onclick="goStep(2)">
-      <div class="step-dot">3</div>
-      <div><div class="step-name">LLM 고충 상담</div><div class="step-sub">Why Tree 2문항</div></div>
+
+    <!-- ============ SCREEN: Q2 CATEGORY ============ -->
+    <div class="screen q-screen" id="screen-q2">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="q-header">
+        <button class="back-btn" onclick="goTo('screen-q1')">←</button>
+        <div class="progress-track"><div class="progress-fill" style="width: 66%;"></div></div>
+        <div class="step-text">2<span class="total">/3</span></div>
+        <button class="skip-btn" onclick="skipToTrend()">건너뛰기</button>
+      </div>
+      <div class="screen-content">
+        <div class="q-prompt">
+          <div class="q-step-label">두 번째 질문이에요</div>
+          <div class="q-title">어떤 분야가<br/>궁금해요?</div>
+          <div class="q-helper">관심 있는 거 다 골라주세요</div>
+        </div>
+        <div class="chip-section">
+          <div class="chip-grid">
+            <div class="chip" data-val="food" onclick="selectCategory(this)">먹방 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="vlog" onclick="selectCategory(this)">브이로그 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="dance" onclick="selectCategory(this)">춤 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="fashion" onclick="selectCategory(this)">패션 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="beauty" onclick="selectCategory(this)">뷰티 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="fitness" onclick="selectCategory(this)">운동 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="travel" onclick="selectCategory(this)">여행 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="study" onclick="selectCategory(this)">공부 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="game" onclick="selectCategory(this)">게임 <span class="chip-check">✓</span></div>
+            <div class="chip" data-val="pet" onclick="selectCategory(this)">반려동물 <span class="chip-check">✓</span></div>
+          </div>
+          <div class="selection-counter" id="counter" style="display: none;">
+            <div class="counter-label">선택한 분야</div>
+            <div class="counter-num"><span id="count-num">0</span>개</div>
+          </div>
+        </div>
+        <div style="height: 24px;"></div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta" id="cta-q2" disabled onclick="goTo('screen-q3')">다음</button>
+      </div>
     </div>
-    <div class="step-item" data-step="3" onclick="goStep(3)">
-      <div class="step-dot">4</div>
-      <div><div class="step-name">콘티 생성</div><div class="step-sub">4컷 장면 기획안</div></div>
+
+    <!-- ============ SCREEN: Q3 AGE ============ -->
+    <div class="screen age-screen" id="screen-q3">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="q-header">
+        <button class="back-btn" onclick="goTo('screen-q2')">←</button>
+        <div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div>
+        <div class="step-text">3<span class="total">/3</span></div>
+        <button class="skip-btn" onclick="skipToTrend()">건너뛰기</button>
+      </div>
+      <div class="q-prompt">
+        <div class="q-step-label">마지막 질문이에요</div>
+        <div class="q-title">시청자가<br/>몇 살이에요?</div>
+      </div>
+      <div class="age-display">
+        <div class="age-big-number" id="age-big">—</div>
+        <div class="age-helper-text" id="age-helper">연령대를 골라주세요</div>
+      </div>
+      <div class="age-options-wrap">
+        <div class="age-options">
+          <div class="age-opt" data-val="10s" data-num="10" data-text="10대를 주로 봐요" onclick="selectAge(this)">10대</div>
+          <div class="age-opt" data-val="20s" data-num="20" data-text="20대를 주로 봐요" onclick="selectAge(this)">20대</div>
+          <div class="age-opt" data-val="30s" data-num="30" data-text="30대를 주로 봐요" onclick="selectAge(this)">30대</div>
+          <div class="age-opt" data-val="40s" data-num="40" data-text="40대를 주로 봐요" onclick="selectAge(this)">40대</div>
+          <div class="age-opt" data-val="50s" data-num="50" data-text="50대 이상이에요" onclick="selectAge(this)">50+</div>
+        </div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta" id="cta-q3" disabled onclick="startLoading()">트렌드 보러가기</button>
+      </div>
     </div>
-    <div class="step-item" data-step="4" onclick="goStep(4)">
-      <div class="step-dot">5</div>
-      <div><div class="step-name">10개 챌린지</div><div class="step-sub">루프 + 다음 추천</div></div>
+
+    <!-- ============ SCREEN: LOADING ============ -->
+    <div class="screen" id="screen-loading" style="background: var(--bg);">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="loading">
+        <div class="loading-bar"></div>
+        <div class="loading-title">트렌드를 모으고 있어요</div>
+        <div class="loading-msg" id="loading-msg">잠시만요</div>
+      </div>
     </div>
-  </div>
-  <div class="usp-box">
-    <div class="usp-label">USP</div>
-    <div class="usp-text">요즘 터진 영상의 키워드 패턴을 해부해서, 초보도 따라 찍을 수 있는 콘티로. <strong style="color:var(--lime)">10개만 올리면 알고리즘이 보인다.</strong></div>
+
+    <!-- ============ SCREEN: DASHBOARD ============ -->
+    <div class="screen dash-screen" id="screen-trend">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="screen-content">
+        <div class="dash-header">
+          <div class="dash-logo">Pulse<span class="dot">.</span></div>
+          <div class="cmd-k" onclick="event.stopPropagation()">
+            <svg class="cmd-k-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="7" cy="7" r="5"/>
+              <path d="M14 14L11 11" stroke-linecap="round"/>
+            </svg>
+            <span class="cmd-k-text">검색하기</span>
+            <span class="cmd-k-shortcut">
+              <kbd>⌘</kbd><kbd>K</kbd>
+            </span>
+          </div>
+          <div class="avatar-mini" onclick="switchTab('my')">S</div>
+        </div>
+
+        <div class="dash-hero">
+          <div class="dash-hello-line"><span class="name">수진</span>님,<br/>오늘 좋은 트렌드 왔어요</div>
+          <div class="dash-hello-sub">5.26 THU · 14 INSIGHTS TODAY</div>
+        </div>
+
+        <!-- 프로필 완성도 (Smart Onboarding) — 샘플 모드일 때만 보임 -->
+        <div class="profile-progress" id="profile-progress" style="display: none;" onclick="goTo('screen-q1')">
+          <div class="progress-ring">
+            <svg viewBox="0 0 36 36">
+              <circle class="progress-ring-bg" cx="18" cy="18" r="15"/>
+              <circle class="progress-ring-fill" cx="18" cy="18" r="15"
+                stroke-dasharray="94.2"
+                stroke-dashoffset="72.5" id="progress-stroke"/>
+            </svg>
+            <div class="progress-ring-text" id="progress-percent">23%</div>
+          </div>
+          <div class="progress-body">
+            <div class="progress-title">프로필 완성하면 더 정확해져요</div>
+            <div class="progress-desc" id="progress-status">3개 중 0개 완료</div>
+          </div>
+          <div class="progress-arrow">→</div>
+        </div>
+
+        <!-- AI BRIEFING — 차별화 포인트 -->
+        <div class="ai-briefing">
+          <div class="briefing-header">
+            <div class="briefing-tag">
+              <span class="briefing-tag-dot"></span>
+              AI Daily Briefing
+            </div>
+            <div class="briefing-time">9:30 AM</div>
+          </div>
+
+          <div class="briefing-greeting">
+            안녕하세요, <span class="name">수진</span>님.<br/>
+            오늘 트렌드를 정리했어요.
+          </div>
+
+          <div class="briefing-summary">
+            오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
+            출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
+            짧고 실용적인 게 통하는 날이에요.
+          </div>
+
+          <div class="briefing-points">
+            <div class="briefing-point">
+              <div class="briefing-point-num">01</div>
+              <div class="briefing-point-text">
+                <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
+              </div>
+            </div>
+            <div class="briefing-point">
+              <div class="briefing-point-num">02</div>
+              <div class="briefing-point-text">
+                <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
+              </div>
+            </div>
+            <div class="briefing-point">
+              <div class="briefing-point-num">03</div>
+              <div class="briefing-point-text">
+                인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
+              </div>
+            </div>
+          </div>
+
+          <div class="briefing-footer">
+            <div class="briefing-source">SOURCE: 5.26 · IG + YT + TT</div>
+            <button class="briefing-cta">자세히 보기 →</button>
+          </div>
+        </div>
+
+        <!-- HEADLINE -->
+        <div class="headline-block">
+          <div class="headline-top-row">
+            <div class="headline-tag">
+              <span class="pulse-dot"></span>
+              Today's Big Trend
+            </div>
+            <div class="headline-time">UPDATED 9:30 AM</div>
+          </div>
+
+          <div class="headline-big">
+            "출근길 5분 루틴"이<br/>
+            어제보다 <span class="big-num">3배</span> 더 보였어요
+          </div>
+
+          <div class="h-stats-row">
+            <div class="h-stat">
+              <div class="h-stat-label">Growth</div>
+              <div class="h-stat-num up">+312%</div>
+            </div>
+            <div class="h-stat">
+              <div class="h-stat-label">Views</div>
+              <div class="h-stat-num">2.4M</div>
+            </div>
+            <div class="h-stat">
+              <div class="h-stat-label">New Posts</div>
+              <div class="h-stat-num accent">8.2K</div>
+            </div>
+          </div>
+
+          <div class="bar-chart">
+            <div class="bar-chart-head">
+              <div class="bar-chart-title">PAST 7 DAYS</div>
+              <div class="bar-chart-meta">PEAK · TODAY</div>
+            </div>
+            <div class="bars">
+              <div class="bar" style="height: 25%;"></div>
+              <div class="bar" style="height: 35%;"></div>
+              <div class="bar" style="height: 28%;"></div>
+              <div class="bar" style="height: 45%;"></div>
+              <div class="bar" style="height: 52%;"></div>
+              <div class="bar" style="height: 68%;"></div>
+              <div class="bar active" style="height: 100%;"></div>
+            </div>
+            <div class="bar-labels">
+              <div class="bar-label">목</div>
+              <div class="bar-label">금</div>
+              <div class="bar-label">토</div>
+              <div class="bar-label">일</div>
+              <div class="bar-label">월</div>
+              <div class="bar-label">화</div>
+              <div class="bar-label active">오늘</div>
+            </div>
+          </div>
+
+          <!-- WHY 인사이트 -->
+          <div class="headline-why">
+            <div class="headline-why-label">Why now</div>
+            <div class="headline-why-text">
+              5월 들어 출근 시간이 평균 <span class="highlight">7분 늘었어요</span>.<br/>
+              직장인들이 짧고 알찬 콘텐츠를 더 찾고 있어요.
+            </div>
+          </div>
+        </div>
+
+        <!-- TRENDING -->
+        <div class="section">
+          <div class="section-head">
+            <div class="section-title">지금 뜨고 있어요</div>
+            <div class="section-meta">더보기 →</div>
+          </div>
+          <div class="trend-list">
+            <div class="trend-item expanded" onclick="toggleTrendItem(this, event)">
+              <div class="trend-item-main">
+                <div class="trend-rank gold">1</div>
+                <div class="trend-body">
+                  <div class="trend-title">커피값 절약한 돈으로 한 일</div>
+                  <div class="trend-meta">
+                    <span class="platform-name">인스타그램</span>
+                    <span class="bullet"></span>
+                    <span class="up">+480%</span>
+                    <span class="bullet"></span>
+                    <span>1.8M</span>
+                  </div>
+                </div>
+                <svg class="sparkline" viewBox="0 0 50 24">
+                  <path class="area" d="M0,20 L8,18 L17,16 L25,12 L33,10 L42,6 L50,2 L50,24 L0,24 Z"/>
+                  <path d="M0,20 L8,18 L17,16 L25,12 L33,10 L42,6 L50,2"/>
+                  <circle class="dot" cx="50" cy="2" r="2"/>
+                </svg>
+              </div>
+              <div class="trend-actions">
+                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
+                <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
+              </div>
+            </div>
+            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+              <div class="trend-item-main">
+                <div class="trend-rank silver">2</div>
+                <div class="trend-body">
+                  <div class="trend-title">퇴근 후 30분 루틴 브이로그</div>
+                  <div class="trend-meta">
+                    <span class="platform-name">유튜브</span>
+                    <span class="bullet"></span>
+                    <span class="up">+215%</span>
+                    <span class="bullet"></span>
+                    <span>920K</span>
+                  </div>
+                </div>
+                <svg class="sparkline" viewBox="0 0 50 24">
+                  <path class="area" d="M0,18 L8,16 L17,14 L25,10 L33,12 L42,8 L50,5 L50,24 L0,24 Z"/>
+                  <path d="M0,18 L8,16 L17,14 L25,10 L33,12 L42,8 L50,5"/>
+                  <circle class="dot" cx="50" cy="5" r="2"/>
+                </svg>
+              </div>
+              <div class="trend-actions">
+                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
+                <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
+              </div>
+            </div>
+
+            <!-- Soft Prompt 1: 플랫폼 -->
+            <div class="soft-prompt" id="soft-prompt-1" style="display: none;">
+              <div class="prompt-top">
+                <div class="prompt-eyebrow">더 정확하게</div>
+                <button class="prompt-skip" onclick="dismissPrompt('soft-prompt-1')">나중에</button>
+              </div>
+              <div class="prompt-question">어떤 플랫폼 자주 봐요?</div>
+              <div class="prompt-options">
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-1', 'platform', 'tiktok')">틱톡</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-1', 'platform', 'instagram')">인스타그램</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-1', 'platform', 'youtube')">유튜브</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-1', 'platform', 'all')">모두 다</div>
+              </div>
+            </div>
+
+            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+              <div class="trend-item-main">
+                <div class="trend-rank bronze">3</div>
+                <div class="trend-body">
+                  <div class="trend-title">2010년대 다시 듣는 노래</div>
+                  <div class="trend-meta">
+                    <span class="platform-name">틱톡</span>
+                    <span class="bullet"></span>
+                    <span class="up">+188%</span>
+                    <span class="bullet"></span>
+                    <span>640K</span>
+                  </div>
+                </div>
+                <svg class="sparkline" viewBox="0 0 50 24">
+                  <path class="area" d="M0,15 L8,18 L17,14 L25,10 L33,8 L42,6 L50,4 L50,24 L0,24 Z"/>
+                  <path d="M0,15 L8,18 L17,14 L25,10 L33,8 L42,6 L50,4"/>
+                  <circle class="dot" cx="50" cy="4" r="2"/>
+                </svg>
+              </div>
+              <div class="trend-actions">
+                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
+                <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
+              </div>
+            </div>
+            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+              <div class="trend-item-main">
+                <div class="trend-rank">4</div>
+                <div class="trend-body">
+                  <div class="trend-title">점심 도시락 5분 컷 레시피</div>
+                  <div class="trend-meta">
+                    <span class="platform-name">인스타그램</span>
+                    <span class="bullet"></span>
+                    <span class="up">+92%</span>
+                    <span class="bullet"></span>
+                    <span>410K</span>
+                  </div>
+                </div>
+                <svg class="sparkline" viewBox="0 0 50 24">
+                  <path class="area" d="M0,16 L8,14 L17,15 L25,13 L33,12 L42,10 L50,9 L50,24 L0,24 Z"/>
+                  <path d="M0,16 L8,14 L17,15 L25,13 L33,12 L42,10 L50,9"/>
+                  <circle class="dot" cx="50" cy="9" r="2"/>
+                </svg>
+              </div>
+              <div class="trend-actions">
+                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
+                <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
+              </div>
+            </div>
+
+            <!-- Soft Prompt 2: 카테고리 -->
+            <div class="soft-prompt" id="soft-prompt-2" style="display: none;">
+              <div class="prompt-top">
+                <div class="prompt-eyebrow">더 정확하게</div>
+                <button class="prompt-skip" onclick="dismissPrompt('soft-prompt-2')">나중에</button>
+              </div>
+              <div class="prompt-question">어떤 분야가 궁금해요?</div>
+              <div class="prompt-options">
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-2', 'category', 'food')">먹방</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-2', 'category', 'vlog')">브이로그</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-2', 'category', 'fashion')">패션</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-2', 'category', 'beauty')">뷰티</div>
+                <div class="prompt-chip" onclick="answerPrompt(this, 'soft-prompt-2', 'category', 'fitness')">운동</div>
+              </div>
+            </div>
+
+            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+              <div class="trend-item-main">
+                <div class="trend-rank">5</div>
+                <div class="trend-body">
+                  <div class="trend-title">홈카페 라떼아트 챌린지</div>
+                  <div class="trend-meta">
+                    <span class="platform-name">틱톡</span>
+                    <span class="bullet"></span>
+                    <span class="up">+64%</span>
+                    <span class="bullet"></span>
+                    <span>280K</span>
+                  </div>
+                </div>
+                <svg class="sparkline" viewBox="0 0 50 24">
+                  <path class="area" d="M0,14 L8,16 L17,13 L25,15 L33,12 L42,11 L50,10 L50,24 L0,24 Z"/>
+                  <path d="M0,14 L8,16 L17,13 L25,15 L33,12 L42,11 L50,10"/>
+                  <circle class="dot" cx="50" cy="10" r="2"/>
+                </svg>
+              </div>
+              <div class="trend-actions">
+                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
+                <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KEYWORDS -->
+        <div class="keywords">
+          <div class="section-head" style="padding: 0 12px;">
+            <div class="section-title">실시간 키워드</div>
+            <div class="section-meta">LIVE</div>
+          </div>
+          <div class="keyword-list">
+            <div class="keyword-row">
+              <div class="kw-rank">1</div>
+              <div class="kw-text">출근길 5분</div>
+              <div class="kw-bar"><div class="kw-bar-fill" style="width: 95%;"></div></div>
+              <div class="kw-spark">+312%</div>
+            </div>
+            <div class="keyword-row">
+              <div class="kw-rank">2</div>
+              <div class="kw-text">짠테크 루틴</div>
+              <div class="kw-bar"><div class="kw-bar-fill" style="width: 80%;"></div></div>
+              <div class="kw-spark">+248%</div>
+            </div>
+            <div class="keyword-row">
+              <div class="kw-rank">3</div>
+              <div class="kw-text">홈카페</div>
+              <div class="kw-bar"><div class="kw-bar-fill" style="width: 65%;"></div></div>
+              <div class="kw-spark">+187%</div>
+            </div>
+            <div class="keyword-row">
+              <div class="kw-rank">4</div>
+              <div class="kw-text">2010년대 음악</div>
+              <div class="kw-bar"><div class="kw-bar-fill" style="width: 50%;"></div></div>
+              <div class="kw-spark">+142%</div>
+            </div>
+            <div class="keyword-row">
+              <div class="kw-rank">5</div>
+              <div class="kw-text">미라클모닝</div>
+              <div class="kw-bar"><div class="kw-bar-fill" style="width: 38%;"></div></div>
+              <div class="kw-spark">+98%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab('trend')">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 18 L8 13 L12 17 L21 6"/>
+              <path d="M16 6 L21 6 L21 11"/>
+            </svg>
+          </div>
+          <div class="tab-label">트렌드</div>
+        </div>
+        <div class="tab-item" onclick="switchTab('my')">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21 C4 16 7.5 14 12 14 C16.5 14 20 16 20 21"/>
+            </svg>
+          </div>
+          <div class="tab-label">마이</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: MY PAGE ============ -->
+    <div class="screen my-screen" id="screen-my">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="screen-content">
+        <div class="my-header">
+          <div class="my-page-title">마이</div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-row">
+            <div class="big-avatar">S</div>
+            <div class="profile-info">
+              <div class="profile-name">수진<span class="nim"> 님</span></div>
+              <div class="profile-meta">팔로워 4,200명 · 크리에이터</div>
+            </div>
+            <div class="profile-arrow">→</div>
+          </div>
+
+          <div class="tag-row" id="my-tags">
+            <div class="tag">인스타그램</div>
+            <div class="tag">먹방</div>
+            <div class="tag">30대</div>
+          </div>
+        </div>
+
+        <!-- 토스 시그니처 — 친근한 인사이트 카드 -->
+        <div class="insight-card">
+          <div class="insight-eyebrow">This Week's Insights</div>
+          <div class="insight-headline">
+            지난주보다 <span class="num">+42%</span><br/>
+            더 잘했어요
+          </div>
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <div class="mini-stat-label">Saved Trends</div>
+              <div class="mini-stat-value accent">17</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Posts Tried</div>
+              <div class="mini-stat-value">8</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Avg. Views</div>
+              <div class="mini-stat-value up">+42%</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-stat-label">Viral Candidates</div>
+              <div class="mini-stat-value">3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 액션 -->
+        <div class="actions">
+          <div class="section-head">
+            <div class="section-title">더 정확한 추천 받기</div>
+          </div>
+          <div class="action-list">
+            <div class="action-item">
+              <div class="action-num">01</div>
+              <div class="action-body">
+                <div class="action-title">관심사 더 알려주기</div>
+                <div class="action-desc">주관식 3문항 · 약 1분</div>
+              </div>
+              <div class="action-arrow">→</div>
+            </div>
+            <div class="action-item">
+              <div class="action-num">02</div>
+              <div class="action-body">
+                <div class="action-title">계정 연결하기</div>
+                <div class="action-desc">실제 채널 데이터로 분석</div>
+              </div>
+              <div class="action-arrow">→</div>
+            </div>
+            <div class="action-item">
+              <div class="action-num">03</div>
+              <div class="action-body">
+                <div class="action-title">목표 설정하기</div>
+                <div class="action-desc">달성하고 싶은 KPI 설정</div>
+              </div>
+              <div class="action-arrow">→</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item" onclick="switchTab('trend')">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 18 L8 13 L12 17 L21 6"/>
+              <path d="M16 6 L21 6 L21 11"/>
+            </svg>
+          </div>
+          <div class="tab-label">트렌드</div>
+        </div>
+        <div class="tab-item active" onclick="switchTab('my')">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21 C4 16 7.5 14 12 14 C16.5 14 20 16 20 21"/>
+            </svg>
+          </div>
+          <div class="tab-label">마이</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div class="phone-wrap">
-<div class="phone">
-  <div class="status-bar">
-    <span class="sb-left">SHORTFORM PULSE</span>
-    <span class="sb-right mono">9:41</span>
-  </div>
-  <div class="screen" id="screen">
-
-    <div class="view active" id="view0">
-      <div class="feed-header">
-        <div class="feed-eyebrow">트렌드 피드 — 실시간</div>
-        <div class="feed-title">지금 뜨는 숏폼</div>
-      </div>
-      <div class="cat-tabs">
-        <div class="cat-tab active">전체</div>
-        <div class="cat-tab">라이프</div>
-        <div class="cat-tab">뷰티</div>
-        <div class="cat-tab">정보</div>
-        <div class="cat-tab">요리</div>
-        <div class="cat-tab">게임</div>
-      </div>
-      <div class="section-label">PLATFORM PULSE — TOP 1</div>
-      <div class="platform-row">
-        <div class="platform-card" onclick="selectTrend()">
-          <div class="pc-badge" style="background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:#ff6464">SHORTS</div>
-          <div class="pc-title">직장인 점심 뭐먹지? 이거 보고 해결함</div>
-          <div class="pc-stat">128만 뷰</div>
-          <div class="pc-growth">↑ +340%</div>
-        </div>
-        <div class="platform-card">
-          <div class="pc-badge" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.15);color:#ddd">TIKTOK</div>
-          <div class="pc-title">출근 전 10분 루틴 공개 🌅</div>
-          <div class="pc-stat">84만 뷰</div>
-          <div class="pc-growth">↑ +218%</div>
-        </div>
-        <div class="platform-card">
-          <div class="pc-badge" style="background:rgba(255,100,150,.1);border:1px solid rgba(255,100,150,.3);color:#ff6496">REELS</div>
-          <div class="pc-title">사무실 책상 정리 GRWM 💼</div>
-          <div class="pc-stat">61만 뷰</div>
-          <div class="pc-growth">↑ +156%</div>
-        </div>
-      </div>
-      <div class="section-label">HOT 키워드</div>
-      <div class="keyword-row">
-        <div class="kw hot">#직장인일상</div>
-        <div class="kw hot">#점심추천</div>
-        <div class="kw rising">#직장인vlog</div>
-        <div class="kw rising">#출근루틴</div>
-        <div class="kw normal">#자기계발</div>
-        <div class="kw normal">#회사생활</div>
-      </div>
-      <div class="section-label">트렌드 목록</div>
-      <div class="trend-list">
-        <div class="trend-card" onclick="selectTrend()">
-          <div class="tc-top">
-            <div class="tc-title">직장인 점심 뭐먹지? 이거 보고 해결함</div>
-            <div class="tc-platform" style="background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.25);color:#ff6464">YT</div>
-          </div>
-          <div class="tc-meta">
-            <div class="tc-stat">128만 뷰</div>
-            <div class="tc-stat" style="color:var(--lime)">↑ +340%</div>
-            <div class="tc-stat">#직장인일상 #점심</div>
-          </div>
-          <div class="tc-reason">
-            <div class="tc-reason-l">트렌드 이유</div>
-            "고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중
-          </div>
-        </div>
-        <div class="trend-card">
-          <div class="tc-top">
-            <div class="tc-title">출근 전 10분 루틴 공개 🌅</div>
-            <div class="tc-platform" style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);color:#ccc">TT</div>
-          </div>
-          <div class="tc-meta">
-            <div class="tc-stat">84만 뷰</div>
-            <div class="tc-stat" style="color:var(--lime)">↑ +218%</div>
-            <div class="tc-stat">#출근루틴 #직장인vlog</div>
-          </div>
-          <div class="tc-reason">
-            <div class="tc-reason-l">트렌드 이유</div>
-            "공개" 단어가 제목에 있는 숏폼이 이 카테고리에서 지속 상위권
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="view" id="view1">
-      <div class="feed-header">
-        <div class="feed-eyebrow">선택한 트렌드</div>
-        <div class="feed-title" style="font-size:14px">직장인 점심 뭐먹지?<br>이거 보고 해결함</div>
-      </div>
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
-        <div style="display:flex;gap:10px;margin-bottom:10px">
-          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
-            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">뷰</div>
-            <div style="font-size:14px;font-weight:700;color:var(--lime)">128만</div>
-          </div>
-          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
-            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">성장</div>
-            <div style="font-size:14px;font-weight:700;color:var(--lime)">+340%</div>
-          </div>
-          <div style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:9px 10px;text-align:center">
-            <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:3px">플랫폼</div>
-            <div style="font-size:13px;font-weight:700;color:var(--text)">YT</div>
-          </div>
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:10px;margin-bottom:10px">
-          <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px">트렌드 이유 (텍스트 메타 기반 LLM 추론)</div>
-          <div style="font-size:11px;color:var(--text2);line-height:1.6">"고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중. 같은 패턴의 영상 5개 중 3개가 100만 뷰 돌파.</div>
-        </div>
-        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r3);padding:10px">
-          <div style="font-size:9px;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:4px">연관 키워드</div>
-          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">
-            <span class="kw hot">#직장인일상</span>
-            <span class="kw hot">#점심추천</span>
-            <span class="kw rising">#직장인vlog</span>
-            <span class="kw normal">#회사점심</span>
-          </div>
-        </div>
-      </div>
-      <div style="padding:12px 16px">
-        <button class="btn lime" onclick="goStep(2)">이 포맷으로 콘티 만들기 →</button>
-        <button class="btn" style="margin-top:8px" onclick="goStep(0)">← 다른 트렌드 보기</button>
-      </div>
-    </div>
-
-    <div class="view" id="view2">
-      <div class="chat-header">
-        <div class="feed-eyebrow">LLM 고충 상담</div>
-        <div class="feed-title" style="font-size:14px">나만의 콘티 각도 찾기</div>
-      </div>
-      <div class="chat-trend-chip">
-        <span class="ctc-l">선택 트렌드</span>
-        <span class="ctc-v">직장인 점심 뭐먹지? 이거 보고 해결함</span>
-      </div>
-      <div class="chat-q" id="q1-area">
-        <div class="q-text">이 영상을 보고 가장 끌린 게 뭔가요?</div>
-        <div class="q-options">
-          <div class="q-opt" onclick="selectQ1(this,'empathy')">감성/공감이 좋았어요</div>
-          <div class="q-opt" onclick="selectQ1(this,'info')">정보가 유용했어요</div>
-          <div class="q-opt" onclick="selectQ1(this,'humor')">유머/재미가 좋았어요</div>
-          <div class="q-opt" onclick="selectQ1(this,'relatable')">나도 이런 상황이었어요</div>
-        </div>
-      </div>
-      <div class="chat-divider" id="chat-div" style="display:none"></div>
-      <div class="chat-q" id="q2-area" style="display:none">
-        <div class="q-text">지금 영상 올리는 게 가장 힘든 이유가 뭔가요?</div>
-        <div class="q-options">
-          <div class="q-opt" onclick="selectQ2(this,'no_idea')">뭘 찍어야 할지 모르겠어요</div>
-          <div class="q-opt" onclick="selectQ2(this,'no_reaction')">만들어도 반응이 없어요</div>
-          <div class="q-opt" onclick="selectQ2(this,'no_consistency')">꾸준히 못하겠어요</div>
-        </div>
-      </div>
-      <div class="chat-generating" id="generating">
-        <div class="gen-bar"><div class="gen-fill" id="gen-fill"></div></div>
-        <div class="gen-text">앵글 추출 중...</div>
-      </div>
-      <div class="angle-result fade-in" id="angleResult">
-        <div class="ar-box">
-          <div class="ar-label">추출된 콘텐츠 앵글</div>
-          <div class="ar-angle" id="ar-angle-text"></div>
-          <div class="ar-hook-l">훅 초안</div>
-          <div class="ar-hook" id="ar-hook-text"></div>
-        </div>
-      </div>
-      <div class="chat-cta" id="chatCta" style="display:none;padding:12px 16px">
-        <button class="btn lime" onclick="goStep(3)">이 앵글로 콘티 만들기 →</button>
-      </div>
-    </div>
-
-    <div class="view" id="view3">
-      <div class="conti-header">
-        <div class="feed-eyebrow">콘티 가이드 · 공감형 · 3 / 10</div>
-        <div class="feed-title" style="font-size:14px">점심 고민 → 내 해결법 공유</div>
-      </div>
-      <div class="conti-trend-chip">
-        <div class="ctc2-l">트렌드 포인트</div>
-        <div class="ctc2-v">"고민→해결" 제목 구조 + 직장인 공감 키워드 활용</div>
-      </div>
-      <div class="cut-list" id="cutList"></div>
-      <div class="conti-done">
-        <button class="done-btn primary" onclick="goStep(4)">✓ 촬영했어요</button>
-        <button class="done-btn" style="flex:0;padding:12px 14px;font-size:16px" onclick="regenConti()">↺</button>
-      </div>
-    </div>
-
-    <div class="view" id="view4">
-      <div class="challenge-header">
-        <div class="feed-eyebrow">10개 챌린지</div>
-        <div class="feed-title" style="font-size:14px">10개 올리면 알고리즘이 보인다</div>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
-      <div class="progress-text mono">3 / 10 완료</div>
-      <div class="challenge-grid" id="challengeGrid"></div>
-      <div class="next-section">
-        <div class="next-label">다음 추천 트렌드 [B안 — 자동 추천]</div>
-        <div class="next-item" onclick="goStep(1)">
-          <div><div class="ni-title">직장인 퇴근 후 루틴 vlog</div><div class="ni-sub">라이프 · 급상승 · YT</div></div>
-          <div class="ni-arrow">→</div>
-        </div>
-        <div class="next-item" onclick="goStep(1)">
-          <div><div class="ni-title">1만원 점심 챌린지</div><div class="ni-sub">정보 · 조회수 상위 · TT</div></div>
-          <div class="ni-arrow">→</div>
-        </div>
-        <div class="next-item" onclick="goStep(0)" style="opacity:.6">
-          <div><div class="ni-title" style="color:var(--text3)">트렌드 피드로 직접 가기</div></div>
-          <div class="ni-arrow">→</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="sheet-overlay" id="sheet" onclick="closeSheet(event)">
-    <div class="sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-trend-name">직장인 점심 뭐먹지? 이거 보고 해결함</div>
-      <div class="sheet-meta mono">YouTube Shorts · 128만 뷰 · ↑+340%</div>
-      <div class="sheet-reason">
-        <div class="sheet-reason-l">트렌드 이유</div>
-        "고민 → 해결" 제목 구조 + 직장인 공감 키워드 조합이 이 시기 급상승 중
-      </div>
-      <div class="sheet-btns">
-        <button class="sheet-btn primary" onclick="goFromSheet()">이 포맷으로 콘티 만들기 →</button>
-        <button class="sheet-btn secondary" onclick="closeSheet()">원본 영상 보기 ↗</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-bar">
-    <div class="tab active" id="tab0" onclick="goStep(0)">
-      <div class="tab-icon">⚡</div>
-      <div class="tab-label">트렌드</div>
-    </div>
-    <div class="tab" id="tab3" onclick="goStep(3)">
-      <div class="tab-icon">🎬</div>
-      <div class="tab-label">콘티</div>
-    </div>
-    <div class="tab" id="tab4" onclick="goStep(4)">
-      <div class="tab-icon">🏆</div>
-      <div class="tab-label">챌린지</div>
-    </div>
-  </div>
-</div>
-</div>
-
-</div>
+<div class="demo-info">Pulse · SV — Smart Onboarding + AI Briefing</div>
+<button class="reset-btn" onclick="resetDemo()">Reset</button>
 
 <script>
-const ANGLES={
-  empathy:{angle:'나의 공감 경험으로 직장인 점심 고민 풀기',hook:'"저도 매일 점심 뭐 먹을지 진짜 모르겠더라고요."'},
-  info:{angle:'3가지 기준으로 정리한 직장인 점심 선택법',hook:'"사실 기준 없이 고르다가 맨날 후회했어요."'},
-  humor:{angle:'직장인 점심 실패담으로 웃기며 해결법 공유',hook:'"최악의 점심 선택 TOP 3을 알려드릴게요."'},
-  relatable:{angle:'나도 그랬는데 이렇게 해결했어요 – 점심 루틴',hook:'"혹시 점심 메뉴 고르는 데 10분 넘게 쓰는 분?"'},
-};
-const CUTS=[
-  {label:'CUT 1 · 훅',time:'0 — 3s',part:'hook',script:'"저도 매일 점심 뭐 먹을지 진짜 모르겠더라고요."',note:'정면 클로즈업, 고민하는 표정으로 시작'},
-  {label:'CUT 2 · 전환',time:'3 — 6s',part:'transition',script:'"그래서 저만의 기준 3가지를 만들었어요."',note:'검지 들며 자신감 있게, 살짝 후퇴'},
-  {label:'CUT 3 · 본론',time:'6 — 12s',part:'body',script:'"첫째 걸어서 5분, 둘째 웨이팅 없는 곳, 셋째 1만원 이하."',note:'설명하며 실제 음식 B-roll 교차 촬영'},
-  {label:'CUT 4 · 클로징',time:'12 — 15s',part:'closing',script:'"여러분만의 기준도 댓글에 알려주세요!"',note:'정면, 환하게 웃으며 양손 들기'},
-];
+  const answers = { platform: null, categories: [], age: null };
 
-let currentStep=0,q1Val=null;
+  // Smart Onboarding state
+  const sampleProgress = {
+    answered: 0,        // 답한 질문 수
+    total: 3,           // 총 질문 수
+    isSampleMode: false // 샘플 모드인가
+  };
 
-function goStep(n){
-  if(n===1){selectTrend();return;}
-  currentStep=n;
-  document.querySelectorAll('.view').forEach((v,i)=>v.classList.toggle('active',i===n));
-  document.getElementById('screen').scrollTop=0;
-  updateStepList(n);updateTabs(n);
-  if(n===3)renderConti();
-  if(n===4)renderChallenge();
-}
-
-function updateStepList(n){
-  document.querySelectorAll('.step-item').forEach((el,i)=>{
-    el.classList.remove('active','done');
-    if(i===n)el.classList.add('active');
-    else if(i<n)el.classList.add('done');
-  });
-  document.querySelectorAll('.step-dot').forEach((el,i)=>{el.textContent=i<n?'✓':i+1;});
-}
-
-function updateTabs(n){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(n===0)document.getElementById('tab0')?.classList.add('active');
-  if(n===3)document.getElementById('tab3')?.classList.add('active');
-  if(n===4)document.getElementById('tab4')?.classList.add('active');
-}
-
-function selectTrend(){document.getElementById('sheet').classList.add('open');}
-function closeSheet(e){if(!e||e.target===document.getElementById('sheet'))document.getElementById('sheet').classList.remove('open');}
-function goFromSheet(){
-  document.getElementById('sheet').classList.remove('open');
-  currentStep=1;
-  document.querySelectorAll('.view').forEach((v,i)=>v.classList.toggle('active',i===1));
-  document.getElementById('screen').scrollTop=0;
-  updateStepList(1);updateTabs(1);
-}
-
-function selectQ1(el,val){
-  q1Val=val;
-  document.querySelectorAll('#q1-area .q-opt').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('chat-div').style.display='block';
-  const q2=document.getElementById('q2-area');
-  q2.style.display='block';q2.classList.add('fade-in');
-  setTimeout(()=>document.getElementById('screen').scrollTo({top:300,behavior:'smooth'}),100);
-}
-
-function selectQ2(el,val){
-  document.querySelectorAll('#q2-area .q-opt').forEach(o=>o.classList.remove('selected'));
-  el.classList.add('selected');
-  setTimeout(()=>{
-    const gen=document.getElementById('generating');
-    gen.style.display='block';
-    setTimeout(()=>document.getElementById('gen-fill').style.width='100%',50);
-    setTimeout(()=>{
-      gen.style.display='none';
-      const a=ANGLES[q1Val]||ANGLES.empathy;
-      document.getElementById('ar-angle-text').textContent=a.angle;
-      document.getElementById('ar-hook-text').textContent=a.hook;
-      const result=document.getElementById('angleResult');
-      result.style.display='block';result.classList.add('fade-in');
-      document.getElementById('chatCta').style.display='block';
-      setTimeout(()=>document.getElementById('screen').scrollTo({top:600,behavior:'smooth'}),100);
-    },2000);
-  },200);
-}
-
-function renderConti(){
-  const list=document.getElementById('cutList');list.innerHTML='';
-  CUTS.forEach((cut,i)=>{
-    const card=document.createElement('div');
-    card.className='cut-card fade-in';card.style.animationDelay=`${i*.08}s`;
-    card.innerHTML=`
-      <div class="cut-head"><span class="cut-label">${cut.label}</span><span class="cut-time mono">${cut.time}</span></div>
-      <div class="cut-sketch"><canvas id="canvas${i}" width="600" height="337"></canvas></div>
-      <div class="cut-foot"><div class="cut-script">${cut.script}</div><div class="cut-note">${cut.note}</div></div>`;
-    list.appendChild(card);
-    setTimeout(()=>drawSketch(i,cut.part),i*100+50);
-  });
-}
-
-function regenConti(){renderConti();}
-
-function drawSketch(idx,part){
-  const canvas=document.getElementById('canvas'+idx);if(!canvas)return;
-  const ctx=canvas.getContext('2d');const W=600,H=337;
-  ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
-  for(let i=0;i<2000;i++){ctx.fillStyle=`rgba(255,255,255,${Math.random()*.02})`;ctx.fillRect(Math.random()*W,Math.random()*H,1,1);}
-  if(part==='hook')drawHook(ctx,W,H);
-  else if(part==='transition')drawTransition(ctx,W,H);
-  else if(part==='body')drawBody(ctx,W,H);
-  else drawClosing(ctx,W,H);
-  ctx.strokeStyle='rgba(200,255,87,0.15)';ctx.lineWidth=2;ctx.strokeRect(1,1,W-2,H-2);
-}
-
-function hatch(ctx,x,y,w,h,gap,angle,a){
-  ctx.save();ctx.strokeStyle=`rgba(220,215,200,${a})`;ctx.lineWidth=0.8;ctx.lineCap='round';
-  const r=angle*Math.PI/180,ext=Math.max(w,h)*2;
-  ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
-  for(let i=-ext;i<ext*2;i+=gap){ctx.moveTo(x+i,y);ctx.lineTo(x+i+ext*Math.cos(r+Math.PI/2),y+ext*Math.sin(r+Math.PI/2));}
-  ctx.stroke();ctx.restore();
-}
-
-function drawFace(ctx,cx,cy,rx,ry,expr){
-  ctx.save();
-  ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.8;
-  ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.fillStyle='rgba(220,215,200,0.12)';
-  ctx.beginPath();ctx.ellipse(cx,cy-ry*.25,rx*1.08,ry*.8,0,Math.PI,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx-rx*.9,cy,rx*.2,ry*.5,-0.15,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+rx*.9,cy,rx*.2,ry*.5,0.15,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(220,215,200,0.9)';ctx.lineWidth=1.8;ctx.lineCap='round';
-  if(expr==='worried'){
-    ctx.beginPath();ctx.moveTo(cx-rx*.52,cy-ry*.2);ctx.quadraticCurveTo(cx-rx*.3,cy-ry*.28,cx-rx*.08,cy-ry*.2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx+rx*.08,cy-ry*.2);ctx.quadraticCurveTo(cx+rx*.3,cy-ry*.28,cx+rx*.52,cy-ry*.2);ctx.stroke();
-  } else {
-    ctx.beginPath();ctx.moveTo(cx-rx*.52,cy-ry*.24);ctx.quadraticCurveTo(cx-rx*.3,cy-ry*.3,cx-rx*.08,cy-ry*.22);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx+rx*.08,cy-ry*.22);ctx.quadraticCurveTo(cx+rx*.3,cy-ry*.3,cx+rx*.52,cy-ry*.24);ctx.stroke();
+  function skipToSampleDashboard() {
+    // 샘플 모드로 대시보드 진입
+    sampleProgress.isSampleMode = true;
+    sampleProgress.answered = 0;
+    updateProgressUI();
+    // 프로필 진행도 banner + 첫 번째 soft prompt 보이기
+    document.getElementById('profile-progress').style.display = 'flex';
+    document.getElementById('soft-prompt-1').style.display = 'block';
+    goTo('screen-trend');
   }
-  [-1,1].forEach(s=>{
-    const ex=cx+s*rx*.3,ey=cy-ry*.05,eRx=rx*.2,eRy=expr==='smile'?ry*.08:ry*.14;
-    if(expr==='smile'){
-      ctx.strokeStyle='rgba(220,215,200,0.9)';ctx.lineWidth=2;
-      ctx.beginPath();ctx.arc(ex,ey+3,eRx*.85,Math.PI,Math.PI*2,true);ctx.stroke();
-    } else {
-      ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.4;
-      ctx.beginPath();ctx.ellipse(ex,ey,eRx,eRy,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-      ctx.fillStyle='rgba(220,215,200,0.9)';ctx.beginPath();ctx.arc(ex,ey,eRy*.65,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(255,255,255,0.9)';ctx.beginPath();ctx.arc(ex+eRy*.25,ey-eRy*.2,eRy*.2,0,Math.PI*2);ctx.fill();
+
+  function updateProgressUI() {
+    const percent = Math.round((sampleProgress.answered / sampleProgress.total) * 100);
+    const percentEl = document.getElementById('progress-percent');
+    const statusEl = document.getElementById('progress-status');
+    const strokeEl = document.getElementById('progress-stroke');
+    if (percentEl) percentEl.textContent = percent + '%';
+    if (statusEl) statusEl.textContent = `3개 중 ${sampleProgress.answered}개 완료`;
+    if (strokeEl) {
+      // circumference = 2 * π * 15 ≈ 94.25
+      const offset = 94.25 - (94.25 * percent / 100);
+      strokeEl.setAttribute('stroke-dashoffset', offset);
     }
-  });
-  ctx.strokeStyle='rgba(220,215,200,0.45)';ctx.lineWidth=1.1;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(cx,cy+ry*.12);ctx.quadraticCurveTo(cx+rx*.1,cy+ry*.28,cx,cy+ry*.32);ctx.stroke();
-  ctx.beginPath();ctx.arc(cx-rx*.1,cy+ry*.32,rx*.08,0.2,Math.PI-0.2);ctx.stroke();
-  ctx.beginPath();ctx.arc(cx+rx*.1,cy+ry*.32,rx*.08,0.2,Math.PI-0.2);ctx.stroke();
-  ctx.strokeStyle='rgba(220,215,200,0.85)';ctx.lineWidth=1.8;ctx.lineCap='round';
-  const my=cy+ry*.55;
-  if(expr==='worried'){ctx.beginPath();ctx.moveTo(cx-rx*.28,my);ctx.quadraticCurveTo(cx,my+ry*.03,cx+rx*.28,my);ctx.stroke();}
-  else if(expr==='smile'){
-    ctx.beginPath();ctx.moveTo(cx-rx*.38,my-ry*.02);ctx.quadraticCurveTo(cx,my+ry*.2,cx+rx*.38,my-ry*.02);ctx.stroke();
-    ctx.fillStyle='rgba(220,215,200,0.08)';
-    ctx.beginPath();ctx.moveTo(cx-rx*.32,my+ry*.01);ctx.quadraticCurveTo(cx,my+ry*.16,cx+rx*.32,my+ry*.01);ctx.closePath();ctx.fill();
-    ctx.beginPath();ctx.moveTo(cx-rx*.38,my-ry*.02);ctx.quadraticCurveTo(cx-rx*.1,my-ry*.1,cx,my-ry*.07);ctx.quadraticCurveTo(cx+rx*.1,my-ry*.1,cx+rx*.38,my-ry*.02);ctx.stroke();
-  } else {ctx.beginPath();ctx.moveTo(cx-rx*.28,my+ry*.02);ctx.quadraticCurveTo(cx,my+ry*.12,cx+rx*.28,my+ry*.02);ctx.stroke();}
-  hatch(ctx,cx-rx*.95,cy-ry*.1,rx*.3,ry*.35,6,40,0.1);
-  hatch(ctx,cx+rx*.62,cy-ry*.1,rx*.3,ry*.35,6,140,0.1);
-  ctx.restore();
-}
-
-function drawBodyShape(ctx,cx,topY,W,H){
-  ctx.save();ctx.fillStyle='#181614';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.5;
-  ctx.beginPath();
-  ctx.moveTo(0,H);ctx.bezierCurveTo(cx-W*.32,H,cx-W*.3,topY+20,cx-W*.18,topY+8);
-  ctx.lineTo(cx+W*.18,topY+8);ctx.bezierCurveTo(cx+W*.3,topY+20,cx+W*.32,H,W,H);
-  ctx.fill();ctx.stroke();ctx.restore();
-}
-
-function drawHook(ctx,W,H){
-  ctx.fillStyle='#141210';ctx.fillRect(0,H*.55,W,H*.45);
-  ctx.strokeStyle='rgba(220,215,200,0.15)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(0,H*.7);ctx.lineTo(W,H*.7);ctx.stroke();
-  ctx.fillStyle='#0e0c0a';ctx.strokeStyle='rgba(220,215,200,0.15)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.roundRect(W*.6,H*.14,W*.25,H*.28,4);ctx.fill();ctx.stroke();
-  hatch(ctx,W*.62,H*.16,W*.21,H*.22,14,0,0.05);
-  ctx.save();ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.55)';ctx.lineWidth=1.6;
-  ctx.beginPath();
-  ctx.moveTo(W*.08,H);ctx.bezierCurveTo(W*.1,H*.82,W*.14,H*.74,W*.18,H*.7);
-  ctx.bezierCurveTo(W*.2,H*.66,W*.2,H*.58,W*.22,H*.54);
-  ctx.bezierCurveTo(W*.24,H*.5,W*.26,H*.48,W*.24,H*.46);
-  ctx.lineTo(W*.2,H*.46);ctx.bezierCurveTo(W*.18,H*.5,W*.14,H*.62,W*.1,H*.7);
-  ctx.bezierCurveTo(W*.06,H*.78,W*.04,H*.9,W*.04,H);ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.arc(W*.22,H*.44,W*.04,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.restore();
-  hatch(ctx,W*.06,H*.44,W*.18,H*.28,7,35,0.12);
-  drawBodyShape(ctx,W*.42,H*.64,W,H);
-  drawFace(ctx,W*.44,H*.35,W*.2,H*.3,'worried');
-  ctx.save();ctx.font='bold 28px serif';ctx.fillStyle='rgba(220,215,200,0.1)';
-  ctx.fillText('?',W*.68,H*.28);ctx.font='bold 18px serif';ctx.fillText('?',W*.76,H*.18);ctx.restore();
-}
-
-function drawTransition(ctx,W,H){
-  ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
-  ctx.save();ctx.globalAlpha=0.04;
-  for(let i=0;i<16;i++){const a=(i/16)*Math.PI*2;ctx.strokeStyle='rgba(200,255,87,1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*.46,H*.34);ctx.lineTo(W*.46+Math.cos(a)*W,H*.34+Math.sin(a)*H);ctx.stroke();}
-  ctx.restore();
-  drawBodyShape(ctx,W*.46,H*.6,W,H);
-  ctx.save();ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.7;
-  ctx.beginPath();ctx.moveTo(W*.72,H);ctx.bezierCurveTo(W*.74,H*.78,W*.74,H*.66,W*.72,H*.56);
-  ctx.bezierCurveTo(W*.7,H*.46,W*.68,H*.38,W*.68,H*.3);ctx.lineTo(W*.64,H*.3);
-  ctx.bezierCurveTo(W*.62,H*.4,W*.62,H*.52,W*.64,H*.62);ctx.bezierCurveTo(W*.66,H*.72,W*.64,H*.84,W*.62,H);ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.moveTo(W*.64,H*.32);ctx.bezierCurveTo(W*.63,H*.2,W*.64,H*.1,W*.655,H*.06);
-  ctx.bezierCurveTo(W*.67,H*.02,W*.69,H*.04,W*.695,H*.1);ctx.bezierCurveTo(W*.7,H*.18,W*.69,H*.26,W*.67,H*.32);ctx.fill();ctx.stroke();
-  ctx.restore();
-  hatch(ctx,W*.62,H*.28,W*.1,H*.42,7,40,0.12);
-  ctx.save();ctx.strokeStyle='rgba(200,255,87,0.5)';ctx.lineWidth=1.5;
-  const sx=W*.76,sy=H*.08;
-  [[sx,sy-12,sx,sy+12],[sx-12,sy,sx+12,sy],[sx-8,sy-8,sx+8,sy+8],[sx-8,sy+8,sx+8,sy-8]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
-  ctx.restore();
-  drawFace(ctx,W*.42,H*.32,W*.19,H*.28,'neutral');
-}
-
-function drawBody(ctx,W,H){
-  const mid=W*.5;
-  ctx.fillStyle='#141210';ctx.fillRect(0,0,mid,H);
-  ctx.fillStyle='#0e0d0b';ctx.fillRect(mid,0,W-mid,H);
-  ctx.strokeStyle='rgba(220,215,200,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(mid,0);ctx.lineTo(mid,H);ctx.stroke();
-  ctx.save();ctx.beginPath();ctx.rect(0,0,mid,H);ctx.clip();
-  drawBodyShape(ctx,mid*.55,H*.6,mid,H);
-  ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.55)';ctx.lineWidth=1.4;
-  ctx.beginPath();ctx.moveTo(mid*.05,H);ctx.bezierCurveTo(mid*.08,H*.8,mid*.12,H*.7,mid*.18,H*.62);
-  ctx.bezierCurveTo(mid*.22,H*.56,mid*.24,H*.5,mid*.22,H*.46);ctx.lineTo(mid*.18,H*.46);
-  ctx.bezierCurveTo(mid*.16,H*.52,mid*.12,H*.62,mid*.06,H*.72);ctx.bezierCurveTo(mid*.02,H*.82,0,H*.92,0,H);ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.arc(mid*.2,H*.44,mid*.07,0,Math.PI*2);ctx.fill();ctx.stroke();
-  hatch(ctx,mid*.04,H*.42,mid*.2,H*.3,7,35,0.12);
-  drawFace(ctx,mid*.58,H*.32,mid*.3,H*.28,'neutral');ctx.restore();
-  ctx.save();ctx.beginPath();ctx.rect(mid,0,W-mid,H);ctx.clip();
-  const fc=mid+(W-mid)*.5,fy=H*.42;
-  ctx.fillStyle='#1a1815';ctx.strokeStyle='rgba(220,215,200,0.4)';ctx.lineWidth=1.4;
-  ctx.beginPath();ctx.ellipse(fc,fy+H*.12,(W-mid)*.3,H*.07,0,0,Math.PI*2);ctx.fill();ctx.stroke();
-  ctx.fillStyle='#1e1c18';ctx.beginPath();
-  ctx.moveTo(fc-(W-mid)*.3,fy);ctx.bezierCurveTo(fc-(W-mid)*.3,fy+H*.1,fc-(W-mid)*.28,fy+H*.14,fc,fy+H*.15);
-  ctx.bezierCurveTo(fc+(W-mid)*.28,fy+H*.14,fc+(W-mid)*.3,fy+H*.1,fc+(W-mid)*.3,fy);
-  ctx.bezierCurveTo(fc+(W-mid)*.28,fy-H*.08,fc,fy-H*.1,fc-(W-mid)*.28,fy-H*.08);ctx.closePath();ctx.fill();ctx.stroke();
-  ctx.fillStyle='rgba(180,200,160,0.5)';ctx.beginPath();ctx.ellipse(fc+W*.05,fy-H*.04,(W-mid)*.09,H*.07,0.3,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(200,100,80,0.5)';ctx.beginPath();ctx.ellipse(fc,fy-H*.06,(W-mid)*.07,H*.05,-0.1,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(180,160,120,0.5)';ctx.lineWidth=2;ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(fc-(W-mid)*.28,fy-H*.18);ctx.lineTo(fc-(W-mid)*.38,fy-H*.38);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(fc-(W-mid)*.22,fy-H*.16);ctx.lineTo(fc-(W-mid)*.32,fy-H*.36);ctx.stroke();
-  ctx.save();ctx.font='500 14px monospace';ctx.fillStyle='rgba(200,255,87,0.2)';ctx.fillText('B-roll',mid+(W-mid)*.28,H*.88);ctx.restore();
-  ctx.restore();
-}
-
-function drawClosing(ctx,W,H){
-  ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
-  ctx.save();
-  [[W*.12,H*.8,W*.06,H*.56,W*.08,H*.42],[W*.88,H*.8,W*.94,H*.56,W*.92,H*.42]].forEach((pts,si)=>{
-    ctx.fillStyle='#1e1c18';ctx.strokeStyle='rgba(220,215,200,0.6)';ctx.lineWidth=1.6;
-    ctx.beginPath();ctx.moveTo(si===0?W*.08:W*.92,H);
-    ctx.bezierCurveTo(pts[0],pts[1],pts[2],pts[3],pts[4],pts[5]);
-    ctx.bezierCurveTo(si===0?W*.22:W*.78,H*.44,si===0?W*.2:W*.8,H*.58,si===0?W*.18:W*.82,H*.78);
-    ctx.bezierCurveTo(si===0?W*.14:W*.86,H*.7,si===0?W*.12:W*.88,H*.84,si===0?W*.1:W*.9,H);
-    ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.ellipse(pts[4],pts[5],W*.04,H*.04,si===0?-0.3:0.3,0,Math.PI*2);ctx.fill();ctx.stroke();
-  });
-  ctx.restore();
-  hatch(ctx,W*.06,H*.38,W*.18,H*.45,7,35,0.1);
-  hatch(ctx,W*.76,H*.38,W*.18,H*.45,7,145,0.1);
-  drawBodyShape(ctx,W*.46,H*.6,W,H);
-  drawFace(ctx,W*.46,H*.32,W*.22,H*.32,'smile');
-}
-
-function renderChallenge(){
-  const grid=document.getElementById('challengeGrid');grid.innerHTML='';
-  for(let i=0;i<10;i++){
-    const cell=document.createElement('div');
-    cell.className='cg-cell'+(i<3?' done':i===3?' current':'');
-    cell.textContent=i<3?'✓':i+1;
-    grid.appendChild(cell);
   }
-}
 
-goStep(0);
+  function dismissPrompt(id) {
+    const prompt = document.getElementById(id);
+    prompt.classList.add('dismissed');
+    setTimeout(() => { prompt.style.display = 'none'; }, 400);
+  }
+
+  function answerPrompt(chipEl, promptId, field, value) {
+    // 답변 저장
+    if (field === 'platform') answers.platform = value;
+    if (field === 'category') {
+      if (!answers.categories.includes(value)) answers.categories.push(value);
+    }
+    // 칩 선택 표시
+    chipEl.classList.add('selected');
+    // 약간의 만족감 주는 딜레이 후 닫기
+    setTimeout(() => {
+      const prompt = document.getElementById(promptId);
+      prompt.classList.add('dismissed');
+      setTimeout(() => {
+        prompt.style.display = 'none';
+        // 진행도 업데이트
+        sampleProgress.answered++;
+        updateProgressUI();
+        // 다음 prompt 자동 노출 (1번 답하면 2번 보임)
+        if (promptId === 'soft-prompt-1') {
+          setTimeout(() => {
+            const next = document.getElementById('soft-prompt-2');
+            if (next) next.style.display = 'block';
+          }, 200);
+        }
+        // 모든 답변 끝나면 progress 숨김
+        if (sampleProgress.answered >= sampleProgress.total) {
+          setTimeout(() => {
+            document.getElementById('profile-progress').style.display = 'none';
+          }, 1500);
+        }
+      }, 400);
+    }, 400);
+  }
+
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const sc = document.querySelector('#' + id + ' .screen-content');
+    if (sc) sc.scrollTop = 0;
+  }
+
+  function selectPlatform(el) {
+    document.querySelectorAll('#screen-q1 .toss-item').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    answers.platform = el.dataset.val;
+    document.getElementById('cta-q1').disabled = false;
+  }
+
+  function selectCategory(el) {
+    el.classList.toggle('selected');
+    const selected = document.querySelectorAll('#screen-q2 .chip.selected');
+    answers.categories = Array.from(selected).map(s => s.dataset.val);
+    document.getElementById('cta-q2').disabled = selected.length === 0;
+
+    const counter = document.getElementById('counter');
+    const countNum = document.getElementById('count-num');
+    if (selected.length > 0) {
+      counter.style.display = 'flex';
+      countNum.textContent = selected.length;
+    } else {
+      counter.style.display = 'none';
+    }
+  }
+
+  function selectAge(el) {
+    document.querySelectorAll('.age-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers.age = el.dataset.val;
+    const bigNum = document.getElementById('age-big');
+    const helper = document.getElementById('age-helper');
+    const num = el.dataset.num;
+    bigNum.innerHTML = num + '<span class="suffix">대</span>';
+    bigNum.classList.add('active');
+    helper.textContent = el.dataset.text;
+    helper.classList.add('active');
+    document.getElementById('cta-q3').disabled = false;
+  }
+
+  function startLoading() {
+    goTo('screen-loading');
+    const messages = [
+      '잠시만요',
+      '관심 분야 매칭 중...',
+      '연령대 데이터 분석 중...',
+      '인사이트 정리 중...',
+    ];
+    let i = 0;
+    const msg = document.getElementById('loading-msg');
+    const interval = setInterval(() => {
+      i = (i + 1) % messages.length;
+      msg.textContent = messages[i];
+    }, 700);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      updateMyTags();
+      goTo('screen-trend');
+    }, 2600);
+  }
+
+  function skipToTrend() {
+    updateMyTags();
+    goTo('screen-trend');
+  }
+
+  function updateMyTags() {
+    const tagsEl = document.getElementById('my-tags');
+    if (!tagsEl) return;
+    const pMap = { tiktok: '틱톡', instagram: '인스타그램', youtube: '유튜브', all: '모두 보기' };
+    const cMap = { food: '먹방', vlog: '브이로그', dance: '춤', fashion: '패션', beauty: '뷰티', fitness: '운동', travel: '여행', study: '공부', game: '게임', pet: '반려동물' };
+    const aMap = { '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50s': '50대+' };
+    const tags = [];
+    if (answers.platform) tags.push(pMap[answers.platform]);
+    if (answers.categories.length) answers.categories.forEach(c => tags.push(cMap[c]));
+    if (answers.age) tags.push(aMap[answers.age]);
+    if (tags.length) {
+      tagsEl.innerHTML = tags.map(t => `<div class="tag">${t}</div>`).join('');
+    }
+  }
+
+  function switchTab(tab) {
+    if (tab === 'trend') goTo('screen-trend');
+    else if (tab === 'my') goTo('screen-my');
+  }
+
+  function toggleTrendItem(el, event) {
+    // 액션 버튼 클릭은 제외 (stopPropagation이 처리)
+    el.classList.toggle('expanded');
+  }
+
+  function resetDemo() {
+    answers.platform = null;
+    answers.categories = [];
+    answers.age = null;
+    sampleProgress.answered = 0;
+    sampleProgress.isSampleMode = false;
+    document.querySelectorAll('.toss-item, .chip, .age-opt').forEach(o => o.classList.remove('selected'));
+    document.querySelectorAll('.cta[id^="cta-q"]').forEach(b => b.disabled = true);
+    document.querySelectorAll('.soft-prompt').forEach(p => {
+      p.style.display = 'none';
+      p.classList.remove('dismissed');
+    });
+    document.querySelectorAll('.prompt-chip').forEach(c => c.classList.remove('selected'));
+    const pp = document.getElementById('profile-progress');
+    if (pp) pp.style.display = 'none';
+    const bigNum = document.getElementById('age-big');
+    bigNum.textContent = '—';
+    bigNum.classList.remove('active');
+    const helper = document.getElementById('age-helper');
+    helper.textContent = '연령대를 골라주세요';
+    helper.classList.remove('active');
+    document.getElementById('counter').style.display = 'none';
+    goTo('screen-welcome');
+  }
 </script>
+
 </body>
 </html>

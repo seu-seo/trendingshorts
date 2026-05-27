@@ -1744,6 +1744,213 @@
   }
 
   /* ============================
+     DEEP PROFILE SCREEN
+     ============================ */
+  .deep-screen {
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+  .deep-header {
+    padding: 12px 16px 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .deep-progress-track {
+    flex: 1;
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .deep-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 0.4s var(--ease-out);
+  }
+  .deep-step-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .deep-step-text .total { color: var(--gray-light); }
+
+  /* 스텝 컨테이너 */
+  .deep-steps {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .deep-step {
+    position: absolute;
+    inset: 0;
+    padding: 32px 24px 0;
+    opacity: 0;
+    transform: translateX(32px);
+    transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .deep-step.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+  .deep-step.exit {
+    opacity: 0;
+    transform: translateX(-32px);
+  }
+
+  .deep-category {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .deep-q {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .deep-hint {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .deep-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s ease;
+    -webkit-appearance: none;
+  }
+  .deep-textarea::placeholder {
+    color: var(--gray-light);
+  }
+  .deep-textarea:focus {
+    border-color: var(--primary);
+  }
+  .deep-char-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray-light);
+    text-align: right;
+    margin-top: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  /* 결과 카드 */
+  .deep-result {
+    padding: 32px 24px 24px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .deep-result-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .deep-result-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: pulse-ring 2s ease infinite;
+  }
+  .deep-niche-card {
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .deep-niche-title {
+    font-family: var(--font-pop);
+    font-size: 26px;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .deep-niche-desc {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .deep-niche-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .deep-niche-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .deep-insight-row {
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .deep-insight-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--gray);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .deep-insight-text {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .deep-result-cta {
+    margin-top: 20px;
+  }
+
+  /* ============================
      TAB BAR — 토스 깔끔하게
      ============================ */
   .tab-bar {
@@ -3103,6 +3310,87 @@
       </div>
     </div>
 
+    <!-- ============ SCREEN: DEEP PROFILE ============ -->
+    <div class="screen deep-screen" id="screen-deep-profile">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="deep-header">
+        <button class="back-btn" onclick="goTo('screen-my')">←</button>
+        <div class="deep-progress-track">
+          <div class="deep-progress-fill" id="deep-progress-fill" style="width: 25%;"></div>
+        </div>
+        <div class="deep-step-text" id="deep-step-text">1<span class="total">/4</span></div>
+        <button class="skip-btn" onclick="goTo('screen-my')">나중에</button>
+      </div>
+
+      <div class="deep-steps" id="deep-steps">
+
+        <!-- STEP 1: 열정 -->
+        <div class="deep-step active" id="deep-step-1">
+          <div class="deep-category">열정 · PASSION</div>
+          <div class="deep-q">조회수 0이어도<br/>1년 내내 만들고 싶은 게<br/>있나요?</div>
+          <div class="deep-hint">잘 될지 몰라도, 그냥 좋아서 하게 되는 것.</div>
+          <textarea class="deep-textarea" id="deep-ans-1" placeholder="예: 오래된 물건 고치는 법, 새벽 혼밥 레시피, 산책 브이로그…" oninput="deepCheckNext(1)" maxlength="200"></textarea>
+          <div class="deep-char-hint" id="deep-char-1">0 / 200</div>
+        </div>
+
+        <!-- STEP 2: 소비 -->
+        <div class="deep-step" id="deep-step-2">
+          <div class="deep-category">소비 · SPENDING</div>
+          <div class="deep-q">지난 1년,<br/>가장 많이 돈 쓴<br/>취미는?</div>
+          <div class="deep-hint">카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.</div>
+          <textarea class="deep-textarea" id="deep-ans-2" placeholder="예: 카페 투어, 등산 장비, 보드게임, 독립출판…" oninput="deepCheckNext(2)" maxlength="200"></textarea>
+          <div class="deep-char-hint" id="deep-char-2">0 / 200</div>
+        </div>
+
+        <!-- STEP 3: 강점 -->
+        <div class="deep-step" id="deep-step-3">
+          <div class="deep-category">강점 · STRENGTH</div>
+          <div class="deep-q">주변에서 자주<br/>묻거나 칭찬받는 게<br/>있어요?</div>
+          <div class="deep-hint">"너 그거 어떻게 해?" 또는 "너한테 물어봐야지"라는 말을 듣는 것.</div>
+          <textarea class="deep-textarea" id="deep-ans-3" placeholder="예: 여행 코스 짜기, 다이어트 식단, 인테리어 감각…" oninput="deepCheckNext(3)" maxlength="200"></textarea>
+          <div class="deep-char-hint" id="deep-char-3">0 / 200</div>
+        </div>
+
+        <!-- STEP 4: 오디언스 -->
+        <div class="deep-step" id="deep-step-4">
+          <div class="deep-category">오디언스 · AUDIENCE</div>
+          <div class="deep-q">내일 갑자기<br/>2만 팔로워가 됐어요.<br/>누가 봐줬으면 좋겠어요?</div>
+          <div class="deep-hint">팔로워 한 명의 모습을 구체적으로 떠올려보세요.</div>
+          <textarea class="deep-textarea" id="deep-ans-4" placeholder="예: 자취 2년 차 직장인, 육아 중인 30대 엄마, 취업 준비 중인 대학생…" oninput="deepCheckNext(4)" maxlength="200"></textarea>
+          <div class="deep-char-hint" id="deep-char-4">0 / 200</div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="deep-step" id="deep-step-result">
+          <div class="deep-result-label">AI 니치 분석 완료</div>
+          <div class="deep-niche-card">
+            <div class="deep-niche-title" id="deep-niche-title">분석 중…</div>
+            <div class="deep-niche-desc" id="deep-niche-desc"></div>
+            <div class="deep-niche-tags" id="deep-niche-tags"></div>
+          </div>
+          <div class="deep-insight-row">
+            <div class="deep-insight-label">추천 콘텐츠 포맷</div>
+            <div class="deep-insight-text" id="deep-insight-format"></div>
+          </div>
+          <div class="deep-insight-row">
+            <div class="deep-insight-label">가장 가능성 있는 플랫폼</div>
+            <div class="deep-insight-text" id="deep-insight-platform"></div>
+          </div>
+          <div class="deep-result-cta">
+            <button class="cta" onclick="goTo('screen-my')">대시보드로 돌아가기</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="cta-wrap" id="deep-cta-wrap">
+        <button class="cta" id="deep-cta" disabled onclick="deepNext()">다음</button>
+      </div>
+    </div>
+
     <!-- ============ SCREEN: MY PAGE ============ -->
     <div class="screen my-screen" id="screen-my">
       <div class="status-bar">
@@ -3179,11 +3467,11 @@
             <div class="section-title">더 정확한 추천 받기</div>
           </div>
           <div class="action-list">
-            <div class="action-item">
+            <div class="action-item" onclick="openDeepProfile()">
               <div class="action-num">01</div>
               <div class="action-body">
                 <div class="action-title">관심사 더 알려주기</div>
-                <div class="action-desc">주관식 3문항 · 약 1분</div>
+                <div class="action-desc">주관식 4문항 · 약 2분</div>
               </div>
               <div class="action-arrow">→</div>
             </div>
@@ -3455,6 +3743,144 @@
   function switchTab(tab) {
     if (tab === 'trend') goTo('screen-trend');
     else if (tab === 'my') goTo('screen-my');
+  }
+
+  /* ===========================
+     DEEP PROFILE
+     =========================== */
+  let deepCurrentStep = 1;
+  const deepAnswers = { 1: '', 2: '', 3: '', 4: '' };
+
+  function openDeepProfile() {
+    deepCurrentStep = 1;
+    deepAnswers[1] = ''; deepAnswers[2] = ''; deepAnswers[3] = ''; deepAnswers[4] = '';
+    ['1','2','3','4'].forEach(n => {
+      const ta = document.getElementById('deep-ans-' + n);
+      if (ta) ta.value = '';
+      const ch = document.getElementById('deep-char-' + n);
+      if (ch) ch.textContent = '0 / 200';
+    });
+    document.querySelectorAll('.deep-step').forEach(s => s.classList.remove('active', 'exit'));
+    document.getElementById('deep-step-1').classList.add('active');
+    document.getElementById('deep-progress-fill').style.width = '25%';
+    document.getElementById('deep-step-text').innerHTML = '1<span class="total">/4</span>';
+    document.getElementById('deep-cta').disabled = true;
+    document.getElementById('deep-cta').textContent = '다음';
+    document.getElementById('deep-cta-wrap').style.display = '';
+    goTo('screen-deep-profile');
+  }
+
+  function deepCheckNext(step) {
+    const ta = document.getElementById('deep-ans-' + step);
+    const ch = document.getElementById('deep-char-' + step);
+    const val = ta.value.trim();
+    deepAnswers[step] = val;
+    ch.textContent = ta.value.length + ' / 200';
+    document.getElementById('deep-cta').disabled = val.length === 0;
+  }
+
+  function deepNext() {
+    const current = deepCurrentStep;
+    const next = current + 1;
+
+    const currentEl = document.getElementById('deep-step-' + current);
+    currentEl.classList.add('exit');
+    setTimeout(() => currentEl.classList.remove('active', 'exit'), 350);
+
+    if (next <= 4) {
+      deepCurrentStep = next;
+      const pct = (next / 4) * 100;
+      document.getElementById('deep-progress-fill').style.width = pct + '%';
+      document.getElementById('deep-step-text').innerHTML = next + '<span class="total">/4</span>';
+      document.getElementById('deep-cta').disabled = true;
+      const nextEl = document.getElementById('deep-step-' + next);
+      setTimeout(() => {
+        nextEl.classList.add('active');
+        const ta = document.getElementById('deep-ans-' + next);
+        if (ta) setTimeout(() => ta.focus(), 100);
+      }, 50);
+    } else {
+      // 완료 → 결과 생성
+      document.getElementById('deep-progress-fill').style.width = '100%';
+      document.getElementById('deep-cta-wrap').style.display = 'none';
+      buildDeepResult();
+      setTimeout(() => {
+        document.getElementById('deep-step-result').classList.add('active');
+      }, 50);
+    }
+  }
+
+  function buildDeepResult() {
+    const a1 = deepAnswers[1].toLowerCase();
+    const a2 = deepAnswers[2].toLowerCase();
+    const a3 = deepAnswers[3].toLowerCase();
+    const a4 = deepAnswers[4].toLowerCase();
+
+    // mock 분석 — 키워드 기반 간단 분류
+    let niche = '라이프스타일 크리에이터';
+    let desc = '일상 속 소소한 발견을 콘텐츠로 만드는 타입이에요. 특정 트렌드보다 꾸준히 공감받는 루틴이 강점입니다.';
+    let tags = ['DAILY', 'ROUTINE', 'LIFESTYLE'];
+    let format = '짧은 브이로그 (60-90초) — 출퇴근·점심·퇴근 루틴 포맷이 잘 맞아요.';
+    let platform = '인스타그램 릴스 + 틱톡 — 짧고 따뜻한 일상 콘텐츠 수요가 높아요.';
+
+    const foodKws = ['요리','음식','레시피','먹','카페','밥','식당','쿠킹'];
+    const fitnessKws = ['운동','헬스','다이어트','요가','필라','러닝','등산'];
+    const travelKws = ['여행','카페','투어','맛집','국내','해외'];
+    const techKws = ['기기','테크','앱','코딩','개발','ai','gadget'];
+    const selfdevKws = ['독서','공부','자기계발','책','루틴','생산성'];
+
+    const all = [a1, a2, a3, a4].join(' ');
+    const score = (kws) => kws.filter(k => all.includes(k)).length;
+
+    const scores = {
+      food: score(foodKws),
+      fitness: score(fitnessKws),
+      travel: score(travelKws),
+      tech: score(techKws),
+      selfdev: score(selfdevKws),
+    };
+    const top = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+
+    if (top === 'food' && scores.food > 0) {
+      niche = '집밥 & 카페 큐레이터';
+      desc = '음식에 진심인 사람이에요. "이건 진짜 맛있다"는 감각이 콘텐츠가 됩니다. 레시피보다 분위기·선택 기준을 담으면 차별화돼요.';
+      tags = ['FOOD', 'HOMECAFE', 'RECIPE'];
+      format = '30-60초 쇼트폼 — 재료 준비부터 완성까지 원테이크, 또는 카페 브이로그.';
+      platform = '인스타그램 릴스 — 음식 콘텐츠 저장률 1위 플랫폼이에요.';
+    } else if (top === 'fitness' && scores.fitness > 0) {
+      niche = '현실 피트니스 크리에이터';
+      desc = '화려한 몸보다 "나처럼 바쁜 사람도 되더라"는 현실감이 강점이에요. 변화 과정 자체가 콘텐츠입니다.';
+      tags = ['FITNESS', 'HEALTH', 'ROUTINE'];
+      format = '주간 기록 + 챌린지 포맷 — 7일/30일 단위 변화 기록이 팔로우 유지율 높아요.';
+      platform = '틱톡 + 유튜브 쇼츠 — 운동 관련 검색량 꾸준히 상위권이에요.';
+    } else if (top === 'travel' && scores.travel > 0) {
+      niche = '로컬 여행 큐레이터';
+      desc = '발품 팔아 찾은 곳들이 남들이 모르는 보물이에요. "어디서 찾았어요?"가 가장 많이 받을 DM이에요.';
+      tags = ['TRAVEL', 'LOCAL', 'CURATION'];
+      format = '장소 리뷰 + 코스 추천 — "당일치기 OO 코스" 포맷이 저장·공유율 최고예요.';
+      platform = '인스타그램 + 유튜브 — 여행 정보는 저장 후 나중에 보는 패턴이 강해요.';
+    } else if (top === 'tech' && scores.tech > 0) {
+      niche = 'AI · 테크 라이프 크리에이터';
+      desc = '새로운 도구를 빠르게 써보고 "이게 진짜 쓸 만해?"를 정직하게 말해주는 타입이에요.';
+      tags = ['TECH', 'AI', 'REVIEW'];
+      format = '비교 리뷰 + "써봤어요" 포맷 — 신제품/앱 출시 직후 빠른 반응 콘텐츠.';
+      platform = '유튜브 쇼츠 + 틱톡 — 테크 리뷰 쇼트폼 수요 급성장 중이에요.';
+    } else if (top === 'selfdev' && scores.selfdev > 0) {
+      niche = '생산성 · 자기계발 크리에이터';
+      desc = '꾸준히 뭔가를 해온 사람이에요. "저는 이렇게 했어요"가 누군가에게는 엄청난 동기부여가 됩니다.';
+      tags = ['PRODUCTIVITY', 'SELFDEV', 'ROUTINE'];
+      format = '루틴 공유 + 결과 기록 — "OO일 챌린지 결과" 포맷이 저장률 높아요.';
+      platform = '유튜브 + 인스타그램 — 자기계발 콘텐츠는 긴 영상도 소화하는 팬층이 있어요.';
+    }
+
+    document.getElementById('deep-niche-title').textContent = niche;
+    document.getElementById('deep-niche-desc').textContent = desc;
+    const tagsEl = document.getElementById('deep-niche-tags');
+    tagsEl.innerHTML = tags.map(t => `<span class="deep-niche-tag">${t}</span>`).join('');
+    document.getElementById('deep-insight-format').textContent = format;
+    document.getElementById('deep-insight-platform').textContent = platform;
+
+    document.getElementById('deep-step-text').innerHTML = '완료';
   }
 
   function togglePulseCard(el, event) {

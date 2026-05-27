@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse — B&W Sample</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @font-face {
+    font-family: 'Cafe24Surround';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff') format('woff');
+    font-display: swap;
+  }
+
+  :root {
+    /* Tonal dark — 4단계 표면 */
+    --bg:       #0A0A0A;
+    --bg-soft:  #111111;
+    --bg-card:  #1A1A1A;
+    --bg-hover: #222222;
+    --line:     #2A2A2A;
+    --line-mid: #333333;
+
+    /* 텍스트 위계 4단계 */
+    --t1: #FFFFFF;   /* 헤드라인, 핵심 숫자 */
+    --t2: #E4E4E7;   /* 본문 */
+    --t3: #A1A1AA;   /* 보조 레이블 */
+    --t4: #6B6B6B;   /* 메타, 비활성 */
+
+    /* 데이터 컬러 — 여기에만 색 존재 */
+    --up:   #22C55E;   /* 성장 = 유니버설 그린 */
+    --down: #EF4444;   /* 하락 = 레드 */
+    --ai:   #60A5FA;   /* AI 콘텐츠 = 블루 */
+
+    --font-body: 'Pretendard Variable', sans-serif;
+    --font-cute: 'Cafe24Surround', 'Pretendard Variable', sans-serif;
+    --font-mono: 'Inter', sans-serif;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: #0D0D0D;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .phone {
+    width: 390px;
+    background: var(--bg);
+    border-radius: 48px;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 12px #0F0F0F,
+      0 0 0 14px #1A1A1A,
+      0 40px 100px rgba(0,0,0,0.95);
+  }
+
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 28px 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--t3);
+  }
+
+  .screen-content {
+    padding: 0 0 32px;
+    overflow-y: auto;
+  }
+
+  /* HEADER */
+  .dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 12px;
+  }
+  .dash-logo {
+    font-family: var(--font-cute);
+    font-size: 22px;
+    color: var(--t1);
+    letter-spacing: -0.02em;
+  }
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--line-mid);
+    border-radius: 20px;
+  }
+  .live-dot {
+    width: 5px; height: 5px;
+    background: var(--up);
+    border-radius: 50%;
+    animation: blink 1.8s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+  .live-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--t3);
+    letter-spacing: 0.08em;
+  }
+
+  /* AI BRIEFING */
+  .briefing {
+    margin: 0 16px 16px;
+    padding: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--line-mid);
+    border-radius: 18px;
+  }
+  .briefing-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ai);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .briefing-eyebrow::before {
+    content: '';
+    width: 5px; height: 5px;
+    background: var(--ai);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .briefing-text {
+    font-size: 14px;
+    color: var(--t2);
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  .briefing-text strong {
+    color: var(--t1);
+    font-weight: 700;
+  }
+
+  /* SECTION */
+  .section { padding: 0 16px; margin-bottom: 8px; }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: var(--font-cute);
+    font-size: 17px;
+    color: var(--t1);
+    letter-spacing: -0.02em;
+  }
+  .section-more {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--t4);
+    letter-spacing: 0.04em;
+  }
+
+  /* TREND LIST */
+  .trend-list { display: flex; flex-direction: column; gap: 2px; }
+  .trend-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 12px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    transition: all 0.18s var(--ease-out);
+  }
+  .trend-item:hover {
+    background: var(--bg-card);
+    border-color: var(--line);
+  }
+  .rank {
+    width: 28px;
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--t4);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .rank.r1 { color: var(--t1); }
+  .rank.r2 { color: var(--t3); }
+  .trend-body { flex: 1; min-width: 0; }
+  .trend-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--t1);
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .trend-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--t4);
+  }
+  .trend-meta .platform { color: var(--t3); }
+  .trend-meta .sep { color: var(--line-mid); }
+  .trend-meta .growth-up   { color: var(--up);   font-weight: 700; }
+  .trend-meta .growth-down { color: var(--down); font-weight: 700; }
+
+  /* mini sparkline */
+  .sparkline {
+    width: 44px; height: 22px;
+    flex-shrink: 0;
+  }
+  .sparkline path.line { fill: none; stroke: var(--t4); stroke-width: 1.5; }
+  .sparkline path.area { fill: rgba(255,255,255,0.04); }
+  .sparkline path.line.up-line { stroke: var(--up); }
+  .sparkline path.area.up-area { fill: rgba(34,197,94,0.08); }
+  .sparkline path.line.down-line { stroke: var(--down); }
+  .sparkline path.area.down-area { fill: rgba(239,68,68,0.08); }
+  .sparkline circle { fill: var(--t4); }
+  .sparkline circle.up-dot   { fill: var(--up); }
+  .sparkline circle.down-dot { fill: var(--down); }
+
+  .heart-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 4px; color: var(--t4);
+    transition: color 0.15s ease;
+    display: flex; align-items: center;
+  }
+  .heart-btn:hover { color: var(--t1); }
+  .heart-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--line);
+    margin: 16px 16px;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 0 16px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 12px;
+  }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--t4);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--t1);
+    line-height: 1;
+  }
+  .stat-value.up   { color: var(--up); }
+  .stat-value.down { color: var(--down); }
+  .stat-delta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--t4);
+    margin-top: 4px;
+  }
+
+  /* CTA */
+  .cta-wrap { padding: 0 16px 8px; }
+  .cta {
+    width: 100%;
+    padding: 17px;
+    background: var(--t1);
+    color: var(--bg);
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font-cute);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: -0.01em;
+  }
+  .cta:hover { background: var(--t2); }
+
+  .cta-ghost {
+    width: 100%;
+    padding: 15px;
+    background: none;
+    color: var(--t3);
+    border: 1px solid var(--line-mid);
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: -0.01em;
+    margin-top: 8px;
+  }
+  .cta-ghost:hover { border-color: var(--t3); color: var(--t1); }
+
+  /* LABEL */
+  .label-row {
+    padding: 0 16px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .label-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--line-mid);
+    color: var(--t4);
+  }
+  .label-tag.ai { border-color: rgba(96,165,250,0.3); color: var(--ai); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>􀙇 􀛪</span>
+  </div>
+  <div class="screen-content">
+
+    <!-- HEADER -->
+    <div class="dash-header">
+      <div class="dash-logo">Pulse</div>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <div class="live-label">LIVE</div>
+      </div>
+    </div>
+
+    <!-- AI BRIEFING -->
+    <div class="briefing">
+      <div class="briefing-eyebrow">AI DAILY BRIEFING</div>
+      <div class="briefing-text">
+        오늘은 <strong>절약 + 루틴 콘텐츠</strong>가 강하게 치고 있어요.<br>
+        인스타그램에서 <strong>+480%</strong> — 출근 전 숏폼이 핵심이에요.
+      </div>
+    </div>
+
+    <!-- TRENDING -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">지금 뜨고 있어요</div>
+        <div class="section-more">더보기 →</div>
+      </div>
+      <div class="trend-list">
+
+        <div class="trend-item">
+          <div class="rank r1">1</div>
+          <div class="trend-body">
+            <div class="trend-title">커피값 절약한 돈으로 한 일</div>
+            <div class="trend-meta">
+              <span class="platform">인스타그램</span>
+              <span class="sep">·</span>
+              <span class="growth-up">+480%</span>
+              <span class="sep">·</span>
+              <span>1.8M</span>
+            </div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 44 22">
+            <path class="area up-area" d="M0,18 L8,15 L17,12 L26,8 L35,5 L44,2 L44,22 L0,22 Z"/>
+            <path class="line up-line" d="M0,18 L8,15 L17,12 L26,8 L35,5 L44,2"/>
+            <circle class="up-dot" cx="44" cy="2" r="2"/>
+          </svg>
+          <button class="heart-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="trend-item">
+          <div class="rank r2">2</div>
+          <div class="trend-body">
+            <div class="trend-title">퇴근 후 30분 루틴 브이로그</div>
+            <div class="trend-meta">
+              <span class="platform">유튜브</span>
+              <span class="sep">·</span>
+              <span class="growth-up">+215%</span>
+              <span class="sep">·</span>
+              <span>920K</span>
+            </div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 44 22">
+            <path class="area up-area" d="M0,16 L8,14 L17,11 L26,9 L35,6 L44,4 L44,22 L0,22 Z"/>
+            <path class="line up-line" d="M0,16 L8,14 L17,11 L26,9 L35,6 L44,4"/>
+            <circle class="up-dot" cx="44" cy="4" r="2"/>
+          </svg>
+          <button class="heart-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+        <div class="trend-item">
+          <div class="rank">3</div>
+          <div class="trend-body">
+            <div class="trend-title">2010년대 다시 듣는 노래</div>
+            <div class="trend-meta">
+              <span class="platform">틱톡</span>
+              <span class="sep">·</span>
+              <span class="growth-down">-12%</span>
+              <span class="sep">·</span>
+              <span>640K</span>
+            </div>
+          </div>
+          <svg class="sparkline" viewBox="0 0 44 22">
+            <path class="area down-area" d="M0,8 L8,9 L17,11 L26,13 L35,16 L44,19 L44,22 L0,22 Z"/>
+            <path class="line down-line" d="M0,8 L8,9 L17,11 L26,13 L35,16 L44,19"/>
+            <circle class="down-dot" cx="44" cy="19" r="2"/>
+          </svg>
+          <button class="heart-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- STATS -->
+    <div class="label-row">
+      <span class="label-tag ai">AI INSIGHT</span>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">GROWTH</div>
+        <div class="stat-value up">+42%</div>
+        <div class="stat-delta">vs 지난주</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">SAVED</div>
+        <div class="stat-value">17</div>
+        <div class="stat-delta">트렌드</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">COOLING</div>
+        <div class="stat-value down">3</div>
+        <div class="stat-delta">식는 중</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-wrap">
+      <button class="cta">오늘 트렌드 더 보기</button>
+      <button class="cta-ghost">콘티 만들기</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

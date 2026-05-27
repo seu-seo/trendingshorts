@@ -436,6 +436,24 @@
     margin-bottom: 14px;
   }
   .welcome-pitch-en .pitch-accent { color: var(--primary); }
+  .pitch-strike {
+    position: relative;
+    color: var(--ink-soft);
+    opacity: 0.55;
+  }
+  .pitch-strike::after {
+    content: '';
+    position: absolute;
+    left: -2px; right: -2px;
+    top: 52%;
+    height: 3px;
+    background: var(--ink);
+    transform: rotate(-1.5deg);
+  }
+  .pitch-correction {
+    color: var(--up);
+    margin-left: 10px;
+  }
   .welcome-pitch-divider {
     width: 28px; height: 2px;
     background: var(--primary);
@@ -3167,7 +3185,7 @@
 
         <!-- 태그라인 -->
         <div class="welcome-pitch">
-          <div class="welcome-pitch-en">CREATE<br/>YOUR OWN<br/><span class="pitch-accent">CONTENT.</span></div>
+          <div class="welcome-pitch-en">CREATE<br/>YOUR OWN<br/><span class="pitch-strike">CONTENT</span><span class="pitch-correction">STORY.</span></div>
           <div class="welcome-pitch-divider"></div>
           <div class="welcome-pitch-ko">
             내가 만들어서 특별한<br/>

@@ -1,9 +1,35 @@
 import { create } from 'zustand';
-import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent } from './types';
+import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent, UploadRecord } from './types';
 import type { InsightsResponse } from '@/app/api/insights/route';
 import { ALL_TRENDS } from './data/trends';
 
 const LS_KEY = 'sfp_onboarding';
+const LS_UPLOADS_KEY = 'sfp_uploads';
+
+const SEED_RECORDS: UploadRecord[] = [
+  { id: 'seed-1', date: '2026-05-23', platform: 'instagram', title: '직장인 아침 루틴 5분 ver.', note: '조회수 반응 좋았음, 다음엔 썸네일 바꿔볼 것' },
+  { id: 'seed-2', date: '2026-05-20', platform: 'instagram', title: '런닝 전 스트레칭 루틴', url: 'https://www.instagram.com/reel/example1' },
+  { id: 'seed-3', date: '2026-05-15', platform: 'instagram', title: '퇴근 후 10km 도전 브이로그' },
+  { id: 'seed-4', date: '2026-05-10', platform: 'youtube',   title: '초보 러너를 위한 페이스 조절법', note: '유튜브 첫 업로드' },
+  { id: 'seed-5', date: '2026-05-05', platform: 'instagram', title: '한 달 운동 결과 공개 📊' },
+];
+
+function loadUploadRecords(): UploadRecord[] {
+  if (typeof window === 'undefined') return SEED_RECORDS;
+  try {
+    const raw = localStorage.getItem(LS_UPLOADS_KEY);
+    if (!raw) {
+      // 첫 방문 시 시드 데이터로 초기화
+      saveUploadRecords(SEED_RECORDS);
+      return SEED_RECORDS;
+    }
+    return JSON.parse(raw);
+  } catch { return SEED_RECORDS; }
+}
+
+function saveUploadRecords(records: UploadRecord[]) {
+  try { localStorage.setItem(LS_UPLOADS_KEY, JSON.stringify(records)); } catch {}
+}
 
 function loadOnboarding(): { input: PersonaInput; result: PersonaResult } | null {
   if (typeof window === 'undefined') return null;
@@ -77,6 +103,16 @@ interface AppState {
   // Insights cache (카테고리별, 페이지 이동 후에도 유지)
   insightsCache: Map<string, InsightsResponse>;
   setInsightsCache: (key: string, value: InsightsResponse) => void;
+
+  // Upload records (마이페이지 — localStorage 영속)
+  uploadRecords: UploadRecord[];
+  addUploadRecord: (record: Omit<UploadRecord, 'id'>) => void;
+  updateUploadRecord: (id: string, data: Partial<Omit<UploadRecord, 'id'>>) => void;
+  deleteUploadRecord: (id: string) => void;
+
+  // 업로드 주기 목표 (설정 페이지 연동 예정, 단위: 일)
+  uploadGoalDays: number;
+  setUploadGoalDays: (days: number) => void;
 }
 
 export const useStore = create<AppState>((set, get) => {
@@ -154,5 +190,26 @@ export const useStore = create<AppState>((set, get) => {
     next.set(key, value);
     return { insightsCache: next };
   }),
+
+  uploadRecords: loadUploadRecords(),
+  addUploadRecord: (record) => {
+    const newRecord: UploadRecord = { ...record, id: `${Date.now()}-${Math.random().toString(36).slice(2)}` };
+    const records = [...get().uploadRecords, newRecord];
+    saveUploadRecords(records);
+    set({ uploadRecords: records });
+  },
+  updateUploadRecord: (id, data) => {
+    const records = get().uploadRecords.map(r => r.id === id ? { ...r, ...data } : r);
+    saveUploadRecords(records);
+    set({ uploadRecords: records });
+  },
+  deleteUploadRecord: (id) => {
+    const records = get().uploadRecords.filter(r => r.id !== id);
+    saveUploadRecords(records);
+    set({ uploadRecords: records });
+  },
+
+  uploadGoalDays: 5, // 목 페르소나: 5일 단위 업로드
+  setUploadGoalDays: (days) => set({ uploadGoalDays: days }),
   };
 });

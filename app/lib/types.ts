@@ -69,7 +69,16 @@ export interface Persona {
   purpose?: AppPurpose;
 }
 
-export type Tab = 'dashboard' | 'recommend';
+export type Tab = 'dashboard' | 'recommend' | 'mypage';
+
+export interface UploadRecord {
+  id: string;
+  date: string;        // "YYYY-MM-DD"
+  platform: Platform;
+  title: string;
+  url?: string;
+  note?: string;
+}
 
 export type SortOrder = 'trending' | 'recent';
 

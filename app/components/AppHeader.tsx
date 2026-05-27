@@ -6,6 +6,7 @@ const TAB_LABELS: Record<string, string> = {
   dashboard: 'WEEKLY',
   recommend: 'FOR YOU',
   production: 'PRODUCE',
+  mypage: 'MY DIARY',
 };
 
 export default function AppHeader() {

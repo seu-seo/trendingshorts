@@ -1605,55 +1605,92 @@
   .goal-section-head { display: flex; justify-content: space-between; align-items: center; }
   .goal-section-title { font-size: 14px; font-weight: 600; color: var(--ink); }
   .goal-section-meta { font-size: 11px; font-family: var(--font-mono); color: var(--ink-soft); letter-spacing: .06em; }
+  /* ── STAMP CARD 리디자인 ── */
   .stamp-card {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
-    background: var(--bg-card); border-radius: 20px; padding: 16px 14px;
-    border: 1px solid var(--line);
-    position: relative;
+    border-radius: 20px; padding: 18px 16px 16px;
+    background:
+      linear-gradient(#0E0E11, #0E0E11) padding-box,
+      linear-gradient(135deg, rgba(245,184,0,0.6) 0%, rgba(245,184,0,0.08) 50%, rgba(245,184,0,0.35) 100%) border-box;
+    border: 1.5px solid transparent;
+    position: relative; overflow: hidden;
+  }
+  .stamp-card::before {
+    content: '';
+    position: absolute; top: -40px; left: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(245,184,0,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .stamp-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .stamp-card-title {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--gold); opacity: .8;
+  }
+  .stamp-card-serial {
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
+    color: var(--ink-soft);
+  }
+  .stamp-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    margin-bottom: 14px;
   }
   .stamp {
     aspect-ratio: 1; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: transform .15s var(--spring), box-shadow .2s;
+    cursor: pointer;
+    transition: transform .15s var(--spring), box-shadow .25s;
     position: relative; overflow: hidden;
-    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+    font-family: var(--font-pop); font-size: 15px;
   }
-  /* 빈 슬롯 */
   .stamp.empty {
-    background: var(--bg); border: 1.5px dashed var(--line-strong);
-    color: transparent;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
   }
-  /* 채워진 — 골드 그라디언트 */
   .stamp.filled {
-    background: linear-gradient(135deg, #F5B800 0%, #FF9500 100%);
-    border: none;
-    box-shadow: 0 2px 8px rgba(245, 184, 0, 0.35);
+    background: linear-gradient(145deg, #FFD000 0%, #F5B800 45%, #E07800 100%);
+    box-shadow: 0 0 0 1px rgba(245,184,0,0.3), 0 4px 14px rgba(245,184,0,0.4);
     color: #0A0A0A;
+    font-weight: 700;
   }
-  .stamp.filled::after {
+  .stamp.filled::before {
     content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+    position: absolute; top: 6%; left: 10%; width: 60%; height: 40%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%);
     border-radius: 50%;
+    pointer-events: none;
   }
-  .stamp.filled svg { width: 13px; height: 13px; position: relative; z-index: 1; }
-  /* 다음 대기 슬롯 */
+  .stamp.filled svg { display: none; }
   .stamp#stamp-next {
-    background: var(--bg);
-    border: 2px dashed var(--gold);
-    color: var(--gold);
-    animation: stamp-pulse 2s ease-in-out infinite;
+    background: rgba(245,184,0,0.06);
+    border: 1.5px dashed rgba(245,184,0,0.5);
+    color: rgba(245,184,0,0.7);
+    font-size: 18px; font-family: var(--font-body); font-weight: 300;
+    animation: stamp-pulse 2.4s ease-in-out infinite;
   }
   @keyframes stamp-pulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(245,184,0,0); }
-    50% { box-shadow: 0 0 0 4px rgba(245,184,0,0.2); }
+    50%       { box-shadow: 0 0 0 5px rgba(245,184,0,0.15); }
   }
-  .stamp#stamp-next:active { transform: scale(.88); }
-  .stamp-row-label {
-    grid-column: 1 / -1; font-size: 10px; font-family: var(--font-mono);
-    color: var(--ink-soft); letter-spacing: .08em; margin-top: 4px; text-align: center;
+  .stamp#stamp-next:active { transform: scale(.86); }
+  .stamp-card-footer {
+    display: flex; align-items: center; gap: 10px;
   }
-  .stamp-progress-text { font-size: 12px; color: var(--ink-soft); text-align: center; }
+  .stamp-bar-wrap {
+    flex: 1; height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px;
+  }
+  .stamp-bar {
+    height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, #F5B800, #FFD000);
+    transition: width .5s var(--ease-out);
+  }
+  .stamp-bar-label {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--gold); white-space: nowrap;
+  }
+  .stamp-progress-text { display: none; }
 
   /* 업로드 기록 버튼 */
   .goal-log-btn {
@@ -4055,25 +4092,31 @@
         </div>
 
         <!-- 스탬프 카드 -->
-        <div class="goal-section">
-          <div class="goal-section-head">
-            <div class="goal-section-title">스탬프 카드</div>
-            <div class="goal-section-meta">10개 모으면 리워드 잠금 해제</div>
+        <div class="stamp-card">
+          <div class="stamp-card-header">
+            <div class="stamp-card-title">Creator Pass</div>
+            <div class="stamp-card-serial">수진님 · #001</div>
           </div>
-          <div class="stamp-card">
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="stamp-grid">
+            <div class="stamp filled">1</div>
+            <div class="stamp filled">2</div>
+            <div class="stamp filled">3</div>
+            <div class="stamp filled">4</div>
+            <div class="stamp filled">5</div>
+            <div class="stamp filled">6</div>
+            <div class="stamp filled">7</div>
             <div class="stamp" id="stamp-next" onclick="addStamp()">+</div>
             <div class="stamp empty"></div>
             <div class="stamp empty"></div>
           </div>
-          <div class="stamp-progress-text"><span id="stamp-count">7</span>/10 — <span style="color:var(--gold)">3개</span> 더 모으면 달성!</div>
+          <div class="stamp-card-footer">
+            <div class="stamp-bar-wrap">
+              <div class="stamp-bar" id="stamp-bar" style="width:70%"></div>
+            </div>
+            <div class="stamp-bar-label"><span id="stamp-count">7</span> / 10</div>
+          </div>
         </div>
+        <div class="stamp-progress-text"></div>
 
         <!-- 업로드 일지 입력 -->
         <button class="goal-log-btn" onclick="toggleLogSheet()">
@@ -5086,23 +5129,19 @@
   function addStamp() {
     if (stampCount >= 10) return;
     stampCount++;
-    document.getElementById('stamp-count').textContent = stampCount;
     const next = document.getElementById('stamp-next');
     if (next) {
       next.id = '';
       next.classList.remove('empty');
       next.classList.add('filled');
-      next.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+      next.textContent = stampCount;
     }
     const empties = document.querySelectorAll('#screen-goal .stamp.empty');
-    if (empties.length > 0) {
-      empties[0].id = 'stamp-next';
-    }
-    if (stampCount === 10) {
-      document.querySelector('.stamp-progress-text').innerHTML = '<span class="up">스탬프 카드 완성! 리워드를 확인하세요.</span>';
-    } else {
-      document.getElementById('stamp-count').textContent = stampCount;
-    }
+    if (empties.length > 0) empties[0].id = 'stamp-next';
+
+    document.getElementById('stamp-count').textContent = stampCount;
+    const bar = document.getElementById('stamp-bar');
+    if (bar) bar.style.width = (stampCount / 10 * 100) + '%';
   }
 
   let goalSetOpen = false;

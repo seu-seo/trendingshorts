@@ -31,6 +31,9 @@
     --gold:      #F5B800;
     --gold-soft: rgba(245, 184, 0, 0.15);
 
+    --blue:      #38B6FF;
+    --blue-soft: rgba(56, 182, 255, 0.12);
+
     /* 텍스트 위계 */
     --ink:        #ECEDEE;
     --ink-soft:   #8A8A92;
@@ -1631,12 +1634,12 @@
   .platform-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .platform-dot.tiktok { background: var(--primary); }
   .platform-dot.insta { background: var(--up); }
-  .platform-dot.youtube { background: var(--ink-soft); }
+  .platform-dot.youtube { background: var(--blue); }
   .mini-line-chart { width: 100%; height: 44px; display: block; }
   .chart-line { stroke-width: 1.5; }
   .chart-line.tt { stroke: var(--primary); }
   .chart-line.ig { stroke: var(--up); }
-  .chart-line.yt { stroke: var(--ink-soft); }
+  .chart-line.yt { stroke: var(--blue); }
 
   /* 리워드 */
   .reward-list { display: flex; flex-direction: column; gap: 10px; }
@@ -1763,7 +1766,7 @@
   .compare-chart { width: 100%; height: 80px; display: block; }
   .compare-line { stroke-width: 1.5; }
   .compare-line.mine { stroke: var(--up); }
-  .compare-line.yt { stroke: var(--ink-soft); }
+  .compare-line.yt { stroke: var(--blue); }
   .compare-line.avg { stroke: var(--ink-soft); opacity: .5; }
   .compare-x-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--ink-soft); }
   .compare-insight { font-size: 12px; color: var(--ink-soft); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 12px; }
@@ -1796,7 +1799,7 @@
     width: 56px; height: 56px;
     border-radius: 50%;
     background: var(--primary);
-    color: #FFFFFF;
+    color: #0A0A0A;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4113,10 +4116,10 @@
             <div class="platform-graph-item">
               <div class="platform-graph-label">
                 <span class="platform-dot youtube"></span>유튜브
-                <span class="platform-graph-val" style="color: var(--ink-soft)">+5%</span>
+                <span class="platform-graph-val" style="color: var(--blue)">+5%</span>
               </div>
               <svg class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
-                <defs><linearGradient id="grad-yt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8A8A92" stop-opacity="0.2"/><stop offset="100%" stop-color="#8A8A92" stop-opacity="0"/></linearGradient></defs>
+                <defs><linearGradient id="grad-yt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#38B6FF" stop-opacity="0.25"/><stop offset="100%" stop-color="#38B6FF" stop-opacity="0"/></linearGradient></defs>
                 <path class="chart-area" fill="url(#grad-yt)" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30 L200,50 L0,50 Z"/>
                 <path class="chart-line yt" fill="none" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30"/>
               </svg>
@@ -4278,7 +4281,7 @@
           </div>
           <svg class="compare-chart" viewBox="0 0 300 100" preserveAspectRatio="none">
             <path class="compare-line avg" fill="none" stroke-dasharray="4 3" d="M0,65 L37,62 L75,58 L112,55 L150,52 L187,48 L225,44 L262,40 L300,36"/>
-            <defs><linearGradient id="cgrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8A8A92" stop-opacity="0.2"/><stop offset="100%" stop-color="#8A8A92" stop-opacity="0"/></linearGradient></defs>
+            <defs><linearGradient id="cgrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#38B6FF" stop-opacity="0.25"/><stop offset="100%" stop-color="#38B6FF" stop-opacity="0"/></linearGradient></defs>
             <path fill="url(#cgrad3)" d="M0,68 L37,70 L75,72 L112,68 L150,64 L187,61 L225,58 L262,55 L300,52 L300,100 L0,100 Z"/>
             <path class="compare-line yt" fill="none" d="M0,68 L37,70 L75,72 L112,68 L150,64 L187,61 L225,58 L262,55 L300,52"/>
           </svg>
@@ -4286,7 +4289,7 @@
             <span>8주전</span><span>6주전</span><span>4주전</span><span>2주전</span><span>이번주</span>
           </div>
           <div class="compare-insight">
-            유튜브는 <span style="color:var(--ink-soft)">평균 수준</span>이에요. 업로드 주기를 늘리면 격차를 벌릴 수 있어요.
+            유튜브는 <span style="color:var(--blue)">평균 수준</span>이에요. 업로드 주기를 늘리면 격차를 벌릴 수 있어요.
           </div>
         </div>
 

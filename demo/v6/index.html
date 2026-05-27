@@ -28,8 +28,8 @@
     --neutral:     #5A5A62;
     --neutral-soft: rgba(90, 90, 98, 0.2);
 
-    --gold:      #FF4274;
-    --gold-soft: rgba(255, 66, 116, 0.12);
+    --gold:      #F5B800;
+    --gold-soft: rgba(245, 184, 0, 0.15);
 
     /* 텍스트 위계 */
     --ink:        #ECEDEE;
@@ -924,7 +924,7 @@
     height: 36px;
     border-radius: 50%;
     background: var(--primary);
-    color: var(--on-primary);
+    color: #0A0A0A;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1559,20 +1559,53 @@
   .goal-section-title { font-size: 14px; font-weight: 600; color: var(--ink); }
   .goal-section-meta { font-size: 11px; font-family: var(--font-mono); color: var(--ink-soft); letter-spacing: .06em; }
   .stamp-card {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
-    background: var(--bg-card); border-radius: 16px; padding: 16px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+    background: var(--bg-card); border-radius: 20px; padding: 16px 14px;
     border: 1px solid var(--line);
+    position: relative;
   }
   .stamp {
-    aspect-ratio: 1; border-radius: 10px; border: 1.5px solid var(--line);
+    aspect-ratio: 1; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all .2s;
+    cursor: pointer; transition: transform .15s var(--spring), box-shadow .2s;
+    position: relative; overflow: hidden;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
   }
-  .stamp.filled { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-  .stamp.filled svg { width: 14px; height: 14px; }
-  .stamp#stamp-next { border: 1.5px dashed var(--primary); }
-  .stamp#stamp-next:active { transform: scale(.9); }
-  .stamp.empty { opacity: .3; }
+  /* 빈 슬롯 */
+  .stamp.empty {
+    background: var(--bg); border: 1.5px dashed var(--line-strong);
+    color: transparent;
+  }
+  /* 채워진 — 골드 그라디언트 */
+  .stamp.filled {
+    background: linear-gradient(135deg, #F5B800 0%, #FF9500 100%);
+    border: none;
+    box-shadow: 0 2px 8px rgba(245, 184, 0, 0.35);
+    color: #0A0A0A;
+  }
+  .stamp.filled::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+  .stamp.filled svg { width: 13px; height: 13px; position: relative; z-index: 1; }
+  /* 다음 대기 슬롯 */
+  .stamp#stamp-next {
+    background: var(--bg);
+    border: 2px dashed var(--gold);
+    color: var(--gold);
+    animation: stamp-pulse 2s ease-in-out infinite;
+  }
+  @keyframes stamp-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,184,0,0); }
+    50% { box-shadow: 0 0 0 4px rgba(245,184,0,0.2); }
+  }
+  .stamp#stamp-next:active { transform: scale(.88); }
+  .stamp-row-label {
+    grid-column: 1 / -1; font-size: 10px; font-family: var(--font-mono);
+    color: var(--ink-soft); letter-spacing: .08em; margin-top: 4px; text-align: center;
+  }
   .stamp-progress-text { font-size: 12px; color: var(--ink-soft); text-align: center; }
 
   /* 업로드 기록 버튼 */
@@ -1618,16 +1651,47 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; color: var(--ink-soft);
   }
-  .reward-item.unlocked .reward-icon { background: var(--primary-soft); color: var(--primary); }
+  .reward-item.unlocked .reward-icon { background: var(--gold-soft); color: var(--gold); }
   .reward-body { flex: 1; }
   .reward-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
   .reward-desc { font-size: 11px; color: var(--ink-soft); }
   .reward-badge {
     font-size: 11px; font-family: var(--font-mono); padding: 4px 8px;
-    border-radius: 6px; background: var(--primary-soft); color: var(--primary);
+    border-radius: 6px; background: var(--gold-soft); color: var(--gold);
     white-space: nowrap;
   }
   .reward-badge.locked { background: var(--line); color: var(--ink-soft); }
+
+  /* 목표 설정 시트 */
+  .goal-set-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--bg-soft); border-radius: 24px 24px 0 0;
+    padding: 12px 24px 40px; z-index: 102;
+    transform: translateY(100%); transition: transform .35s var(--ease-out);
+    border-top: 1px solid var(--line);
+  }
+  .goal-set-sheet.open { transform: translateY(0); }
+  .goal-set-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .goal-set-sub { font-size: 12px; color: var(--ink-soft); margin-bottom: 20px; }
+  .goal-freq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+  .goal-freq-btn {
+    aspect-ratio: 1; border-radius: 14px; border: 1.5px solid var(--line);
+    background: var(--bg-card); color: var(--ink-soft);
+    font-family: var(--font-mono); font-size: 16px; font-weight: 700;
+    cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    transition: all .15s;
+  }
+  .goal-freq-btn span { font-size: 9px; font-weight: 400; letter-spacing: .05em; }
+  .goal-freq-btn.selected {
+    border-color: var(--gold); background: var(--gold-soft); color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold);
+  }
+  .goal-set-save {
+    width: 100%; background: var(--gold); color: #0A0A0A;
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
+  }
 
   /* 비교 진입 버튼 */
   .compare-entry-btn {
@@ -4001,11 +4065,11 @@
             <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
             <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
             <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div class="stamp" id="stamp-next" onclick="addStamp()"></div>
+            <div class="stamp" id="stamp-next" onclick="addStamp()">+</div>
             <div class="stamp empty"></div>
             <div class="stamp empty"></div>
           </div>
-          <div class="stamp-progress-text"><span id="stamp-count">7</span>/10 — <span class="up">3개</span> 더 모으면 달성!</div>
+          <div class="stamp-progress-text"><span id="stamp-count">7</span>/10 — <span style="color:var(--gold)">3개</span> 더 모으면 달성!</div>
         </div>
 
         <!-- 업로드 일지 입력 -->
@@ -4124,6 +4188,25 @@
         <button class="log-submit-btn" onclick="submitLog()">기록 완료</button>
       </div>
       <div class="log-overlay" id="log-overlay" onclick="toggleLogSheet()"></div>
+
+      <!-- 목표 설정 시트 -->
+      <div class="goal-set-sheet" id="goal-set-sheet">
+        <div class="log-sheet-handle"></div>
+        <div class="goal-set-title">목표 설정하기</div>
+        <div class="goal-set-sub">일주일에 몇 번 업로드할 건가요?</div>
+        <div class="goal-freq-grid">
+          <button class="goal-freq-btn" onclick="selectFreq(this,1)">1<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,2)">2<span>회/주</span></button>
+          <button class="goal-freq-btn selected" onclick="selectFreq(this,3)">3<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,4)">4<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,5)">5<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,6)">6<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,7)">7<span>회/주</span></button>
+          <button class="goal-freq-btn" onclick="selectFreq(this,0)">자유<span>직접설정</span></button>
+        </div>
+        <button class="goal-set-save" onclick="saveGoal()">목표 저장하기</button>
+      </div>
+      <div class="log-overlay" id="goal-set-overlay" onclick="closeGoalSet()"></div>
     </div>
 
     <!-- ============ SCREEN: COMPARE ============ -->
@@ -4926,7 +5009,36 @@
     }
   }
 
-  function toggleGoalEdit() {}
+  let goalSetOpen = false;
+  let selectedFreq = 3;
+
+  function toggleGoalEdit() {
+    goalSetOpen = !goalSetOpen;
+    document.getElementById('goal-set-sheet').classList.toggle('open', goalSetOpen);
+    document.getElementById('goal-set-overlay').classList.toggle('open', goalSetOpen);
+  }
+
+  function closeGoalSet() {
+    goalSetOpen = false;
+    document.getElementById('goal-set-sheet').classList.remove('open');
+    document.getElementById('goal-set-overlay').classList.remove('open');
+  }
+
+  function selectFreq(btn, freq) {
+    selectedFreq = freq;
+    document.querySelectorAll('.goal-freq-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function saveGoal() {
+    document.getElementById('goal-target-count').textContent = selectedFreq || '자유';
+    const bar = document.getElementById('goal-week-bar');
+    const done = parseInt(document.getElementById('goal-done-count').textContent);
+    if (selectedFreq > 0) {
+      bar.style.width = Math.min(100, Math.round(done / selectedFreq * 100)) + '%';
+    }
+    closeGoalSet();
+  }
 
   function switchCompareTab(btn, platform) {
     document.querySelectorAll('.compare-tab').forEach(b => b.classList.remove('active'));

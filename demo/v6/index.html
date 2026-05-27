@@ -1517,6 +1517,192 @@
      MY PAGE
      ============================ */
   .my-screen { background: var(--bg); }
+
+  /* ===== GOAL SCREEN ===== */
+  .goal-screen { background: var(--bg); flex-direction: column; }
+  .screen-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 12px; flex-shrink: 0;
+  }
+  .screen-title { font-family: var(--font-body); font-weight: 600; font-size: 16px; color: var(--ink); }
+  .goal-body {
+    flex: 1; overflow-y: auto; padding: 0 20px 32px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+
+  /* 이번 주 목표 카드 */
+  .goal-week-card {
+    background: var(--bg-card); border-radius: 16px;
+    padding: 18px 20px; border: 1px solid var(--line);
+  }
+  .goal-week-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .goal-week-label { font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); }
+  .goal-edit-btn { font-size: 12px; color: var(--ink-soft); background: none; border: none; cursor: pointer; padding: 0; }
+  .goal-week-main { display: flex; align-items: baseline; gap: 3px; margin-bottom: 12px; }
+  .goal-week-num { font-family: var(--font-pop); font-size: 42px; color: var(--primary); line-height: 1; }
+  .goal-week-sep { font-size: 24px; color: var(--ink-soft); }
+  .goal-week-total { font-family: var(--font-pop); font-size: 28px; color: var(--ink-soft); }
+  .goal-week-unit { font-size: 13px; color: var(--ink-soft); margin-left: 6px; }
+  .goal-week-bar-wrap { background: var(--line); border-radius: 4px; height: 4px; margin-bottom: 14px; }
+  .goal-week-bar { height: 4px; border-radius: 4px; background: var(--primary); transition: width .5s var(--ease-out); }
+  .goal-week-days { display: flex; gap: 8px; }
+  .goal-day {
+    width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: var(--ink-soft);
+  }
+  .goal-day.done { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+
+  /* 스탬프 카드 */
+  .goal-section { display: flex; flex-direction: column; gap: 12px; }
+  .goal-section-head { display: flex; justify-content: space-between; align-items: center; }
+  .goal-section-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .goal-section-meta { font-size: 11px; font-family: var(--font-mono); color: var(--ink-soft); letter-spacing: .06em; }
+  .stamp-card {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    background: var(--bg-card); border-radius: 16px; padding: 16px;
+    border: 1px solid var(--line);
+  }
+  .stamp {
+    aspect-ratio: 1; border-radius: 10px; border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .2s;
+  }
+  .stamp.filled { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+  .stamp.filled svg { width: 14px; height: 14px; }
+  .stamp#stamp-next { border: 1.5px dashed var(--primary); }
+  .stamp#stamp-next:active { transform: scale(.9); }
+  .stamp.empty { opacity: .3; }
+  .stamp-progress-text { font-size: 12px; color: var(--ink-soft); text-align: center; }
+
+  /* 업로드 기록 버튼 */
+  .goal-log-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: var(--font-body);
+  }
+
+  /* 플랫폼 그래프 */
+  .platform-graphs { display: flex; flex-direction: column; gap: 14px; }
+  .platform-graph-item {
+    background: var(--bg-card); border-radius: 12px; padding: 14px 16px;
+    border: 1px solid var(--line);
+  }
+  .platform-graph-label {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 10px;
+    font-size: 13px; font-weight: 500; color: var(--ink);
+  }
+  .platform-graph-val { margin-left: auto; font-family: var(--font-mono); font-size: 12px; }
+  .platform-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .platform-dot.tiktok { background: var(--primary); }
+  .platform-dot.insta { background: var(--up); }
+  .platform-dot.youtube { background: var(--ink-soft); }
+  .mini-line-chart { width: 100%; height: 44px; display: block; }
+  .chart-line { stroke-width: 1.5; }
+  .chart-line.tt { stroke: var(--primary); }
+  .chart-line.ig { stroke: var(--up); }
+  .chart-line.yt { stroke: var(--ink-soft); }
+
+  /* 리워드 */
+  .reward-list { display: flex; flex-direction: column; gap: 10px; }
+  .reward-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg-card); border-radius: 12px; padding: 14px 16px;
+    border: 1px solid var(--line);
+  }
+  .reward-item.locked { opacity: .55; }
+  .reward-icon {
+    width: 36px; height: 36px; border-radius: 10px; background: var(--line);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--ink-soft);
+  }
+  .reward-item.unlocked .reward-icon { background: var(--primary-soft); color: var(--primary); }
+  .reward-body { flex: 1; }
+  .reward-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .reward-desc { font-size: 11px; color: var(--ink-soft); }
+  .reward-badge {
+    font-size: 11px; font-family: var(--font-mono); padding: 4px 8px;
+    border-radius: 6px; background: var(--primary-soft); color: var(--primary);
+    white-space: nowrap;
+  }
+  .reward-badge.locked { background: var(--line); color: var(--ink-soft); }
+
+  /* 비교 진입 버튼 */
+  .compare-entry-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px; color: var(--ink);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .compare-entry-arrow { color: var(--primary); font-size: 16px; }
+
+  /* 업로드 기록 시트 */
+  .log-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--bg-soft); border-radius: 24px 24px 0 0;
+    padding: 12px 24px 40px; z-index: 100;
+    transform: translateY(100%); transition: transform .35s var(--ease-out);
+    border-top: 1px solid var(--line);
+  }
+  .log-sheet.open { transform: translateY(0); }
+  .log-sheet-handle {
+    width: 36px; height: 4px; background: var(--line-strong); border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .log-sheet-title { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 16px; }
+  .log-platforms { display: flex; gap: 8px; margin-bottom: 20px; }
+  .log-platform-btn {
+    padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--line);
+    background: none; color: var(--ink-soft); font-size: 13px; cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .log-platform-btn.active { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+  .log-input-row { margin-bottom: 20px; }
+  .log-input-label { font-size: 11px; font-family: var(--font-mono); color: var(--ink-soft); margin-bottom: 8px; letter-spacing: .08em; }
+  .log-input {
+    width: 100%; background: var(--bg-card); border: 1.5px solid var(--line);
+    border-radius: 10px; padding: 12px 14px; color: var(--ink);
+    font-size: 20px; font-family: var(--font-mono); outline: none;
+  }
+  .log-input:focus { border-color: var(--primary); }
+  .log-submit-btn {
+    width: 100%; background: var(--primary); color: var(--on-primary);
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-body);
+  }
+  .log-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,.5);
+    z-index: 99; display: none;
+  }
+  .log-overlay.open { display: block; }
+
+  /* ===== COMPARE SCREEN ===== */
+  .compare-info { font-size: 12px; color: var(--ink-soft); line-height: 1.6; }
+  .compare-tabs { display: flex; gap: 8px; }
+  .compare-tab {
+    padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--line);
+    background: none; color: var(--ink-soft); font-size: 13px; cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .compare-tab.active { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+  .compare-graph-wrap {
+    background: var(--bg-card); border-radius: 16px; padding: 16px;
+    border: 1px solid var(--line); flex-direction: column; gap: 12px;
+  }
+  .compare-legend { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--ink-soft); }
+  .compare-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .compare-legend-dot.mine { background: var(--up); }
+  .compare-legend-dot.avg { background: var(--ink-soft); }
+  .compare-chart { width: 100%; height: 80px; display: block; }
+  .compare-line { stroke-width: 1.5; }
+  .compare-line.mine { stroke: var(--up); }
+  .compare-line.yt { stroke: var(--ink-soft); }
+  .compare-line.avg { stroke: var(--ink-soft); opacity: .5; }
+  .compare-x-labels { display: flex; justify-content: space-between; font-size: 10px; font-family: var(--font-mono); color: var(--ink-soft); }
+  .compare-insight { font-size: 12px; color: var(--ink-soft); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 12px; }
   .my-header {
     padding: 16px 24px 24px;
   }
@@ -3769,6 +3955,261 @@
       </div>
     </div>
 
+    <!-- ============ SCREEN: GOAL ============ -->
+    <div class="screen goal-screen" id="screen-goal">
+      <div class="status-bar"></div>
+      <div class="screen-header">
+        <button class="back-btn" onclick="goTo('screen-my')">←</button>
+        <div class="screen-title">목표 트래커</div>
+        <div style="width:32px"></div>
+      </div>
+      <div class="goal-body">
+
+        <!-- 이번 주 목표 -->
+        <div class="goal-week-card">
+          <div class="goal-week-top">
+            <div class="goal-week-label">이번 주 목표</div>
+            <button class="goal-edit-btn" onclick="toggleGoalEdit()">수정</button>
+          </div>
+          <div class="goal-week-main">
+            <span class="goal-week-num" id="goal-done-count">2</span>
+            <span class="goal-week-sep">/</span>
+            <span class="goal-week-total" id="goal-target-count">3</span>
+            <span class="goal-week-unit">회 업로드</span>
+          </div>
+          <div class="goal-week-bar-wrap">
+            <div class="goal-week-bar" id="goal-week-bar" style="width: 66%"></div>
+          </div>
+          <div class="goal-week-days">
+            <div class="goal-day done">월</div>
+            <div class="goal-day done">수</div>
+            <div class="goal-day">금</div>
+          </div>
+        </div>
+
+        <!-- 스탬프 카드 -->
+        <div class="goal-section">
+          <div class="goal-section-head">
+            <div class="goal-section-title">스탬프 카드</div>
+            <div class="goal-section-meta">10개 모으면 리워드 잠금 해제</div>
+          </div>
+          <div class="stamp-card">
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp filled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stamp" id="stamp-next" onclick="addStamp()"></div>
+            <div class="stamp empty"></div>
+            <div class="stamp empty"></div>
+          </div>
+          <div class="stamp-progress-text"><span id="stamp-count">7</span>/10 — <span class="up">3개</span> 더 모으면 달성!</div>
+        </div>
+
+        <!-- 업로드 일지 입력 -->
+        <button class="goal-log-btn" onclick="toggleLogSheet()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          업로드 기록하기
+        </button>
+
+        <!-- 플랫폼별 조회수 그래프 -->
+        <div class="goal-section">
+          <div class="goal-section-head">
+            <div class="goal-section-title">내 채널 성장</div>
+            <div class="goal-section-meta">최근 8주</div>
+          </div>
+          <div class="platform-graphs">
+
+            <div class="platform-graph-item">
+              <div class="platform-graph-label">
+                <span class="platform-dot tiktok"></span>틱톡
+                <span class="platform-graph-val up">+24%</span>
+              </div>
+              <svg class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+                <defs><linearGradient id="grad-tt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4274" stop-opacity="0.3"/><stop offset="100%" stop-color="#FF4274" stop-opacity="0"/></linearGradient></defs>
+                <path class="chart-area" fill="url(#grad-tt)" d="M0,45 L25,40 L50,38 L75,32 L100,28 L125,22 L150,18 L175,12 L200,8 L200,50 L0,50 Z"/>
+                <path class="chart-line tt" fill="none" d="M0,45 L25,40 L50,38 L75,32 L100,28 L125,22 L150,18 L175,12 L200,8"/>
+              </svg>
+            </div>
+
+            <div class="platform-graph-item">
+              <div class="platform-graph-label">
+                <span class="platform-dot insta"></span>인스타그램
+                <span class="platform-graph-val up">+18%</span>
+              </div>
+              <svg class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+                <defs><linearGradient id="grad-ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4274" stop-opacity="0.3"/><stop offset="100%" stop-color="#FF4274" stop-opacity="0"/></linearGradient></defs>
+                <path class="chart-area" fill="url(#grad-ig)" d="M0,42 L25,44 L50,40 L75,35 L100,38 L125,30 L150,25 L175,20 L200,15 L200,50 L0,50 Z"/>
+                <path class="chart-line ig" fill="none" d="M0,42 L25,44 L50,40 L75,35 L100,38 L125,30 L150,25 L175,20 L200,15"/>
+              </svg>
+            </div>
+
+            <div class="platform-graph-item">
+              <div class="platform-graph-label">
+                <span class="platform-dot youtube"></span>유튜브
+                <span class="platform-graph-val" style="color: var(--ink-soft)">+5%</span>
+              </div>
+              <svg class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+                <defs><linearGradient id="grad-yt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8A8A92" stop-opacity="0.2"/><stop offset="100%" stop-color="#8A8A92" stop-opacity="0"/></linearGradient></defs>
+                <path class="chart-area" fill="url(#grad-yt)" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30 L200,50 L0,50 Z"/>
+                <path class="chart-line yt" fill="none" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30"/>
+              </svg>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 리워드 -->
+        <div class="goal-section">
+          <div class="goal-section-head">
+            <div class="goal-section-title">리워드</div>
+          </div>
+          <div class="reward-list">
+            <div class="reward-item unlocked">
+              <div class="reward-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+              </div>
+              <div class="reward-body">
+                <div class="reward-title">첫 스탬프 달성</div>
+                <div class="reward-desc">AI 니치 분석 1회 추가 잠금 해제</div>
+              </div>
+              <div class="reward-badge">완료</div>
+            </div>
+            <div class="reward-item unlocked">
+              <div class="reward-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div class="reward-body">
+                <div class="reward-title">5회 연속 달성</div>
+                <div class="reward-desc">트렌드 심화 리포트 잠금 해제</div>
+              </div>
+              <div class="reward-badge">완료</div>
+            </div>
+            <div class="reward-item locked">
+              <div class="reward-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="reward-body">
+                <div class="reward-title">10회 달성</div>
+                <div class="reward-desc">AI 대본 생성 무제한 1주일</div>
+              </div>
+              <div class="reward-badge locked">3개 남음</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 비교 버튼 -->
+        <button class="compare-entry-btn" onclick="goTo('screen-compare')">
+          비슷한 크리에이터와 비교해보기
+          <span class="compare-entry-arrow">→</span>
+        </button>
+
+      </div>
+
+      <!-- 업로드 기록 시트 -->
+      <div class="log-sheet" id="log-sheet">
+        <div class="log-sheet-handle"></div>
+        <div class="log-sheet-title">업로드 기록하기</div>
+        <div class="log-platforms">
+          <button class="log-platform-btn active" onclick="selectLogPlatform(this,'tiktok')">틱톡</button>
+          <button class="log-platform-btn" onclick="selectLogPlatform(this,'instagram')">인스타</button>
+          <button class="log-platform-btn" onclick="selectLogPlatform(this,'youtube')">유튜브</button>
+        </div>
+        <div class="log-input-row">
+          <div class="log-input-label">조회수</div>
+          <input class="log-input" id="log-views-input" type="number" placeholder="12,400" inputmode="numeric"/>
+        </div>
+        <button class="log-submit-btn" onclick="submitLog()">기록 완료</button>
+      </div>
+      <div class="log-overlay" id="log-overlay" onclick="toggleLogSheet()"></div>
+    </div>
+
+    <!-- ============ SCREEN: COMPARE ============ -->
+    <div class="screen goal-screen" id="screen-compare">
+      <div class="status-bar"></div>
+      <div class="screen-header">
+        <button class="back-btn" onclick="goTo('screen-goal')">←</button>
+        <div class="screen-title">크리에이터 비교</div>
+        <div style="width:32px"></div>
+      </div>
+      <div class="goal-body">
+
+        <div class="compare-info">
+          비슷한 팔로워 규모의 크리에이터 평균과 비교해요.
+        </div>
+
+        <!-- 플랫폼 탭 -->
+        <div class="compare-tabs">
+          <button class="compare-tab active" onclick="switchCompareTab(this,'tt')">틱톡</button>
+          <button class="compare-tab" onclick="switchCompareTab(this,'ig')">인스타</button>
+          <button class="compare-tab" onclick="switchCompareTab(this,'yt')">유튜브</button>
+        </div>
+
+        <!-- 비교 그래프 -->
+        <div class="compare-graph-wrap" id="compare-graph-tt" style="display:flex">
+          <div class="compare-legend">
+            <span class="compare-legend-dot mine"></span><span>나</span>
+            <span class="compare-legend-dot avg"></span><span>비슷한 크리에이터 평균</span>
+          </div>
+          <svg class="compare-chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+            <!-- 평균 -->
+            <path class="compare-line avg" fill="none" stroke-dasharray="4 3" d="M0,72 L37,68 L75,65 L112,60 L150,58 L187,55 L225,52 L262,50 L300,48"/>
+            <!-- 나 -->
+            <defs><linearGradient id="cgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4274" stop-opacity="0.25"/><stop offset="100%" stop-color="#FF4274" stop-opacity="0"/></linearGradient></defs>
+            <path fill="url(#cgrad)" d="M0,78 L37,74 L75,70 L112,60 L150,52 L187,40 L225,30 L262,20 L300,12 L300,100 L0,100 Z"/>
+            <path class="compare-line mine" fill="none" d="M0,78 L37,74 L75,70 L112,60 L150,52 L187,40 L225,30 L262,20 L300,12"/>
+          </svg>
+          <div class="compare-x-labels">
+            <span>8주전</span><span>6주전</span><span>4주전</span><span>2주전</span><span>이번주</span>
+          </div>
+          <div class="compare-insight">
+            <span class="up">평균보다 빠르게 성장 중이에요.</span> 이 페이스면 상위 20%예요.
+          </div>
+        </div>
+
+        <div class="compare-graph-wrap" id="compare-graph-ig" style="display:none">
+          <div class="compare-legend">
+            <span class="compare-legend-dot mine"></span><span>나</span>
+            <span class="compare-legend-dot avg"></span><span>비슷한 크리에이터 평균</span>
+          </div>
+          <svg class="compare-chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+            <path class="compare-line avg" fill="none" stroke-dasharray="4 3" d="M0,70 L37,67 L75,64 L112,62 L150,60 L187,57 L225,54 L262,52 L300,50"/>
+            <defs><linearGradient id="cgrad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF4274" stop-opacity="0.25"/><stop offset="100%" stop-color="#FF4274" stop-opacity="0"/></linearGradient></defs>
+            <path fill="url(#cgrad2)" d="M0,75 L37,78 L75,72 L112,65 L150,68 L187,55 L225,45 L262,35 L300,25 L300,100 L0,100 Z"/>
+            <path class="compare-line mine" fill="none" d="M0,75 L37,78 L75,72 L112,65 L150,68 L187,55 L225,45 L262,35 L300,25"/>
+          </svg>
+          <div class="compare-x-labels">
+            <span>8주전</span><span>6주전</span><span>4주전</span><span>2주전</span><span>이번주</span>
+          </div>
+          <div class="compare-insight">
+            최근 <span class="up">4주간 평균 추월</span>했어요. 릴스 업로드 빈도가 효과를 내고 있어요.
+          </div>
+        </div>
+
+        <div class="compare-graph-wrap" id="compare-graph-yt" style="display:none">
+          <div class="compare-legend">
+            <span class="compare-legend-dot mine"></span><span>나</span>
+            <span class="compare-legend-dot avg"></span><span>비슷한 크리에이터 평균</span>
+          </div>
+          <svg class="compare-chart" viewBox="0 0 300 100" preserveAspectRatio="none">
+            <path class="compare-line avg" fill="none" stroke-dasharray="4 3" d="M0,65 L37,62 L75,58 L112,55 L150,52 L187,48 L225,44 L262,40 L300,36"/>
+            <defs><linearGradient id="cgrad3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8A8A92" stop-opacity="0.2"/><stop offset="100%" stop-color="#8A8A92" stop-opacity="0"/></linearGradient></defs>
+            <path fill="url(#cgrad3)" d="M0,68 L37,70 L75,72 L112,68 L150,64 L187,61 L225,58 L262,55 L300,52 L300,100 L0,100 Z"/>
+            <path class="compare-line yt" fill="none" d="M0,68 L37,70 L75,72 L112,68 L150,64 L187,61 L225,58 L262,55 L300,52"/>
+          </svg>
+          <div class="compare-x-labels">
+            <span>8주전</span><span>6주전</span><span>4주전</span><span>2주전</span><span>이번주</span>
+          </div>
+          <div class="compare-insight">
+            유튜브는 <span style="color:var(--ink-soft)">평균 수준</span>이에요. 업로드 주기를 늘리면 격차를 벌릴 수 있어요.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
     <!-- ============ SCREEN: MY PAGE ============ -->
     <div class="screen my-screen" id="screen-my">
       <div class="status-bar">
@@ -3853,7 +4294,7 @@
               </div>
               <div class="action-arrow">→</div>
             </div>
-            <div class="action-item">
+            <div class="action-item" onclick="goTo('screen-goal')">
               <div class="action-num">02</div>
               <div class="action-body">
                 <div class="action-title">목표 설정하기</div>
@@ -4436,6 +4877,64 @@
     const wasExpanded = el.classList.contains('expanded');
     scroll.querySelectorAll('.pulse-card').forEach(c => c.classList.remove('expanded'));
     if (!wasExpanded) el.classList.add('expanded');
+  }
+
+  // ===== GOAL TRACKER =====
+  let stampCount = 7;
+  let logPlatform = 'tiktok';
+  let logSheetOpen = false;
+
+  function toggleLogSheet() {
+    logSheetOpen = !logSheetOpen;
+    document.getElementById('log-sheet').classList.toggle('open', logSheetOpen);
+    document.getElementById('log-overlay').classList.toggle('open', logSheetOpen);
+  }
+
+  function selectLogPlatform(btn, platform) {
+    logPlatform = platform;
+    document.querySelectorAll('.log-platform-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function submitLog() {
+    const val = document.getElementById('log-views-input').value;
+    if (!val) return;
+    addStamp();
+    document.getElementById('log-views-input').value = '';
+    toggleLogSheet();
+  }
+
+  function addStamp() {
+    if (stampCount >= 10) return;
+    stampCount++;
+    document.getElementById('stamp-count').textContent = stampCount;
+    const next = document.getElementById('stamp-next');
+    if (next) {
+      next.id = '';
+      next.classList.remove('empty');
+      next.classList.add('filled');
+      next.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+    }
+    const empties = document.querySelectorAll('#screen-goal .stamp.empty');
+    if (empties.length > 0) {
+      empties[0].id = 'stamp-next';
+    }
+    if (stampCount === 10) {
+      document.querySelector('.stamp-progress-text').innerHTML = '<span class="up">스탬프 카드 완성! 리워드를 확인하세요.</span>';
+    } else {
+      document.getElementById('stamp-count').textContent = stampCount;
+    }
+  }
+
+  function toggleGoalEdit() {}
+
+  function switchCompareTab(btn, platform) {
+    document.querySelectorAll('.compare-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    ['tt','ig','yt'].forEach(p => {
+      const el = document.getElementById('compare-graph-' + p);
+      if (el) el.style.display = p === platform ? 'flex' : 'none';
+    });
   }
 
   function resetDemo() {

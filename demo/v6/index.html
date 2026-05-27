@@ -1261,6 +1261,109 @@
     color: white;
     box-shadow: 0 4px 12px var(--primary-glow);
   }
+  .trend-action.saved {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .trend-action.saved:hover {
+    background: rgba(255, 66, 116, 0.18);
+    border-color: var(--primary-deep);
+    color: var(--primary-deep);
+  }
+
+  /* COLLECTION SECTION */
+  .collection-section {
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .collection-empty {
+    padding: 28px 12px;
+    text-align: center;
+  }
+  .collection-empty-text {
+    font-family: var(--font-cute);
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .collection-empty-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.01em;
+  }
+  .collection-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0 0;
+  }
+  .collection-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .collection-item:hover {
+    border-color: var(--line-strong);
+  }
+  .collection-item-platform {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 3px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .collection-item-platform.p-instagram { background: rgba(131,58,180,0.15); color: #c084fc; }
+  .collection-item-platform.p-youtube   { background: rgba(255,0,0,0.12);     color: #f87171; }
+  .collection-item-platform.p-tiktok    { background: rgba(16,185,129,0.12);  color: var(--neutral); }
+  .collection-item-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .collection-item-growth {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--up);
+    flex-shrink: 0;
+  }
+  .collection-item-remove {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--gray);
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    line-height: 1;
+  }
+  .collection-item-remove:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
   .section-head {
     display: flex;
     justify-content: space-between;
@@ -2810,7 +2913,7 @@
             <div class="section-meta">더보기 →</div>
           </div>
           <div class="trend-list">
-            <div class="trend-item expanded" onclick="toggleTrendItem(this, event)">
+            <div class="trend-item expanded" id="trend-t1" onclick="toggleTrendItem(this, event)">
               <div class="trend-item-main">
                 <div class="trend-rank gold">1</div>
                 <div class="trend-body">
@@ -2830,12 +2933,12 @@
                 </svg>
               </div>
               <div class="trend-actions">
-                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action" id="save-t1" onclick="saveTrend(this,'t1','커피값 절약한 돈으로 한 일','인스타그램','+480%');event.stopPropagation()">저장</button>
                 <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
                 <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
               </div>
             </div>
-            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+            <div class="trend-item" id="trend-t2" onclick="toggleTrendItem(this, event)">
               <div class="trend-item-main">
                 <div class="trend-rank silver">2</div>
                 <div class="trend-body">
@@ -2855,7 +2958,7 @@
                 </svg>
               </div>
               <div class="trend-actions">
-                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action" id="save-t2" onclick="saveTrend(this,'t2','퇴근 후 30분 루틴 브이로그','유튜브','+215%');event.stopPropagation()">저장</button>
                 <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
                 <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
               </div>
@@ -2876,7 +2979,7 @@
               </div>
             </div>
 
-            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+            <div class="trend-item" id="trend-t3" onclick="toggleTrendItem(this, event)">
               <div class="trend-item-main">
                 <div class="trend-rank bronze">3</div>
                 <div class="trend-body">
@@ -2896,12 +2999,12 @@
                 </svg>
               </div>
               <div class="trend-actions">
-                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action" id="save-t3" onclick="saveTrend(this,'t3','2010년대 다시 듣는 노래','틱톡','+188%');event.stopPropagation()">저장</button>
                 <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
                 <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
               </div>
             </div>
-            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+            <div class="trend-item" id="trend-t4" onclick="toggleTrendItem(this, event)">
               <div class="trend-item-main">
                 <div class="trend-rank">4</div>
                 <div class="trend-body">
@@ -2921,7 +3024,7 @@
                 </svg>
               </div>
               <div class="trend-actions">
-                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action" id="save-t4" onclick="saveTrend(this,'t4','점심 도시락 5분 컷 레시피','인스타그램','+92%');event.stopPropagation()">저장</button>
                 <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
                 <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
               </div>
@@ -2943,7 +3046,7 @@
               </div>
             </div>
 
-            <div class="trend-item" onclick="toggleTrendItem(this, event)">
+            <div class="trend-item" id="trend-t5" onclick="toggleTrendItem(this, event)">
               <div class="trend-item-main">
                 <div class="trend-rank">5</div>
                 <div class="trend-body">
@@ -2963,7 +3066,7 @@
                 </svg>
               </div>
               <div class="trend-actions">
-                <button class="trend-action" onclick="event.stopPropagation()">저장</button>
+                <button class="trend-action" id="save-t5" onclick="saveTrend(this,'t5','홈카페 라떼아트 챌린지','틱톡','+64%');event.stopPropagation()">저장</button>
                 <button class="trend-action primary" onclick="event.stopPropagation()">콘티 만들기</button>
                 <button class="trend-action" onclick="event.stopPropagation()">비슷한 거</button>
               </div>
@@ -3072,7 +3175,7 @@
           <div class="mini-stats">
             <div class="mini-stat">
               <div class="mini-stat-label">Saved Trends</div>
-              <div class="mini-stat-value accent">17</div>
+              <div class="mini-stat-value accent" id="saved-trends-count">0</div>
             </div>
             <div class="mini-stat">
               <div class="mini-stat-label">Posts Tried</div>
@@ -3087,6 +3190,21 @@
               <div class="mini-stat-value">3</div>
             </div>
           </div>
+        </div>
+
+        <!-- 내 컬렉션 -->
+        <div class="collection-section">
+          <div class="section-head" style="padding: 0;">
+            <div class="section-title">내 컬렉션</div>
+            <div class="section-meta" id="collection-count-badge" style="display:none;">
+              <span id="collection-count">0</span>개
+            </div>
+          </div>
+          <div class="collection-empty" id="collection-empty">
+            <div class="collection-empty-text">저장한 트렌드가 없어요</div>
+            <div class="collection-empty-sub">트렌드 카드에서 저장 버튼을 눌러보세요</div>
+          </div>
+          <div class="collection-grid" id="collection-grid"></div>
         </div>
 
         <!-- 액션 -->
@@ -3153,6 +3271,64 @@
 
 <script>
   const answers = { platform: null, categories: [], age: null };
+
+  // Save & Collection state
+  const savedTrends = [];
+
+  function saveTrend(btn, id, title, platform, growth) {
+    const idx = savedTrends.findIndex(t => t.id === id);
+    if (idx === -1) {
+      savedTrends.push({ id, title, platform, growth });
+      btn.textContent = '저장됨';
+      btn.classList.add('saved');
+    } else {
+      savedTrends.splice(idx, 1);
+      btn.textContent = '저장';
+      btn.classList.remove('saved');
+    }
+    renderCollection();
+  }
+
+  function removeSaved(id) {
+    const idx = savedTrends.findIndex(t => t.id === id);
+    if (idx === -1) return;
+    savedTrends.splice(idx, 1);
+    const btn = document.getElementById('save-' + id);
+    if (btn) { btn.textContent = '저장'; btn.classList.remove('saved'); }
+    renderCollection();
+  }
+
+  function renderCollection() {
+    const grid = document.getElementById('collection-grid');
+    const empty = document.getElementById('collection-empty');
+    const badge = document.getElementById('collection-count-badge');
+    const countEl = document.getElementById('collection-count');
+    const statEl = document.getElementById('saved-trends-count');
+
+    const count = savedTrends.length;
+    if (statEl) statEl.textContent = count;
+    if (countEl) countEl.textContent = count;
+
+    if (count === 0) {
+      empty.style.display = 'block';
+      badge.style.display = 'none';
+      grid.innerHTML = '';
+      return;
+    }
+
+    empty.style.display = 'none';
+    badge.style.display = 'block';
+
+    const platformClass = { '인스타그램': 'p-instagram', '유튜브': 'p-youtube', '틱톡': 'p-tiktok' };
+    grid.innerHTML = savedTrends.map(t => `
+      <div class="collection-item">
+        <span class="collection-item-platform ${platformClass[t.platform] || ''}">${t.platform}</span>
+        <span class="collection-item-title">${t.title}</span>
+        <span class="collection-item-growth">${t.growth}</span>
+        <button class="collection-item-remove" onclick="removeSaved('${t.id}');event.stopPropagation()">×</button>
+      </div>
+    `).join('');
+  }
 
   // Smart Onboarding state
   const sampleProgress = {
@@ -3335,6 +3511,12 @@
     answers.age = null;
     sampleProgress.answered = 0;
     sampleProgress.isSampleMode = false;
+    savedTrends.length = 0;
+    document.querySelectorAll('.trend-action.saved').forEach(b => {
+      b.textContent = '저장';
+      b.classList.remove('saved');
+    });
+    renderCollection();
     document.querySelectorAll('.toss-item, .chip, .age-opt').forEach(o => o.classList.remove('selected'));
     document.querySelectorAll('.cta[id^="cta-q"]').forEach(b => b.disabled = true);
     document.querySelectorAll('.soft-prompt').forEach(p => {

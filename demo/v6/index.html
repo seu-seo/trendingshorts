@@ -21,15 +21,15 @@
     --on-primary:   #0A0A0A;
 
     /* 데이터 컬러 */
-    --up:          #C8FF57;
-    --up-soft:     rgba(200, 255, 87, 0.10);
-    --down:        #FF6B6B;
-    --down-soft:   rgba(255, 107, 107, 0.12);
+    --up:          #FF3063;
+    --up-soft:     rgba(255, 48, 99, 0.12);
+    --down:        #3280F7;
+    --down-soft:   rgba(50, 128, 247, 0.12);
     --neutral:     #5A5A62;
     --neutral-soft: rgba(90, 90, 98, 0.2);
 
-    --gold:      #C8FF57;
-    --gold-soft: rgba(200, 255, 87, 0.10);
+    --gold:      #FF3063;
+    --gold-soft: rgba(255, 48, 99, 0.12);
 
     /* 텍스트 위계 */
     --ink:        #F2F0EB;
@@ -216,10 +216,10 @@
   }
   .value-card-eyebrow .live-dot {
     width: 6px; height: 6px;
-    background: var(--primary);
+    background: #FF3063;
     border-radius: 50%;
     animation: pulse-glow 1.6s ease-in-out infinite;
-    box-shadow: 0 0 0 2px rgba(44,95,138,0.2);
+    box-shadow: 0 0 0 2px rgba(255,48,99,0.25);
   }
   @keyframes pulse-glow {
     0%, 100% { opacity: 1; }
@@ -289,7 +289,7 @@
     transform: scaleY(0);
     animation: growBar 0.7s var(--spring) both;
   }
-  .value-bar.active { background: var(--primary); }
+  .value-bar.active { background: #FF3063; }
   .value-bar:nth-child(1) { animation-delay: 0.4s; }
   .value-bar:nth-child(2) { animation-delay: 0.5s; }
   .value-bar:nth-child(3) { animation-delay: 0.6s; }
@@ -312,7 +312,7 @@
     color: var(--gray);
     font-weight: 600;
   }
-  .value-bar-label.active { color: var(--primary); font-weight: 800; }
+  .value-bar-label.active { color: #FF3063; font-weight: 800; }
 
   /* 통계 row */
   .value-stats {
@@ -370,7 +370,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 92, 73, 0.06) 50%,
+      rgba(255, 48, 99, 0.08) 50%,
       transparent 100%
     );
     animation: shimmer 3s ease-in-out infinite;
@@ -389,8 +389,8 @@
     gap: 6px;
     font-family: var(--font-mono);
     font-size: 10px;
-    color: var(--primary-deep);
-    background: var(--primary-soft);
+    color: #FF3063;
+    background: rgba(255, 48, 99, 0.12);
     padding: 4px 10px;
     border-radius: 100px;
     margin-bottom: 12px;
@@ -402,9 +402,9 @@
     content: '';
     width: 5px;
     height: 5px;
-    background: var(--primary);
+    background: #FF3063;
     border-radius: 50%;
-    box-shadow: 0 0 6px var(--primary);
+    box-shadow: 0 0 8px #FF3063;
   }
   .why-text {
     font-family: var(--font-cute);
@@ -998,10 +998,10 @@
   }
   .pulse-dot {
     width: 6px; height: 6px;
-    background: var(--primary);
+    background: #3280F7;
     border-radius: 50%;
     animation: pulse-glow 1.6s ease-in-out infinite;
-    box-shadow: 0 0 0 2px rgba(44,95,138,0.2);
+    box-shadow: 0 0 0 2px rgba(50,128,247,0.25);
   }
   @keyframes blink {
     0%, 100% { opacity: 1; }
@@ -1103,7 +1103,7 @@
     min-height: 6px;
     transform-origin: bottom;
   }
-  .bar.active { background: var(--primary); }
+  .bar.active { background: #FF3063; }
   .bar-labels {
     display: flex;
     gap: 6px;
@@ -1116,7 +1116,7 @@
     color: var(--gray);
     font-weight: 600;
   }
-  .bar-label.active { color: var(--primary); font-weight: 800; }
+  .bar-label.active { color: #FF3063; font-weight: 800; }
   @keyframes growBar {
     from { transform: scaleY(0); }
     to { transform: scaleY(1); }
@@ -1387,9 +1387,9 @@
     text-align: center;
     line-height: 1;
   }
-  .trend-rank.gold { color: var(--primary); }
-  .trend-rank.silver { color: #C9A04A; }
-  .trend-rank.bronze { color: #B07A4A; }
+  .trend-rank.gold   { color: #FF3063; }
+  .trend-rank.silver { color: #3280F7; }
+  .trend-rank.bronze { color: #C8FF57; }
 
   .trend-body { flex: 1; min-width: 0; }
   .trend-title {
@@ -1435,7 +1435,7 @@
   }
   .sparkline path {
     fill: none;
-    stroke: var(--primary);
+    stroke: #FF3063;
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -1500,7 +1500,7 @@
   }
   .kw-bar-fill {
     height: 100%;
-    background: var(--primary);
+    background: #3280F7;
     border-radius: 100px;
   }
   .kw-spark {
@@ -2484,8 +2484,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--primary);
-    box-shadow: 0 0 0 2px rgba(44,95,138,0.2);
+    background: #FF3063;
+    box-shadow: 0 0 0 2px rgba(255,48,99,0.25);
     position: relative;
   }
   .briefing-tag-dot::after {
@@ -2493,7 +2493,7 @@
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 1.5px solid var(--primary);
+    border: 1.5px solid #FF3063;
     opacity: 0;
     animation: ring 2s ease-out infinite;
   }
@@ -2578,7 +2578,7 @@
   .briefing-point-num {
     font-family: var(--font-mono);
     font-size: 11px;
-    color: var(--primary);
+    color: #3280F7;
     font-weight: 700;
     flex-shrink: 0;
     width: 18px;

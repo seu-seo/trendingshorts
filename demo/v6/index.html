@@ -2645,6 +2645,70 @@
   }
   .briefing-cta:hover { color: var(--primary-deep); }
 
+  /* collapsed teaser */
+  .briefing-teaser {
+    cursor: pointer;
+    padding: 4px 0 2px;
+  }
+  .briefing-teaser-text {
+    font-family: var(--font-cute);
+    font-size: 17px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.45;
+    margin-bottom: 10px;
+  }
+  .briefing-teaser-text .teaser-highlight {
+    color: var(--primary);
+  }
+  .briefing-teaser-read {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--primary);
+    background: var(--primary-soft);
+    padding: 5px 12px;
+    border-radius: 20px;
+    transition: background 0.15s ease;
+  }
+  .briefing-teaser:hover .briefing-teaser-read {
+    background: rgba(44, 95, 138, 0.14);
+  }
+
+  /* expanded body */
+  .briefing-body {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s var(--ease-out), opacity 0.3s ease;
+  }
+  .ai-briefing.expanded .briefing-teaser {
+    display: none;
+  }
+  .ai-briefing.expanded .briefing-body {
+    max-height: 600px;
+    opacity: 1;
+  }
+  .briefing-collapse-btn {
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .briefing-collapse-btn:hover { color: var(--ink); }
+
   /* ============================
      LIVE PULSE MODE — 어제 본 트렌드 변화
      ============================ */
@@ -3123,7 +3187,7 @@
         </div>
 
         <!-- AI BRIEFING — 차별화 포인트 -->
-        <div class="ai-briefing">
+        <div class="ai-briefing" id="ai-briefing">
           <div class="briefing-header">
             <div class="briefing-tag">
               <span class="briefing-tag-dot"></span>
@@ -3132,41 +3196,52 @@
             <div class="briefing-time">9:30 AM</div>
           </div>
 
-          <div class="briefing-greeting">
-            안녕하세요, <span class="name">수진</span>님.<br/>
-            오늘 트렌드를 정리했어요.
+          <!-- 접힌 상태: teaser -->
+          <div class="briefing-teaser" onclick="expandBriefing()">
+            <div class="briefing-teaser-text">
+              <span class="teaser-highlight">3줄</span>도 못읽는데 괜찮겠어요?
+            </div>
+            <div class="briefing-teaser-read">읽어볼게요 →</div>
           </div>
 
-          <div class="briefing-summary">
-            오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
-            출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
-            짧고 실용적인 게 통하는 날이에요.
-          </div>
+          <!-- 펼친 상태: 본문 -->
+          <div class="briefing-body">
+            <div class="briefing-greeting">
+              안녕하세요, <span class="name">수진</span>님.<br/>
+              오늘 트렌드를 정리했어요.
+            </div>
 
-          <div class="briefing-points">
-            <div class="briefing-point">
-              <div class="briefing-point-num">01</div>
-              <div class="briefing-point-text">
-                <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
-              </div>
+            <div class="briefing-summary">
+              오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
+              출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
+              짧고 실용적인 게 통하는 날이에요.
             </div>
-            <div class="briefing-point">
-              <div class="briefing-point-num">02</div>
-              <div class="briefing-point-text">
-                <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
-              </div>
-            </div>
-            <div class="briefing-point">
-              <div class="briefing-point-num">03</div>
-              <div class="briefing-point-text">
-                인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
-              </div>
-            </div>
-          </div>
 
-          <div class="briefing-footer">
-            <div class="briefing-source">SOURCE: 5.26 · IG + YT + TT</div>
-            <button class="briefing-cta">자세히 보기 →</button>
+            <div class="briefing-points">
+              <div class="briefing-point">
+                <div class="briefing-point-num">01</div>
+                <div class="briefing-point-text">
+                  <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
+                </div>
+              </div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">02</div>
+                <div class="briefing-point-text">
+                  <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
+                </div>
+              </div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">03</div>
+                <div class="briefing-point-text">
+                  인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
+                </div>
+              </div>
+            </div>
+
+            <div class="briefing-footer">
+              <div class="briefing-source">SOURCE: 5.26 · IG + YT + TT</div>
+              <button class="briefing-collapse-btn" onclick="collapseBriefing()">접기 ↑</button>
+            </div>
           </div>
         </div>
 
@@ -4363,6 +4438,13 @@
     document.getElementById('deep-insight-platform').textContent = platform;
 
     document.getElementById('deep-step-text').innerHTML = '완료';
+  }
+
+  function expandBriefing() {
+    document.getElementById('ai-briefing').classList.add('expanded');
+  }
+  function collapseBriefing() {
+    document.getElementById('ai-briefing').classList.remove('expanded');
   }
 
   function togglePulseCard(el, event) {

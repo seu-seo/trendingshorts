@@ -21,18 +21,18 @@
     --on-primary:   #0A0A0A;
 
     /* 데이터 컬러 */
-    --up:          #FF3063;
-    --up-soft:     rgba(255, 48, 99, 0.12);
+    --up:          #FF4274;
+    --up-soft:     rgba(255, 66, 116, 0.12);
     --down:        #3280F7;
     --down-soft:   rgba(50, 128, 247, 0.12);
     --neutral:     #5A5A62;
     --neutral-soft: rgba(90, 90, 98, 0.2);
 
-    --gold:      #FF3063;
-    --gold-soft: rgba(255, 48, 99, 0.12);
+    --gold:      #FF4274;
+    --gold-soft: rgba(255, 66, 116, 0.12);
 
     /* 텍스트 위계 */
-    --ink:        #F2F0EB;
+    --ink:        #ECEDEE;
     --ink-soft:   #8A8A92;
     --gray:       #8A8A92;
     --gray-mid:   #5A5A62;
@@ -41,7 +41,7 @@
     /* 선 */
     --line:        #2A2A30;
     --line-strong: #3A3A42;
-    --line-bold:   #F2F0EB;
+    --line-bold:   #ECEDEE;
 
     --ambient-1: rgba(200, 255, 87, 0.02);
     --ambient-2: rgba(200, 255, 87, 0.01);
@@ -216,7 +216,7 @@
   }
   .value-card-eyebrow .live-dot {
     width: 6px; height: 6px;
-    background: #FF3063;
+    background: #FF4274;
     border-radius: 50%;
     animation: pulse-glow 1.6s ease-in-out infinite;
     box-shadow: 0 0 0 2px rgba(255,48,99,0.25);
@@ -289,7 +289,7 @@
     transform: scaleY(0);
     animation: growBar 0.7s var(--spring) both;
   }
-  .value-bar.active { background: #FF3063; }
+  .value-bar.active { background: #FF4274; }
   .value-bar:nth-child(1) { animation-delay: 0.4s; }
   .value-bar:nth-child(2) { animation-delay: 0.5s; }
   .value-bar:nth-child(3) { animation-delay: 0.6s; }
@@ -312,7 +312,7 @@
     color: var(--gray);
     font-weight: 600;
   }
-  .value-bar-label.active { color: #FF3063; font-weight: 800; }
+  .value-bar-label.active { color: #FF4274; font-weight: 800; }
 
   /* 통계 row */
   .value-stats {
@@ -370,7 +370,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 48, 99, 0.08) 50%,
+      rgba(255, 66, 116, 0.08) 50%,
       transparent 100%
     );
     animation: shimmer 3s ease-in-out infinite;
@@ -389,8 +389,8 @@
     gap: 6px;
     font-family: var(--font-mono);
     font-size: 10px;
-    color: #FF3063;
-    background: rgba(255, 48, 99, 0.12);
+    color: #FF4274;
+    background: rgba(255, 66, 116, 0.12);
     padding: 4px 10px;
     border-radius: 100px;
     margin-bottom: 12px;
@@ -402,9 +402,9 @@
     content: '';
     width: 5px;
     height: 5px;
-    background: #FF3063;
+    background: #FF4274;
     border-radius: 50%;
-    box-shadow: 0 0 8px #FF3063;
+    box-shadow: 0 0 8px #FF4274;
   }
   .why-text {
     font-family: var(--font-cute);
@@ -1103,7 +1103,7 @@
     min-height: 6px;
     transform-origin: bottom;
   }
-  .bar.active { background: #FF3063; }
+  .bar.active { background: #FF4274; }
   .bar-labels {
     display: flex;
     gap: 6px;
@@ -1116,7 +1116,7 @@
     color: var(--gray);
     font-weight: 600;
   }
-  .bar-label.active { color: #FF3063; font-weight: 800; }
+  .bar-label.active { color: #FF4274; font-weight: 800; }
   @keyframes growBar {
     from { transform: scaleY(0); }
     to { transform: scaleY(1); }
@@ -1387,7 +1387,7 @@
     text-align: center;
     line-height: 1;
   }
-  .trend-rank.gold   { color: #FF3063; }
+  .trend-rank.gold   { color: #FF4274; }
   .trend-rank.silver { color: #3280F7; }
   .trend-rank.bronze { color: #C8FF57; }
 
@@ -1435,7 +1435,7 @@
   }
   .sparkline path {
     fill: none;
-    stroke: #FF3063;
+    stroke: #FF4274;
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -2484,7 +2484,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #FF3063;
+    background: #FF4274;
     box-shadow: 0 0 0 2px rgba(255,48,99,0.25);
     position: relative;
   }
@@ -2493,7 +2493,7 @@
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 1.5px solid #FF3063;
+    border: 1.5px solid #FF4274;
     opacity: 0;
     animation: ring 2s ease-out infinite;
   }
@@ -3170,6 +3170,71 @@
           <div class="progress-arrow">→</div>
         </div>
 
+        <!-- HEADLINE -->
+        <div class="headline-block">
+          <div class="headline-top-row">
+            <div class="headline-tag">
+              <span class="pulse-dot"></span>
+              Today's Big Trend
+            </div>
+            <div class="headline-time">UPDATED 9:30 AM</div>
+          </div>
+
+          <div class="headline-big">
+            "출근길 5분 루틴"이<br/>
+            어제보다 <span class="big-num">3배</span> 더 보였어요
+          </div>
+
+          <div class="h-stats-row">
+            <div class="h-stat">
+              <div class="h-stat-label">Growth</div>
+              <div class="h-stat-num up">+312%</div>
+            </div>
+            <div class="h-stat">
+              <div class="h-stat-label">Views</div>
+              <div class="h-stat-num">2.4M</div>
+            </div>
+            <div class="h-stat">
+              <div class="h-stat-label">New Posts</div>
+              <div class="h-stat-num accent">8.2K</div>
+            </div>
+          </div>
+
+          <div class="bar-chart">
+            <div class="bar-chart-head">
+              <div class="bar-chart-title">PAST 7 DAYS</div>
+              <div class="bar-chart-meta">PEAK · TODAY</div>
+            </div>
+            <div class="bars">
+              <div class="bar" style="height: 25%;"></div>
+              <div class="bar" style="height: 35%;"></div>
+              <div class="bar" style="height: 28%;"></div>
+              <div class="bar" style="height: 45%;"></div>
+              <div class="bar" style="height: 52%;"></div>
+              <div class="bar" style="height: 68%;"></div>
+              <div class="bar active" style="height: 100%;"></div>
+            </div>
+            <div class="bar-labels">
+              <div class="bar-label">목</div>
+              <div class="bar-label">금</div>
+              <div class="bar-label">토</div>
+              <div class="bar-label">일</div>
+              <div class="bar-label">월</div>
+              <div class="bar-label">화</div>
+              <div class="bar-label active">오늘</div>
+            </div>
+          </div>
+
+          <!-- WHY 인사이트 -->
+          <div class="headline-why">
+            <div class="headline-why-label">Why now</div>
+            <div class="headline-why-text">
+              5월 들어 출근 시간이 평균 <span class="highlight">7분 늘었어요</span>.<br/>
+              직장인들이 짧고 알찬 콘텐츠를 더 찾고 있어요.
+            </div>
+          </div>
+        </div>
+
         <!-- AI BRIEFING — 차별화 포인트 -->
         <div class="ai-briefing" id="ai-briefing">
           <div class="briefing-header">
@@ -3306,71 +3371,6 @@
               </div>
             </div>
 
-          </div>
-        </div>
-
-        <!-- HEADLINE -->
-        <div class="headline-block">
-          <div class="headline-top-row">
-            <div class="headline-tag">
-              <span class="pulse-dot"></span>
-              Today's Big Trend
-            </div>
-            <div class="headline-time">UPDATED 9:30 AM</div>
-          </div>
-
-          <div class="headline-big">
-            "출근길 5분 루틴"이<br/>
-            어제보다 <span class="big-num">3배</span> 더 보였어요
-          </div>
-
-          <div class="h-stats-row">
-            <div class="h-stat">
-              <div class="h-stat-label">Growth</div>
-              <div class="h-stat-num up">+312%</div>
-            </div>
-            <div class="h-stat">
-              <div class="h-stat-label">Views</div>
-              <div class="h-stat-num">2.4M</div>
-            </div>
-            <div class="h-stat">
-              <div class="h-stat-label">New Posts</div>
-              <div class="h-stat-num accent">8.2K</div>
-            </div>
-          </div>
-
-          <div class="bar-chart">
-            <div class="bar-chart-head">
-              <div class="bar-chart-title">PAST 7 DAYS</div>
-              <div class="bar-chart-meta">PEAK · TODAY</div>
-            </div>
-            <div class="bars">
-              <div class="bar" style="height: 25%;"></div>
-              <div class="bar" style="height: 35%;"></div>
-              <div class="bar" style="height: 28%;"></div>
-              <div class="bar" style="height: 45%;"></div>
-              <div class="bar" style="height: 52%;"></div>
-              <div class="bar" style="height: 68%;"></div>
-              <div class="bar active" style="height: 100%;"></div>
-            </div>
-            <div class="bar-labels">
-              <div class="bar-label">목</div>
-              <div class="bar-label">금</div>
-              <div class="bar-label">토</div>
-              <div class="bar-label">일</div>
-              <div class="bar-label">월</div>
-              <div class="bar-label">화</div>
-              <div class="bar-label active">오늘</div>
-            </div>
-          </div>
-
-          <!-- WHY 인사이트 -->
-          <div class="headline-why">
-            <div class="headline-why-label">Why now</div>
-            <div class="headline-why-text">
-              5월 들어 출근 시간이 평균 <span class="highlight">7분 늘었어요</span>.<br/>
-              직장인들이 짧고 알찬 콘텐츠를 더 찾고 있어요.
-            </div>
           </div>
         </div>
 

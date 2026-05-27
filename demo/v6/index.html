@@ -29,20 +29,20 @@
     --bg-card: #1A1A1A;     /* 배경과 미묘하게 구분되는 표면 */
     --bg-hover: #222222;
 
-    /* Acid Lime accent — SV neon, 형광 */
-    --primary: #CDFE00;
-    --primary-soft: rgba(205, 254, 0, 0.08);
-    --primary-deep: #B0DC00;
-    --primary-glow: rgba(205, 254, 0, 0.2);
-    --on-primary: #0A0A0A;  /* primary 배경 위 텍스트 — 어둡게 */
-    --neon-text: 0 0 6px rgba(205,254,0,0.9), 0 0 14px rgba(205,254,0,0.5), 0 0 28px rgba(205,254,0,0.2);
-    --neon-dot:  0 0 8px #CDFE00, 0 0 18px rgba(205,254,0,0.75), 0 0 36px rgba(205,254,0,0.35);
-    --neon-btn:  0 0 10px rgba(205,254,0,0.45), 0 0 24px rgba(205,254,0,0.25), 0 0 48px rgba(205,254,0,0.12);
+    /* Electric Cyan accent — AI 툴, 미래적 */
+    --primary: #00CFFF;
+    --primary-soft: rgba(0, 207, 255, 0.1);
+    --primary-deep: #00AEDA;
+    --primary-glow: rgba(0, 207, 255, 0.2);
+    --on-primary: #0A0A0A;  /* primary 배경 위 텍스트 — 밝은 색이라 어둡게 */
+    --neon-text: 0 0 6px rgba(0,207,255,0.9), 0 0 14px rgba(0,207,255,0.5), 0 0 28px rgba(0,207,255,0.2);
+    --neon-dot:  0 0 8px #00CFFF, 0 0 18px rgba(0,207,255,0.75), 0 0 36px rgba(0,207,255,0.35);
+    --neon-btn:  0 0 10px rgba(0,207,255,0.45), 0 0 24px rgba(0,207,255,0.25), 0 0 48px rgba(0,207,255,0.12);
 
-    --up: #CDFE00;          /* 성장 수치 = 산성 라임 */
-    --up-soft: rgba(205, 254, 0, 0.08);
-    --down: #60A5FA;        /* 하락 = 소프트 블루 */
-    --down-soft: rgba(96, 165, 250, 0.1);
+    --up: #00CFFF;          /* 성장 수치 = 일렉트릭 시안 */
+    --up-soft: rgba(0, 207, 255, 0.1);
+    --down: #F87171;        /* 하락 = 소프트 코랄 */
+    --down-soft: rgba(248, 113, 113, 0.1);
     --neutral: #10B981;     /* 중립 태그 = 테크 민트 */
     --neutral-soft: rgba(16, 185, 129, 0.1);
 
@@ -59,7 +59,7 @@
     --line-strong: #333333;
     --line-bold: #FFFFFF;
 
-    --ambient-1: rgba(205, 254, 0, 0.03);
+    --ambient-1: rgba(0, 207, 255, 0.04);
     --ambient-2: rgba(59, 130, 246, 0.02);
 
     --elev-1: 0 1px 3px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.4);
@@ -105,7 +105,7 @@
     box-shadow:
       0 0 0 12px #0F0F0F,
       0 0 0 14px #1A1A1A,
-      0 60px 120px rgba(205, 254, 0, 0.05),
+      0 60px 120px rgba(0, 207, 255, 0.08),
       0 30px 80px rgba(0, 0, 0, 0.98);
     position: relative;
     overflow: hidden;
@@ -239,7 +239,7 @@
   }
   @keyframes pulse-glow {
     0%, 100% { opacity: 1; box-shadow: var(--neon-dot); }
-    50%       { opacity: 0.7; box-shadow: 0 0 4px rgba(205,254,0,0.6), 0 0 10px rgba(205,254,0,0.3); }
+    50%       { opacity: 0.7; box-shadow: 0 0 4px rgba(0,207,255,0.6), 0 0 10px rgba(0,207,255,0.3); }
   }
 
   .value-headline {
@@ -472,7 +472,7 @@
   .cta:hover:not(:disabled) {
     background: var(--primary-deep);
     color: var(--on-primary);
-    box-shadow: 0 0 14px rgba(205,254,0,0.6), 0 0 32px rgba(205,254,0,0.35), 0 0 60px rgba(205,254,0,0.18);
+    box-shadow: 0 0 14px rgba(0,207,255,0.6), 0 0 32px rgba(0,207,255,0.35), 0 0 60px rgba(0,207,255,0.18);
   }
   .cta:active:not(:disabled) {
     transform: scale(0.98);
@@ -1254,7 +1254,7 @@
   }
   .heart-btn.saved {
     color: var(--primary);
-    filter: drop-shadow(0 0 4px rgba(205,254,0,0.9)) drop-shadow(0 0 10px rgba(205,254,0,0.5));
+    filter: drop-shadow(0 0 4px rgba(0,207,255,0.9)) drop-shadow(0 0 10px rgba(0,207,255,0.5));
   }
   .heart-btn.saved svg {
     fill: var(--primary);

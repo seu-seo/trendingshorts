@@ -54,4 +54,6 @@ Gemini 페르소나      플랫폼별 TOP 1           기반 소재 추천
 
 KAIST BIZ 699911 Group Project · 규동 · 승연 · 지은 · 경재
 
+Reference recommendation logic updated: now prioritizes creators one step ahead of the user in follower count and style, based on user interview insights.
+
 *Last updated: 2026-05-16*

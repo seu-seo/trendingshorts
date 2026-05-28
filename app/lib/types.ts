@@ -110,3 +110,17 @@ export interface PersonaResult {
 }
 
 export type AppIntent = 'explore' | 'produce';
+
+export type FollowerTier = 1 | 2 | 3 | 4 | 5;
+
+export interface Creator {
+  handle: string;
+  followersLabel: string;
+  followers: number;
+  niche: string;
+  uploadFreq: string;
+  tier: FollowerTier;
+  growth: number;
+  score: number;
+  reason: string;
+}

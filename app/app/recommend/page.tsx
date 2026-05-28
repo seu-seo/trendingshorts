@@ -5,6 +5,7 @@ import { useStore } from '@/lib/store';
 import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
 import type { GenerateResponse } from '@/lib/prompts';
 import GeneratedScriptCard from '@/components/production/GeneratedScriptCard';
+import CreatorRecommendSection from '@/components/recommend/CreatorRecommendSection';
 
 const TREND_OPTIONS: { value: string; label: string; sub: string }[] = [
   { value: 'trend-full', label: '트렌드 그대로', sub: '지금 유행 편승' },
@@ -227,6 +228,17 @@ export default function RecommendPage() {
           />
         </div>
 
+      </div>
+
+      {/* 성장 레퍼런스 — 온보딩 완료 시 표시 */}
+      {personaInput && (
+        <CreatorRecommendSection
+          category={personaInput.category}
+          experience={personaInput.experience}
+        />
+      )}
+
+      <div className="px-6 flex flex-col gap-6">
         {/* CTA */}
         <button
           onClick={handleRecommend}

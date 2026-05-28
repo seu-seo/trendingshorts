@@ -14,3 +14,4 @@
 *.log
 .vercel
 .gstack/
+demo/v6/.claude/

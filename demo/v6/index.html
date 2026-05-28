@@ -748,6 +748,33 @@
   }
   .chip.selected .chip-check { display: inline-flex; }
 
+  /* Q2 텍스트 입력 */
+  .category-input-wrap {
+    padding: 0 24px;
+  }
+  .category-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line-strong);
+    border-radius: 16px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding: 16px 18px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s var(--ease);
+    min-height: 120px;
+  }
+  .category-textarea::placeholder {
+    color: var(--ink-soft);
+  }
+  .category-textarea:focus {
+    border-color: var(--primary);
+  }
+
   /* 선택 카운터 */
   .selection-counter {
     margin-top: 24px;
@@ -3341,25 +3368,16 @@
         <div class="q-prompt">
           <div class="q-step-label">두 번째 질문이에요</div>
           <div class="q-title">어떤 분야가<br/>궁금해요?</div>
-          <div class="q-helper">관심 있는 거 다 골라주세요</div>
+          <div class="q-helper">관심 있는 분야를 자유롭게 적어주세요</div>
         </div>
-        <div class="chip-section">
-          <div class="chip-grid">
-            <div class="chip" data-val="food" onclick="selectCategory(this)">먹방 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="vlog" onclick="selectCategory(this)">브이로그 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="dance" onclick="selectCategory(this)">춤 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="fashion" onclick="selectCategory(this)">패션 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="beauty" onclick="selectCategory(this)">뷰티 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="fitness" onclick="selectCategory(this)">운동 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="travel" onclick="selectCategory(this)">여행 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="study" onclick="selectCategory(this)">공부 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="game" onclick="selectCategory(this)">게임 <span class="chip-check">✓</span></div>
-            <div class="chip" data-val="pet" onclick="selectCategory(this)">반려동물 <span class="chip-check">✓</span></div>
-          </div>
-          <div class="selection-counter" id="counter" style="display: none;">
-            <div class="counter-label">선택한 분야</div>
-            <div class="counter-num"><span id="count-num">0</span>개</div>
-          </div>
+        <div class="category-input-wrap">
+          <textarea
+            id="category-input"
+            class="category-textarea"
+            placeholder="예: 먹방, 여행, 뷰티, 게임..."
+            oninput="onCategoryInput(this)"
+            rows="4"
+          ></textarea>
         </div>
         <div style="height: 24px;"></div>
       </div>
@@ -4623,20 +4641,34 @@
     document.getElementById('cta-q1').disabled = false;
   }
 
-  function selectCategory(el) {
-    el.classList.toggle('selected');
-    const selected = document.querySelectorAll('#screen-q2 .chip.selected');
-    answers.categories = Array.from(selected).map(s => s.dataset.val);
-    document.getElementById('cta-q2').disabled = selected.length === 0;
+  const CATEGORY_KEYWORDS = {
+    food:    ['먹방', '음식', '요리', '레시피', '먹', '밥', '식당', '카페', '쿠킹', '맛집'],
+    vlog:    ['브이로그', '일상', '데이로그', '하루', '라이프'],
+    dance:   ['춤', '댄스', '안무', '커버댄스', '퍼포먼스'],
+    fashion: ['패션', '코디', '옷', '스타일', '룩', 'ootd', '쇼핑'],
+    beauty:  ['뷰티', '화장', '메이크업', '스킨케어', '피부'],
+    fitness: ['운동', '헬스', '다이어트', '요가', '필라테스', '러닝', '등산', '홈트'],
+    travel:  ['여행', '투어', '국내여행', '해외여행', '관광'],
+    study:   ['공부', '독서', '책', '자기계발', '학습', '스터디', '생산성'],
+    game:    ['게임', '게이밍', '롤', '배그', '마인크래프트', '닌텐도', 'game', 'gaming'],
+    pet:     ['반려동물', '강아지', '고양이', '펫', '반려'],
+  };
 
-    const counter = document.getElementById('counter');
-    const countNum = document.getElementById('count-num');
-    if (selected.length > 0) {
-      counter.style.display = 'flex';
-      countNum.textContent = selected.length;
-    } else {
-      counter.style.display = 'none';
+  function matchCategories(text) {
+    const tokens = text.toLowerCase().split(/[,\s]+/).map(t => t.trim()).filter(t => t.length > 0);
+    const matched = new Set();
+    for (const token of tokens) {
+      for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+        if (keywords.some(kw => token.includes(kw))) matched.add(cat);
+      }
     }
+    return Array.from(matched);
+  }
+
+  function onCategoryInput(el) {
+    const val = el.value.trim();
+    answers.categories = matchCategories(val);
+    document.getElementById('cta-q2').disabled = val.length === 0;
   }
 
   function selectAge(el) {
@@ -5194,6 +5226,8 @@
     document.querySelectorAll('.heart-btn.saved').forEach(b => b.classList.remove('saved'));
     renderCollection();
     document.querySelectorAll('.toss-item, .chip, .age-opt').forEach(o => o.classList.remove('selected'));
+    const categoryInput = document.getElementById('category-input');
+    if (categoryInput) categoryInput.value = '';
     document.querySelectorAll('.cta[id^="cta-q"]').forEach(b => b.disabled = true);
     document.querySelectorAll('.soft-prompt').forEach(p => {
       p.style.display = 'none';

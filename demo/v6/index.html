@@ -149,6 +149,7 @@
     overflow-x: hidden;
     scrollbar-width: none;
     position: relative;
+    padding-bottom: 100px;
   }
   .screen-content::-webkit-scrollbar { display: none; }
 
@@ -1143,6 +1144,11 @@
     padding-top: 16px;
     border-top: 1px solid var(--line-strong);
   }
+  .wave-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
   .bar-chart-head {
     display: flex;
     justify-content: space-between;
@@ -1503,9 +1509,7 @@
     font-family: var(--font-mono);
   }
   .sparkline {
-    width: 50px;
-    height: 24px;
-    flex-shrink: 0;
+    display: none;
   }
   .sparkline path {
     fill: none;
@@ -1523,8 +1527,86 @@
 
   /* KEYWORDS */
   .keywords {
-    padding: 0 12px 100px;
+    padding: 0 12px 24px;
   }
+  .wc-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px 4px 8px;
+    justify-content: center;
+    align-items: center;
+  }
+  .wc-tag {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 18px;
+    border-radius: 100px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+  }
+  .wc-tag:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+  .wc-word { font-weight: 700; color: var(--ink); line-height: 1; }
+  .wc-pct  { font-family: var(--font-mono); color: var(--gray); letter-spacing: 0.02em; }
+  .wc-tag.s1 { background: rgba(255,66,116,0.09); border-color: rgba(255,66,116,0.35); }
+  .wc-tag.s1 .wc-word { font-size: 22px; }
+  .wc-tag.s1 .wc-pct  { font-size: 10px; color: #FF4274; }
+  .wc-tag.s2 { background: rgba(255,66,116,0.05); border-color: rgba(255,66,116,0.2); }
+  .wc-tag.s2 .wc-word { font-size: 17px; }
+  .wc-tag.s2 .wc-pct  { font-size: 10px; color: #FF4274; opacity: 0.8; }
+  .wc-tag.s3 .wc-word { font-size: 14px; }
+  .wc-tag.s3 .wc-pct  { font-size: 9px; }
+  .wc-tag.s4 .wc-word { font-size: 12px; color: var(--ink-soft); }
+  .wc-tag.s4 .wc-pct  { font-size: 9px; }
+  .wc-tag.s5 .wc-word { font-size: 11px; color: var(--gray); }
+  .wc-tag.s5 .wc-pct  { font-size: 9px; color: var(--gray-mid); }
+  .bubble-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 12px 12px;
+    justify-content: center;
+    align-items: center;
+  }
+  .bubble {
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: transform 0.25s var(--ease);
+    background: rgba(56,182,255,0.08);
+    border: 1px solid rgba(56,182,255,0.35);
+    text-align: center;
+  }
+  .bubble:hover { transform: scale(1.07); }
+  .bubble-word { font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .bubble-pct  { font-family: var(--font-mono); color: #38B6FF; letter-spacing: 0.02em; }
+  @keyframes bubblePulse {
+    0%,100% { box-shadow: 0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10); }
+    50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
+  }
+  .bubble.b1 { width:96px; height:96px; animation: bubblePulse 2.4s ease-in-out infinite; border-color: rgba(56,182,255,0.6); }
+  .bubble.b1 .bubble-word { font-size: 14px; }
+  .bubble.b1 .bubble-pct  { font-size: 11px; }
+  .bubble.b2 { width:82px; height:82px; box-shadow: 0 0 8px rgba(56,182,255,0.45), 0 0 18px rgba(56,182,255,0.22); border-color: rgba(56,182,255,0.5); }
+  .bubble.b2 .bubble-word { font-size: 13px; }
+  .bubble.b2 .bubble-pct  { font-size: 10px; }
+  .bubble.b3 { width:72px; height:72px; box-shadow: 0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16); border-color: rgba(56,182,255,0.4); }
+  .bubble.b3 .bubble-word { font-size: 12px; }
+  .bubble.b3 .bubble-pct  { font-size: 9px; }
+  .bubble.b4 { width:62px; height:62px; box-shadow: 0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10); border-color: rgba(56,182,255,0.28); }
+  .bubble.b4 .bubble-word { font-size: 11px; color: var(--ink-soft); }
+  .bubble.b4 .bubble-pct  { font-size: 9px; }
+  .bubble.b5 { width:52px; height:52px; box-shadow: 0 0 4px rgba(56,182,255,0.12); border-color: rgba(56,182,255,0.18); background: rgba(56,182,255,0.04); }
+  .bubble.b5 .bubble-word { font-size: 10px; color: var(--gray); }
+  .bubble.b5 .bubble-pct  { font-size: 8px; color: var(--gray-mid); }
   .keyword-list {
     display: flex;
     flex-direction: column;
@@ -2057,7 +2139,7 @@
 
   /* Actions */
   .actions {
-    padding: 0 12px 100px;
+    padding: 0 12px 24px;
   }
   .action-list {
     display: flex;
@@ -2188,6 +2270,50 @@
     line-height: 1.5;
     margin-bottom: 24px;
   }
+  .deep-form-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px 0;
+    scrollbar-width: none;
+  }
+  .deep-form-scroll::-webkit-scrollbar { display: none; }
+  .deep-form-item {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .deep-form-item:last-child { border-bottom: none; }
+  .deep-form-q {
+    font-family: var(--font-cute);
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin: 4px 0 10px;
+  }
+  .deep-form-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .deep-form-textarea {
+    width: 100%;
+    min-height: 72px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    resize: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+  .deep-form-textarea:focus { outline: none; border-color: var(--primary); }
+  .deep-form-textarea::placeholder { color: var(--ink-soft); opacity: 0.6; }
   .deep-textarea {
     width: 100%;
     min-height: 120px;
@@ -2281,27 +2407,35 @@
     border-radius: 20px;
     text-transform: uppercase;
   }
-  .deep-insight-row {
-    background: var(--bg-card);
-    border: 1.5px solid var(--line);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 10px;
+  .deep-niche-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
   }
-  .deep-insight-label {
+  .deep-niche-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .deep-niche-meta-label {
     font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--gray);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .deep-insight-text {
-    font-family: var(--font-body);
-    font-size: 14px;
+  .deep-niche-meta-label.fmt { background: rgba(56,182,255,0.12); color: #38B6FF; }
+  .deep-niche-meta-label.plt { background: rgba(255,66,116,0.12); color: #FF4274; }
+  .deep-niche-meta-value {
+    font-size: 13px;
     color: var(--ink);
-    line-height: 1.5;
   }
   .deep-result-cta {
     margin-top: 20px;
@@ -2399,6 +2533,71 @@
     font-size: 13px;
     color: var(--gray);
     margin-bottom: 20px;
+  }
+  .save-content-wrap {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .save-content-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .save-content-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .save-content-btn.saved {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .saved-content-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .saved-content-type {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 4px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .saved-content-type.script { background: rgba(56,182,255,0.12); color: #38B6FF; }
+  .saved-content-type.storyboard { background: rgba(255,66,116,0.12); color: #FF4274; }
+  .saved-content-info { flex: 1; min-width: 0; }
+  .saved-content-niche {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .saved-content-topic {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* 대본 */
@@ -3093,6 +3292,85 @@
     font-weight: 600;
     letter-spacing: 0.05em;
   }
+  .bump-wrap {
+    background: var(--bg-card);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    padding: 16px 10px 10px;
+  }
+  .bump-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .ba-wrap {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .ba-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ba-row:last-child { border-bottom: none; }
+  .ba-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ba-stats {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .ba-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .ba-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--gray-mid);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .ba-val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray);
+  }
+  .ba-val.up   { color: #FF4274; }
+  .ba-val.down { color: #38B6FF; }
+  .ba-sep {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-mid);
+    font-size: 13px;
+    padding: 0 6px;
+    padding-top: 10px;
+  }
+  .ba-delta {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    align-self: center;
+  }
+  .ba-delta.up   { background: rgba(255,66,116,0.12); color: #FF4274; }
+  .ba-delta.down { background: rgba(56,182,255,0.12);  color: #38B6FF; }
   .pulse-scroll {
     display: flex;
     gap: 10px;
@@ -3300,8 +3578,6 @@
               <div class="toss-item-title">틱톡</div>
               <div class="toss-item-meta">
                 <span>TikTok</span>
-                <span class="bullet"></span>
-                <span class="accent">↑ 가장 빠른 트렌드</span>
               </div>
             </div>
             <div class="toss-radio"><div class="toss-radio-inner"></div></div>
@@ -3478,65 +3754,6 @@
           <div class="progress-arrow">→</div>
         </div>
 
-        <!-- AI BRIEFING — 차별화 포인트 -->
-        <div class="ai-briefing" id="ai-briefing">
-          <div class="briefing-header">
-            <div class="briefing-tag">
-              <span class="briefing-tag-dot"></span>
-              AI Daily Briefing
-            </div>
-            <div class="briefing-time">9:30 AM</div>
-          </div>
-
-          <!-- 접힌 상태: teaser -->
-          <div class="briefing-teaser" onclick="expandBriefing()">
-            <div class="briefing-teaser-text">
-              <span class="teaser-highlight">3줄</span>도 못읽는데 괜찮겠어요?
-            </div>
-            <div class="briefing-teaser-read">읽어볼게요 →</div>
-          </div>
-
-          <!-- 펼친 상태: 본문 -->
-          <div class="briefing-body">
-            <div class="briefing-greeting">
-              안녕하세요, <span class="name">수진</span>님.<br/>
-              오늘 트렌드를 정리했어요.
-            </div>
-
-            <div class="briefing-summary">
-              오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
-              출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
-              짧고 실용적인 게 통하는 날이에요.
-            </div>
-
-            <div class="briefing-points">
-              <div class="briefing-point">
-                <div class="briefing-point-num">01</div>
-                <div class="briefing-point-text">
-                  <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
-                </div>
-              </div>
-              <div class="briefing-point">
-                <div class="briefing-point-num">02</div>
-                <div class="briefing-point-text">
-                  <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
-                </div>
-              </div>
-              <div class="briefing-point">
-                <div class="briefing-point-num">03</div>
-                <div class="briefing-point-text">
-                  인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
-                </div>
-              </div>
-            </div>
-
-            <div class="briefing-footer">
-              <div class="briefing-source">SOURCE: 5.26 · IG + YT + TT</div>
-              <button class="briefing-collapse-btn" onclick="collapseBriefing()">접기 ↑</button>
-            </div>
-          </div>
-        </div>
-
         <!-- HEADLINE -->
         <div class="headline-block">
           <div class="headline-top-row">
@@ -3572,24 +3789,31 @@
               <div class="bar-chart-title">PAST 7 DAYS</div>
               <div class="bar-chart-meta">PEAK · TODAY</div>
             </div>
-            <div class="bars">
-              <div class="bar" style="height: 25%;"></div>
-              <div class="bar" style="height: 35%;"></div>
-              <div class="bar" style="height: 28%;"></div>
-              <div class="bar" style="height: 45%;"></div>
-              <div class="bar" style="height: 52%;"></div>
-              <div class="bar" style="height: 68%;"></div>
-              <div class="bar active" style="height: 100%;"></div>
-            </div>
-            <div class="bar-labels">
-              <div class="bar-label">목</div>
-              <div class="bar-label">금</div>
-              <div class="bar-label">토</div>
-              <div class="bar-label">일</div>
-              <div class="bar-label">월</div>
-              <div class="bar-label">화</div>
-              <div class="bar-label active">오늘</div>
-            </div>
+            <svg class="wave-svg" viewBox="0 0 280 72" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FF4274" stop-opacity="0.4"/>
+                  <stop offset="100%" stop-color="#FF4274" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Baseline -->
+              <line x1="10" y1="56" x2="270" y2="56" stroke="#2A2A30" stroke-width="1"/>
+              <!-- Area fill -->
+              <path d="M10,43 C24,43 39,38 53,38 C67,38 82,41 96,41 C110,41 126,33 140,33 C154,33 169,29 183,29 C197,29 212,21 226,21 C240,21 256,4 270,4 L270,56 L10,56 Z" fill="url(#waveGrad)"/>
+              <!-- Wave line -->
+              <path d="M10,43 C24,43 39,38 53,38 C67,38 82,41 96,41 C110,41 126,33 140,33 C154,33 169,29 183,29 C197,29 212,21 226,21 C240,21 256,4 270,4" fill="none" stroke="#FF4274" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Today dot + ring -->
+              <circle cx="270" cy="4" r="4" fill="#FF4274"/>
+              <circle cx="270" cy="4" r="8" fill="none" stroke="#FF4274" stroke-width="1" opacity="0.35"/>
+              <!-- Day labels -->
+              <text x="10"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">목</text>
+              <text x="53"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">금</text>
+              <text x="96"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">토</text>
+              <text x="140" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">일</text>
+              <text x="183" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">월</text>
+              <text x="226" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">화</text>
+              <text x="270" y="70" font-size="9" fill="#C8FF57" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">오늘</text>
+            </svg>
           </div>
 
           <!-- WHY 인사이트 -->
@@ -3602,83 +3826,21 @@
           </div>
         </div>
 
-        <!-- LIVE PULSE MODE — 어제 본 트렌드의 변화 -->
-        <div class="pulse-section">
-          <div class="pulse-section-head">
-            <div class="pulse-section-title">어제 본 트렌드는?</div>
-            <div class="pulse-section-meta">YESTERDAY → TODAY</div>
+        <!-- KEYWORDS -->
+        <div class="keywords">
+          <div class="section-head" style="padding: 0 12px;">
+            <div class="section-title">실시간 키워드</div>
+            <div class="section-meta">LIVE</div>
           </div>
-          <div class="pulse-scroll" id="pulse-scroll">
-
-            <div class="pulse-card" onclick="togglePulseCard(this, event)">
-              <div class="pulse-card-badge rising">더 떴어요</div>
-              <div class="pulse-card-title">커피값 절약한 돈으로 한 일</div>
-              <div class="pulse-card-change">
-                <span class="pulse-from">+312%</span>
-                <span class="pulse-arrow">→</span>
-                <span class="pulse-to up">+480%</span>
-              </div>
-              <div class="pulse-card-detail">
-                <div class="pulse-detail-label">PAST 7 DAYS</div>
-                <div class="pulse-mini-bars">
-                  <div class="pulse-mini-bar" style="height:30%"></div>
-                  <div class="pulse-mini-bar" style="height:40%"></div>
-                  <div class="pulse-mini-bar" style="height:35%"></div>
-                  <div class="pulse-mini-bar" style="height:55%"></div>
-                  <div class="pulse-mini-bar" style="height:62%"></div>
-                  <div class="pulse-mini-bar yst" style="height:75%"></div>
-                  <div class="pulse-mini-bar tdy" style="height:100%"></div>
-                </div>
-                <div class="pulse-detail-insight">절약 콘텐츠가 <strong>4일 연속</strong> 오르고 있어요. 주말 효과로 더 뜰 가능성 있어요.</div>
-              </div>
-            </div>
-
-            <div class="pulse-card" onclick="togglePulseCard(this, event)">
-              <div class="pulse-card-badge rising">상승 중</div>
-              <div class="pulse-card-title">출근길 5분 루틴</div>
-              <div class="pulse-card-change">
-                <span class="pulse-from">+205%</span>
-                <span class="pulse-arrow">→</span>
-                <span class="pulse-to up">+312%</span>
-              </div>
-              <div class="pulse-card-detail">
-                <div class="pulse-detail-label">PAST 7 DAYS</div>
-                <div class="pulse-mini-bars">
-                  <div class="pulse-mini-bar" style="height:25%"></div>
-                  <div class="pulse-mini-bar" style="height:32%"></div>
-                  <div class="pulse-mini-bar" style="height:28%"></div>
-                  <div class="pulse-mini-bar" style="height:45%"></div>
-                  <div class="pulse-mini-bar" style="height:52%"></div>
-                  <div class="pulse-mini-bar yst" style="height:68%"></div>
-                  <div class="pulse-mini-bar tdy" style="height:100%"></div>
-                </div>
-                <div class="pulse-detail-insight">직장인 콘텐츠 붐의 핵심이에요. <strong>월요일 효과</strong>로 오늘 특히 많이 떴어요.</div>
-              </div>
-            </div>
-
-            <div class="pulse-card" onclick="togglePulseCard(this, event)">
-              <div class="pulse-card-badge cooling">식었어요</div>
-              <div class="pulse-card-title">홈카페 레시피 공유</div>
-              <div class="pulse-card-change">
-                <span class="pulse-from">+180%</span>
-                <span class="pulse-arrow">→</span>
-                <span class="pulse-to down">+95%</span>
-              </div>
-              <div class="pulse-card-detail">
-                <div class="pulse-detail-label">PAST 7 DAYS</div>
-                <div class="pulse-mini-bars">
-                  <div class="pulse-mini-bar" style="height:60%"></div>
-                  <div class="pulse-mini-bar" style="height:80%"></div>
-                  <div class="pulse-mini-bar" style="height:100%"></div>
-                  <div class="pulse-mini-bar" style="height:85%"></div>
-                  <div class="pulse-mini-bar" style="height:68%"></div>
-                  <div class="pulse-mini-bar yst" style="height:52%"></div>
-                  <div class="pulse-mini-bar tdy down" style="height:35%"></div>
-                </div>
-                <div class="pulse-detail-insight">주말 피크 이후 조정 중이에요. <strong>다음 주말</strong>에 다시 뜰 가능성 있어요.</div>
-              </div>
-            </div>
-
+          <div class="bubble-wrap">
+            <div class="bubble b1"><div class="bubble-word">출근길 5분</div><div class="bubble-pct">+312%</div></div>
+            <div class="bubble b2"><div class="bubble-word">짠테크 루틴</div><div class="bubble-pct">+248%</div></div>
+            <div class="bubble b3"><div class="bubble-word">홈카페</div><div class="bubble-pct">+187%</div></div>
+            <div class="bubble b3"><div class="bubble-word">2010년대</div><div class="bubble-pct">+142%</div></div>
+            <div class="bubble b4"><div class="bubble-word">미라클모닝</div><div class="bubble-pct">+98%</div></div>
+            <div class="bubble b4"><div class="bubble-word">도시락</div><div class="bubble-pct">+75%</div></div>
+            <div class="bubble b5"><div class="bubble-word">퇴근루틴</div><div class="bubble-pct">+68%</div></div>
+            <div class="bubble b5"><div class="bubble-word">커피절약</div><div class="bubble-pct">+54%</div></div>
           </div>
         </div>
 
@@ -3840,45 +4002,6 @@
           </div>
         </div>
 
-        <!-- KEYWORDS -->
-        <div class="keywords">
-          <div class="section-head" style="padding: 0 12px;">
-            <div class="section-title">실시간 키워드</div>
-            <div class="section-meta">LIVE</div>
-          </div>
-          <div class="keyword-list">
-            <div class="keyword-row">
-              <div class="kw-rank">1</div>
-              <div class="kw-text">출근길 5분</div>
-              <div class="kw-bar"><div class="kw-bar-fill" style="width: 95%;"></div></div>
-              <div class="kw-spark">+312%</div>
-            </div>
-            <div class="keyword-row">
-              <div class="kw-rank">2</div>
-              <div class="kw-text">짠테크 루틴</div>
-              <div class="kw-bar"><div class="kw-bar-fill" style="width: 80%;"></div></div>
-              <div class="kw-spark">+248%</div>
-            </div>
-            <div class="keyword-row">
-              <div class="kw-rank">3</div>
-              <div class="kw-text">홈카페</div>
-              <div class="kw-bar"><div class="kw-bar-fill" style="width: 65%;"></div></div>
-              <div class="kw-spark">+187%</div>
-            </div>
-            <div class="keyword-row">
-              <div class="kw-rank">4</div>
-              <div class="kw-text">2010년대 음악</div>
-              <div class="kw-bar"><div class="kw-bar-fill" style="width: 50%;"></div></div>
-              <div class="kw-spark">+142%</div>
-            </div>
-            <div class="keyword-row">
-              <div class="kw-rank">5</div>
-              <div class="kw-text">미라클모닝</div>
-              <div class="kw-bar"><div class="kw-bar-fill" style="width: 38%;"></div></div>
-              <div class="kw-spark">+98%</div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="tab-bar">
@@ -3910,67 +4033,75 @@
         <span style="font-size: 12px;">􀙇 􀛪</span>
       </div>
       <div class="deep-header">
-        <button class="back-btn" onclick="goTo('screen-my')">←</button>
-        <div class="deep-progress-track">
-          <div class="deep-progress-fill" id="deep-progress-fill" style="width: 25%;"></div>
-        </div>
-        <div class="deep-step-text" id="deep-step-text">1<span class="total">/4</span></div>
-        <button class="skip-btn" onclick="goTo('screen-my')">나중에</button>
+        <button class="back-btn" id="deep-back-btn" onclick="goTo('screen-my')">←</button>
+        <span id="deep-header-title" style="font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; text-align: center;">콘텐츠 만들기</span>
+        <button class="skip-btn" id="deep-skip-btn" onclick="goTo('screen-my')">나중에</button>
       </div>
 
-      <div class="deep-steps" id="deep-steps">
-
-        <!-- STEP 1: 열정 -->
-        <div class="deep-step active" id="deep-step-1">
+      <!-- FORM VIEW -->
+      <div class="deep-form-scroll" id="deep-form-view">
+        <div class="deep-form-item">
           <div class="deep-category">열정 · PASSION</div>
-          <div class="deep-q">조회수 0이어도<br/>1년 내내 만들고 싶은 게<br/>있나요?</div>
-          <div class="deep-hint">잘 될지 몰라도, 그냥 좋아서 하게 되는 것.</div>
-          <textarea class="deep-textarea" id="deep-ans-1" placeholder="예: 오래된 물건 고치는 법, 새벽 혼밥 레시피, 산책 브이로그…" oninput="deepCheckNext(1)" maxlength="200"></textarea>
-          <div class="deep-char-hint" id="deep-char-1">0 / 200</div>
+          <div class="deep-form-q">조회수 0이어도 1년 내내 만들고 싶은 게 있나요?</div>
+          <div class="deep-form-hint">잘 될지 몰라도, 그냥 좋아서 하게 되는 것.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-1" placeholder="예: 오래된 물건 고치는 법, 새벽 혼밥 레시피, 산책 브이로그…" oninput="deepFormCheck()" maxlength="200"></textarea>
         </div>
-
-        <!-- STEP 2: 소비 -->
-        <div class="deep-step" id="deep-step-2">
+        <div class="deep-form-item">
           <div class="deep-category">소비 · SPENDING</div>
-          <div class="deep-q">지난 1년,<br/>가장 많이 돈 쓴<br/>취미는?</div>
-          <div class="deep-hint">카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.</div>
-          <textarea class="deep-textarea" id="deep-ans-2" placeholder="예: 카페 투어, 등산 장비, 보드게임, 독립출판…" oninput="deepCheckNext(2)" maxlength="200"></textarea>
-          <div class="deep-char-hint" id="deep-char-2">0 / 200</div>
+          <div class="deep-form-q">지난 1년, 가장 많이 돈 쓴 취미는?</div>
+          <div class="deep-form-hint">카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-2" placeholder="예: 카페 투어, 등산 장비, 보드게임, 독립출판…" oninput="deepFormCheck()" maxlength="200"></textarea>
         </div>
-
-        <!-- STEP 3: 강점 -->
-        <div class="deep-step" id="deep-step-3">
+        <div class="deep-form-item">
           <div class="deep-category">강점 · STRENGTH</div>
-          <div class="deep-q">주변에서 자주<br/>묻거나 칭찬받는 게<br/>있어요?</div>
-          <div class="deep-hint">"너 그거 어떻게 해?" 또는 "너한테 물어봐야지"라는 말을 듣는 것.</div>
-          <textarea class="deep-textarea" id="deep-ans-3" placeholder="예: 여행 코스 짜기, 다이어트 식단, 인테리어 감각…" oninput="deepCheckNext(3)" maxlength="200"></textarea>
-          <div class="deep-char-hint" id="deep-char-3">0 / 200</div>
+          <div class="deep-form-q">주변에서 자주 묻거나 칭찬받는 게 있어요?</div>
+          <div class="deep-form-hint">"너 그거 어떻게 해?" 라는 말을 듣는 것.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-3" placeholder="예: 여행 코스 짜기, 다이어트 식단, 인테리어 감각…" oninput="deepFormCheck()" maxlength="200"></textarea>
         </div>
-
-        <!-- STEP 4: 오디언스 -->
-        <div class="deep-step" id="deep-step-4">
+        <div class="deep-form-item">
           <div class="deep-category">오디언스 · AUDIENCE</div>
-          <div class="deep-q">내일 갑자기<br/>2만 팔로워가 됐어요.<br/>누가 봐줬으면 좋겠어요?</div>
-          <div class="deep-hint">팔로워 한 명의 모습을 구체적으로 떠올려보세요.</div>
-          <textarea class="deep-textarea" id="deep-ans-4" placeholder="예: 자취 2년 차 직장인, 육아 중인 30대 엄마, 취업 준비 중인 대학생…" oninput="deepCheckNext(4)" maxlength="200"></textarea>
-          <div class="deep-char-hint" id="deep-char-4">0 / 200</div>
+          <div class="deep-form-q">내 영상을 누가 봐줬으면 좋겠어요?</div>
+          <div class="deep-form-hint">팔로워 한 명의 모습을 구체적으로 떠올려보세요.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-4" placeholder="예: 자취 2년 차 직장인, 육아 중인 30대 엄마…" oninput="deepFormCheck()" maxlength="200"></textarea>
         </div>
+        <div class="deep-form-item">
+          <div class="deep-category">주제 · TOPIC</div>
+          <div class="deep-form-q">이번에 만들고 싶은 영상 주제가 있나요?</div>
+          <div class="deep-form-hint">트렌드 키워드와 내 니치를 엮어도 좋아요.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-5" placeholder="예: 짠테크 직장인 점심 도시락 5분 컷, 퇴근 후 홈카페 루틴…" oninput="deepFormCheck()" maxlength="200"></textarea>
+        </div>
+        <div class="deep-form-item">
+          <div class="deep-category">포맷 · FORMAT</div>
+          <div class="deep-form-q">어떤 형식으로 만들 건가요?</div>
+          <div class="deep-form-hint">촬영 환경과 편집 수준도 같이 적어주면 더 정확해요.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-6" placeholder="예: 60초 쇼츠, 집에서 혼자, 편집 초보 / 5분 튜토리얼…" oninput="deepFormCheck()" maxlength="200"></textarea>
+        </div>
+        <div class="deep-form-item">
+          <div class="deep-category">훅 · HOOK</div>
+          <div class="deep-form-q">첫 3초를 어떻게 열고 싶어요?</div>
+          <div class="deep-form-hint">훅이 조회수의 70%를 결정해요.</div>
+          <textarea class="deep-form-textarea" id="deep-ans-7" placeholder="예: 공감형 '나만 이런가요?', 충격형 '이걸 몰랐다면'…" oninput="deepFormCheck()" maxlength="200"></textarea>
+        </div>
+      </div>
 
-        <!-- RESULT -->
-        <div class="deep-step" id="deep-step-result">
+      <!-- RESULT VIEW -->
+      <div class="deep-form-scroll" id="deep-result-view" style="display:none;">
+        <div style="padding: 8px 0 24px;">
           <div class="deep-result-label">AI 니치 분석 완료</div>
           <div class="deep-niche-card">
             <div class="deep-niche-title" id="deep-niche-title">분석 중…</div>
             <div class="deep-niche-desc" id="deep-niche-desc"></div>
             <div class="deep-niche-tags" id="deep-niche-tags"></div>
-          </div>
-          <div class="deep-insight-row">
-            <div class="deep-insight-label">추천 콘텐츠 포맷</div>
-            <div class="deep-insight-text" id="deep-insight-format"></div>
-          </div>
-          <div class="deep-insight-row">
-            <div class="deep-insight-label">가장 가능성 있는 플랫폼</div>
-            <div class="deep-insight-text" id="deep-insight-platform"></div>
+            <div class="deep-niche-meta">
+              <div class="deep-niche-meta-item">
+                <div class="deep-niche-meta-label fmt">FORMAT</div>
+                <div class="deep-niche-meta-value" id="deep-insight-format"></div>
+              </div>
+              <div class="deep-niche-meta-item">
+                <div class="deep-niche-meta-label plt">PLATFORM</div>
+                <div class="deep-niche-meta-value" id="deep-insight-platform"></div>
+              </div>
+            </div>
           </div>
           <div class="deep-result-cta">
             <div class="deep-action-row">
@@ -3988,22 +4119,46 @@
             <button class="cta" style="background: var(--bg-card); color: var(--ink); border: 1.5px solid var(--line);" onclick="goTo('screen-my')">대시보드로 돌아가기</button>
           </div>
         </div>
-
       </div>
 
       <div class="cta-wrap" id="deep-cta-wrap">
-        <button class="cta" id="deep-cta" disabled onclick="deepNext()">다음</button>
+        <button class="cta" id="deep-cta" disabled onclick="submitDeepProfile()">AI 분석 시작</button>
       </div>
     </div>
 
     <!-- ============ SCREEN: SCRIPT ============ -->
+    <!-- TOPIC INPUT SCREEN -->
+    <div class="screen deep-screen" id="screen-content-topic">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span style="font-size: 12px;">􀙇 􀛪</span>
+      </div>
+      <div class="deep-header">
+        <button class="back-btn" onclick="goTo('screen-deep-profile')">←</button>
+        <span id="topic-action-label" style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-soft); letter-spacing: 0.06em; flex: 1;"></span>
+        <button class="skip-btn" onclick="goTo('screen-deep-profile')">나중에</button>
+      </div>
+      <div class="deep-steps">
+        <div class="deep-step" id="topic-step">
+          <div class="deep-category">TOPIC · 주제</div>
+          <div class="deep-q">어떤 영상을<br>만들고 싶어요?</div>
+          <div class="deep-hint">구체적일수록 더 딱 맞게 나와요.</div>
+          <textarea class="deep-textarea" id="topic-input" placeholder="예: 냉장고 파먹기 30분 레시피, 공복 홈트, 성수동 카페 3곳…" oninput="topicCheckNext()" maxlength="150"></textarea>
+          <div class="deep-char-hint"><span id="topic-char">0</span> / 150</div>
+        </div>
+      </div>
+      <div class="cta-wrap">
+        <button class="cta" id="topic-next-btn" disabled onclick="goToContentResult()">추천 받기</button>
+      </div>
+    </div>
+
     <div class="screen content-screen" id="screen-script">
       <div class="status-bar">
         <span>9:41</span>
         <span style="font-size: 12px;">􀙇 􀛪</span>
       </div>
       <div class="content-header">
-        <button class="back-btn" onclick="goTo('screen-deep-profile')">←</button>
+        <button class="back-btn" onclick="goTo('screen-content-topic')">←</button>
         <div class="content-header-title">대본 추천</div>
         <div class="content-header-tag">AI GENERATED</div>
       </div>
@@ -4052,6 +4207,10 @@
             <div class="script-line" id="script-outro"></div>
           </div>
         </div>
+        <div class="save-content-wrap">
+          <button class="save-content-btn" id="script-save-btn" onclick="saveContent('script')">이 대본 저장하기</button>
+          <button class="save-content-btn" style="margin-top: 8px; background: transparent; border-color: var(--line-strong); color: var(--ink-soft);" onclick="switchTab('my')">마이페이지로 돌아가기</button>
+        </div>
       </div>
     </div>
 
@@ -4062,7 +4221,7 @@
         <span style="font-size: 12px;">􀙇 􀛪</span>
       </div>
       <div class="content-header">
-        <button class="back-btn" onclick="goTo('screen-deep-profile')">←</button>
+        <button class="back-btn" onclick="goTo('screen-content-topic')">←</button>
         <div class="content-header-title">콘티 추천</div>
         <div class="content-header-tag">AI GENERATED</div>
       </div>
@@ -4073,6 +4232,10 @@
         <div class="scene-total">
           <div class="scene-total-label">총 영상 길이</div>
           <div class="scene-total-val" id="scene-total-duration"></div>
+        </div>
+        <div class="save-content-wrap">
+          <button class="save-content-btn" id="storyboard-save-btn" onclick="saveContent('storyboard')">이 콘티 저장하기</button>
+          <button class="save-content-btn" style="margin-top: 8px; background: transparent; border-color: var(--line-strong); color: var(--ink-soft);" onclick="switchTab('my')">마이페이지로 돌아가기</button>
         </div>
       </div>
     </div>
@@ -4419,31 +4582,12 @@
           </div>
         </div>
 
-        <!-- 내 컬렉션 -->
-        <div class="collection-section">
-          <div class="section-head">
-            <div class="section-title">내 컬렉션</div>
-            <div class="section-meta" id="collection-count-badge" style="display:none;">
-              <span id="collection-count">0</span>개
-            </div>
-          </div>
-          <div class="collection-empty" id="collection-empty">
-            <div class="collection-empty-text">저장한 트렌드가 없어요</div>
-            <div class="collection-empty-sub">트렌드 카드에서 저장 버튼을 눌러보세요</div>
-          </div>
-          <div class="collection-grid" id="collection-grid"></div>
-        </div>
-
-        <!-- 액션 -->
         <div class="actions">
-          <div class="section-head">
-            <div class="section-title">이제는 해보자 팔로워 1만</div>
-          </div>
           <div class="action-list">
             <div class="action-item" onclick="openDeepProfile()">
               <div class="action-num">01</div>
               <div class="action-body">
-                <div class="action-title">나만의 콘텐츠 만들러 가기</div>
+                <div class="action-title">콘텐츠 만들기</div>
                 <div class="action-desc">주관식 4문항 · 약 2분</div>
               </div>
               <div class="action-arrow">→</div>
@@ -4466,6 +4610,37 @@
             </div>
           </div>
         </div>
+
+        <!-- 내 컬렉션 -->
+        <div class="collection-section">
+          <div class="section-head">
+            <div class="section-title">내 컬렉션</div>
+            <div class="section-meta" id="collection-count-badge" style="display:none;">
+              <span id="collection-count">0</span>개
+            </div>
+          </div>
+          <div class="collection-empty" id="collection-empty">
+            <div class="collection-empty-text">저장한 트렌드가 없어요</div>
+            <div class="collection-empty-sub">트렌드 카드에서 저장 버튼을 눌러보세요</div>
+          </div>
+          <div class="collection-grid" id="collection-grid"></div>
+        </div>
+
+        <!-- 저장한 대본·콘티 -->
+        <div class="collection-section">
+          <div class="section-head">
+            <div class="section-title">저장한 대본·콘티</div>
+            <div class="section-meta" id="saved-content-badge" style="display:none;">
+              <span id="saved-content-count">0</span>개
+            </div>
+          </div>
+          <div class="collection-empty" id="saved-content-empty">
+            <div class="collection-empty-text">저장한 대본·콘티가 없어요</div>
+            <div class="collection-empty-sub">콘티·대본 추천 결과에서 저장해보세요</div>
+          </div>
+          <div id="saved-content-list"></div>
+        </div>
+
       </div>
 
       <div class="tab-bar">
@@ -4501,6 +4676,56 @@
 
   // Save & Collection state
   const savedTrends = [];
+  const savedContents = [];
+
+  function saveContent(type) {
+    const id = Date.now();
+    let item;
+    if (type === 'script') {
+      item = { id, type: 'script', label: '대본',
+        niche: document.getElementById('script-niche-title').textContent,
+        topic: document.getElementById('script-subtitle').textContent };
+      const btn = document.getElementById('script-save-btn');
+      btn.textContent = '저장됨'; btn.classList.add('saved'); btn.disabled = true;
+    } else {
+      item = { id, type: 'storyboard', label: '콘티',
+        niche: document.getElementById('storyboard-niche-title').textContent,
+        topic: document.getElementById('storyboard-subtitle').textContent };
+      const btn = document.getElementById('storyboard-save-btn');
+      btn.textContent = '저장됨'; btn.classList.add('saved'); btn.disabled = true;
+    }
+    savedContents.push(item);
+    renderSavedContents();
+  }
+
+  function removeSavedContent(id) {
+    const idx = savedContents.findIndex(c => c.id === id);
+    if (idx !== -1) savedContents.splice(idx, 1);
+    renderSavedContents();
+  }
+
+  function renderSavedContents() {
+    const list = document.getElementById('saved-content-list');
+    const empty = document.getElementById('saved-content-empty');
+    const badge = document.getElementById('saved-content-badge');
+    if (!list) return;
+    if (savedContents.length === 0) {
+      empty.style.display = ''; list.innerHTML = ''; badge.style.display = 'none'; return;
+    }
+    empty.style.display = 'none';
+    badge.style.display = '';
+    document.getElementById('saved-content-count').textContent = savedContents.length;
+    list.innerHTML = savedContents.map(c => `
+      <div class="saved-content-item">
+        <div class="saved-content-type ${c.type}">${c.label}</div>
+        <div class="saved-content-info">
+          <div class="saved-content-niche">${c.niche}</div>
+          <div class="saved-content-topic">${c.topic}</div>
+        </div>
+        <button class="collection-item-remove" onclick="removeSavedContent(${c.id})">×</button>
+      </div>
+    `).join('');
+  }
 
   function saveTrend(btn, id, title, platform, growth) {
     const idx = savedTrends.findIndex(t => t.id === id);
@@ -4739,62 +4964,47 @@
   const deepAnswers = { 1: '', 2: '', 3: '', 4: '' };
 
   function openDeepProfile() {
-    deepCurrentStep = 1;
-    deepAnswers[1] = ''; deepAnswers[2] = ''; deepAnswers[3] = ''; deepAnswers[4] = '';
-    ['1','2','3','4'].forEach(n => {
-      const ta = document.getElementById('deep-ans-' + n);
+    for (let i = 1; i <= 7; i++) {
+      deepAnswers[i] = '';
+      const ta = document.getElementById('deep-ans-' + i);
       if (ta) ta.value = '';
-      const ch = document.getElementById('deep-char-' + n);
-      if (ch) ch.textContent = '0 / 200';
-    });
-    document.querySelectorAll('.deep-step').forEach(s => s.classList.remove('active', 'exit'));
-    document.getElementById('deep-step-1').classList.add('active');
-    document.getElementById('deep-progress-fill').style.width = '25%';
-    document.getElementById('deep-step-text').innerHTML = '1<span class="total">/4</span>';
+    }
+    document.getElementById('deep-form-view').style.display = '';
+    document.getElementById('deep-result-view').style.display = 'none';
     document.getElementById('deep-cta').disabled = true;
-    document.getElementById('deep-cta').textContent = '다음';
+    document.getElementById('deep-cta').textContent = 'AI 분석 시작';
     document.getElementById('deep-cta-wrap').style.display = '';
+    document.getElementById('deep-header-title').textContent = '콘텐츠 만들기';
+    document.getElementById('deep-skip-btn').style.display = '';
+    document.getElementById('deep-back-btn').onclick = () => goTo('screen-my');
+    document.getElementById('deep-form-view').scrollTop = 0;
     goTo('screen-deep-profile');
   }
 
-  function deepCheckNext(step) {
-    const ta = document.getElementById('deep-ans-' + step);
-    const ch = document.getElementById('deep-char-' + step);
-    const val = ta.value.trim();
-    deepAnswers[step] = val;
-    ch.textContent = ta.value.length + ' / 200';
+  function deepFormCheck() {
+    const val = (document.getElementById('deep-ans-1').value || '').trim();
     document.getElementById('deep-cta').disabled = val.length === 0;
   }
 
-  function deepNext() {
-    const current = deepCurrentStep;
-    const next = current + 1;
-
-    const currentEl = document.getElementById('deep-step-' + current);
-    currentEl.classList.add('exit');
-    setTimeout(() => currentEl.classList.remove('active', 'exit'), 350);
-
-    if (next <= 4) {
-      deepCurrentStep = next;
-      const pct = (next / 4) * 100;
-      document.getElementById('deep-progress-fill').style.width = pct + '%';
-      document.getElementById('deep-step-text').innerHTML = next + '<span class="total">/4</span>';
-      document.getElementById('deep-cta').disabled = true;
-      const nextEl = document.getElementById('deep-step-' + next);
-      setTimeout(() => {
-        nextEl.classList.add('active');
-        const ta = document.getElementById('deep-ans-' + next);
-        if (ta) setTimeout(() => ta.focus(), 100);
-      }, 50);
-    } else {
-      // 완료 → 결과 생성
-      document.getElementById('deep-progress-fill').style.width = '100%';
-      document.getElementById('deep-cta-wrap').style.display = 'none';
-      buildDeepResult();
-      setTimeout(() => {
-        document.getElementById('deep-step-result').classList.add('active');
-      }, 50);
+  function submitDeepProfile() {
+    for (let i = 1; i <= 7; i++) {
+      deepAnswers[i] = (document.getElementById('deep-ans-' + i).value || '').trim();
     }
+    document.getElementById('deep-form-view').style.display = 'none';
+    document.getElementById('deep-cta-wrap').style.display = 'none';
+    document.getElementById('deep-header-title').textContent = 'AI 니치 분석';
+    document.getElementById('deep-skip-btn').style.display = 'none';
+    document.getElementById('deep-back-btn').onclick = () => {
+      document.getElementById('deep-form-view').style.display = '';
+      document.getElementById('deep-result-view').style.display = 'none';
+      document.getElementById('deep-cta-wrap').style.display = '';
+      document.getElementById('deep-header-title').textContent = '콘텐츠 만들기';
+      document.getElementById('deep-skip-btn').style.display = '';
+      document.getElementById('deep-back-btn').onclick = () => goTo('screen-my');
+    };
+    buildDeepResult();
+    document.getElementById('deep-result-view').style.display = '';
+    document.getElementById('deep-result-view').scrollTop = 0;
   }
 
   /* ===========================
@@ -4921,37 +5131,68 @@
 
   let currentNicheKey = 'default';
 
+  let pendingContentAction = 'storyboard';
+
   function openScript() {
-    const c = nicheContent[currentNicheKey] || nicheContent.default;
-    const nicheTitle = document.getElementById('deep-niche-title').textContent;
-    document.getElementById('script-niche-title').textContent = nicheTitle;
-    document.getElementById('script-subtitle').textContent = c.storyboard.subtitle;
-    document.getElementById('script-hook').textContent = c.script.hook;
-    document.getElementById('script-body').textContent = c.script.body;
-    document.getElementById('script-cta').textContent = c.script.cta;
-    document.getElementById('script-outro').textContent = c.script.outro;
-    goTo('screen-script');
+    pendingContentAction = 'script';
+    document.getElementById('topic-action-label').textContent = '대본 추천';
+    document.getElementById('topic-input').value = '';
+    document.getElementById('topic-char').textContent = '0';
+    document.getElementById('topic-next-btn').disabled = true;
+    document.getElementById('topic-step').classList.add('active');
+    goTo('screen-content-topic');
   }
 
   function openStoryboard() {
+    pendingContentAction = 'storyboard';
+    document.getElementById('topic-action-label').textContent = '콘티 추천';
+    document.getElementById('topic-input').value = '';
+    document.getElementById('topic-char').textContent = '0';
+    document.getElementById('topic-next-btn').disabled = true;
+    document.getElementById('topic-step').classList.add('active');
+    goTo('screen-content-topic');
+  }
+
+  function topicCheckNext() {
+    const val = document.getElementById('topic-input').value.trim();
+    document.getElementById('topic-char').textContent = document.getElementById('topic-input').value.length;
+    document.getElementById('topic-next-btn').disabled = val.length === 0;
+  }
+
+  function goToContentResult() {
+    const topic = document.getElementById('topic-input').value.trim();
     const c = nicheContent[currentNicheKey] || nicheContent.default;
     const nicheTitle = document.getElementById('deep-niche-title').textContent;
-    document.getElementById('storyboard-niche-title').textContent = nicheTitle;
-    document.getElementById('storyboard-subtitle').textContent = c.storyboard.subtitle;
-    document.getElementById('scene-total-duration').textContent = c.storyboard.total;
-    const list = document.getElementById('scene-list');
-    list.innerHTML = c.storyboard.scenes.map((s, i) => `
-      <div class="scene-card">
-        <div class="scene-num">${i + 1}</div>
-        <div class="scene-body">
-          <div class="scene-shot">${s.shot}</div>
-          <div class="scene-desc">${s.desc}</div>
-          <div class="scene-caption">${s.caption}</div>
-          <div class="scene-duration">${s.duration}</div>
+    if (pendingContentAction === 'script') {
+      document.getElementById('script-niche-title').textContent = nicheTitle;
+      document.getElementById('script-subtitle').textContent = topic ? `"${topic}" 기반으로 만들었어요` : c.storyboard.subtitle;
+      document.getElementById('script-hook').textContent = c.script.hook;
+      document.getElementById('script-body').textContent = c.script.body;
+      document.getElementById('script-cta').textContent = c.script.cta;
+      document.getElementById('script-outro').textContent = c.script.outro;
+      const sbtn = document.getElementById('script-save-btn');
+      sbtn.textContent = '이 대본 저장하기'; sbtn.classList.remove('saved'); sbtn.disabled = false;
+      goTo('screen-script');
+    } else {
+      document.getElementById('storyboard-niche-title').textContent = nicheTitle;
+      document.getElementById('storyboard-subtitle').textContent = topic ? `"${topic}" 기반으로 만들었어요` : c.storyboard.subtitle;
+      document.getElementById('scene-total-duration').textContent = c.storyboard.total;
+      const list = document.getElementById('scene-list');
+      list.innerHTML = c.storyboard.scenes.map((s, i) => `
+        <div class="scene-card">
+          <div class="scene-num">${i + 1}</div>
+          <div class="scene-body">
+            <div class="scene-shot">${s.shot}</div>
+            <div class="scene-desc">${s.desc}</div>
+            <div class="scene-caption">${s.caption}</div>
+            <div class="scene-duration">${s.duration}</div>
+          </div>
         </div>
-      </div>
-    `).join('');
-    goTo('screen-storyboard');
+      `).join('');
+      const sbtn = document.getElementById('storyboard-save-btn');
+      sbtn.textContent = '이 콘티 저장하기'; sbtn.classList.remove('saved'); sbtn.disabled = false;
+      goTo('screen-storyboard');
+    }
   }
 
   function buildDeepResult() {
@@ -4964,8 +5205,8 @@
     let niche = '라이프스타일 크리에이터';
     let desc = '일상 속 소소한 발견을 콘텐츠로 만드는 타입이에요. 특정 트렌드보다 꾸준히 공감받는 루틴이 강점입니다.';
     let tags = ['DAILY', 'ROUTINE', 'LIFESTYLE'];
-    let format = '짧은 브이로그 (60-90초) — 출퇴근·점심·퇴근 루틴 포맷이 잘 맞아요.';
-    let platform = '인스타그램 릴스 + 틱톡 — 짧고 따뜻한 일상 콘텐츠 수요가 높아요.';
+    let format = '브이로그 · 60-90초 루틴';
+    let platform = '인스타그램 릴스 · 틱톡';
 
     const foodKws = ['요리','음식','레시피','먹','카페','밥','식당','쿠킹'];
     const fitnessKws = ['운동','헬스','다이어트','요가','필라','러닝','등산'];
@@ -4991,36 +5232,36 @@
       niche = '집밥 & 카페 큐레이터';
       desc = '음식에 진심인 사람이에요. "이건 진짜 맛있다"는 감각이 콘텐츠가 됩니다. 레시피보다 분위기·선택 기준을 담으면 차별화돼요.';
       tags = ['FOOD', 'HOMECAFE', 'RECIPE'];
-      format = '30-60초 쇼트폼 — 재료 준비부터 완성까지 원테이크, 또는 카페 브이로그.';
-      platform = '인스타그램 릴스 — 음식 콘텐츠 저장률 1위 플랫폼이에요.';
+      format = '쇼츠 · 30-60초 원테이크';
+      platform = '인스타그램 릴스';
     } else if (top === 'fitness' && scores.fitness > 0) {
       currentNicheKey = 'fitness';
       niche = '현실 피트니스 크리에이터';
       desc = '화려한 몸보다 "나처럼 바쁜 사람도 되더라"는 현실감이 강점이에요. 변화 과정 자체가 콘텐츠입니다.';
       tags = ['FITNESS', 'HEALTH', 'ROUTINE'];
-      format = '주간 기록 + 챌린지 포맷 — 7일/30일 단위 변화 기록이 팔로우 유지율 높아요.';
-      platform = '틱톡 + 유튜브 쇼츠 — 운동 관련 검색량 꾸준히 상위권이에요.';
+      format = '7-30일 챌린지 기록';
+      platform = '틱톡 · 유튜브 쇼츠';
     } else if (top === 'travel' && scores.travel > 0) {
       currentNicheKey = 'travel';
       niche = '로컬 여행 큐레이터';
       desc = '발품 팔아 찾은 곳들이 남들이 모르는 보물이에요. "어디서 찾았어요?"가 가장 많이 받을 DM이에요.';
       tags = ['TRAVEL', 'LOCAL', 'CURATION'];
-      format = '장소 리뷰 + 코스 추천 — "당일치기 OO 코스" 포맷이 저장·공유율 최고예요.';
-      platform = '인스타그램 + 유튜브 — 여행 정보는 저장 후 나중에 보는 패턴이 강해요.';
+      format = '당일치기 코스 · 장소 리뷰';
+      platform = '인스타그램 · 유튜브';
     } else if (top === 'tech' && scores.tech > 0) {
       currentNicheKey = 'tech';
       niche = 'AI · 테크 라이프 크리에이터';
       desc = '새로운 도구를 빠르게 써보고 "이게 진짜 쓸 만해?"를 정직하게 말해주는 타입이에요.';
       tags = ['TECH', 'AI', 'REVIEW'];
-      format = '비교 리뷰 + "써봤어요" 포맷 — 신제품/앱 출시 직후 빠른 반응 콘텐츠.';
-      platform = '유튜브 쇼츠 + 틱톡 — 테크 리뷰 쇼트폼 수요 급성장 중이에요.';
+      format = '"써봤어요" 비교 리뷰 · 쇼트폼';
+      platform = '유튜브 쇼츠 · 틱톡';
     } else if (top === 'selfdev' && scores.selfdev > 0) {
       currentNicheKey = 'selfdev';
       niche = '생산성 · 자기계발 크리에이터';
       desc = '꾸준히 뭔가를 해온 사람이에요. "저는 이렇게 했어요"가 누군가에게는 엄청난 동기부여가 됩니다.';
       tags = ['PRODUCTIVITY', 'SELFDEV', 'ROUTINE'];
-      format = '루틴 공유 + 결과 기록 — "OO일 챌린지 결과" 포맷이 저장률 높아요.';
-      platform = '유튜브 + 인스타그램 — 자기계발 콘텐츠는 긴 영상도 소화하는 팬층이 있어요.';
+      format = 'OO일 챌린지 · 루틴 기록';
+      platform = '유튜브 · 인스타그램';
     }
 
     document.getElementById('deep-niche-title').textContent = niche;
@@ -5030,7 +5271,6 @@
     document.getElementById('deep-insight-format').textContent = format;
     document.getElementById('deep-insight-platform').textContent = platform;
 
-    document.getElementById('deep-step-text').innerHTML = '완료';
   }
 
   function expandBriefing() {
@@ -5245,6 +5485,19 @@
     document.getElementById('counter').style.display = 'none';
     goTo('screen-welcome');
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const content = document.querySelector('#screen-trend .screen-content');
+    const headline = document.querySelector('.headline-block');
+    const keywords = document.querySelector('#screen-trend .keywords');
+    const dashHero = content && content.querySelector('.dash-hero');
+    if (content && dashHero && headline) {
+      content.insertBefore(headline, dashHero.nextSibling);
+    }
+    if (content && headline && keywords) {
+      content.insertBefore(keywords, headline.nextSibling);
+    }
+  });
 </script>
 
 </body>

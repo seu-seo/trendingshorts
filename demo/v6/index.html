@@ -1254,15 +1254,61 @@
   /* === HEADLINE — Spatial Layered === */
   .headline-block {
     margin: 0 16px 28px;
-    padding: 22px 22px 18px;
+    padding: 22px 22px 20px;
     background: var(--bg-card);
-    border-radius: 22px;
+    border-radius: 16px;
     cursor: pointer;
-    transition: all 0.3s var(--ease-out);
+    transition: all 0.2s ease;
     border: 1px solid var(--line);
-    box-shadow: var(--elev-floating);
+    border-left: 3px solid var(--primary);
     position: relative;
     overflow: hidden;
+  }
+  .signal-title {
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+  }
+  .signal-growth-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .signal-growth-num {
+    font-family: var(--font-mono);
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(200, 255, 87, 0.3);
+  }
+  .signal-growth-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+  }
+  .signal-sub-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .signal-why {
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
   }
   .headline-block::before { display: none; }
   .headline-block > * {
@@ -1292,10 +1338,10 @@
   }
   .pulse-dot {
     width: 6px; height: 6px;
-    background: #6B6B72;
+    background: var(--primary);
     border-radius: 50%;
     animation: pulse-glow 1.6s ease-in-out infinite;
-    box-shadow: 0 0 0 2px rgba(50,128,247,0.25);
+    box-shadow: 0 0 0 2px rgba(200,255,87,0.3);
   }
   @keyframes blink {
     0%, 100% { opacity: 1; }
@@ -4490,72 +4536,44 @@
         </div>
 
         <!-- HEADLINE -->
-        <div class="headline-block">
+        <div class="headline-block" onclick="openTrendDetail('커피값 절약한 돈으로 한 일')">
           <div class="headline-top-row">
             <div class="headline-tag">
               <span class="pulse-dot"></span>
-              Today's Big Trend
+              오늘의 시그널
             </div>
             <div class="headline-time">UPDATED 9:30 AM</div>
           </div>
 
-          <div class="h-stats-row">
-            <div class="h-stat">
-              <div class="h-stat-label">Growth</div>
-              <div class="h-stat-num up">+312%</div>
-            </div>
-            <div class="h-stat">
-              <div class="h-stat-label">Views</div>
-              <div class="h-stat-num">2.4M</div>
-            </div>
-            <div class="h-stat">
-              <div class="h-stat-label">New Posts</div>
-              <div class="h-stat-num accent">8.2K</div>
-            </div>
+          <div class="signal-title">"커피값 절약한 돈으로<br>한 일" 급상승 중</div>
+
+          <div class="signal-growth-row">
+            <div class="signal-growth-num">+480%</div>
+            <div class="signal-growth-meta">지난 7일 대비</div>
+          </div>
+          <div class="signal-sub-stats">
+            <span>1.8M 조회</span>
+            <span>·</span>
+            <span>인스타그램</span>
+            <span>·</span>
+            <span>8.2K 게시물</span>
           </div>
 
-          <div class="bar-chart">
-            <div class="bar-chart-head">
-              <div class="bar-chart-title">PAST 7 DAYS</div>
-              <div class="bar-chart-meta">PEAK · TODAY</div>
-            </div>
-            <svg class="wave-svg" viewBox="0 0 280 72" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#FF4274" stop-opacity="0.4"/>
-                  <stop offset="100%" stop-color="#FF4274" stop-opacity="0"/>
-                </linearGradient>
-              </defs>
-              <!-- Baseline -->
-              <line x1="10" y1="56" x2="270" y2="56" stroke="#2A2A30" stroke-width="1"/>
-              <!-- Area fill -->
-              <path d="M10,43 C24,43 39,38 53,38 C67,38 82,41 96,41 C110,41 126,33 140,33 C154,33 169,29 183,29 C197,29 212,21 226,21 C240,21 256,4 270,4 L270,56 L10,56 Z" fill="url(#waveGrad)"/>
-              <!-- Wave line -->
-              <path d="M10,43 C24,43 39,38 53,38 C67,38 82,41 96,41 C110,41 126,33 140,33 C154,33 169,29 183,29 C197,29 212,21 226,21 C240,21 256,4 270,4" fill="none" stroke="#FF4274" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <!-- Today dot + ring -->
-              <circle cx="270" cy="4" r="4" fill="#FF4274"/>
-              <circle cx="270" cy="4" r="8" fill="none" stroke="#FF4274" stroke-width="1" opacity="0.35"/>
-              <!-- Day labels -->
-              <text x="10"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">목</text>
-              <text x="53"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">금</text>
-              <text x="96"  y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">토</text>
-              <text x="140" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">일</text>
-              <text x="183" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">월</text>
-              <text x="226" y="70" font-size="9" fill="#3A3A42" font-family="JetBrains Mono,monospace" text-anchor="middle">화</text>
-              <text x="270" y="70" font-size="9" fill="#C8FF57" font-family="JetBrains Mono,monospace" text-anchor="middle" font-weight="600">오늘</text>
-            </svg>
-          </div>
+          <svg class="wave-svg" viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#C8FF57" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#C8FF57" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M10,44 C40,44 55,40 80,38 C105,36 120,34 140,30 C160,26 180,20 210,14 C230,10 250,6 270,2 L270,56 L10,56 Z" fill="url(#waveGrad)"/>
+            <path d="M10,44 C40,44 55,40 80,38 C105,36 120,34 140,30 C160,26 180,20 210,14 C230,10 250,6 270,2" fill="none" stroke="#C8FF57" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="270" cy="2" r="3" fill="#C8FF57"/>
+            <circle cx="270" cy="2" r="7" fill="none" stroke="#C8FF57" stroke-width="1" opacity="0.4"/>
+          </svg>
 
-          <!-- WHY 인사이트 -->
-          <div class="headline-why">
-            <div class="headline-why-label">Why now</div>
-            <div class="headline-big">
-              "출근길 5분 루틴"이 어제보다 <span class="big-num">3배</span> 더 보였어요
-            </div>
-            <div class="headline-why-text">
-              5월 들어 출근 시간이 평균 <span class="highlight">7분 늘었어요</span>.<br/>
-              직장인들이 짧고 알찬 콘텐츠를 더 찾고 있어요.
-            </div>
+          <div class="signal-why">
+            5월 절약 챌린지 확산으로 짠테크 콘텐츠 수요가 3배 급증했어요
           </div>
         </div>
 

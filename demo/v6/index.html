@@ -587,6 +587,25 @@
     color: #000;
     font-weight: 600;
   }
+  .chip-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .cat-custom-input {
+    margin-top: 12px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 8px 0;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .cat-custom-input::placeholder { color: var(--ink-soft); }
+  .cat-custom-input:focus { border-bottom-color: var(--primary); }
   .q-header {
     padding: 14px 20px 0;
     display: flex;
@@ -3826,17 +3845,22 @@
           <div class="q-all-section-label">카테고리</div>
           <div class="q-all-section-title">어떤 분야가 궁금해요?</div>
           <div class="simple-chips" id="cat-chips">
-            <div class="chip cat-chip" data-cat="food" onclick="toggleCat(this)">먹방</div>
-            <div class="chip cat-chip" data-cat="beauty" onclick="toggleCat(this)">뷰티</div>
-            <div class="chip cat-chip" data-cat="fitness" onclick="toggleCat(this)">운동</div>
-            <div class="chip cat-chip" data-cat="travel" onclick="toggleCat(this)">여행</div>
-            <div class="chip cat-chip" data-cat="game" onclick="toggleCat(this)">게임</div>
-            <div class="chip cat-chip" data-cat="fashion" onclick="toggleCat(this)">패션</div>
-            <div class="chip cat-chip" data-cat="vlog" onclick="toggleCat(this)">일상</div>
-            <div class="chip cat-chip" data-cat="study" onclick="toggleCat(this)">공부</div>
-            <div class="chip cat-chip" data-cat="pet" onclick="toggleCat(this)">반려동물</div>
-            <div class="chip cat-chip" data-cat="dance" onclick="toggleCat(this)">댄스</div>
+            <div class="chip chip-sm cat-chip" data-cat="food" onclick="toggleCat(this)">먹방</div>
+            <div class="chip chip-sm cat-chip" data-cat="beauty" onclick="toggleCat(this)">뷰티</div>
+            <div class="chip chip-sm cat-chip" data-cat="fitness" onclick="toggleCat(this)">운동</div>
+            <div class="chip chip-sm cat-chip" data-cat="travel" onclick="toggleCat(this)">여행</div>
+            <div class="chip chip-sm cat-chip" data-cat="game" onclick="toggleCat(this)">게임</div>
+            <div class="chip chip-sm cat-chip" data-cat="fashion" onclick="toggleCat(this)">패션</div>
+            <div class="chip chip-sm cat-chip" data-cat="vlog" onclick="toggleCat(this)">일상</div>
+            <div class="chip chip-sm cat-chip" data-cat="study" onclick="toggleCat(this)">공부</div>
           </div>
+          <input
+            id="cat-custom-input"
+            class="cat-custom-input"
+            type="text"
+            placeholder="직접 입력 (예: 반려동물, 댄스...)"
+            oninput="onCategoryTextAll(this)"
+          />
         </div>
 
         <div class="q-all-divider"></div>
@@ -5208,6 +5232,13 @@
     checkAllQ();
   }
 
+  function onCategoryTextAll(el) {
+    const custom = matchCategories(el.value);
+    const chips = [...document.querySelectorAll('.cat-chip.selected')].map(c => c.dataset.cat);
+    answers.categories = [...new Set([...chips, ...custom])];
+    checkAllQ();
+  }
+
   function selectAgeAll(el) {
     document.querySelectorAll('#age-segment-all .age-seg-opt').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
@@ -5223,7 +5254,9 @@
 
   function checkAllQ() {
     const hasPlatform = !!answers.platform;
-    const hasCategory = answers.categories && answers.categories.length > 0;
+    const customInput = document.getElementById('cat-custom-input');
+    const hasCategory = (answers.categories && answers.categories.length > 0) ||
+      (customInput && customInput.value.trim().length > 0);
     const hasAge = !!answers.age;
     const btn = document.getElementById('cta-all');
     if (btn) btn.disabled = !(hasPlatform && hasCategory && hasAge);

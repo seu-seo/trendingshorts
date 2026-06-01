@@ -4498,41 +4498,54 @@
             </div>
             <div class="headline-time">LIVE</div>
           </div>
-          <div style="display:flex; align-items:center; gap:20px;">
-            <svg viewBox="0 0 120 120" width="120" height="120" style="flex-shrink:0;">
-              <circle cx="60" cy="60" r="40" fill="none" stroke="#FF2D78" stroke-width="13"
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 120 120" width="140" height="140" style="overflow:visible;">
+              <defs>
+                <filter id="glow-pink" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="glow-blue" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="glow-lime" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <!-- glow layers -->
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#FF2D78" stroke-width="16" opacity="0.25"
                 stroke-dasharray="130.7 120.6" stroke-dashoffset="62.8" stroke-linecap="round"/>
-              <circle cx="60" cy="60" r="40" fill="none" stroke="#38BFFF" stroke-width="13"
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#38BFFF" stroke-width="16" opacity="0.25"
                 stroke-dasharray="55.1 196.2" stroke-dashoffset="-73.9" stroke-linecap="round"/>
-              <circle cx="60" cy="60" r="40" fill="none" stroke="#A855F7" stroke-width="13"
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#C8FF57" stroke-width="16" opacity="0.25"
                 stroke-dasharray="47.5 203.8" stroke-dashoffset="-135.0" stroke-linecap="round"/>
-              <text x="60" y="55" text-anchor="middle" font-size="9" fill="#6B6B72" font-family="JetBrains Mono,monospace" letter-spacing="1">1위</text>
-              <text x="60" y="73" text-anchor="middle" font-size="19" fill="#FF2D78" font-family="JetBrains Mono,monospace" font-weight="700">+480%</text>
+              <!-- crisp layers -->
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#FF2D78" stroke-width="11"
+                stroke-dasharray="130.7 120.6" stroke-dashoffset="62.8" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#38BFFF" stroke-width="11"
+                stroke-dasharray="55.1 196.2" stroke-dashoffset="-73.9" stroke-linecap="round"/>
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#C8FF57" stroke-width="11"
+                stroke-dasharray="47.5 203.8" stroke-dashoffset="-135.0" stroke-linecap="round"/>
+              <text x="60" y="57" text-anchor="middle" font-size="8" fill="rgba(236,237,238,0.3)" font-family="JetBrains Mono,monospace" letter-spacing="1">TODAY #1</text>
+              <text x="60" y="73" text-anchor="middle" font-size="17" fill="#FF2D78" font-family="JetBrains Mono,monospace" font-weight="700" filter="url(#glow-pink)">+480%</text>
             </svg>
-            <div style="display:flex; flex-direction:column; gap:14px; flex:1;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:2px;background:#FF2D78;flex-shrink:0;"></div>
-                <div style="flex:1;">
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:12px;color:var(--ink-soft);">인스타그램 1위</div>
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:11px;color:var(--gray);margin-top:1px;">커피값 절약한 돈으로 한 일</div>
-                </div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#FF2D78;">+480%</div>
+            <div style="display:flex; gap:28px; align-items:flex-start;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF2D78;text-shadow:0 0 12px rgba(255,45,120,0.8);">+480%</div>
+                <div style="width:5px;height:5px;border-radius:50%;background:#FF2D78;box-shadow:0 0 8px 2px rgba(255,45,120,0.7);"></div>
+                <div style="font-size:9px;color:rgba(236,237,238,0.35);letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;">IG</div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:2px;background:#38BFFF;flex-shrink:0;"></div>
-                <div style="flex:1;">
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:12px;color:var(--ink-soft);">유튜브 1위</div>
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:11px;color:var(--gray);margin-top:1px;">퇴근 후 30분 루틴 브이로그</div>
-                </div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#38BFFF;">+215%</div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#38BFFF;text-shadow:0 0 12px rgba(56,191,255,0.8);">+215%</div>
+                <div style="width:5px;height:5px;border-radius:50%;background:#38BFFF;box-shadow:0 0 8px 2px rgba(56,191,255,0.7);"></div>
+                <div style="font-size:9px;color:rgba(236,237,238,0.35);letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;">YT</div>
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:2px;background:#A855F7;flex-shrink:0;"></div>
-                <div style="flex:1;">
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:12px;color:var(--ink-soft);">틱톡 1위</div>
-                  <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:11px;color:var(--gray);margin-top:1px;">2010년대 다시 듣는 노래</div>
-                </div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#A855F7;">+188%</div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;text-shadow:0 0 12px rgba(200,255,87,0.8);">+188%</div>
+                <div style="width:5px;height:5px;border-radius:50%;background:#C8FF57;box-shadow:0 0 8px 2px rgba(200,255,87,0.7);"></div>
+                <div style="font-size:9px;color:rgba(236,237,238,0.35);letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;">TT</div>
               </div>
             </div>
           </div>

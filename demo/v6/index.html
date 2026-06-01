@@ -1293,10 +1293,10 @@
   }
   .pulse-dot {
     width: 6px; height: 6px;
-    background: #ffffff;
+    background: var(--primary);
     border-radius: 50%;
     animation: pulse-glow 1.6s ease-in-out infinite;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+    box-shadow: 0 0 8px 2px rgba(200,255,87,0.7);
   }
   @keyframes blink {
     0%, 100% { opacity: 1; }
@@ -4516,7 +4516,7 @@
                 stroke-dasharray="0 138.23" stroke-linecap="round" transform="rotate(-90 60 60)"/>
             </svg>
             <div style="display:flex; flex-direction:column; gap:12px; flex:1;">
-              <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:0.04em;text-align:right;">업로드된 영상 수</div>
+              <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:10px;color:#ffffff;letter-spacing:0.04em;text-align:right;">업로드된 영상 수</div>
               <div id="donut-legend-insta" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#A855F7;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">인스타</div>

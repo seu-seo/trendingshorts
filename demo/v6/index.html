@@ -3941,6 +3941,121 @@
   }
   .chat-send-btn:active { opacity: 0.75; }
   .chat-send-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ============================
+     SEARCH OVERLAY
+     ============================ */
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+  .search-overlay.active { opacity: 1; pointer-events: all; }
+  .search-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-soft);
+  }
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .search-input::placeholder { color: var(--ink-soft); }
+  .search-cancel {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px;
+    flex-shrink: 0;
+  }
+  .search-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .search-section-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .search-hashtags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .search-tag {
+    padding: 7px 14px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .search-tag:hover { border-color: var(--primary); color: var(--primary); }
+  .search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .search-result-item:last-child { border-bottom: none; }
+  .search-result-icon {
+    width: 32px; height: 32px;
+    border-radius: 4px;
+    background: var(--bg-card);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .search-result-body { flex: 1; min-width: 0; }
+  .search-result-title {
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .search-result-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .search-result-growth {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .search-empty {
+    color: var(--ink-soft);
+    font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+    font-size: 14px;
+    padding: 20px 0;
+  }
 </style>
 </head>
 <body>
@@ -4215,7 +4330,7 @@
       <div class="screen-content">
         <div class="dash-header">
           <div class="dash-logo">Pulse<span class="dot">.</span></div>
-          <div class="cmd-k" onclick="event.stopPropagation()">
+          <div class="cmd-k" onclick="openSearch()">
             <svg class="cmd-k-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="7" cy="7" r="5"/>
               <path d="M14 14L11 11" stroke-linecap="round"/>
@@ -5468,6 +5583,81 @@
     goTo('screen-trend');
   }
 
+  const SEARCH_DATA = [
+    { type: 'trend', title: '커피값 절약한 돈으로 한 일', platform: '인스타그램', growth: '+480%' },
+    { type: 'trend', title: '퇴근 후 30분 루틴 브이로그', platform: '유튜브', growth: '+215%' },
+    { type: 'trend', title: '2010년대 다시 듣는 노래', platform: '틱톡', growth: '+188%' },
+    { type: 'trend', title: '점심 도시락 5분 컷 레시피', platform: '인스타그램', growth: '+92%' },
+    { type: 'trend', title: '홈카페 라떼아트 챌린지', platform: '틱톡', growth: '+64%' },
+    { type: 'tag', title: '#출근길5분', growth: '+312%' },
+    { type: 'tag', title: '#짠테크루틴', growth: '+248%' },
+    { type: 'tag', title: '#홈카페', growth: '+187%' },
+    { type: 'tag', title: '#2010년대', growth: '+142%' },
+    { type: 'tag', title: '#미라클모닝', growth: '+98%' },
+    { type: 'tag', title: '#도시락', growth: '+75%' },
+    { type: 'tag', title: '#퇴근루틴', growth: '+68%' },
+    { type: 'tag', title: '#커피절약', growth: '+54%' },
+  ];
+  let recentSearches = [];
+
+  function openSearch() {
+    document.getElementById('search-overlay').classList.add('active');
+    const input = document.getElementById('search-input');
+    input.value = '';
+    setTimeout(() => input.focus(), 100);
+    renderSearchDefault();
+  }
+
+  function closeSearch() {
+    document.getElementById('search-overlay').classList.remove('active');
+  }
+
+  function renderSearchDefault() {
+    const body = document.getElementById('search-body');
+    const tagsHtml = SEARCH_DATA.filter(d => d.type === 'tag')
+      .map(d => `<div class="search-tag" onclick="selectSearchTag('${d.title}')">${d.title}</div>`)
+      .join('');
+    const recentHtml = recentSearches.length ? `
+      <div class="search-section-title">최근 검색</div>
+      <div class="search-hashtags">${recentSearches.map(r => `<div class="search-tag" onclick="selectSearchTag('${r}')">${r}</div>`).join('')}</div>
+    ` : '';
+    body.innerHTML = `${recentHtml}<div class="search-section-title">실시간 해시태그</div><div class="search-hashtags">${tagsHtml}</div>`;
+  }
+
+  function onSearchInput(val) {
+    const body = document.getElementById('search-body');
+    if (!val.trim()) { renderSearchDefault(); return; }
+    const q = val.toLowerCase();
+    const results = SEARCH_DATA.filter(d => d.title.toLowerCase().includes(q));
+    if (!results.length) {
+      body.innerHTML = `<div class="search-empty">검색 결과가 없어요</div>`;
+      return;
+    }
+    body.innerHTML = `
+      <div class="search-section-title">검색 결과 ${results.length}개</div>
+      ${results.map(r => `
+        <div class="search-result-item">
+          <div class="search-result-icon">${r.type === 'tag' ? '#' : '↑'}</div>
+          <div class="search-result-body">
+            <div class="search-result-title">${r.title}</div>
+            <div class="search-result-meta">${r.platform || '해시태그'}</div>
+          </div>
+          <div class="search-result-growth">${r.growth}</div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  function selectSearchTag(tag) {
+    const input = document.getElementById('search-input');
+    input.value = tag;
+    if (!recentSearches.includes(tag)) {
+      recentSearches.unshift(tag);
+      if (recentSearches.length > 5) recentSearches.pop();
+    }
+    onSearchInput(tag);
+  }
+
   function showToast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -6158,6 +6348,20 @@
 </script>
 
 <div class="toast" id="toast"></div>
+
+<!-- ============ SEARCH OVERLAY ============ -->
+<div id="search-overlay" class="search-overlay">
+  <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+  <div class="search-header">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="7" cy="7" r="5"/>
+      <path d="M14 14L11 11" stroke-linecap="round"/>
+    </svg>
+    <input id="search-input" class="search-input" type="text" placeholder="트렌드, 해시태그 검색..." oninput="onSearchInput(this.value)" />
+    <button class="search-cancel" onclick="closeSearch()">취소</button>
+  </div>
+  <div class="search-body" id="search-body"></div>
+</div>
 
 </body>
 </html>

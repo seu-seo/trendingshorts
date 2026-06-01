@@ -2699,35 +2699,49 @@
   }
   .deep-action-btn {
     flex: 1;
-    padding: 14px 12px;
-    background: var(--bg-card);
-    border: 1.5px solid var(--line);
+    padding: 16px 14px 14px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 14px;
     cursor: pointer;
     text-align: left;
-    transition: border-color 0.15s ease, background 0.15s ease;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s ease, border-color 0.2s ease;
   }
+  .deep-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2.5px;
+    border-radius: 14px 14px 0 0;
+  }
+  .deep-action-btn-script::before  { background: #FF4274; }
+  .deep-action-btn-storyboard::before { background: #00BFFF; }
   .deep-action-btn:hover {
-    border-color: var(--primary);
-    background: var(--primary-soft);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.15);
   }
   .deep-action-btn-icon {
     font-family: var(--font-mono);
     font-size: 18px;
-    color: var(--primary);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
+  .deep-action-btn-script .deep-action-btn-icon     { color: #FF4274; }
+  .deep-action-btn-storyboard .deep-action-btn-icon { color: #00BFFF; }
   .deep-action-btn-title {
     font-family: var(--font-cute);
     font-size: 14px;
     color: var(--ink);
     letter-spacing: -0.01em;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
   }
   .deep-action-btn-desc {
     font-family: var(--font-body);
     font-size: 11px;
-    color: var(--gray);
+    color: var(--ink-soft);
     font-weight: 500;
   }
 
@@ -4775,12 +4789,12 @@
           </div>
           <div class="deep-result-cta">
             <div class="deep-action-row">
-              <div class="deep-action-btn" onclick="openScript()">
+              <div class="deep-action-btn deep-action-btn-script" onclick="openScript()">
                 <div class="deep-action-btn-icon">✦</div>
                 <div class="deep-action-btn-title">대본 추천 받기</div>
                 <div class="deep-action-btn-desc">훅 · 본문 · 아웃트로</div>
               </div>
-              <div class="deep-action-btn" onclick="openStoryboard()">
+              <div class="deep-action-btn deep-action-btn-storyboard" onclick="openStoryboard()">
                 <div class="deep-action-btn-icon">▤</div>
                 <div class="deep-action-btn-title">콘티 추천 받기</div>
                 <div class="deep-action-btn-desc">씬별 샷 구성 · 자막</div>
@@ -6372,8 +6386,12 @@
 
     document.getElementById('deep-niche-title').textContent = niche;
     document.getElementById('deep-niche-desc').textContent = desc;
+    const TAG_COLORS = ['#FF4274', '#00BFFF', '#00FF7F'];
     const tagsEl = document.getElementById('deep-niche-tags');
-    tagsEl.innerHTML = tags.map(t => `<span class="deep-niche-tag">${t}</span>`).join('');
+    tagsEl.innerHTML = tags.map((t, i) => {
+      const c = TAG_COLORS[i % TAG_COLORS.length];
+      return `<span class="deep-niche-tag" style="color:${c};background:${c}22;">${t}</span>`;
+    }).join('');
     document.getElementById('deep-insight-format').textContent = format;
     document.getElementById('deep-insight-platform').textContent = platform;
 

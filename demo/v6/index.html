@@ -1839,7 +1839,7 @@
     50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
   }
   .donut-svg circle {
-    transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .bubble.b1 { width:96px; height:96px; animation: bubblePulse 2.4s ease-in-out infinite; border-color: rgba(56,182,255,0.6); }
   .bubble.b1 .bubble-word { font-size: 14px; }
@@ -4502,44 +4502,31 @@
             <div class="headline-time">LIVE · 오늘</div>
           </div>
           <div style="display:flex; align-items:center; gap:20px;">
-            <svg class="donut-svg" viewBox="0 0 120 120" width="130" height="130" style="flex-shrink:0;">
-              <!-- 배경 트랙 -->
-              <circle id="donut-track-insta"   cx="60" cy="60" r="50" fill="none" stroke="rgba(168,85,247,0.15)"  stroke-width="9"/>
-              <circle id="donut-track-youtube" cx="60" cy="60" r="36" fill="none" stroke="rgba(255,56,160,0.15)"  stroke-width="9"/>
-              <circle id="donut-track-tiktok"  cx="60" cy="60" r="22" fill="none" stroke="rgba(200,255,87,0.15)"  stroke-width="9"/>
-              <!-- 진행 바 -->
-              <circle id="donut-insta"   cx="60" cy="60" r="50" fill="none" stroke="#A855F7" stroke-width="9"
-                stroke-dasharray="0 314.16" stroke-linecap="round" transform="rotate(-90 60 60)"/>
-              <circle id="donut-youtube" cx="60" cy="60" r="36" fill="none" stroke="#FF38A0" stroke-width="9"
-                stroke-dasharray="0 226.19" stroke-linecap="round" transform="rotate(-90 60 60)"/>
-              <circle id="donut-tiktok"  cx="60" cy="60" r="22" fill="none" stroke="#C8FF57" stroke-width="9"
-                stroke-dasharray="0 138.23" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+            <svg class="donut-svg" viewBox="0 0 120 120" width="120" height="120" style="flex-shrink:0;">
+              <circle id="donut-insta"   cx="60" cy="60" r="40" fill="none" stroke="#E1306C" stroke-width="13"
+                stroke-dasharray="130.7 120.6" stroke-dashoffset="62.8"  stroke-linecap="round"/>
+              <circle id="donut-youtube" cx="60" cy="60" r="40" fill="none" stroke="#FF0000" stroke-width="13"
+                stroke-dasharray="55.1 196.2"  stroke-dashoffset="-73.9" stroke-linecap="round"/>
+              <circle id="donut-tiktok"  cx="60" cy="60" r="40" fill="none" stroke="#69C9D0" stroke-width="13"
+                stroke-dasharray="47.5 203.8"  stroke-dashoffset="-135.0" stroke-linecap="round"/>
+              <text x="60" y="54" text-anchor="middle" font-size="9" fill="#6B6B72" font-family="JetBrains Mono,monospace" letter-spacing="1">TODAY</text>
+              <text x="60" y="72" text-anchor="middle" font-size="20" fill="#C8FF57" font-family="JetBrains Mono,monospace" font-weight="700">+312%</text>
             </svg>
             <div style="display:flex; flex-direction:column; gap:12px; flex:1;">
-              <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:10px;color:#ffffff;letter-spacing:0.04em;text-align:right;">기회 지수</div>
               <div id="donut-legend-insta" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#A855F7;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">인스타</div>
-                <div style="text-align:right;">
-                  <div id="donut-score-insta" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#A855F7;">87</div>
-                  <div id="donut-label-insta" style="font-size:9px;color:#A855F7;opacity:0.8;">기회 높음</div>
-                </div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#E1306C;flex-shrink:0;"></div>
+                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">인스타</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#E1306C;">+480%</div>
               </div>
               <div id="donut-legend-youtube" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#FF38A0;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">유튜브</div>
-                <div style="text-align:right;">
-                  <div id="donut-score-youtube" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF38A0;">45</div>
-                  <div id="donut-label-youtube" style="font-size:9px;color:#FF38A0;opacity:0.8;">경쟁 과열</div>
-                </div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#FF0000;flex-shrink:0;"></div>
+                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">유튜브</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#FF0000;">+215%</div>
               </div>
               <div id="donut-legend-tiktok" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#C8FF57;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">틱톡</div>
-                <div style="text-align:right;">
-                  <div id="donut-score-tiktok" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;">68</div>
-                  <div id="donut-label-tiktok" style="font-size:9px;color:#C8FF57;opacity:0.8;">여유 있음</div>
-                </div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#69C9D0;flex-shrink:0;"></div>
+                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">틱톡</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#69C9D0;">+188%</div>
               </div>
             </div>
           </div>
@@ -5629,50 +5616,23 @@
   }
 
   function updateDonutChart() {
-    const scores = calcOpportunityScore();
-    const PLATFORM_DATA = {
-      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   scoreId: 'donut-score-insta',   labelId: 'donut-label-insta',   circ: 314.16, growth: scores.instagram },
-      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', scoreId: 'donut-score-youtube', labelId: 'donut-label-youtube', circ: 226.19, growth: scores.youtube },
-      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  scoreId: 'donut-score-tiktok',  labelId: 'donut-label-tiktok',  circ: 138.23, growth: scores.tiktok },
-    };
-    const MAX_GROWTH = 100;
-    const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
+    const selected = answers.platforms.length > 0 ? answers.platforms : ['instagram', 'youtube', 'tiktok'];
     updateHeadlineTag();
 
-    // 트랙은 항상 표시, 진행 바는 선택 플랫폼만 컬러
+    const MAP = {
+      instagram: { circleId: 'donut-insta',   legendId: 'donut-legend-insta' },
+      youtube:   { circleId: 'donut-youtube',  legendId: 'donut-legend-youtube' },
+      tiktok:    { circleId: 'donut-tiktok',   legendId: 'donut-legend-tiktok' },
+    };
+
     ['instagram', 'youtube', 'tiktok'].forEach(p => {
-      const d = PLATFORM_DATA[p];
+      const d = MAP[p];
       const active = selected.includes(p);
       const circle = document.getElementById(d.circleId);
       const legend = document.getElementById(d.legendId);
-      if (circle) {
-        circle.style.opacity = active ? '1' : '0';
-        circle.style.strokeDasharray = `0 ${d.circ}`;
-      }
-      if (legend) legend.style.display = active ? 'flex' : 'none';
+      if (circle) circle.style.opacity = active ? '1' : '0.15';
+      if (legend) legend.style.opacity = active ? '1' : '0.3';
     });
-
-    // 점수 + 라벨 업데이트
-    Object.entries(PLATFORM_DATA).forEach(([p, d]) => {
-      const scoreEl = document.getElementById(d.scoreId);
-      const labelEl = document.getElementById(d.labelId);
-      if (scoreEl) scoreEl.textContent = d.growth;
-      if (labelEl) {
-        const s = d.growth;
-        labelEl.textContent = s >= 75 ? '기회 높음' : s >= 55 ? '여유 있음' : '경쟁 과열';
-      }
-    });
-
-    // draw animation: 선택 링만 채움
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      selected.forEach(p => {
-        const d = PLATFORM_DATA[p];
-        const fill = (d.growth / MAX_GROWTH) * d.circ;
-        const gap  = d.circ - fill;
-        const circle = document.getElementById(d.circleId);
-        if (circle) circle.style.strokeDasharray = `${fill.toFixed(1)} ${gap.toFixed(1)}`;
-      });
-    }));
   }
 
   function selectPlatform(el) {

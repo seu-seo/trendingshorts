@@ -5579,19 +5579,20 @@
     const MAX_GROWTH = 500;
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
 
+    // 트랙은 항상 표시, 진행 바는 선택 플랫폼만 컬러
     ['instagram', 'youtube', 'tiktok'].forEach(p => {
       const d = PLATFORM_DATA[p];
-      const show = selected.includes(p);
+      const active = selected.includes(p);
       const circle = document.getElementById(d.circleId);
-      const track  = document.getElementById(d.trackId);
       const legend = document.getElementById(d.legendId);
-      const opacity = show ? '1' : '0';
-      if (circle) { circle.style.opacity = opacity; circle.style.strokeDasharray = `0 ${d.circ}`; }
-      if (track)  track.style.opacity = opacity;
-      if (legend) legend.style.display = show ? 'flex' : 'none';
+      if (circle) {
+        circle.style.opacity = active ? '1' : '0';
+        circle.style.strokeDasharray = `0 ${d.circ}`;
+      }
+      if (legend) legend.style.display = active ? 'flex' : 'none';
     });
 
-    // draw animation
+    // draw animation: 선택 링만 채움
     requestAnimationFrame(() => requestAnimationFrame(() => {
       selected.forEach(p => {
         const d = PLATFORM_DATA[p];

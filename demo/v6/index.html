@@ -4062,6 +4062,125 @@
     100% { background: transparent; }
   }
   .trend-item.highlighted { animation: trend-flash 1.4s ease forwards; }
+
+  /* ============================
+     TREND DETAIL SCREEN
+     ============================ */
+  .trend-detail-screen { background: var(--bg); }
+  .trend-detail-content { flex: 1; overflow-y: auto; padding: 0 20px 100px; }
+  .trend-detail-hero {
+    padding: 20px 0 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 20px;
+  }
+  .trend-detail-platform {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .trend-detail-title {
+    font-family: var(--font-body), 'Pretendard';
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 14px;
+  }
+  .trend-detail-stats {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .trend-detail-growth {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+  }
+  .trend-detail-views {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .trend-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+  .trend-detail-tag {
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .trend-detail-section-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .video-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .video-card {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .video-card:hover { border-color: var(--primary); }
+  .video-thumb {
+    width: 48px;
+    height: 72px;
+    border-radius: 6px;
+    background: var(--line);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-size: 18px;
+  }
+  .video-card-body { flex: 1; min-width: 0; }
+  .video-card-title {
+    font-family: var(--font-body), 'Pretendard';
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .video-card-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .trend-detail-cta {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    padding: 16px 20px 32px;
+    background: linear-gradient(to top, var(--bg) 70%, transparent);
+  }
 </style>
 </head>
 <body>
@@ -4465,7 +4584,7 @@
             <div class="section-meta">더보기 →</div>
           </div>
           <div class="trend-list">
-            <div class="trend-item platform-insta" id="trend-t1">
+            <div class="trend-item platform-insta" id="trend-t1" onclick="openTrendDetail('커피값 절약한 돈으로 한 일')">
               <div class="trend-item-main">
                 <div class="trend-rank">1</div>
                 <div class="trend-body">
@@ -4484,12 +4603,12 @@
                     <circle class="dot" cx="50" cy="2" r="2"/>
                   </svg>
                 </div>
-                <button class="heart-btn" id="heart-t1" onclick="saveTrend(this,'t1','커피값 절약한 돈으로 한 일','인스타그램','+480%')">
+                <button class="heart-btn" id="heart-t1" onclick="event.stopPropagation();saveTrend(this,'t1','커피값 절약한 돈으로 한 일','인스타그램','+480%')">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
               </div>
             </div>
-            <div class="trend-item platform-youtube" id="trend-t2">
+            <div class="trend-item platform-youtube" id="trend-t2" onclick="openTrendDetail('퇴근 후 30분 루틴 브이로그')">
               <div class="trend-item-main">
                 <div class="trend-rank">2</div>
                 <div class="trend-body">
@@ -4508,7 +4627,7 @@
                     <circle class="dot" cx="50" cy="5" r="2"/>
                   </svg>
                 </div>
-                <button class="heart-btn" id="heart-t2" onclick="saveTrend(this,'t2','퇴근 후 30분 루틴 브이로그','유튜브','+215%')">
+                <button class="heart-btn" id="heart-t2" onclick="event.stopPropagation();saveTrend(this,'t2','퇴근 후 30분 루틴 브이로그','유튜브','+215%')">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
               </div>
@@ -4529,7 +4648,7 @@
               </div>
             </div>
 
-            <div class="trend-item platform-tiktok" id="trend-t3">
+            <div class="trend-item platform-tiktok" id="trend-t3" onclick="openTrendDetail('2010년대 다시 듣는 노래')">
               <div class="trend-item-main">
                 <div class="trend-rank">3</div>
                 <div class="trend-body">
@@ -4548,12 +4667,12 @@
                     <circle class="dot" cx="50" cy="4" r="2"/>
                   </svg>
                 </div>
-                <button class="heart-btn" id="heart-t3" onclick="saveTrend(this,'t3','2010년대 다시 듣는 노래','틱톡','+188%')">
+                <button class="heart-btn" id="heart-t3" onclick="event.stopPropagation();saveTrend(this,'t3','2010년대 다시 듣는 노래','틱톡','+188%')">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
               </div>
             </div>
-            <div class="trend-item platform-insta" id="trend-t4">
+            <div class="trend-item platform-insta" id="trend-t4" onclick="openTrendDetail('점심 도시락 5분 컷 레시피')">
               <div class="trend-item-main">
                 <div class="trend-rank">4</div>
                 <div class="trend-body">
@@ -4572,7 +4691,7 @@
                     <circle class="dot" cx="50" cy="9" r="2"/>
                   </svg>
                 </div>
-                <button class="heart-btn" id="heart-t4" onclick="saveTrend(this,'t4','점심 도시락 5분 컷 레시피','인스타그램','+92%')">
+                <button class="heart-btn" id="heart-t4" onclick="event.stopPropagation();saveTrend(this,'t4','점심 도시락 5분 컷 레시피','인스타그램','+92%')">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
               </div>
@@ -4594,7 +4713,7 @@
               </div>
             </div>
 
-            <div class="trend-item platform-tiktok" id="trend-t5">
+            <div class="trend-item platform-tiktok" id="trend-t5" onclick="openTrendDetail('홈카페 라떼아트 챌린지')">
               <div class="trend-item-main">
                 <div class="trend-rank">5</div>
                 <div class="trend-body">
@@ -4613,7 +4732,7 @@
                     <circle class="dot" cx="50" cy="10" r="2"/>
                   </svg>
                 </div>
-                <button class="heart-btn" id="heart-t5" onclick="saveTrend(this,'t5','홈카페 라떼아트 챌린지','틱톡','+64%')">
+                <button class="heart-btn" id="heart-t5" onclick="event.stopPropagation();saveTrend(this,'t5','홈카페 라떼아트 챌린지','틱톡','+64%')">
                   <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
               </div>
@@ -4716,6 +4835,32 @@
 
     <!-- ============ SCREEN: SCRIPT ============ -->
     <!-- TOPIC INPUT SCREEN -->
+    <!-- ============ SCREEN: TREND DETAIL ============ -->
+    <div class="screen trend-detail-screen" id="screen-trend-detail">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="deep-header">
+        <button class="back-btn" id="trend-detail-back" onclick="goTo('screen-trend')">←</button>
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-soft);letter-spacing:0.06em;">TRENDING</span>
+        <div style="width:32px;"></div>
+      </div>
+      <div class="trend-detail-content">
+        <div class="trend-detail-hero">
+          <div class="trend-detail-platform" id="td-platform"></div>
+          <div class="trend-detail-title" id="td-title"></div>
+          <div class="trend-detail-stats">
+            <div class="trend-detail-growth" id="td-growth"></div>
+            <div class="trend-detail-views" id="td-views"></div>
+          </div>
+        </div>
+        <div class="trend-detail-tags" id="td-tags"></div>
+        <div class="trend-detail-section-title">관련 영상</div>
+        <div class="video-cards" id="td-videos"></div>
+      </div>
+      <div class="trend-detail-cta">
+        <button class="welcome-start-btn" onclick="goTo('screen-content-topic')">이 주제로 만들기</button>
+      </div>
+    </div>
+
     <div class="screen deep-screen" id="screen-content-topic">
       <div class="status-bar">
         <span>9:41</span>
@@ -5589,6 +5734,75 @@
     goTo('screen-trend');
   }
 
+  const TREND_DETAILS = {
+    '커피값 절약한 돈으로 한 일': {
+      platform: '인스타그램', growth: '+480%', views: '1.8M',
+      tags: ['#커피절약', '#짠테크루틴', '#절약일기'],
+      videos: [
+        { title: '아아 참으면 한 달 6만원 절약', views: '482K', creator: '@savinglife' },
+        { title: '커피값 모아서 여행 간 후기', views: '341K', creator: '@frugaltravel' },
+        { title: '텀블러 챌린지 30일 결과', views: '218K', creator: '@tumbler30' },
+      ]
+    },
+    '퇴근 후 30분 루틴 브이로그': {
+      platform: '유튜브', growth: '+215%', views: '920K',
+      tags: ['#퇴근루틴', '#직장인브이로그', '#야간루틴'],
+      videos: [
+        { title: '퇴근 후 진짜 내 30분 공개', views: '312K', creator: '@afterwork_life' },
+        { title: '직장인 야간 루틴 브이로그', views: '267K', creator: '@nightroutine' },
+        { title: '퇴근길→홈트→샤워 타임랩스', views: '189K', creator: '@workoutafter' },
+      ]
+    },
+    '2010년대 다시 듣는 노래': {
+      platform: '틱톡', growth: '+188%', views: '640K',
+      tags: ['#2010년대', '#감성플리', '#추억소환'],
+      videos: [
+        { title: '2012년 내 플리 공개합니다', views: '521K', creator: '@nostalgia_mix' },
+        { title: '그때 그 노래 다 아시죠?', views: '398K', creator: '@playlist2010s' },
+        { title: '2011년 버스에서 듣던 노래', views: '287K', creator: '@old_melody' },
+      ]
+    },
+    '점심 도시락 5분 컷 레시피': {
+      platform: '인스타그램', growth: '+92%', views: '410K',
+      tags: ['#도시락', '#직장인점심', '#5분요리'],
+      videos: [
+        { title: '직장인 도시락 5분 완성 꿀팁', views: '198K', creator: '@lunch5min' },
+        { title: '냉장고 파먹기 도시락 3종', views: '167K', creator: '@fridge_lunch' },
+        { title: '1주일 도시락 준비 타임랩스', views: '143K', creator: '@mealprep_kr' },
+      ]
+    },
+    '홈카페 라떼아트 챌린지': {
+      platform: '틱톡', growth: '+64%', views: '280K',
+      tags: ['#홈카페', '#라떼아트', '#홈바리스타'],
+      videos: [
+        { title: '라떼아트 입문 3주 성장기', views: '156K', creator: '@latte_beginner' },
+        { title: '집에서 카페 음료 다 만들기', views: '134K', creator: '@homecafe_diy' },
+        { title: '바리스타가 알려주는 홈카페 팁', views: '98K', creator: '@barista_tip' },
+      ]
+    },
+  };
+
+  function openTrendDetail(title) {
+    const d = TREND_DETAILS[title];
+    if (!d) { goTo('screen-trend'); return; }
+    document.getElementById('td-platform').textContent = d.platform.toUpperCase();
+    document.getElementById('td-title').textContent = title;
+    document.getElementById('td-growth').textContent = d.growth;
+    document.getElementById('td-views').textContent = d.views + ' views';
+    document.getElementById('td-tags').innerHTML = d.tags.map(t =>
+      `<div class="trend-detail-tag">${t}</div>`).join('');
+    document.getElementById('td-videos').innerHTML = d.videos.map(v => `
+      <div class="video-card">
+        <div class="video-thumb">▶</div>
+        <div class="video-card-body">
+          <div class="video-card-title">${v.title}</div>
+          <div class="video-card-meta">${v.creator} · ${v.views}</div>
+        </div>
+      </div>
+    `).join('');
+    goTo('screen-trend-detail');
+  }
+
   const SEARCH_DATA = [
     { type: 'trend', title: '커피값 절약한 돈으로 한 일', platform: '인스타그램', growth: '+480%' },
     { type: 'trend', title: '퇴근 후 30분 루틴 브이로그', platform: '유튜브', growth: '+215%' },
@@ -5668,23 +5882,7 @@
       if (recentSearches.length > 5) recentSearches.pop();
     }
     closeSearch();
-    goTo('screen-trend');
-    setTimeout(() => {
-      const scrollEl = document.querySelector('#screen-trend .screen-content');
-      const trendList = document.querySelector('#screen-trend .trend-list');
-      if (scrollEl && trendList) {
-        scrollEl.scrollTo({ top: trendList.offsetTop - 16, behavior: 'smooth' });
-      }
-      const items = document.querySelectorAll('.trend-item');
-      for (const item of items) {
-        const t = item.querySelector('.trend-title');
-        if (t && t.textContent.trim() === title) {
-          item.classList.add('highlighted');
-          setTimeout(() => item.classList.remove('highlighted'), 1400);
-          return;
-        }
-      }
-    }, 250);
+    openTrendDetail(title);
   }
 
   function showToast(msg) {

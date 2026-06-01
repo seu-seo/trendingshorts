@@ -4502,13 +4502,18 @@
             <div class="headline-time">LIVE · 오늘</div>
           </div>
           <div style="display:flex; align-items:center; gap:20px;">
-            <svg class="donut-svg" viewBox="0 0 120 120" width="120" height="120" style="flex-shrink:0;">
-              <circle id="donut-insta" cx="60" cy="60" r="40" fill="none" stroke="#A855F7" stroke-width="13"
-                stroke-dasharray="130.7 120.6" stroke-dashoffset="62.8" stroke-linecap="round"/>
-              <circle id="donut-youtube" cx="60" cy="60" r="40" fill="none" stroke="#FF38A0" stroke-width="13"
-                stroke-dasharray="55.1 196.2" stroke-dashoffset="-73.9" stroke-linecap="round"/>
-              <circle id="donut-tiktok" cx="60" cy="60" r="40" fill="none" stroke="#C8FF57" stroke-width="13"
-                stroke-dasharray="47.5 203.8" stroke-dashoffset="-135.0" stroke-linecap="round"/>
+            <svg class="donut-svg" viewBox="0 0 120 120" width="130" height="130" style="flex-shrink:0;">
+              <!-- 배경 트랙 -->
+              <circle id="donut-track-insta"   cx="60" cy="60" r="50" fill="none" stroke="rgba(168,85,247,0.15)"  stroke-width="9"/>
+              <circle id="donut-track-youtube" cx="60" cy="60" r="36" fill="none" stroke="rgba(255,56,160,0.15)"  stroke-width="9"/>
+              <circle id="donut-track-tiktok"  cx="60" cy="60" r="22" fill="none" stroke="rgba(200,255,87,0.15)"  stroke-width="9"/>
+              <!-- 진행 바 -->
+              <circle id="donut-insta"   cx="60" cy="60" r="50" fill="none" stroke="#A855F7" stroke-width="9"
+                stroke-dasharray="0 314.16" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              <circle id="donut-youtube" cx="60" cy="60" r="36" fill="none" stroke="#FF38A0" stroke-width="9"
+                stroke-dasharray="0 226.19" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+              <circle id="donut-tiktok"  cx="60" cy="60" r="22" fill="none" stroke="#C8FF57" stroke-width="9"
+                stroke-dasharray="0 138.23" stroke-linecap="round" transform="rotate(-90 60 60)"/>
             </svg>
             <div style="display:flex; flex-direction:column; gap:12px; flex:1;">
               <div id="donut-legend-insta" style="display:flex; align-items:center; gap:8px;">
@@ -5567,30 +5572,35 @@
 
   function updateDonutChart() {
     const PLATFORM_DATA = {
-      instagram: { circleId: 'donut-insta',   legendId: 'donut-legend-insta',   arr: '130.7 120.6', growth: 480 },
-      youtube:   { circleId: 'donut-youtube',  legendId: 'donut-legend-youtube', arr: '55.1 196.2',  growth: 215 },
-      tiktok:    { circleId: 'donut-tiktok',   legendId: 'donut-legend-tiktok',  arr: '47.5 203.8',  growth: 188 },
+      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   circ: 314.16, growth: 480 },
+      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', circ: 226.19, growth: 215 },
+      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  circ: 138.23, growth: 188 },
     };
+    const MAX_GROWTH = 500;
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
 
-    // show/hide legends, reset circles to 0 for draw animation
     ['instagram', 'youtube', 'tiktok'].forEach(p => {
       const d = PLATFORM_DATA[p];
       const show = selected.includes(p);
       const circle = document.getElementById(d.circleId);
+      const track  = document.getElementById(d.trackId);
       const legend = document.getElementById(d.legendId);
-      if (circle) { circle.style.opacity = show ? '1' : '0'; circle.style.strokeDasharray = '0 251.3'; }
+      const opacity = show ? '1' : '0';
+      if (circle) { circle.style.opacity = opacity; circle.style.strokeDasharray = `0 ${d.circ}`; }
+      if (track)  track.style.opacity = opacity;
       if (legend) legend.style.display = show ? 'flex' : 'none';
     });
 
-    // draw animation: trigger after reset frame
+    // draw animation
     requestAnimationFrame(() => requestAnimationFrame(() => {
       selected.forEach(p => {
-        const circle = document.getElementById(PLATFORM_DATA[p].circleId);
-        if (circle) circle.style.strokeDasharray = PLATFORM_DATA[p].arr;
+        const d = PLATFORM_DATA[p];
+        const fill = (d.growth / MAX_GROWTH) * d.circ;
+        const gap  = d.circ - fill;
+        const circle = document.getElementById(d.circleId);
+        if (circle) circle.style.strokeDasharray = `${fill.toFixed(1)} ${gap.toFixed(1)}`;
       });
     }));
-
   }
 
   function selectPlatform(el) {

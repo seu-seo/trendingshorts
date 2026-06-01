@@ -2985,6 +2985,29 @@
     transition: color 0.2s ease;
   }
   .tab-item.active { color: var(--ink); }
+  .tab-item.disabled { opacity: 0.35; cursor: default; }
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
   .tab-icon {
     width: 24px;
     height: 24px;
@@ -4465,7 +4488,7 @@
           </div>
           <div class="tab-label">트렌드</div>
         </div>
-        <div class="tab-item" onclick="switchTab('my')">
+        <div class="tab-item disabled" id="tab-my" onclick="switchTab('my')">
           <div class="tab-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <circle cx="12" cy="8" r="4"/>
@@ -5093,6 +5116,7 @@
 
 <script>
   const answers = { platform: null, categories: [], age: null };
+  let isLoggedIn = false;
 
   // Save & Collection state
   const savedTrends = [];
@@ -5411,12 +5435,20 @@
   }
 
   function loginAndGo() {
-    // 기존 유저 — 설문 없이 바로 대시보드
+    isLoggedIn = true;
     answers.platform = 'instagram';
     answers.categories = ['food', 'beauty', 'fashion'];
     answers.age = '30s';
     updateMyTags();
+    document.querySelectorAll('.tab-item.disabled').forEach(t => t.classList.remove('disabled'));
     goTo('screen-trend');
+  }
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
   }
 
   function updateMyTags() {
@@ -5436,7 +5468,10 @@
 
   function switchTab(tab) {
     if (tab === 'trend') goTo('screen-trend');
-    else if (tab === 'my') goTo('screen-my');
+    else if (tab === 'my') {
+      if (!isLoggedIn) { showToast('로그인이 필요한 기능이에요'); return; }
+      goTo('screen-my');
+    }
   }
 
   /* ===========================
@@ -6097,6 +6132,8 @@
     }
   });
 </script>
+
+<div class="toast" id="toast"></div>
 
 </body>
 </html>

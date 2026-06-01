@@ -516,7 +516,7 @@
   .welcome-start-btn {
     width: 100%;
     background: var(--primary);
-    border: 1px solid var(--primary);
+    border: none;
     border-radius: 4px;
     color: #000;
     font-family: var(--font-body);
@@ -526,25 +526,25 @@
     cursor: pointer;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    transition: opacity 0.2s ease;
+    box-shadow: 0 0 24px rgba(200, 255, 87, 0.45);
+    transition: box-shadow 0.2s ease, opacity 0.2s ease;
   }
-  .welcome-start-btn:hover { opacity: 0.88; }
+  .welcome-start-btn:hover { box-shadow: 0 0 36px rgba(200, 255, 87, 0.65); opacity: 0.95; }
   .welcome-login-btn {
     width: 100%;
     background: transparent;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    color: var(--ink);
+    border: none;
+    color: var(--ink-soft);
     font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    padding: 18px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 24px;
     cursor: pointer;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    transition: border-color 0.2s ease;
+    letter-spacing: 0.06em;
+    text-align: center;
+    transition: color 0.2s ease;
   }
-  .welcome-login-btn:hover { border-color: var(--ink); }
+  .welcome-login-btn:hover { color: var(--ink); }
   .cta:hover:not(:disabled) {
     background: var(--primary-deep);
     color: var(--on-primary);
@@ -3924,8 +3924,7 @@
 
         <div class="welcome-actions">
           <button class="welcome-start-btn" onclick="goTo('screen-q-all')">시작하기</button>
-          <div class="welcome-auth-divider">이미 계정이 있나요?</div>
-          <button class="welcome-login-btn" onclick="loginAndGo()">로그인</button>
+          <button class="welcome-login-btn" onclick="loginAndGo()">이미 계정이 있나요? 로그인</button>
         </div>
       </div>
     </div>

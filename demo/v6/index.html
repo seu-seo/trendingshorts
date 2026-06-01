@@ -2620,11 +2620,23 @@
     animation: pulse-ring 2s ease infinite;
   }
   .deep-niche-card {
-    background: var(--bg-card);
-    border: 1.5px solid var(--line);
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .deep-niche-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2.5px;
+    background: var(--primary);
+    border-radius: 16px 16px 0 0;
   }
   .deep-niche-title {
     font-family: var(--font-pop);

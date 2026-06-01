@@ -1679,11 +1679,14 @@
     border-left: 3px solid transparent;
   }
   .trend-item:hover { background: rgba(255, 255, 255, 0.04); }
-  #trend-t1 { border-left-color: rgba(200, 255, 87, 0.90); }
-  #trend-t2 { border-left-color: rgba(200, 255, 87, 0.70); }
+  #trend-t1 { border-left-color: rgba(200, 255, 87, 0.90); background: rgba(200, 255, 87, 0.06); }
+  #trend-t2 { border-left-color: rgba(200, 255, 87, 0.70); background: rgba(200, 255, 87, 0.03); }
   #trend-t3 { border-left-color: rgba(200, 255, 87, 0.50); }
   #trend-t4 { border-left-color: rgba(200, 255, 87, 0.30); }
   #trend-t5 { border-left-color: rgba(200, 255, 87, 0.15); }
+  #trend-t1 .trend-rank { color: var(--primary); }
+  #trend-t2 .trend-rank { color: rgba(236, 237, 238, 0.7); }
+  #trend-t3 .trend-rank, #trend-t4 .trend-rank, #trend-t5 .trend-rank { color: rgba(236, 237, 238, 0.4); }
   .trend-stat {
     display: flex;
     flex-direction: column;

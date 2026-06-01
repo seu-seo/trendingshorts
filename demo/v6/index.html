@@ -4241,7 +4241,6 @@
             <div class="chip" data-val="tiktok" onclick="selectPlatformChip(this)">틱톡</div>
             <div class="chip" data-val="instagram" onclick="selectPlatformChip(this)">인스타그램</div>
             <div class="chip" data-val="youtube" onclick="selectPlatformChip(this)">유튜브</div>
-            <div class="chip" data-val="all" onclick="selectPlatformChip(this)">모두 다</div>
           </div>
         </div>
 
@@ -5376,7 +5375,7 @@
 <button class="reset-btn" onclick="resetDemo()">Reset</button>
 
 <script>
-  const answers = { platform: null, categories: [], age: null };
+  const answers = { platforms: [], categories: [], age: null };
   let isLoggedIn = false;
 
   // Save & Collection state
@@ -5525,7 +5524,7 @@
 
   function answerPrompt(chipEl, promptId, field, value) {
     // 답변 저장
-    if (field === 'platform') answers.platform = value;
+    if (field === 'platform') { if (!answers.platforms.includes(value)) answers.platforms.push(value); }
     if (field === 'category') {
       if (!answers.categories.includes(value)) answers.categories.push(value);
     }
@@ -5569,7 +5568,7 @@
     const parentList = el.closest('.toss-list');
     if (parentList) parentList.querySelectorAll('.toss-item').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
-    answers.platform = el.dataset.val;
+    answers.platforms = [el.dataset.val];
     const ctaQ1 = document.getElementById('cta-q1');
     if (ctaQ1) ctaQ1.disabled = false;
     checkAllQ();
@@ -5626,9 +5625,8 @@
   }
 
   function selectPlatformChip(el) {
-    document.querySelectorAll('#platform-chips .chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    answers.platform = el.dataset.val;
+    el.classList.toggle('selected');
+    answers.platforms = [...document.querySelectorAll('#platform-chips .chip.selected')].map(c => c.dataset.val);
     checkAllQ();
   }
 
@@ -5659,7 +5657,7 @@
   }
 
   function checkAllQ() {
-    const hasPlatform = !!answers.platform;
+    const hasPlatform = answers.platforms.length > 0;
     const customInput = document.getElementById('cat-custom-input');
     const hasCategory = (answers.categories && answers.categories.length > 0) ||
       (customInput && customInput.value.trim().length > 0);
@@ -5697,7 +5695,7 @@
 
   function loginAndGo() {
     isLoggedIn = true;
-    answers.platform = 'instagram';
+    answers.platforms = ['instagram'];
     answers.categories = ['food', 'beauty', 'fashion'];
     answers.age = '30s';
     updateMyTags();
@@ -5866,11 +5864,11 @@
   function updateMyTags() {
     const tagsEl = document.getElementById('my-tags');
     if (!tagsEl) return;
-    const pMap = { tiktok: '틱톡', instagram: '인스타그램', youtube: '유튜브', all: '모두 보기' };
+    const pMap = { tiktok: '틱톡', instagram: '인스타그램', youtube: '유튜브' };
     const cMap = { food: '먹방', vlog: '브이로그', dance: '춤', fashion: '패션', beauty: '뷰티', fitness: '운동', travel: '여행', study: '공부', game: '게임', pet: '반려동물' };
     const aMap = { '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50s': '50대+' };
     const tags = [];
-    if (answers.platform) tags.push(pMap[answers.platform]);
+    if (answers.platforms.length) answers.platforms.forEach(p => { if (pMap[p]) tags.push(pMap[p]); });
     if (answers.categories.length) answers.categories.forEach(c => tags.push(cMap[c]));
     if (answers.age) tags.push(aMap[answers.age]);
     if (tags.length) {
@@ -6493,7 +6491,7 @@
   }
 
   function resetDemo() {
-    answers.platform = null;
+    answers.platforms = [];
     answers.categories = [];
     answers.age = null;
     sampleProgress.answered = 0;

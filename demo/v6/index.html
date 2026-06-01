@@ -4516,21 +4516,30 @@
                 stroke-dasharray="0 138.23" stroke-linecap="round" transform="rotate(-90 60 60)"/>
             </svg>
             <div style="display:flex; flex-direction:column; gap:12px; flex:1;">
-              <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:10px;color:#ffffff;letter-spacing:0.04em;text-align:right;">업로드된 영상 수</div>
+              <div style="font-family:'Instrument Sans','Pretendard',sans-serif;font-size:10px;color:#ffffff;letter-spacing:0.04em;text-align:right;">기회 지수</div>
               <div id="donut-legend-insta" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#A855F7;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">인스타</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#A855F7;">2,340</div>
+                <div style="text-align:right;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#A855F7;">87</div>
+                  <div style="font-size:9px;color:#A855F7;opacity:0.8;">기회 높음</div>
+                </div>
               </div>
               <div id="donut-legend-youtube" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#FF38A0;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">유튜브</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF38A0;">1,120</div>
+                <div style="text-align:right;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF38A0;">45</div>
+                  <div style="font-size:9px;color:#FF38A0;opacity:0.8;">경쟁 과열</div>
+                </div>
               </div>
               <div id="donut-legend-tiktok" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#C8FF57;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">틱톡</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;">980</div>
+                <div style="text-align:right;">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;">68</div>
+                  <div style="font-size:9px;color:#C8FF57;opacity:0.8;">여유 있음</div>
+                </div>
               </div>
             </div>
           </div>
@@ -5587,11 +5596,11 @@
 
   function updateDonutChart() {
     const PLATFORM_DATA = {
-      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   circ: 314.16, growth: 480 },
-      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', circ: 226.19, growth: 215 },
-      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  circ: 138.23, growth: 188 },
+      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   circ: 314.16, growth: 87 },
+      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', circ: 226.19, growth: 45 },
+      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  circ: 138.23, growth: 68 },
     };
-    const MAX_GROWTH = 500;
+    const MAX_GROWTH = 100;
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
     updateHeadlineTag();
 

@@ -4521,24 +4521,24 @@
                 <div style="width:8px;height:8px;border-radius:50%;background:#A855F7;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">인스타</div>
                 <div style="text-align:right;">
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#A855F7;">87</div>
-                  <div style="font-size:9px;color:#A855F7;opacity:0.8;">기회 높음</div>
+                  <div id="donut-score-insta" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#A855F7;">87</div>
+                  <div id="donut-label-insta" style="font-size:9px;color:#A855F7;opacity:0.8;">기회 높음</div>
                 </div>
               </div>
               <div id="donut-legend-youtube" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#FF38A0;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">유튜브</div>
                 <div style="text-align:right;">
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF38A0;">45</div>
-                  <div style="font-size:9px;color:#FF38A0;opacity:0.8;">경쟁 과열</div>
+                  <div id="donut-score-youtube" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#FF38A0;">45</div>
+                  <div id="donut-label-youtube" style="font-size:9px;color:#FF38A0;opacity:0.8;">경쟁 과열</div>
                 </div>
               </div>
               <div id="donut-legend-tiktok" style="display:flex; align-items:center; gap:8px;">
                 <div style="width:8px;height:8px;border-radius:50%;background:#C8FF57;flex-shrink:0;"></div>
                 <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:#ffffff;">틱톡</div>
                 <div style="text-align:right;">
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;">68</div>
-                  <div style="font-size:9px;color:#C8FF57;opacity:0.8;">여유 있음</div>
+                  <div id="donut-score-tiktok" style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#C8FF57;">68</div>
+                  <div id="donut-label-tiktok" style="font-size:9px;color:#C8FF57;opacity:0.8;">여유 있음</div>
                 </div>
               </div>
             </div>
@@ -5594,11 +5594,46 @@
     el.textContent = ageText + platformText + ' 트렌드';
   }
 
+  function calcOpportunityScore() {
+    const BASE = { instagram: 65, youtube: 55, tiktok: 60 };
+    const AGE_MOD = {
+      '10s': { instagram:  0, youtube: -8, tiktok: +18 },
+      '20s': { instagram: +8, youtube:  0, tiktok: +10 },
+      '30s': { instagram: +14, youtube: +10, tiktok: -5 },
+      '40s': { instagram:  +5, youtube: +16, tiktok: -18 },
+      '50s': { instagram:  +2, youtube: +20, tiktok: -22 },
+    };
+    const CAT_MOD = {
+      food:    { instagram: +10, youtube:  +5, tiktok:  +5 },
+      beauty:  { instagram: +14, youtube:  -3, tiktok: +10 },
+      fashion: { instagram: +12, youtube:  -5, tiktok: +14 },
+      vlog:    { instagram:  +3, youtube: +16, tiktok:  +6 },
+      dance:   { instagram:  +5, youtube:  -8, tiktok: +22 },
+      fitness: { instagram:  +8, youtube: +10, tiktok:  +6 },
+      travel:  { instagram:  +8, youtube: +12, tiktok:  +4 },
+      study:   { instagram:  -4, youtube: +16, tiktok:  -8 },
+      game:    { instagram:  -5, youtube: +12, tiktok:  +8 },
+      pet:     { instagram:  +8, youtube:  +4, tiktok: +12 },
+    };
+    const scores = {};
+    ['instagram', 'youtube', 'tiktok'].forEach(p => {
+      let s = BASE[p];
+      if (answers.age && AGE_MOD[answers.age]) s += AGE_MOD[answers.age][p];
+      if (answers.categories.length) {
+        const catSum = answers.categories.reduce((acc, c) => acc + (CAT_MOD[c] ? CAT_MOD[c][p] : 0), 0);
+        s += Math.round(catSum / answers.categories.length);
+      }
+      scores[p] = Math.min(99, Math.max(5, s));
+    });
+    return scores;
+  }
+
   function updateDonutChart() {
+    const scores = calcOpportunityScore();
     const PLATFORM_DATA = {
-      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   circ: 314.16, growth: 87 },
-      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', circ: 226.19, growth: 45 },
-      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  circ: 138.23, growth: 68 },
+      instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   scoreId: 'donut-score-insta',   labelId: 'donut-label-insta',   circ: 314.16, growth: scores.instagram },
+      youtube:   { circleId: 'donut-youtube',  trackId: 'donut-track-youtube', legendId: 'donut-legend-youtube', scoreId: 'donut-score-youtube', labelId: 'donut-label-youtube', circ: 226.19, growth: scores.youtube },
+      tiktok:    { circleId: 'donut-tiktok',   trackId: 'donut-track-tiktok',  legendId: 'donut-legend-tiktok',  scoreId: 'donut-score-tiktok',  labelId: 'donut-label-tiktok',  circ: 138.23, growth: scores.tiktok },
     };
     const MAX_GROWTH = 100;
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
@@ -5615,6 +5650,17 @@
         circle.style.strokeDasharray = `0 ${d.circ}`;
       }
       if (legend) legend.style.display = active ? 'flex' : 'none';
+    });
+
+    // 점수 + 라벨 업데이트
+    Object.entries(PLATFORM_DATA).forEach(([p, d]) => {
+      const scoreEl = document.getElementById(d.scoreId);
+      const labelEl = document.getElementById(d.labelId);
+      if (scoreEl) scoreEl.textContent = d.growth;
+      if (labelEl) {
+        const s = d.growth;
+        labelEl.textContent = s >= 75 ? '기회 높음' : s >= 55 ? '여유 있음' : '경쟁 과열';
+      }
     });
 
     // draw animation: 선택 링만 채움

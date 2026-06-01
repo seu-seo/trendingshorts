@@ -5670,17 +5670,21 @@
     closeSearch();
     goTo('screen-trend');
     setTimeout(() => {
+      const scrollEl = document.querySelector('#screen-trend .screen-content');
+      const trendList = document.querySelector('#screen-trend .trend-list');
+      if (scrollEl && trendList) {
+        scrollEl.scrollTo({ top: trendList.offsetTop - 16, behavior: 'smooth' });
+      }
       const items = document.querySelectorAll('.trend-item');
       for (const item of items) {
         const t = item.querySelector('.trend-title');
         if (t && t.textContent.trim() === title) {
           item.classList.add('highlighted');
-          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
           setTimeout(() => item.classList.remove('highlighted'), 1400);
           return;
         }
       }
-    }, 200);
+    }, 250);
   }
 
   function showToast(msg) {

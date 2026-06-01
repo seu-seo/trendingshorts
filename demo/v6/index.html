@@ -4497,7 +4497,7 @@
           <div class="headline-top-row">
             <div class="headline-tag">
               <span class="pulse-dot"></span>
-              플랫폼 트렌드
+              <span id="headline-tag-text">플랫폼 트렌드</span>
             </div>
             <div class="headline-time">LIVE · 오늘</div>
           </div>
@@ -5571,6 +5571,20 @@
     if (id === 'screen-trend') updateDonutChart();
   }
 
+  function updateHeadlineTag() {
+    const pMap = { instagram: '인스타', youtube: '유튜브', tiktok: '틱톡' };
+    const aMap = { '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50s': '50대' };
+    const el = document.getElementById('headline-tag-text');
+    if (!el) return;
+    const platforms = answers.platforms;
+    const age = answers.age;
+    const platformText = (platforms.length === 0 || platforms.length === 3)
+      ? '플랫폼'
+      : platforms.map(p => pMap[p]).join(' · ');
+    const ageText = age ? aMap[age] + ' ' : '';
+    el.textContent = ageText + platformText + ' 트렌드';
+  }
+
   function updateDonutChart() {
     const PLATFORM_DATA = {
       instagram: { circleId: 'donut-insta',   trackId: 'donut-track-insta',   legendId: 'donut-legend-insta',   circ: 314.16, growth: 480 },
@@ -5579,6 +5593,7 @@
     };
     const MAX_GROWTH = 500;
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
+    updateHeadlineTag();
 
     // 트랙은 항상 표시, 진행 바는 선택 플랫폼만 컬러
     ['instagram', 'youtube', 'tiktok'].forEach(p => {

@@ -1838,7 +1838,9 @@
     0%,100% { box-shadow: 0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10); }
     50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
   }
-  .donut-svg { }
+  .donut-svg circle {
+    transition: stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
   .bubble.b1 { width:96px; height:96px; animation: bubblePulse 2.4s ease-in-out infinite; border-color: rgba(56,182,255,0.6); }
   .bubble.b1 .bubble-word { font-size: 14px; }
   .bubble.b1 .bubble-pct  { font-size: 11px; }
@@ -5567,24 +5569,44 @@
 
   function updateDonutChart() {
     const PLATFORM_DATA = {
-      instagram: { circleId: 'donut-insta',   legendId: 'donut-legend-insta',   growth: '+480%' },
-      youtube:   { circleId: 'donut-youtube',  legendId: 'donut-legend-youtube', growth: '+215%' },
-      tiktok:    { circleId: 'donut-tiktok',   legendId: 'donut-legend-tiktok',  growth: '+188%' },
+      instagram: { circleId: 'donut-insta',   legendId: 'donut-legend-insta',   arr: '130.7 120.6', growth: 480 },
+      youtube:   { circleId: 'donut-youtube',  legendId: 'donut-legend-youtube', arr: '55.1 196.2',  growth: 215 },
+      tiktok:    { circleId: 'donut-tiktok',   legendId: 'donut-legend-tiktok',  arr: '47.5 203.8',  growth: 188 },
     };
     const selected = answers.platforms.length > 0 ? answers.platforms : Object.keys(PLATFORM_DATA);
-    let topGrowth = '+188%';
+
+    // show/hide legends, reset circles to 0 for draw animation
     ['instagram', 'youtube', 'tiktok'].forEach(p => {
       const d = PLATFORM_DATA[p];
       const show = selected.includes(p);
       const circle = document.getElementById(d.circleId);
       const legend = document.getElementById(d.legendId);
-      if (circle) circle.style.opacity = show ? '1' : '0';
+      if (circle) { circle.style.opacity = show ? '1' : '0'; circle.style.strokeDasharray = '0 251.3'; }
       if (legend) legend.style.display = show ? 'flex' : 'none';
-      if (show && p === 'instagram') topGrowth = '+480%';
-      else if (show && p === 'youtube' && topGrowth !== '+480%') topGrowth = '+215%';
     });
-    const centerVal = document.getElementById('donut-center-val');
-    if (centerVal) centerVal.textContent = topGrowth;
+
+    // draw animation: trigger after reset frame
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      selected.forEach(p => {
+        const circle = document.getElementById(PLATFORM_DATA[p].circleId);
+        if (circle) circle.style.strokeDasharray = PLATFORM_DATA[p].arr;
+      });
+    }));
+
+    // counter-up for center number
+    const topGrowth = selected.includes('instagram') ? 480 : selected.includes('youtube') ? 215 : 188;
+    const centerEl = document.getElementById('donut-center-val');
+    if (centerEl) {
+      const duration = 1200;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        centerEl.textContent = '+' + Math.round(topGrowth * eased) + '%';
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
   }
 
   function selectPlatform(el) {

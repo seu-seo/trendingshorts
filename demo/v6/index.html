@@ -4056,6 +4056,12 @@
     font-size: 14px;
     padding: 20px 0;
   }
+  @keyframes trend-flash {
+    0%   { background: rgba(200, 255, 87, 0.18); }
+    60%  { background: rgba(200, 255, 87, 0.12); }
+    100% { background: transparent; }
+  }
+  .trend-item.highlighted { animation: trend-flash 1.4s ease forwards; }
 </style>
 </head>
 <body>
@@ -5636,7 +5642,7 @@
     body.innerHTML = `
       <div class="search-section-title">검색 결과 ${results.length}개</div>
       ${results.map(r => `
-        <div class="search-result-item">
+        <div class="search-result-item" onclick="goToTrendItem('${r.title.replace(/'/g, "\\'")}')">
           <div class="search-result-icon">${r.type === 'tag' ? '#' : '↑'}</div>
           <div class="search-result-body">
             <div class="search-result-title">${r.title}</div>
@@ -5649,13 +5655,32 @@
   }
 
   function selectSearchTag(tag) {
-    const input = document.getElementById('search-input');
-    input.value = tag;
     if (!recentSearches.includes(tag)) {
       recentSearches.unshift(tag);
       if (recentSearches.length > 5) recentSearches.pop();
     }
-    onSearchInput(tag);
+    goToTrendItem(tag);
+  }
+
+  function goToTrendItem(title) {
+    if (!recentSearches.includes(title)) {
+      recentSearches.unshift(title);
+      if (recentSearches.length > 5) recentSearches.pop();
+    }
+    closeSearch();
+    goTo('screen-trend');
+    setTimeout(() => {
+      const items = document.querySelectorAll('.trend-item');
+      for (const item of items) {
+        const t = item.querySelector('.trend-title');
+        if (t && t.textContent.trim() === title) {
+          item.classList.add('highlighted');
+          item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => item.classList.remove('highlighted'), 1400);
+          return;
+        }
+      }
+    }, 200);
   }
 
   function showToast(msg) {

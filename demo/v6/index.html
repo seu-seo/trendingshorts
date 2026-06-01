@@ -532,6 +532,58 @@
   .q-all-screen {
     flex-direction: column;
   }
+  /* ── Nordic Q-ALL overrides ── */
+  .q-all-screen .q-all-section-label {
+    letter-spacing: 0.18em;
+    font-size: 9px;
+  }
+  .q-all-screen .q-all-section-title {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .q-all-screen .chip {
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    padding: 9px 16px;
+    font-size: 14px;
+  }
+  .q-all-screen .chip.selected {
+    background: transparent;
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--primary);
+  }
+  .q-all-screen .chip-sm {
+    padding: 6px 11px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+  .q-all-screen .cat-custom-input {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .q-all-screen .age-segment {
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: transparent;
+    padding: 3px;
+  }
+  .q-all-screen .age-segment-slider {
+    border-radius: 3px;
+  }
+  .q-all-screen .age-seg-opt {
+    font-family: var(--font-body);
+    font-size: 13px;
+    border-radius: 2px;
+    padding: 12px 0;
+  }
+  .q-all-screen .q-all-divider {
+    margin: 0 20px;
+    opacity: 0.5;
+  }
   .q-all-scroll {
     flex: 1;
     overflow-y: auto;

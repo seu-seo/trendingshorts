@@ -4917,9 +4917,6 @@
         <div class="trend-detail-section-title">관련 영상</div>
         <div class="video-cards" id="td-videos"></div>
       </div>
-      <div class="trend-detail-cta">
-        <button class="welcome-start-btn" onclick="goTo('screen-content-topic')">이 주제로 만들기</button>
-      </div>
     </div>
 
     <div class="screen deep-screen" id="screen-content-topic">
@@ -4943,6 +4940,10 @@
       </div>
       <div class="cta-wrap">
         <button class="cta" id="topic-next-btn" disabled onclick="goToContentResult()">추천 받기</button>
+        <div id="topic-dual-cta" style="display:none; gap:10px;">
+          <button class="cta" style="flex:1; background:var(--bg-card); color:var(--primary); border:1px solid var(--primary);" onclick="pendingContentAction='script'; document.getElementById('topic-action-label').textContent='대본 추천'; goToContentResult()">대본 만들기</button>
+          <button class="cta" style="flex:1;" onclick="pendingContentAction='storyboard'; document.getElementById('topic-action-label').textContent='콘티 추천'; goToContentResult()">콘티 만들기</button>
+        </div>
       </div>
     </div>
 
@@ -6335,23 +6336,45 @@
 
   let pendingContentAction = 'storyboard';
 
+  function resetContentTopicToSingle(backTarget) {
+    document.getElementById('topic-next-btn').style.display = '';
+    document.getElementById('topic-next-btn').disabled = true;
+    document.getElementById('topic-dual-cta').style.display = 'none';
+    document.querySelector('#screen-content-topic .back-btn').onclick = () => goTo(backTarget);
+    document.querySelector('#screen-content-topic .skip-btn').onclick = () => goTo(backTarget);
+  }
+
   function openScript() {
+    resetContentTopicToSingle('screen-deep-profile');
     pendingContentAction = 'script';
     document.getElementById('topic-action-label').textContent = '대본 추천';
     document.getElementById('topic-input').value = '';
     document.getElementById('topic-char').textContent = '0';
-    document.getElementById('topic-next-btn').disabled = true;
     document.getElementById('topic-step').classList.add('active');
     goTo('screen-content-topic');
   }
 
   function openStoryboard() {
+    resetContentTopicToSingle('screen-deep-profile');
     pendingContentAction = 'storyboard';
     document.getElementById('topic-action-label').textContent = '콘티 추천';
     document.getElementById('topic-input').value = '';
     document.getElementById('topic-char').textContent = '0';
-    document.getElementById('topic-next-btn').disabled = true;
     document.getElementById('topic-step').classList.add('active');
+    goTo('screen-content-topic');
+  }
+
+  function openContentFromTrend() {
+    const title = document.getElementById('td-title').textContent.trim();
+    document.getElementById('topic-input').value = title;
+    document.getElementById('topic-char').textContent = title.length;
+    document.getElementById('topic-action-label').textContent = '콘텐츠 만들기';
+    document.getElementById('topic-step').classList.add('active');
+    document.getElementById('topic-next-btn').style.display = 'none';
+    const dual = document.getElementById('topic-dual-cta');
+    dual.style.display = 'flex';
+    document.querySelector('#screen-content-topic .back-btn').onclick = () => goTo('screen-trend-detail');
+    document.querySelector('#screen-content-topic .skip-btn').onclick = () => goTo('screen-trend-detail');
     goTo('screen-content-topic');
   }
 

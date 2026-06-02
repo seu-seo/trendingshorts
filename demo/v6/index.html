@@ -1146,7 +1146,6 @@
   }
   .dash-logo .dot { color: var(--primary); }
 
-  /* SV 시그니처 — Command Palette 버튼 (⌘K) */
   .cmd-k {
     flex: 1;
     height: 36px;
@@ -1178,23 +1177,6 @@
     font-weight: 500;
     flex: 1;
   }
-  .cmd-k-shortcut {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-  .cmd-k-shortcut kbd {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--gray);
-    background: var(--bg-card);
-    border: 1px solid var(--line-strong);
-    border-radius: 4px;
-    padding: 2px 5px;
-    font-weight: 600;
-    line-height: 1;
-  }
-
   /* === DASH SEARCH SECTION === */
   .dash-search-section {
     padding: 0 20px 14px;
@@ -1227,22 +1209,6 @@
     font-family: var(--font-body);
     font-size: 14px;
     color: var(--gray);
-  }
-  .dash-search-shortcut {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-  .dash-search-shortcut kbd {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--gray-mid);
-    background: var(--bg-hover);
-    border: 1px solid var(--line-strong);
-    border-radius: 4px;
-    padding: 2px 5px;
-    font-weight: 600;
-    line-height: 1;
   }
   .dash-hot-label {
     font-family: var(--font-mono);
@@ -4588,9 +4554,6 @@
               <path d="M14 14L11 11" stroke-linecap="round"/>
             </svg>
             <span class="cmd-k-text">검색하기</span>
-            <span class="cmd-k-shortcut">
-              <kbd>⌘</kbd><kbd>K</kbd>
-            </span>
           </div>
           <div class="avatar-mini" onclick="switchTab('my')">S</div>
         </div>

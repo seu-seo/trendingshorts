@@ -1,4 +1,19 @@
 
+## Deploy Configuration (configured by /setup-deploy)
+- Platform: Vercel
+- Production URL: https://web-v2-sand.vercel.app
+- Deploy workflow: auto-deploy on push to main (or `vercel deploy --prod` from `web-v2/`)
+- Deploy status command: `vercel ls --prod`
+- Merge method: squash
+- Project type: Next.js web app (App Router)
+- Post-deploy health check: https://web-v2-sand.vercel.app
+
+### Custom deploy hooks
+- Pre-merge: none
+- Deploy trigger: `cd web-v2 && vercel deploy --prod`
+- Deploy status: `vercel ls --prod`
+- Health check: https://web-v2-sand.vercel.app
+
 ## Skill routing
 
 When the user's request matches an available skill, invoke it via the Skill tool. The

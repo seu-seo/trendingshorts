@@ -36,6 +36,17 @@ const TABS: TabItem[] = [
       </svg>
     ),
   },
+  {
+    key: 'my',
+    label: '마이',
+    href: '/my',
+    icon: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" />
+      </svg>
+    ),
+  },
 ];
 
 export default function TabBar() {

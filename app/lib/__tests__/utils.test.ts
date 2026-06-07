@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import { deriveLifecycle, mapCategory, PLATFORM_LABEL } from '../utils';
+import { deriveHeatLevel, mapCategory, PLATFORM_LABEL } from '../utils';
 
-describe('deriveLifecycle', () => {
-  it('returns rising when engagement >= 100', () => {
-    expect(deriveLifecycle(100)).toBe('rising');
-    expect(deriveLifecycle(250)).toBe('rising');
+describe('deriveHeatLevel', () => {
+  it('returns HOT when engagementRate >= 5', () => {
+    expect(deriveHeatLevel(5)).toBe('HOT');
+    expect(deriveHeatLevel(10)).toBe('HOT');
   });
 
-  it('returns peak when engagement is 30–99', () => {
-    expect(deriveLifecycle(30)).toBe('peak');
-    expect(deriveLifecycle(99)).toBe('peak');
+  it('returns WARM when engagementRate is 2–4.99', () => {
+    expect(deriveHeatLevel(2)).toBe('WARM');
+    expect(deriveHeatLevel(4.99)).toBe('WARM');
   });
 
-  it('returns fading when engagement < 30', () => {
-    expect(deriveLifecycle(0)).toBe('fading');
-    expect(deriveLifecycle(29)).toBe('fading');
+  it('returns COLD when engagementRate < 2', () => {
+    expect(deriveHeatLevel(0)).toBe('COLD');
+    expect(deriveHeatLevel(1.99)).toBe('COLD');
   });
 });
 

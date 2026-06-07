@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
 import { useStore } from '@/lib/store';
-import CategoryTabs from '@/components/dashboard/CategoryTabs';
-import PlatformTabs from '@/components/dashboard/PlatformTabs';
-import PlatformPulse from '@/components/dashboard/PlatformPulse';
+import OpportunityRingChart from '@/components/dashboard/OpportunityRingChart';
+import WeeklyIssues from '@/components/dashboard/WeeklyIssues';
 import KeywordInsight from '@/components/dashboard/KeywordInsight';
 import TrendRow from '@/components/dashboard/TrendRow';
 import TrendActionSheet from '@/components/dashboard/TrendActionSheet';
-import WeeklyIssues from '@/components/dashboard/WeeklyIssues';
 
 export default function DashboardPage() {
   const setTab = useStore((s) => s.setTab);
@@ -17,8 +15,6 @@ export default function DashboardPage() {
   const setTrends = useStore((s) => s.setTrends);
   const filterPlatform = useStore((s) => s.filterPlatform);
   const filterCategory = useStore((s) => s.filterCategory);
-  const persona = useStore((s) => s.persona);
-  const hasPersona = !!persona;
   const personaResult = useStore((s) => s.personaResult);
   const personaInput = useStore((s) => s.personaInput);
 
@@ -49,33 +45,25 @@ export default function DashboardPage() {
     })();
   }, [setTrends]);
 
-  // 카테고리 필터만 적용 — PlatformPulse·KeywordInsight에 사용 (3개 플랫폼 전체)
+  // 카테고리 필터 적용 (전체 플랫폼)
   const categoryFiltered = useMemo(() => {
     let result = trends;
-    if (filterCategory) {
-      result = result.filter((t) => t.category === filterCategory);
-    }
+    if (filterCategory) result = result.filter((t) => t.category === filterCategory);
     return [...result].sort((a, b) => b.engagementRate - a.engagementRate);
   }, [trends, filterCategory]);
 
-  // 카테고리 + 플랫폼 필터 — 트렌드 목록에 사용
-  const platformFiltered = useMemo(() => {
-    return categoryFiltered.filter((t) => t.platform === filterPlatform);
+  // 카테고리 + 플랫폼 필터 — Top 5
+  const top5 = useMemo(() => {
+    return categoryFiltered
+      .filter((t) => t.platform === filterPlatform)
+      .slice(0, 5);
   }, [categoryFiltered, filterPlatform]);
+
+  const hasPersona = !!personaResult;
 
   return (
     <>
-      <div className="px-6 pb-3.5 flex justify-between items-end">
-        <div className="font-display text-[32px] leading-none tracking-tight">
-          이번 주 <span className="text-accent-lime">트렌드</span>
-          <br />
-          한눈에 비교
-        </div>
-        <div className="font-mono text-[9px] text-text-faint tracking-widest uppercase">
-          06 MAY · 7 DAYS
-        </div>
-      </div>
-
+      {/* ── 페르소나 칩 ───────────────────────────────────── */}
       {personaResult && personaInput && (
         <div className="mx-6 mb-4 px-3.5 py-2.5 rounded-xl flex items-center justify-between"
           style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.2)' }}>
@@ -98,7 +86,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {!hasPersona && !personaResult && (
+      {!hasPersona && (
         <Link
           href="/recommend"
           className="mx-6 mb-4 mt-1 px-3.5 py-3 rounded-xl border border-dashed flex items-center justify-between gap-3 no-underline transition-all hover:translate-y-[-1px]"
@@ -124,40 +112,36 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      {/* ── 1. 카테고리 탭 ─────────────────────────────── */}
-      <CategoryTabs />
+      {/* ── 1. 기회 지수 링 차트 (플랫폼 선택 + 개인화 헤더) ── */}
+      <OpportunityRingChart trends={categoryFiltered} />
 
-      {/* ── 2. 이번 주 주요 이슈 (Gemini + Google Search) ── */}
+      {/* ── 2. 이번 주 주요 이슈 (Gemini + Google Search) ────── */}
       <WeeklyIssues category={filterCategory} />
 
-      {/* ── 3. 플랫폼별 TOP 1 (카테고리 기준, 3개 플랫폼 항상 표시) ── */}
-      <PlatformPulse />
-
-      {/* ── 4. 키워드 트렌드 (카테고리 기준, 전체 플랫폼) ─── */}
+      {/* ── 3. 해시태그 인사이트 (Gemini) ─────────────────────── */}
       <KeywordInsight trends={categoryFiltered} category={filterCategory} />
 
-      {/* ── 5. 트렌드 목록 (카테고리 + 플랫폼 선택) ──────── */}
+      {/* ── 4. TOP 5 트렌드 목록 ──────────────────────────────── */}
       <div className="px-6 pt-2 pb-2 flex items-baseline justify-between">
         <div className="font-mono text-[10px] tracking-widest text-text-faint uppercase">
-          트렌드 목록
+          TOP 5 트렌드
         </div>
         <div className="font-mono text-[9px] text-text-faint">
-          {platformFiltered.length}개
+          {top5.length}개
         </div>
       </div>
-      <PlatformTabs />
 
-      {platformFiltered.length === 0 ? (
+      {top5.length === 0 ? (
         <div className="text-center py-14 px-8 text-text-faint">
           <div className="text-4xl mb-4 opacity-40">📭</div>
           <div className="font-display text-lg text-text-dim mb-1 tracking-tight">데이터 없음</div>
           <div className="text-xs leading-relaxed text-text-faint">
-            다른 플랫폼을 선택해보세요
+            트렌드 데이터를 불러오는 중이에요
           </div>
         </div>
       ) : (
         <div className="px-6 pb-6">
-          {platformFiltered.map((t, i) => (
+          {top5.map((t, i) => (
             <TrendRow key={t.id} trend={t} rank={i + 1} />
           ))}
         </div>

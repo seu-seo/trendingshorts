@@ -20,8 +20,8 @@ const PLATFORM_COLOR: Record<string, string> = {
 const AGE_LABEL: Record<string, string> = {
   '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50+': '50대+',
 };
-const LIFECYCLE_COLOR: Record<string, string> = {
-  rising: ACCENT, peak: '#57C8FF', fading: '#6A6A72',
+const HEAT_COLOR: Record<string, string> = {
+  HOT: '#C8FF57', WARM: '#57C8FF', COLD: '#555',
 };
 
 interface SavedScript {
@@ -231,8 +231,8 @@ export default function MyPage() {
                 </p>
                 <div className="flex items-center gap-1.5 mt-auto pt-1">
                   <span className="font-mono text-[9px] font-bold"
-                    style={{ color: LIFECYCLE_COLOR[t.lifecycle] ?? 'var(--text-faint)' }}>
-                    {t.lifecycle === 'rising' ? '▲' : t.lifecycle === 'peak' ? '◆' : '▼'}
+                    style={{ color: HEAT_COLOR[t.heatLevel] ?? 'var(--text-faint)' }}>
+                    {t.heatLevel === 'HOT' ? '▲' : t.heatLevel === 'WARM' ? '◆' : '▼'}
                   </span>
                   <span className="font-mono text-[9px] text-text-faint">
                     {PLATFORM_LABEL[t.platform] ?? t.platform}

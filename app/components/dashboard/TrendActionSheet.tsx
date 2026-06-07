@@ -69,7 +69,7 @@ export default function TrendActionSheet() {
             className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
             style={{ background: 'var(--accent-lime)', color: '#0a0a0a' }}
           >
-            ✏️ 트렌드 기반 제작하기
+            이 트렌드로 콘텐츠 만들기 →
           </button>
           <button
             onClick={handleWatch}
@@ -82,7 +82,7 @@ export default function TrendActionSheet() {
               cursor: trend.videoUrl ? 'pointer' : 'not-allowed',
             }}
           >
-            ▶ 영상 보기
+            원본 보기
           </button>
         </div>
       </div>

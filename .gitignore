@@ -12,3 +12,15 @@
 
 # logs
 *.log
+
+# Vercel
+.vercel/
+
+# old code
+old/
+
+# Next.js build artifacts & dependencies
+node_modules/
+.next/
+tsconfig.tsbuildinfo
+next-env.d.ts

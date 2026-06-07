@@ -15,11 +15,15 @@ const PLATFORM_TEXT_COLORS: Record<string, string> = {
   instagram: '#FF6699',
 };
 
+const HEAT_COLOR: Record<string, string> = {
+  HOT: '#C8FF57',
+  WARM: '#57C8FF',
+  COLD: '#555',
+};
+
 export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }) {
   const setActionSheetTrend = useStore((s) => s.setActionSheetTrend);
-
-  const rising = trend.lifecycle === 'rising';
-
+  const isHot = trend.heatLevel === 'HOT';
   const handleClick = () => setActionSheetTrend(trend);
 
   return (
@@ -29,7 +33,7 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
     >
       <div
         className={`font-display text-[22px] min-w-8 text-center leading-none ${
-          rising ? 'text-accent-lime' : 'text-text-faint'
+          isHot ? 'text-accent-lime' : 'text-text-faint'
         }`}
       >
         {String(rank).padStart(2, '0')}
@@ -54,9 +58,10 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
           <span>{trend.time}</span>
         </div>
       </div>
-      <div className="font-mono text-[11px] font-bold flex-shrink-0"
-        style={{ color: trend.lifecycle === 'rising' ? '#C8FF57' : trend.lifecycle === 'peak' ? '#57C8FF' : '#555' }}>
-        {trend.lifecycle === 'rising' ? '▲' : trend.lifecycle === 'peak' ? '◆' : '▼'}
+      <div className="font-mono text-[10px] font-bold flex-shrink-0 text-right leading-tight"
+        style={{ color: HEAT_COLOR[trend.heatLevel] }}>
+        <div>{trend.engagementRate > 0 ? `${trend.engagementRate}%` : '—'}</div>
+        <div className="text-[8px] tracking-wider">{trend.heatLevel}</div>
       </div>
     </button>
   );

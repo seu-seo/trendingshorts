@@ -1,5 +1,5 @@
 import type { Trend } from './types';
-import { deriveLifecycle, PLATFORM_LABEL } from './utils';
+import { deriveHeatLevel, PLATFORM_LABEL } from './utils';
 import type { Category } from './types';
 
 const BASE_URL = 'https://www.googleapis.com/youtube/v3';
@@ -70,9 +70,56 @@ async function get<T>(url: string): Promise<T | null> {
   }
 }
 
+export async function fetchYouTubeFromSnapshot(): Promise<Trend[]> {
+  try {
+    const raw = (await import('./data/youtube-snapshot.json')).default as unknown as (VideoDetail & { requestedCid: string })[];
+    return processVideos(raw);
+  } catch {
+    return [];
+  }
+}
+
+function processVideos(items: (VideoDetail & { requestedCid: string })[]): Trend[] {
+  const actualShorts = items.filter((v) => {
+    const s = parseDuration(v.contentDetails.duration);
+    return s > 0 && s <= 180 && HANGUL_RE.test(v.snippet.title);
+  });
+
+  return actualShorts.map((video, index) => {
+    const seconds = parseDuration(video.contentDetails.duration);
+    const views = parseInt(video.statistics.viewCount || '0');
+    const likes = parseInt(video.statistics.likeCount || '0');
+    const comments = parseInt(video.statistics.commentCount || '0');
+    const tags = (video.snippet.tags ?? []).filter((t) => t.startsWith('#')).slice(0, 4);
+    const engagementRate = views >= 1000
+      ? parseFloat(((likes + comments) / views * 100).toFixed(2))
+      : 0;
+
+    return {
+      id: index + 1,
+      platform: 'youtube' as const,
+      platformLabel: PLATFORM_LABEL.youtube,
+      category: CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
+      heatLevel: deriveHeatLevel(engagementRate),
+      title: video.snippet.title,
+      creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,
+      views,
+      likes,
+      comments,
+      shares: 0,
+      engagementRate,
+      duration: formatDuration(seconds),
+      thumb: THUMBNAIL_MAP[video.requestedCid] || '🎬',
+      time: timeAgo(video.snippet.publishedAt),
+      hashtags: tags.length ? tags.join(' ') : '#shorts',
+      videoUrl: `https://www.youtube.com/shorts/${video.id}`,
+    };
+  });
+}
+
 export async function fetchYouTubeTrends(): Promise<Trend[]> {
   const API_KEY = process.env.YOUTUBE_API_KEY;
-  if (!API_KEY) return [];
+  if (!API_KEY) return fetchYouTubeFromSnapshot();
 
   const categoryResults = await Promise.all(
     SHORTS_CATEGORY_IDS.map(async (cid) => {
@@ -97,38 +144,5 @@ export async function fetchYouTubeTrends(): Promise<Trend[]> {
     }
   }
 
-  // isShort() HTTP 체크 제거 — 개별 요청 수백 개로 타임아웃 발생
-  // 60초 이하 = Shorts, 61~180초 = 짧은 영상도 포함
-  const actualShorts = allVideos.filter((v) => {
-    const s = parseDuration(v.contentDetails.duration);
-    return s > 0 && s <= 180 && HANGUL_RE.test(v.snippet.title);
-  });
-
-  return actualShorts.map((video, index) => {
-    const seconds = parseDuration(video.contentDetails.duration);
-    const views = parseInt(video.statistics.viewCount || '0');
-    const likes = parseInt(video.statistics.likeCount || '0');
-    const comments = parseInt(video.statistics.commentCount || '0');
-    const tags = (video.snippet.tags ?? []).filter((t) => t.startsWith('#')).slice(0, 4);
-
-    return {
-      id: index + 1,
-      platform: 'youtube' as const,
-      platformLabel: PLATFORM_LABEL.youtube,
-      category: CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
-      lifecycle: deriveLifecycle(views > 0 ? Math.round((likes + comments) / views * 1000) : 0),
-      title: video.snippet.title,
-      creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,
-      views,
-      likes,
-      comments,
-      shares: 0,
-      growth: views > 0 ? Math.round((likes + comments) / views * 1000) : 0,
-      duration: formatDuration(seconds),
-      thumb: THUMBNAIL_MAP[video.requestedCid] || '🎬',
-      time: timeAgo(video.snippet.publishedAt),
-      hashtags: tags.length ? tags.join(' ') : '#shorts',
-      videoUrl: `https://www.youtube.com/shorts/${video.id}`,
-    };
-  });
+  return processVideos(allVideos);
 }

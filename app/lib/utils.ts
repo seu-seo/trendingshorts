@@ -1,10 +1,10 @@
-import type { Category, Lifecycle, Platform } from './types';
+import type { Category, HeatLevel, Platform } from './types';
 
-// engagement = (likes + comments) / views × 1000
-export function deriveLifecycle(engagement: number): Lifecycle {
-  if (engagement >= 100) return 'rising';
-  if (engagement >= 30)  return 'peak';
-  return 'fading';
+// erPercent = (likes + comments) / views × 100
+export function deriveHeatLevel(erPercent: number): HeatLevel {
+  if (erPercent >= 5) return 'HOT';
+  if (erPercent >= 2) return 'WARM';
+  return 'COLD';
 }
 
 export const PLATFORM_LABEL: Record<Platform, string> = {

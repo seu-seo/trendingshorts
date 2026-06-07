@@ -19,9 +19,9 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
   const setTab = useStore((s) => s.setTab);
 
   const rankClass =
-    trend.lifecycle === 'peak'
+    trend.heatLevel === 'WARM'
       ? 'bg-peak text-bg'
-      : trend.lifecycle === 'fading'
+      : trend.heatLevel === 'COLD'
       ? 'bg-fading text-text'
       : 'bg-accent-lime text-bg';
 
@@ -70,8 +70,8 @@ export default function RecoTrendCard({ trend, rank }: { trend: Trend; rank: num
       <div className="mt-2.5 pt-2.5 border-t border-dashed border-border flex justify-between items-center">
         <span className="font-mono text-[10px] text-text-faint">{trend.hashtags}</span>
         <span className="font-mono text-[10px] font-bold"
-          style={{ color: trend.lifecycle === 'rising' ? '#C8FF57' : trend.lifecycle === 'peak' ? '#57C8FF' : '#666' }}>
-          {trend.lifecycle === 'rising' ? '▲ RISING' : trend.lifecycle === 'peak' ? '◆ PEAK' : '▼ FADING'}
+          style={{ color: trend.heatLevel === 'HOT' ? '#C8FF57' : trend.heatLevel === 'WARM' ? '#57C8FF' : '#666' }}>
+          {trend.engagementRate > 0 ? `${trend.engagementRate}%` : '—'} {trend.heatLevel}
         </span>
       </div>
     </button>

@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent, AgeGroup } from './types';
 import type { InsightsResponse } from '@/app/api/insights/route';
-import { ALL_TRENDS } from './data/trends';
 
 // 개별 localStorage 키 (통일된 이름)
 const LS = {
@@ -61,7 +60,6 @@ interface AppState {
   currentTab: Tab;
   setTab: (tab: Tab) => void;
 
-  // Live trends (seeded with mock, replaced by API fetch)
   trends: Trend[];
   setTrends: (t: Trend[]) => void;
 
@@ -132,7 +130,7 @@ export const useStore = create<AppState>((set, get) => {
   currentTab: 'dashboard',
   setTab: (tab) => set({ currentTab: tab }),
 
-  trends: ALL_TRENDS,
+  trends: [],
   setTrends: (t) => set({ trends: t }),
 
   filterPlatform: 'youtube',

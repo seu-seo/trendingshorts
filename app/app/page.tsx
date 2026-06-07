@@ -48,19 +48,13 @@ export default function DashboardPage() {
     })();
   }, [setTrends]);
 
-  const LIFECYCLE_ORDER = { rising: 0, peak: 1, fading: 2 } as const;
-
   // 카테고리 필터만 적용 — PlatformPulse·KeywordInsight에 사용 (3개 플랫폼 전체)
   const categoryFiltered = useMemo(() => {
     let result = trends;
     if (filterCategory) {
       result = result.filter((t) => t.category === filterCategory);
     }
-    return [...result].sort((a, b) => {
-      const lc = LIFECYCLE_ORDER[a.lifecycle] - LIFECYCLE_ORDER[b.lifecycle];
-      if (lc !== 0) return lc;
-      return b.growth - a.growth;
-    });
+    return [...result].sort((a, b) => b.engagementRate - a.engagementRate);
   }, [trends, filterCategory]);
 
   // 카테고리 + 플랫폼 필터 — 트렌드 목록에 사용

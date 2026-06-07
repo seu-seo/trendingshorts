@@ -1,5 +1,5 @@
 import type { Trend } from './types';
-import { deriveLifecycle, mapCategory, PLATFORM_LABEL } from './utils';
+import { deriveHeatLevel, mapCategory, PLATFORM_LABEL } from './utils';
 
 const HANGUL_RE = /[가-힣]/;
 
@@ -92,6 +92,11 @@ function processPosts(posts: ApifyPost[]): Trend[] {
     if (new Date(post.timestamp).getTime() < cutoff) continue;
     seen.add(post.id);
     const views = post.videoViewCount ?? post.igPlayCount ?? post.videoPlayCount ?? 0;
+    const likes = post.likesCount ?? 0;
+    const comments = post.commentsCount ?? 0;
+    const engagementRate = views >= 1000
+      ? parseFloat(((likes + comments) / views * 100).toFixed(2))
+      : 0;
     const tags = post.hashtags ?? [];
     const krCategory = krCategoryFromHashtags(tags);
     results.push({
@@ -99,14 +104,14 @@ function processPosts(posts: ApifyPost[]): Trend[] {
       platform: 'instagram' as const,
       platformLabel: PLATFORM_LABEL.instagram,
       category: mapCategory(krCategory),
-      lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0),
+      heatLevel: deriveHeatLevel(engagementRate),
       title: (post.caption ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'Instagram Reel',
       creator: `@${post.ownerUsername}`,
       views,
-      likes: post.likesCount ?? 0,
-      comments: post.commentsCount ?? 0,
+      likes,
+      comments,
       shares: 0,
-      growth: views > 0 ? Math.round(((post.likesCount ?? 0) + (post.commentsCount ?? 0)) / views * 1000) : 0,
+      engagementRate,
       duration: '0:30',
       thumb: THUMBNAIL_MAP[krCategory] ?? '📱',
       time: timeAgo(post.timestamp),

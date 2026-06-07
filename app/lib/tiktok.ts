@@ -1,5 +1,5 @@
 import type { Trend } from './types';
-import { deriveLifecycle, mapCategory, PLATFORM_LABEL } from './utils';
+import { deriveHeatLevel, mapCategory, PLATFORM_LABEL } from './utils';
 
 const HANGUL_RE = /[가-힣]/;
 
@@ -88,19 +88,24 @@ function processPosts(posts: TikTokPost[]): Trend[] {
     const tagNames = (post.hashtags ?? []).map((h) => h.name);
     const krCategory = krCategoryFromHashtags(tagNames);
     const views = post.playCount ?? 0;
+    const likes = post.diggCount ?? 0;
+    const comments = post.commentCount ?? 0;
+    const engagementRate = views >= 1000
+      ? parseFloat(((likes + comments) / views * 100).toFixed(2))
+      : 0;
     results.push({
       id: results.length + 1,
       platform: 'tiktok' as const,
       platformLabel: PLATFORM_LABEL.tiktok,
       category: mapCategory(krCategory),
-      lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0),
+      heatLevel: deriveHeatLevel(engagementRate),
       title: (post.text ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'TikTok',
       creator: `@${post.authorMeta?.name ?? 'unknown'}`,
       views,
-      likes: post.diggCount ?? 0,
-      comments: post.commentCount ?? 0,
+      likes,
+      comments,
       shares: post.shareCount ?? 0,
-      growth: views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0,
+      engagementRate,
       duration: formatDuration(post.videoMeta?.duration),
       thumb: THUMBNAIL_MAP[krCategory] ?? '♪',
       time: timeAgo(post.createTimeISO),

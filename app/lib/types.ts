@@ -3,12 +3,12 @@ export type PlatformFilter = Platform | 'all';
 
 export type Category = 'food' | 'beauty' | 'lifestyle' | 'edu' | 'gaming' | 'fitness' | 'art';
 
-export type Lifecycle = 'rising' | 'peak' | 'fading';
+export type HeatLevel = 'HOT' | 'WARM' | 'COLD';
 
 export interface Trend {
   id: number;
   category: Category;
-  lifecycle: Lifecycle;
+  heatLevel: HeatLevel;
   platform: Platform;
   platformLabel: string;
   time: string;
@@ -20,7 +20,7 @@ export interface Trend {
   comments: number;
   shares: number;
   hashtags: string;
-  growth: number;
+  engagementRate: number;
   duration: string;
   videoUrl?: string;
 }

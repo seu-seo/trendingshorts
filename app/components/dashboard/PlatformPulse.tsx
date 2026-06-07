@@ -29,7 +29,7 @@ export default function PlatformPulse() {
   const topPerPlatform = PLATFORMS.map((p) => {
     const top = trends
       .filter((t) => t.platform === p.key && (filterCategory === null || t.category === filterCategory))
-      .sort((a, b) => b.growth - a.growth)[0];
+      .sort((a, b) => b.engagementRate - a.engagementRate)[0];
     return { ...p, top };
   });
 
@@ -85,8 +85,8 @@ export default function PlatformPulse() {
               {top.title}
             </div>
             <div className="font-mono text-[10px] font-bold mt-auto"
-              style={{ color: top.lifecycle === 'rising' ? '#C8FF57' : top.lifecycle === 'peak' ? '#57C8FF' : '#666' }}>
-              {top.lifecycle === 'rising' ? '▲ RISING' : top.lifecycle === 'peak' ? '◆ PEAK' : '▼ FADING'}
+              style={{ color: top.heatLevel === 'HOT' ? '#C8FF57' : top.heatLevel === 'WARM' ? '#57C8FF' : '#666' }}>
+              {top.engagementRate > 0 ? `${top.engagementRate}%` : '—'} {top.heatLevel}
             </div>
           </button>
         ))}

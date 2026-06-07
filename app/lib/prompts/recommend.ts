@@ -19,33 +19,32 @@ export function recommendTone(
   let scoreStory = 0;
   let scoreHooking = 0;
 
-  // --- 신호 1: 참여율 지수 (likes+comments / views × 1000) ---
-  // 높을수록 바이럴 → 후킹형, 낮으면 fading → 차별화 훅 필요
-  if (trend.growth >= 150) {
+  // --- 신호 1: 반응률 ER% (likes+comments / views × 100) ---
+  if (trend.engagementRate >= 10) {
     scoreHooking += 25;
-    signals.push(`참여율 지수 ${trend.growth} (바이럴 패턴 — 빠른 어그로 필요)`);
-  } else if (trend.growth >= 80) {
+    signals.push(`반응률 ${trend.engagementRate}% (바이럴 패턴 — 빠른 어그로 필요)`);
+  } else if (trend.engagementRate >= 5) {
     scoreHooking += 15;
     scoreInformative += 5;
-    signals.push(`참여율 지수 ${trend.growth} (높은 참여 — 강한 반응 유도)`);
-  } else if (trend.growth >= 30) {
+    signals.push(`반응률 ${trend.engagementRate}% (높은 참여 — 강한 반응 유도)`);
+  } else if (trend.engagementRate >= 2) {
     scoreStory += 10;
-    signals.push(`참여율 지수 ${trend.growth} (보통 — 스토리 전개에 유리)`);
+    signals.push(`반응률 ${trend.engagementRate}% (보통 — 스토리 전개에 유리)`);
   } else {
     scoreHooking += 10;
-    signals.push(`참여율 지수 ${trend.growth} (낮음 — 차별화된 훅 필요)`);
+    signals.push(`반응률 ${trend.engagementRate}% (낮음 — 차별화된 훅 필요)`);
   }
 
-  // --- 신호 2: lifecycle ---
-  if (trend.lifecycle === 'rising') {
+  // --- 신호 2: heatLevel ---
+  if (trend.heatLevel === 'HOT') {
     scoreHooking += 10;
-    signals.push(`라이프사이클 'rising' — 후킹형 가중`);
-  } else if (trend.lifecycle === 'peak') {
+    signals.push(`참여 열도 HOT — 후킹형 가중`);
+  } else if (trend.heatLevel === 'WARM') {
     scoreInformative += 10;
-    signals.push(`라이프사이클 'peak' — 정보 정리에 적합`);
-  } else if (trend.lifecycle === 'fading') {
+    signals.push(`참여 열도 WARM — 정보 정리에 적합`);
+  } else if (trend.heatLevel === 'COLD') {
     scoreStory += 5;
-    signals.push(`라이프사이클 'fading' — 회고/스토리 각도 가능`);
+    signals.push(`참여 열도 COLD — 회고/스토리 각도 가능`);
   }
 
   // --- 신호 3: 카테고리 (구조적 적합도) ---

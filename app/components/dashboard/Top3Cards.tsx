@@ -10,10 +10,10 @@ const PLATFORM_COLOR: Record<string, string> = {
   instagram: '#FF6699',
 };
 
-const LIFECYCLE_BADGE: Record<string, { label: string; color: string }> = {
-  rising: { label: '▲ RISING', color: '#C8FF57' },
-  peak:   { label: '◆ PEAK',   color: '#57C8FF' },
-  fading: { label: '▼ FADING', color: '#666' },
+const HEAT_COLOR: Record<string, string> = {
+  HOT: '#C8FF57',
+  WARM: '#57C8FF',
+  COLD: '#666',
 };
 
 function formatNum(n: number): string {
@@ -26,7 +26,7 @@ function TrendCard({ trend, rank }: { trend: Trend; rank: number }) {
   const router = useRouter();
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
-  const lc = LIFECYCLE_BADGE[trend.lifecycle] ?? LIFECYCLE_BADGE.rising;
+  const heatColor = HEAT_COLOR[trend.heatLevel] ?? '#666';
   const pc = PLATFORM_COLOR[trend.platform] ?? '#888';
 
   const handleClick = () => {
@@ -51,8 +51,8 @@ function TrendCard({ trend, rank }: { trend: Trend; rank: number }) {
             {trend.platformLabel}
           </span>
           <span className="font-mono text-[8px] font-bold px-1.5 py-0.5 rounded"
-            style={{ background: 'rgba(0,0,0,0.7)', color: lc.color }}>
-            {lc.label}
+            style={{ background: 'rgba(0,0,0,0.7)', color: heatColor }}>
+            {trend.engagementRate > 0 ? `${trend.engagementRate}%` : '—'} {trend.heatLevel}
           </span>
         </div>
         {/* 순위 */}

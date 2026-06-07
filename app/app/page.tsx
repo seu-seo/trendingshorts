@@ -9,6 +9,7 @@ import PlatformPulse from '@/components/dashboard/PlatformPulse';
 import KeywordInsight from '@/components/dashboard/KeywordInsight';
 import TrendRow from '@/components/dashboard/TrendRow';
 import TrendActionSheet from '@/components/dashboard/TrendActionSheet';
+import WeeklyIssues from '@/components/dashboard/WeeklyIssues';
 
 export default function DashboardPage() {
   const setTab = useStore((s) => s.setTab);
@@ -126,13 +127,16 @@ export default function DashboardPage() {
       {/* ── 1. 카테고리 탭 ─────────────────────────────── */}
       <CategoryTabs />
 
-      {/* ── 2. 플랫폼별 TOP 1 (카테고리 기준, 3개 플랫폼 항상 표시) ── */}
+      {/* ── 2. 이번 주 주요 이슈 (Gemini + Google Search) ── */}
+      <WeeklyIssues category={filterCategory} />
+
+      {/* ── 3. 플랫폼별 TOP 1 (카테고리 기준, 3개 플랫폼 항상 표시) ── */}
       <PlatformPulse />
 
-      {/* ── 3. 키워드 트렌드 (카테고리 기준, 전체 플랫폼) ─── */}
+      {/* ── 4. 키워드 트렌드 (카테고리 기준, 전체 플랫폼) ─── */}
       <KeywordInsight trends={categoryFiltered} category={filterCategory} />
 
-      {/* ── 4. 트렌드 목록 (카테고리 + 플랫폼 선택) ──────── */}
+      {/* ── 5. 트렌드 목록 (카테고리 + 플랫폼 선택) ──────── */}
       <div className="px-6 pt-2 pb-2 flex items-baseline justify-between">
         <div className="font-mono text-[10px] tracking-widest text-text-faint uppercase">
           트렌드 목록

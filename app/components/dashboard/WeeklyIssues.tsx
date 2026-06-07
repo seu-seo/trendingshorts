@@ -10,7 +10,7 @@ const CATEGORY_KR: Record<string, string> = {
   edu: '정보/자기계발', gaming: '게임/엔터', fitness: '운동/건강', art: '예술/음악',
 };
 
-export default function WeeklyIssues({ category }: { category: string | null }) {
+export default function WeeklyIssues({ category, trendTitles }: { category: string | null; trendTitles?: string[] }) {
   const [data, setData] = useState<WeeklyIssuesResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const cat = category ?? 'lifestyle';
@@ -21,7 +21,7 @@ export default function WeeklyIssues({ category }: { category: string | null }) 
     fetch('/api/weekly-issues', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category: cat }),
+      body: JSON.stringify({ category: cat, trendTitles }),
     })
       .then((r) => r.json())
       .then((d: WeeklyIssuesResponse) => setData(d))
@@ -63,22 +63,22 @@ export default function WeeklyIssues({ category }: { category: string | null }) 
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {data.issues.map((issue: WeeklyIssue, i) => (
           <div key={i} className="flex gap-3 items-start">
-            <span className="mt-[3px] font-mono text-[10px] font-black flex-shrink-0 w-4 text-center"
+            <span className="mt-[4px] font-mono text-[12px] font-black flex-shrink-0 w-5 text-center"
               style={{ color: ISSUE_COLORS[i] ?? ISSUE_COLORS[2] }}>
               {String(i + 1).padStart(2, '0')}
             </span>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-semibold leading-snug mb-0.5"
-                style={{ color: ISSUE_COLORS[i] ?? 'var(--text)' }}>
+              <div className="text-[16px] font-bold leading-snug mb-1"
+                style={{ color: ISSUE_COLORS[i] ?? 'var(--text)', letterSpacing: '-0.01em' }}>
                 {issue.title}
               </div>
-              <div className="text-[11px] text-text-dim leading-relaxed mb-1">
+              <div className="text-[13px] text-text-dim leading-relaxed mb-1.5">
                 {issue.summary}
               </div>
-              <div className="font-mono text-[9px] px-1.5 py-0.5 rounded inline-block"
+              <div className="font-mono text-[11px] px-2 py-1 rounded inline-block"
                 style={{ background: `${ISSUE_COLORS[i] ?? '#57C8FF'}18`, color: ISSUE_COLORS[i] ?? '#57C8FF' }}>
                 → {issue.angle}
               </div>

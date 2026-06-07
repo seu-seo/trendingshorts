@@ -30,18 +30,24 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const platforms = ['youtube', 'tiktok', 'instagram'] as const;
-    let accumulated: typeof trends = [];
+    const OFFSET: Record<string, number> = { youtube: 0, tiktok: 10000, instagram: 20000 };
     (async () => {
-      for (const platform of platforms) {
-        try {
-          const res = await fetch(`/api/trends?platform=${platform}`);
-          const json = await res.json();
-          if (json.data?.length) {
-            accumulated = [...accumulated, ...json.data];
-            setTrends([...accumulated]);
+      const results = await Promise.all(
+        platforms.map(async (platform) => {
+          try {
+            const res = await fetch(`/api/trends?platform=${platform}`);
+            const json = await res.json();
+            const offset = OFFSET[platform] ?? 0;
+            return (json.data ?? []).map((t: typeof trends[number]) => ({
+              ...t,
+              id: t.id + offset,
+            }));
+          } catch {
+            return [] as typeof trends;
           }
-        } catch {}
-      }
+        })
+      );
+      setTrends(results.flat());
     })();
   }, [setTrends]);
 
@@ -112,7 +118,7 @@ export default function DashboardPage() {
           style={{ background: 'var(--accent-lime)', boxShadow: '0 0 6px var(--accent-lime)' }} />
         <span className="font-mono text-[10px] tracking-widest uppercase text-accent-lime">트렌드 분석</span>
       </div>
-      <WeeklyIssues category={filterCategory} />
+      <WeeklyIssues category={filterCategory} trendTitles={top10.map(t => t.title)} />
 
       {/* ── 2. 키워드 분석 ──────────────────────────────────── */}
       <div className="px-6 mb-1 flex items-center gap-2">
@@ -122,13 +128,13 @@ export default function DashboardPage() {
       </div>
       <KeywordInsight trends={sorted} category={filterCategory} />
 
-      {/* ── 3. 상위 영상 10개 ────────────────────────────────── */}
+      {/* ── 3. 지금 뜨고 있어요 ──────────────────────────────── */}
       <div className="px-6 mb-3 flex items-baseline justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-[5px] h-[5px] rounded-full flex-shrink-0" style={{ background: '#FF4274' }} />
-          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: '#FF4274' }}>지금 뜨고 있어요</span>
+        <div className="font-display text-[18px] leading-none tracking-tight text-text"
+          style={{ letterSpacing: '-0.02em' }}>
+          지금 뜨고 있어요
         </div>
-        <span className="font-mono text-[9px] text-text-faint">TOP {top10.length}</span>
+        <span className="font-mono text-[9px] text-text-faint tracking-wider">더보기 →</span>
       </div>
 
       {top10.length === 0 ? (
@@ -137,7 +143,7 @@ export default function DashboardPage() {
           <div className="font-mono text-[11px] text-text-faint tracking-wider">트렌드 데이터를 불러오는 중이에요</div>
         </div>
       ) : (
-        <div className="px-6 pb-6">
+        <div className="pb-6">
           {top10.map((t, i) => (
             <TrendRow key={t.id} trend={t} rank={i + 1} />
           ))}

@@ -76,14 +76,14 @@ function krCategoryFromHashtags(tags: string[]): string {
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function processPosts(posts: TikTokPost[]): Trend[] {
+function processPosts(posts: TikTokPost[], skipExpiry = false): Trend[] {
   const seen = new Set<string>();
   const results: Trend[] = [];
   const cutoff = Date.now() - THIRTY_DAYS_MS;
   for (const post of posts) {
     if (post.isAd || post.isSponsored) continue;
     if (seen.has(post.id)) continue;
-    if (new Date(post.createTimeISO).getTime() < cutoff) continue;
+    if (!skipExpiry && new Date(post.createTimeISO).getTime() < cutoff) continue;
     seen.add(post.id);
     const tagNames = (post.hashtags ?? []).map((h) => h.name);
     const krCategory = krCategoryFromHashtags(tagNames);
@@ -116,11 +116,10 @@ function processPosts(posts: TikTokPost[]): Trend[] {
   return results;
 }
 
-// DISABLE_APIFY=true 시 스냅샷 JSON을 fallback으로 사용
 export async function fetchTikTokFromSnapshot(): Promise<Trend[]> {
   try {
     const raw = (await import('./data/tiktok-snapshot.json')).default as unknown as TikTokPost[];
-    return processPosts(raw);
+    return processPosts(raw, true); // 스냅샷은 날짜 만료 없이 처리
   } catch {
     return [];
   }

@@ -1,9 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { KeywordItem, InsightsResponse } from '@/app/api/insights/route';
+import type { KeywordItem, InsightsResponse, HashtagScore } from '@/app/api/insights/route';
 import type { Trend } from '@/lib/types';
 import { useStore } from '@/lib/store';
+
+// 수집 쿼리에 사용된 태그 — 실제 트렌드 신호가 아니므로 스코어링에서 제외
+const COLLECTION_TAGS = new Set([
+  '#먹방', '#뷰티', '#댄스', '#게임', '#운동', '#브이로그', '#요리', '#패션',
+  '#여행', '#일상', '#반려동물', '#유머', '#asmr', '#diy', '#음악', '#쇼츠',
+  '#shorts', '#릴스', '#틱톡', '#reels', '#youtube', '#viral', '#trending',
+]);
+
+function computeHashtagScores(trends: Trend[]): HashtagScore[] {
+  const map = new Map<string, { count: number; totalER: number }>();
+  for (const trend of trends) {
+    const tags = trend.hashtags.split(' ').filter(Boolean);
+    for (const tag of tags) {
+      const key = tag.toLowerCase();
+      if (COLLECTION_TAGS.has(key)) continue;
+      const prev = map.get(key) ?? { count: 0, totalER: 0 };
+      map.set(key, { count: prev.count + 1, totalER: prev.totalER + trend.engagementRate });
+    }
+  }
+  return [...map.entries()]
+    .map(([tag, { count, totalER }]) => ({ tag, score: parseFloat((count * (totalER / count)).toFixed(2)) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20);
+}
 
 const BUBBLE: Record<string, { size: number; bg: string; border: string; color: string; glow: string; fs: number }> = {
   hot:    { size: 84, bg: 'rgba(255,61,127,0.22)',  border: 'rgba(255,61,127,0.6)',   color: '#FF3D7F', glow: '0 0 20px rgba(255,61,127,0.4)',  fs: 11 },
@@ -35,12 +59,13 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
 
     const titles = trends.slice(0, 20).map((t) => t.title);
     const hashtags = trends.flatMap((t) => t.hashtags.split(' ').filter(Boolean));
+    const hashtagScores = computeHashtagScores(trends);
 
     setLoading(true);
     fetch('/api/insights', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category: cat, titles, hashtags }),
+      body: JSON.stringify({ category: cat, titles, hashtags, hashtagScores }),
     })
       .then((r) => r.json())
       .then((d: InsightsResponse) => setInsightsCache(cat, d))

@@ -82,15 +82,11 @@ export default function MyPage() {
   const personaResult = useStore((s) => s.personaResult);
   const trends        = useStore((s) => s.trends);
 
-  const [savedTrendIds, setSavedTrendIds] = useState<number[]>([]);
-  const [savedScripts,  setSavedScripts]  = useState<SavedScript[]>([]);
+  const savedTrendIds = useStore((s) => s.savedTrendIds);
+  const [savedScripts, setSavedScripts] = useState<SavedScript[]>([]);
 
   useEffect(() => {
     setTab('my');
-    try {
-      const t = localStorage.getItem('sfp_saved_trends');
-      if (t) setSavedTrendIds(JSON.parse(t));
-    } catch {}
     try {
       const s = localStorage.getItem('sfp_saved_scripts');
       if (s) setSavedScripts(JSON.parse(s));

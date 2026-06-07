@@ -119,6 +119,10 @@ interface AppState {
   actionSheetTrend: Trend | null;
   setActionSheetTrend: (trend: Trend | null) => void;
 
+  // Saved trends (localStorage 영속)
+  savedTrendIds: number[];
+  toggleSaveTrend: (id: number) => void;
+
   // Insights cache (카테고리별, 페이지 이동 후에도 유지)
   insightsCache: Map<string, InsightsResponse>;
   setInsightsCache: (key: string, value: InsightsResponse) => void;
@@ -204,6 +208,18 @@ export const useStore = create<AppState>((set, get) => {
 
   actionSheetTrend: null,
   setActionSheetTrend: (trend) => set({ actionSheetTrend: trend }),
+
+  savedTrendIds: (() => {
+    if (typeof window === 'undefined') return [];
+    try { return JSON.parse(localStorage.getItem('sfp_saved_trends') ?? '[]') as number[]; } catch { return []; }
+  })(),
+  toggleSaveTrend: (id) => set((s) => {
+    const next = s.savedTrendIds.includes(id)
+      ? s.savedTrendIds.filter((v) => v !== id)
+      : [...s.savedTrendIds, id];
+    try { localStorage.setItem('sfp_saved_trends', JSON.stringify(next)); } catch {}
+    return { savedTrendIds: next };
+  }),
 
   insightsCache: new Map(),
   setInsightsCache: (key, value) => set((s) => {

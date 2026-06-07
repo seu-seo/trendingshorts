@@ -5,43 +5,24 @@ import { usePathname } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { Tab } from '@/lib/types';
 
-interface TabItem {
-  key: Tab;
-  label: string;
-  href: string;
-  icon: React.ReactNode;
-}
-
-const TABS: TabItem[] = [
+const TABS: { key: Tab; label: string; href: string; icon: React.ReactNode }[] = [
   {
     key: 'dashboard',
-    label: '대시보드',
+    label: '트렌드',
     href: '/',
     icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-      </svg>
-    ),
-  },
-  {
-    key: 'recommend',
-    label: '제작',
-    href: '/recommend',
-    icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 18 L8 13 L12 17 L21 6" />
+        <path d="M16 6 L21 6 L21 11" />
       </svg>
     ),
   },
   {
     key: 'my',
-    label: '마이',
+    label: '마이페이지',
     href: '/my',
     icon: (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
         <circle cx="12" cy="8" r="4" />
         <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" />
       </svg>
@@ -72,7 +53,7 @@ export default function TabBar() {
             key={t.key}
             href={t.href}
             onClick={() => setTab(t.key)}
-            className={`flex flex-col items-center gap-1 px-3 py-1 transition-colors ${
+            className={`flex flex-col items-center gap-1 px-6 py-1 transition-colors ${
               active ? 'text-accent-lime' : 'text-text-faint hover:text-text'
             }`}
           >

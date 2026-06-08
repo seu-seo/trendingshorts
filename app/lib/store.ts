@@ -5,12 +5,38 @@ import { ALL_TRENDS } from './data/trends';
 
 // 개별 localStorage 키 (통일된 이름)
 const LS = {
-  done:   'onboardingDone',
-  plat:   'platform',
-  cat:    'category',
-  age:    'ageGroup',
-  result: 'personaResult',
+  done:    'onboardingDone',
+  plat:    'platform',
+  cat:     'category',
+  age:     'ageGroup',
+  result:  'personaResult',
+  goal:    'weeklyGoal',
+  handles: 'handles',
 } as const;
+
+export interface Handles {
+  youtube:   string;
+  tiktok:    string;
+  instagram: string;
+}
+
+const EMPTY_HANDLES: Handles = { youtube: '', tiktok: '', instagram: '' };
+
+function loadWeeklyGoal(): number {
+  if (typeof window === 'undefined') return 0;
+  try {
+    const raw = localStorage.getItem(LS.goal);
+    return raw ? Number(raw) || 0 : 0;
+  } catch { return 0; }
+}
+
+function loadHandles(): Handles {
+  if (typeof window === 'undefined') return { ...EMPTY_HANDLES };
+  try {
+    const raw = localStorage.getItem(LS.handles);
+    return raw ? { ...EMPTY_HANDLES, ...JSON.parse(raw) } : { ...EMPTY_HANDLES };
+  } catch { return { ...EMPTY_HANDLES }; }
+}
 
 interface OnboardingSave {
   platform: string[];
@@ -85,6 +111,12 @@ interface AppState {
   setAgeGroup: (a: AgeGroup) => void;
   completeOnboarding: (platform: string[], category: string, ageGroup: AgeGroup, result?: PersonaResult | null) => void;
   resetOnboarding: () => void;
+
+  // 마이 탭 — 목표 / 계정 연결
+  weeklyGoal: number;            // 0 = 미설정
+  handles: Handles;
+  setWeeklyGoal: (n: number) => void;
+  setHandles: (h: Handles) => void;
 
   // 레거시 — 대시보드 배너 등 기존 코드 호환용
   personaInput: PersonaInput | null;
@@ -167,7 +199,18 @@ export const useStore = create<AppState>((set, get) => {
       Object.values(LS).forEach(k => localStorage.removeItem(k));
       localStorage.removeItem('sfp_onboarding'); // 구포맷 정리
     } catch {}
-    set({ onboardingDone: false, platform: [], category: '', ageGroup: '', personaResult: null, personaInput: null, appIntent: null, filterCategory: null });
+    set({ onboardingDone: false, platform: [], category: '', ageGroup: '', personaResult: null, personaInput: null, appIntent: null, filterCategory: null, weeklyGoal: 0, handles: { ...EMPTY_HANDLES } });
+  },
+
+  weeklyGoal: loadWeeklyGoal(),
+  handles: loadHandles(),
+  setWeeklyGoal: (n) => {
+    try { localStorage.setItem(LS.goal, String(n)); } catch {}
+    set({ weeklyGoal: n });
+  },
+  setHandles: (h) => {
+    try { localStorage.setItem(LS.handles, JSON.stringify(h)); } catch {}
+    set({ handles: h });
   },
 
   // 레거시

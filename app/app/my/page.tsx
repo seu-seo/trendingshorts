@@ -81,6 +81,8 @@ export default function MyPage() {
   const ageGroup      = useStore((s) => s.ageGroup);
   const personaResult = useStore((s) => s.personaResult);
   const trends        = useStore((s) => s.trends);
+  const weeklyGoal    = useStore((s) => s.weeklyGoal);
+  const handles       = useStore((s) => s.handles);
 
   const [savedTrendIds, setSavedTrendIds] = useState<number[]>([]);
   const [savedScripts,  setSavedScripts]  = useState<SavedScript[]>([]);
@@ -98,6 +100,10 @@ export default function MyPage() {
   }, [setTab]);
 
   const savedTrends: Trend[] = trends.filter(t => savedTrendIds.includes(t.id));
+
+  const connectedHandles = (['youtube', 'tiktok', 'instagram'] as const)
+    .map(key => ({ key, value: handles[key] }))
+    .filter(h => h.value);
 
   const avatarLetter = personaResult?.personaType
     ? personaResult.personaType.replace(/^THE\s+/i, '')[0] ?? 'M'
@@ -156,6 +162,22 @@ export default function MyPage() {
           </div>
         </div>
 
+        {/* 연결된 핸들 */}
+        {connectedHandles.length > 0 && (
+          <div className="mt-4 pt-4 flex flex-col gap-2 border-t border-border">
+            {connectedHandles.map(h => (
+              <div key={h.key} className="flex items-center justify-between">
+                <span className="font-mono text-[9px] tracking-widest text-text-faint uppercase">
+                  {PLATFORM_LABEL[h.key] ?? h.key}
+                </span>
+                <span className="font-mono text-[11px]" style={{ color: PLATFORM_COLOR[h.key] }}>
+                  {h.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* 팔로워 */}
         <div className="mt-4 pt-4 flex items-center justify-between border-t border-border">
           <span className="font-mono text-[9px] tracking-widest text-text-faint uppercase">
@@ -164,6 +186,17 @@ export default function MyPage() {
           <span className="font-mono text-[12px] text-text-faint">--</span>
         </div>
       </div>
+
+      {/* ── 이번 주 목표 (프로필 아래) ───────────────────────── */}
+      {weeklyGoal > 0 && (
+        <div className="mx-6 mt-2.5 rounded-xl px-5 py-3.5 flex items-center justify-between"
+          style={{ background: CARD, border: `1px solid ${ACCENT}30` }}>
+          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: ACCENT }}>
+            이번 주 목표
+          </span>
+          <span className="text-[13px] font-medium text-text">주 {weeklyGoal}회</span>
+        </div>
+      )}
 
       {/* ── 2. This Week's Insights ──────────────────────────── */}
       <div className="mx-6 mt-6">
@@ -191,24 +224,26 @@ export default function MyPage() {
           </Link>
 
           {/* 02 */}
-          <div className="flex items-center gap-3 px-4 py-4 border-b border-border">
-            <span className="font-mono text-[10px] font-bold w-5 text-text-faint">02</span>
-            <span className="flex-1 text-[14px] text-text-dim">목표 설정하기</span>
-            <span className="font-mono text-[8px] tracking-wider px-2 py-0.5 rounded text-text-faint"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              준비 중
-            </span>
-          </div>
+          <Link href="/my/goal"
+            className="flex items-center gap-3 px-4 py-4 border-b border-border no-underline transition-colors hover:bg-white/[0.025]">
+            <span className="font-mono text-[10px] font-bold w-5" style={{ color: ACCENT }}>02</span>
+            <span className="flex-1 text-[14px] text-text">목표 설정하기</span>
+            {weeklyGoal > 0 && (
+              <span className="font-mono text-[10px] text-text-faint">주 {weeklyGoal}회</span>
+            )}
+            <span className="font-mono text-[11px]" style={{ color: ACCENT }}>→</span>
+          </Link>
 
           {/* 03 */}
-          <div className="flex items-center gap-3 px-4 py-4">
-            <span className="font-mono text-[10px] font-bold w-5 text-text-faint">03</span>
-            <span className="flex-1 text-[14px] text-text-dim">계정 연결하기</span>
-            <span className="font-mono text-[8px] tracking-wider px-2 py-0.5 rounded text-text-faint"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              준비 중
-            </span>
-          </div>
+          <Link href="/my/connect"
+            className="flex items-center gap-3 px-4 py-4 no-underline transition-colors hover:bg-white/[0.025]">
+            <span className="font-mono text-[10px] font-bold w-5" style={{ color: ACCENT }}>03</span>
+            <span className="flex-1 text-[14px] text-text">계정 연결하기</span>
+            {connectedHandles.length > 0 && (
+              <span className="font-mono text-[10px] text-text-faint">{connectedHandles.length}개 연결됨</span>
+            )}
+            <span className="font-mono text-[11px]" style={{ color: ACCENT }}>→</span>
+          </Link>
         </div>
       </div>
 
@@ -259,7 +294,7 @@ export default function MyPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium truncate text-text mb-0.5">{s.title}</p>
                   {s.hook && (
-                    <p className="text-[11px] text-text-dim line-clamp-1">"{s.hook}"</p>
+                    <p className="text-[11px] text-text-dim line-clamp-1">&ldquo;{s.hook}&rdquo;</p>
                   )}
                   <span className="font-mono text-[9px] text-text-faint mt-1.5 block">{s.date}</span>
                 </div>

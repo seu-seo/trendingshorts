@@ -18,6 +18,40 @@ const PART_COLOR: Record<string, string> = {
   클로징: 'var(--peak)',
 };
 
+// 이미지가 있으면 만화 이미지, 없거나 로드 실패면 SVG 스케치로 fallback
+function CutVisual({ cut }: { cut: ContiCut }) {
+  const [imgState, setImgState] = useState<'loading' | 'ok' | 'error'>(cut.imageUrl ? 'loading' : 'error');
+
+  if (!cut.imageUrl || imgState === 'error') {
+    return <ContiSketch type={cut.sketchType} label={cut.shotType} />;
+  }
+  return (
+    <div className="relative w-full overflow-hidden rounded-[10px]" style={{ aspectRatio: '16 / 9' }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={cut.imageUrl}
+        alt={cut.visualKo}
+        referrerPolicy="no-referrer"
+        className="w-full h-full object-cover"
+        style={{ display: imgState === 'ok' ? 'block' : 'none' }}
+        onLoad={() => setImgState('ok')}
+        onError={() => setImgState('error')}
+      />
+      {imgState === 'loading' && (
+        <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+          <div className="w-5 h-5 border-2 border-border border-t-accent-lime rounded-full animate-spin" />
+        </div>
+      )}
+      <span
+        className="absolute bottom-1.5 right-2 font-mono text-[8px] font-bold tracking-wide px-1 rounded-sm"
+        style={{ color: '#0c0c0d', background: 'rgba(255,255,255,0.85)' }}
+      >
+        {cut.shotType}
+      </span>
+    </div>
+  );
+}
+
 function CutCard({ cut }: { cut: ContiCut }) {
   const accent = PART_COLOR[cut.part] ?? 'var(--accent-lime)';
   return (
@@ -33,9 +67,9 @@ function CutCard({ cut }: { cut: ContiCut }) {
         <span className="font-mono text-[10px] text-text-faint tracking-wider">{cut.timeRange}</span>
       </div>
 
-      {/* 장면 스케치 */}
+      {/* 장면: 만화 이미지(또는 SVG fallback) */}
       <div className="p-3 pb-2.5">
-        <ContiSketch type={cut.sketchType} label={cut.shotType} />
+        <CutVisual cut={cut} />
       </div>
 
       {/* 대사 + 촬영 메모 */}
@@ -138,8 +172,8 @@ export default function ContiPanel({
       <div className="px-4 pb-3">
         <p className="font-mono text-[9px] text-text-faint">
           {data.source === 'live'
-            ? 'Gemini 4컷 분해 · 스케치는 장면 가이드용 일러스트'
-            : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — 대본 기반 mock 콘티'}
+            ? 'Gemini 4컷 분해 + Imagen 만화 생성 (동일 화풍·동일 캐릭터). 이미지 실패 시 SVG로 대체'
+            : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — 대본 기반 mock 콘티 (SVG 스케치)'}
         </p>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
+import { generateTextResilient } from '@/lib/ai';
 import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
 import {
   recommendTone,
@@ -44,8 +43,7 @@ export async function POST(req: Request) {
   let scripts: Record<ScriptTone, ScriptOutput>;
   let success = true;
   try {
-    const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
+    const { text } = await generateTextResilient({
       system: buildSystemPrompt({ trend, persona: persona ?? null, direction: finalDirection, recommendation, surveyAnswers, concept }),
       prompt: '위 컨텍스트를 바탕으로 informative / story / hooking 3가지 톤 대본을 JSON 스키마에 맞춰 한 번에 생성하세요.',
     });

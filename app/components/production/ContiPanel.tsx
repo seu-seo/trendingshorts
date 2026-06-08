@@ -172,7 +172,7 @@ export default function ContiPanel({
       <div className="px-4 pb-3">
         <p className="font-mono text-[9px] text-text-faint">
           {data.source === 'live'
-            ? 'Gemini 4컷 분해 + Imagen 만화 생성 (동일 화풍·동일 캐릭터). 이미지 실패 시 SVG로 대체'
+            ? 'Gemini 4컷 분해 + 만화 생성 (1·4 인물 / 2·3 제품, 동일 화풍). 이미지 실패 시 SVG로 대체'
             : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — 대본 기반 mock 콘티 (SVG 스케치)'}
         </p>
       </div>

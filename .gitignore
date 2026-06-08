@@ -9,6 +9,7 @@
 # editor
 .vscode/
 .idea/
+.claude/
 
 # logs
 *.log

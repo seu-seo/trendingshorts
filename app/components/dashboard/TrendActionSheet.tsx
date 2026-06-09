@@ -9,9 +9,12 @@ export default function TrendActionSheet() {
   const setActionSheetTrend = useStore((s) => s.setActionSheetTrend);
   const setSelectedTrendId = useStore((s) => s.setSelectedTrendId);
   const setTab = useStore((s) => s.setTab);
+  const savedTrendIds = useStore((s) => s.savedTrendIds);
+  const toggleSaveTrend = useStore((s) => s.toggleSaveTrend);
 
   if (!trend) return null;
 
+  const isSaved = savedTrendIds.includes(trend.id);
   const close = () => setActionSheetTrend(null);
 
   const handleProduce = () => {
@@ -84,6 +87,31 @@ export default function TrendActionSheet() {
           >
             원본 보기
           </button>
+          {isSaved ? (
+            <button
+              onClick={() => { toggleSaveTrend(trend.id); close(); }}
+              className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
+              style={{
+                background: 'rgba(255,60,60,0.08)',
+                border: '1px solid rgba(255,60,60,0.25)',
+                color: '#ff6b6b',
+              }}
+            >
+              영상 저장 취소
+            </button>
+          ) : (
+            <button
+              onClick={() => { toggleSaveTrend(trend.id); close(); }}
+              className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: 'var(--text)',
+              }}
+            >
+              이 영상 저장하기
+            </button>
+          )}
         </div>
       </div>
     </>

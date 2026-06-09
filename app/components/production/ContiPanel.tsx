@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { ContiCut, ContiResponse } from '@/app/api/conti/route';
 import type { ScriptTone } from '@/lib/prompts';
+import { useStore } from '@/lib/store';
 import ContiSketch from './ContiSketch';
 
 const TONE_LABEL: Record<ScriptTone, string> = {
@@ -107,6 +108,22 @@ export default function ContiPanel({
 }) {
   const [shot, setShot] = useState(false);
 
+  const saveScript = useStore((s) => s.saveScript);
+  const savedScripts = useStore((s) => s.savedScripts);
+  const contiId = `conti-${data.cuts[0]?.dialogue?.slice(0, 10) ?? tone}-${Date.now().toString(36)}`;
+  const [savedId] = useState(contiId);
+  const isSaved = savedScripts.some((x) => x.id === savedId);
+
+  const handleSaveConti = () => {
+    saveScript({
+      id: savedId,
+      title: `[콘티·${TONE_LABEL[tone]}] ${data.trendPoint.slice(0, 30)}${data.trendPoint.length > 30 ? '…' : ''}`,
+      hook: data.cuts[0]?.dialogue,
+      date: new Date().toLocaleDateString('ko-KR'),
+      hasConti: true,
+    });
+  };
+
   return (
     <div className="mt-4 rounded-[18px] border border-border overflow-hidden" style={{ background: 'rgba(200,255,87,0.03)' }}>
       {/* 헤더 */}
@@ -156,6 +173,19 @@ export default function ContiPanel({
           }
         >
           {shot ? '✓ 촬영 완료' : '촬영했어요'}
+        </button>
+        <button
+          type="button"
+          onClick={handleSaveConti}
+          disabled={isSaved}
+          className="px-4 py-2.5 rounded-full font-mono text-[11px] tracking-wider uppercase border transition-colors disabled:cursor-default"
+          style={
+            isSaved
+              ? { borderColor: 'rgba(200,255,87,0.4)', color: 'var(--accent-lime)', background: 'rgba(200,255,87,0.08)' }
+              : { borderColor: 'rgba(255,255,255,0.15)', color: 'var(--text-dim)', background: 'transparent' }
+          }
+        >
+          {isSaved ? '✓ 저장됨' : '저장하기'}
         </button>
         {onRegenerate && (
           <button

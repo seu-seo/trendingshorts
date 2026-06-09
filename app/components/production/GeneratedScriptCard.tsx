@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { ScriptOutput, ScriptTone } from '@/lib/prompts';
 import type { RecommendConcept } from '@/lib/types';
 import type { ContiResponse } from '@/app/api/conti/route';
+import { useStore } from '@/lib/store';
 import ContiPanel from './ContiPanel';
 
 const TONE_META: Record<
@@ -40,6 +41,22 @@ export default function GeneratedScriptCard({
   const [conti, setConti] = useState<ContiResponse | null>(null);
   const [contiLoading, setContiLoading] = useState(false);
   const meta = TONE_META[tone];
+
+  const saveScript = useStore((s) => s.saveScript);
+  const savedScripts = useStore((s) => s.savedScripts);
+  const scriptId = `script-${tone}-${index}`;
+  const isSaved = savedScripts.some((x) => x.id === scriptId);
+
+  const handleSave = () => {
+    saveScript({
+      id: scriptId,
+      title: `[${meta.label}] ${script.hook.slice(0, 30)}${script.hook.length > 30 ? '…' : ''}`,
+      hook: script.hook,
+      body: script.body,
+      cta: script.cta,
+      date: new Date().toLocaleDateString('ko-KR'),
+    });
+  };
 
   const fetchConti = async () => {
     setContiLoading(true);
@@ -130,13 +147,24 @@ export default function GeneratedScriptCard({
       </div>
 
       <div className="flex justify-between items-center pt-3 border-t border-dashed border-border">
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="font-mono text-[11px] text-accent-blue font-semibold tracking-wider uppercase cursor-pointer transition-colors hover:text-accent-lime"
-        >
-          {copied ? '✓ 복사됨' : '대본 복사'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="font-mono text-[11px] text-accent-blue font-semibold tracking-wider uppercase cursor-pointer transition-colors hover:text-accent-lime"
+          >
+            {copied ? '✓ 복사됨' : '대본 복사'}
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaved}
+            className="font-mono text-[11px] font-semibold tracking-wider uppercase cursor-pointer transition-colors disabled:cursor-default"
+            style={{ color: isSaved ? 'var(--accent-lime)' : 'var(--text-faint)' }}
+          >
+            {isSaved ? '✓ 저장됨' : '저장하기'}
+          </button>
+        </div>
         <button
           type="button"
           onClick={handleConti}

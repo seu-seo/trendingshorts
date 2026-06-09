@@ -1,431 +1,465 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
-import type { PersonaInput, PersonaResult, AppIntent, OnboardingCategory } from '@/lib/types';
+import type { AgeGroup, PersonaResult } from '@/lib/types';
 
-const ACCENT = ['#C8FF57', '#57C8FF', '#FF8657', '#C857FF'] as const;
+// ── 디자인 토큰 ──────────────────────────────────────────────────
 
-const QUESTIONS = [
-  {
-    id: 'platform' as keyof PersonaInput,
-    label: '주로 활동하는 플랫폼은 어디인가요?',
-    type: 'single' as const,
-    options: [
-      { value: 'youtube', label: 'YouTube Shorts' },
-      { value: 'tiktok', label: 'TikTok' },
-      { value: 'instagram', label: 'Instagram Reels' },
-      { value: 'multi', label: '멀티플랫폼' },
-    ],
-  },
-  {
-    id: 'category' as keyof PersonaInput,
-    label: '내 채널의 주요 카테고리는?',
-    type: 'single' as const,
-    options: [
-      { value: 'food', label: '요리 / 먹방' },
-      { value: 'beauty', label: '뷰티 / 패션' },
-      { value: 'lifestyle', label: '라이프스타일 / 일상' },
-      { value: 'edu', label: '정보 / 자기계발' },
-      { value: 'gaming', label: '게임 / 엔터테인먼트' },
-      { value: 'fitness', label: '운동 / 건강' },
-      { value: 'art', label: '예술 / 크리에이티브' },
-    ],
-  },
-  {
-    id: 'experience' as keyof PersonaInput,
-    label: '숏폼 크리에이터 경력이 얼마나 됩니까?',
-    type: 'slider' as const,
-    slider: { min: 0, max: 5, labels: ['채널 없음', '1개월 미만', '1~6개월', '6개월~1년', '1~3년', '3년 이상'] },
-  },
-  {
-    id: 'goal' as keyof PersonaInput,
-    label: '지금 가장 원하는 목표는?',
-    type: 'single' as const,
-    options: [
-      { value: 'growth', label: '구독자 / 팔로워 증가' },
-      { value: 'monetize', label: '수익화 시작' },
-      { value: 'brand', label: '브랜드 인지도 구축' },
-      { value: 'community', label: '팬덤 / 커뮤니티' },
-    ],
-  },
-  {
-    id: 'styles' as keyof PersonaInput,
-    label: '내 콘텐츠 스타일 키워드는? (최대 3개)',
-    type: 'multi' as const,
-    multiMax: 3,
-    options: [
-      { value: 'humor', label: '🎭 유머 / 웃음' },
-      { value: 'info', label: '💡 정보 / 교육' },
-      { value: 'emotion', label: '🤍 감성 / 공감' },
-      { value: 'impact', label: '⚡ 자극 / 임팩트' },
-      { value: 'honest', label: '📝 솔직 / 현실' },
-      { value: 'visual', label: '✨ 비주얼 / 심미' },
-      { value: 'challenge', label: '🔥 챌린지 / 트렌드' },
-      { value: 'creative', label: '🧪 실험 / 독창성' },
-    ],
-  },
-  {
-    id: 'pain' as keyof PersonaInput,
-    label: '숏폼 제작에서 가장 힘든 부분은?',
-    type: 'single' as const,
-    options: [
-      { value: 'idea', label: '아이디어가 안 떠올라요' },
-      { value: 'trend', label: '트렌드를 어떻게 써야 할지 모르겠어요' },
-      { value: 'reach', label: '영상을 만들어도 반응이 없어요' },
-      { value: 'consistency', label: '꾸준히 못하겠어요' },
-    ],
-  },
-  {
-    id: 'uploadFreq' as keyof PersonaInput,
-    label: '앞으로 주당 몇 편을 올리고 싶나요?',
-    type: 'single' as const,
-    options: [
-      { value: 'low', label: '1편 이하' },
-      { value: 'mid', label: '1~2편' },
-      { value: 'high', label: '3편 이상' },
-      { value: 'undecided', label: '미정' },
-    ],
-  },
-] as const;
+const ACCENT  = '#C8FF57';
+const BG      = '#0A0A0A';
+const SURFACE = '#111114';
+const BORDER  = '#2A2A30';
+const TEXT    = '#F2F0EB';
+const DIM     = '#8A8A92';
+const FAINT   = '#5A5A62';
 
-const DEFAULT: PersonaInput = {
-  platform: 'youtube', category: 'lifestyle', experience: 0,
-  goal: 'growth', styles: [], pain: 'idea', uploadFreq: 'mid',
-};
+const FONT_HEADING = "'Cafe24 Dangdanghae', Impact, sans-serif";
+const FONT_BODY    = "'Pretendard', 'Instrument Sans', sans-serif";
 
-const LIFECYCLE = {
-  rising: { icon: '▲', label: 'RISING', color: '#C8FF57' },
-  peak:   { icon: '◆', label: 'PEAK',   color: '#57C8FF' },
-  fading: { icon: '▼', label: 'FADING', color: '#888' },
-} as const;
+// ── 상수 ─────────────────────────────────────────────────────────
 
-const INTENT_OPTIONS: { value: AppIntent; emoji: string; label: string; sub: string }[] = [
-  { value: 'explore', emoji: '📊', label: '트렌드 확인', sub: '내 카테고리 트렌드 탐색' },
-  { value: 'produce', emoji: '🎬', label: '제작 도움',   sub: '대본·콘티 바로 생성' },
+const PLATFORMS = [
+  { value: 'youtube',   label: 'YouTube Shorts' },
+  { value: 'tiktok',    label: 'TikTok'          },
+  { value: 'instagram', label: 'Instagram Reels' },
 ];
 
-type Screen = 'intro' | 'survey' | 'loading' | 'result';
+const KEYWORD_MAP: { triggers: string[]; chips: string[] }[] = [
+  { triggers: ['요리', '먹방', '쿠킹', '음식', '레시피', '쉐프', '베이킹'], chips: ['#먹방', '#요리', '#쿠킹', '#레시피'] },
+  { triggers: ['뷰티', '메이크업', '화장', '스킨케어', '피부', '코스메틱'], chips: ['#뷰티', '#메이크업', '#스킨케어', '#GRWM'] },
+  { triggers: ['패션', '옷', 'ootd', '스타일', '코디', '룩', '의류'],       chips: ['#패션', '#OOTD', '#코디', '#스타일링'] },
+  { triggers: ['라이프', '일상', '브이로그', '데일리', '브이'],              chips: ['#일상', '#브이로그', '#데일리', '#라이프스타일'] },
+  { triggers: ['정보', '공부', '자기계발', '꿀팁', '교육', '지식'],         chips: ['#정보', '#꿀팁', '#자기계발', '#공부'] },
+  { triggers: ['게임', '롤', '배그', '리그', '스팀', 'fps', 'rpg'],         chips: ['#게임', '#게임방송', '#리뷰', '#공략'] },
+  { triggers: ['운동', '헬스', '다이어트', '홈트', '피트니스', '필라테스'], chips: ['#운동', '#헬스', '#홈트레이닝', '#다이어트'] },
+  { triggers: ['예술', '그림', '드로잉', '음악', '악기', '그래픽'],         chips: ['#예술', '#드로잉', '#음악', '#크리에이티브'] },
+  { triggers: ['댄스', '춤', '안무', 'kpop', '케이팝', '아이돌'],           chips: ['#댄스', '#챌린지', '#KPOP', '#안무'] },
+  { triggers: ['여행', '해외', '국내', '캠핑', '투어', '맛집'],             chips: ['#여행', '#브이로그', '#맛집', '#투어'] },
+  { triggers: ['펫', '강아지', '고양이', '반려', '동물'],                   chips: ['#반려동물', '#강아지', '#고양이', '#펫'] },
+];
+
+const AGE_GROUPS: { value: AgeGroup; label: string; range: string }[] = [
+  { value: '10s', label: '10대', range: '13 – 19' },
+  { value: '20s', label: '20대', range: '20 – 29' },
+  { value: '30s', label: '30대', range: '30 – 39' },
+  { value: '40s', label: '40대', range: '40 – 49' },
+  { value: '50+', label: '50대+', range: '50 –'   },
+];
+
+const LIFECYCLE_STYLE: Record<string, { label: string; color: string }> = {
+  rising: { label: '▲ RISING', color: ACCENT     },
+  peak:   { label: '◆ PEAK',   color: '#57C8FF'  },
+  fading: { label: '▼ FADING', color: '#6A6A72'  },
+};
+
+type Screen = 'intro' | 'step1' | 'step2' | 'step3' | 'loading' | 'result';
+
+const STEP_ORDER: Screen[] = ['step1', 'step2', 'step3'];
+const TOTAL_STEPS = STEP_ORDER.length;
+
+// ── 컴포넌트 ─────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useStore((s) => s.completeOnboarding);
 
-  const [screen, setScreen] = useState<Screen>('intro');
-  const [step, setStep]     = useState(0);
-  const [answers, setAnswers] = useState<PersonaInput>({ ...DEFAULT });
-  const [result, setResult]   = useState<PersonaResult | null>(null);
-  const [progress, setProgress] = useState(0);
+  const [screen,       setScreen]       = useState<Screen>('intro');
+  const [platforms,    setPlatforms]    = useState<string[]>([]);
+  const [category,     setCategory]     = useState('');
+  const [ageGroup,     setAgeGroup]     = useState<AgeGroup | ''>('');
+  const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
+  const [progress,     setProgress]     = useState(0);
 
-  const q = QUESTIONS[step];
-  const val = answers[q.id];
-  const accent = result ? ACCENT[result.typeIndex ?? 0] : ACCENT[0];
+  const stepIndex   = STEP_ORDER.indexOf(screen);
+  const currentStep = stepIndex + 1;
 
-  function setAnswer(id: keyof PersonaInput, value: unknown) {
-    setAnswers(prev => ({ ...prev, [id]: value }));
+  // ── 헬퍼 ───────────────────────────────────────────────────────
+
+  function goBack() {
+    const prev: Record<Screen, Screen> = {
+      intro: 'intro', step1: 'intro', step2: 'step1',
+      step3: 'step2', loading: 'step3', result: 'step3',
+    };
+    setScreen(prev[screen]);
   }
 
-  function toggleMulti(id: keyof PersonaInput, value: string, max: number) {
-    setAnswers(prev => {
-      const cur = (prev[id] as string[]) ?? [];
-      const next = cur.includes(value)
-        ? cur.filter(v => v !== value)
-        : cur.length < max ? [...cur, value] : cur;
-      return { ...prev, [id]: next };
-    });
+  function togglePlatform(value: string) {
+    setPlatforms(prev =>
+      prev.includes(value) ? prev.filter(p => p !== value) : [...prev, value]
+    );
   }
 
-  function canProceed() {
-    if (q.type === 'multi') return (val as string[]).length > 0;
-    return val !== undefined && String(val) !== '';
+  function advance(to: Screen) {
+    setScreen(to);
+    window.scrollTo({ top: 0 });
   }
 
-  function next() {
-    if (!canProceed()) return;
-    if (step < QUESTIONS.length - 1) setStep(s => s + 1);
-    else startAnalysis();
-  }
-
-  function back() {
-    if (step > 0) setStep(s => s - 1);
-    else setScreen('intro');
-  }
-
-  async function startAnalysis() {
+  // Q3 → API 호출 → 로딩 → 결과
+  async function handleCallPersona() {
+    if (!ageGroup) return;
     setScreen('loading');
     setProgress(0);
-    const timer = setInterval(() => setProgress(p => Math.min(p + 8, 90)), 300);
+
+    const timer = setInterval(() => {
+      setProgress(p => (p < 88 ? p + 9 : p));
+    }, 250);
+
     try {
       const res = await fetch('/api/persona', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers),
+        body: JSON.stringify({
+          platform:    platforms[0] ?? 'youtube',
+          category,
+          experience:  2,
+          goal:        'growth',
+          styles:      [],
+          pain:        'idea',
+          uploadFreq:  'mid',
+        }),
       });
       const data: PersonaResult = await res.json();
-      setResult(data);
       clearInterval(timer);
       setProgress(100);
-      setTimeout(() => setScreen('result'), 400);
+      setTimeout(() => { setPersonaResult(data); setScreen('result'); }, 350);
     } catch {
       clearInterval(timer);
-      setScreen('result');
+      setProgress(100);
+      setTimeout(() => setScreen('result'), 350);
     }
   }
 
-  function handleIntent(intent: AppIntent) {
-    if (!result) return;
-    completeOnboarding(answers, result, intent);
-    if (intent === 'produce') router.push('/recommend');
-    else router.push('/');
+  // 결과 카드 → 완료
+  function handleFinish() {
+    completeOnboarding(platforms, category.trim(), ageGroup as AgeGroup, personaResult ?? undefined);
+    router.replace('/');
   }
 
-  // ── 인트로 ─────────────────────────────────────────────────
+  // Q2 자동 매칭 칩
+  const suggestedChips = useMemo(() => {
+    const q = category.trim().toLowerCase();
+    if (!q) return [];
+    const matched = new Set<string>();
+    for (const { triggers, chips } of KEYWORD_MAP) {
+      if (triggers.some(t => q.includes(t) || t.includes(q))) {
+        chips.forEach(c => matched.add(c));
+      }
+    }
+    return [...matched].slice(0, 8);
+  }, [category]);
+
+  // ── 인트로 ────────────────────────────────────────────────────
+
   if (screen === 'intro') return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-10 text-center"
-      style={{ background: 'var(--bg)' }}>
-      <div className="text-5xl mb-6">⚡</div>
-      <h1 className="font-display text-[30px] leading-tight tracking-tight text-text mb-3">
-        나만의 크리에이터<br />
-        <span style={{ color: ACCENT[0] }}>페르소나</span>를 찾아보세요
-      </h1>
-      <p className="text-[13px] text-text-dim leading-relaxed mb-10 max-w-[280px]">
-        7가지 질문으로 내 채널에 맞는 트렌드와<br />오늘 찍을 콘텐츠 방향을 알려드립니다.
-      </p>
-      <button
-        onClick={() => setScreen('survey')}
-        className="w-full max-w-[320px] py-4 rounded-2xl font-semibold text-[15px] tracking-wide"
-        style={{ background: ACCENT[0], color: '#0a0a0a' }}
-      >
-        시작하기 →
-      </button>
-    </div>
-  );
-
-  // ── 설문 ───────────────────────────────────────────────────
-  if (screen === 'survey') return (
-    <div className="px-6 py-8 pb-10" style={{ background: 'var(--bg)' }}>
-      {/* 진행 바 */}
-      <div className="mb-6">
-        <div className="flex justify-between font-mono text-[9px] text-text-faint mb-2">
-          <span>Q{step + 1} / {QUESTIONS.length}</span>
-          <button onClick={back} className="text-text-faint hover:text-text transition-colors">← 이전</button>
-        </div>
-        <div className="h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-          <div className="h-1 rounded-full transition-all duration-300"
-            style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%`, background: ACCENT[0] }} />
-        </div>
+    <div className="flex flex-col justify-between px-6 pt-12 pb-10"
+      style={{ background: BG, minHeight: '100%' }}>
+      <div>
+        <span className="font-mono text-[10px] tracking-[0.28em] uppercase" style={{ color: ACCENT }}>
+          SHORTFORM PULSE
+        </span>
+        <h1 className="mt-12 leading-[0.86] tracking-tight"
+          style={{ fontFamily: FONT_HEADING, fontSize: '76px', color: TEXT }}>
+          BEGIN<br />YOUR<br /><span style={{ color: ACCENT }}>STORY</span>
+        </h1>
+        <p className="mt-7 text-[14px] leading-[1.65]" style={{ fontFamily: FONT_BODY, color: DIM }}>
+          3가지 질문으로 내 채널에 맞는<br />트렌드를 바로 확인하세요.
+        </p>
       </div>
-
-      {/* 질문 */}
-      <div className="text-[18px] font-semibold text-text leading-snug mb-6">{q.label}</div>
-
-      {/* 단일 선택 */}
-      {'options' in q && q.type === 'single' && (
-        <div className="flex flex-col gap-2.5 mb-8">
-          {q.options.map(opt => {
-            const sel = val === opt.value;
-            return (
-              <button key={opt.value} onClick={() => setAnswer(q.id, opt.value)}
-                className="w-full py-3.5 px-4 rounded-xl text-left text-[14px] font-medium transition-all"
-                style={{
-                  background: sel ? `${ACCENT[0]}18` : 'rgba(255,255,255,0.04)',
-                  border: `1.5px solid ${sel ? ACCENT[0] : 'rgba(255,255,255,0.1)'}`,
-                  color: sel ? ACCENT[0] : 'rgba(255,255,255,0.85)',
-                  fontWeight: sel ? 600 : 400,
-                }}>
-                {opt.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 다중 선택 */}
-      {'options' in q && q.type === 'multi' && (
-        <div className="grid grid-cols-2 gap-2.5 mb-8">
-          {q.options.map(opt => {
-            const sel = (val as string[])?.includes(opt.value);
-            return (
-              <button key={opt.value}
-                onClick={() => toggleMulti(q.id, opt.value, ('multiMax' in q ? q.multiMax : 3) ?? 3)}
-                className="py-3 px-3 rounded-xl text-left text-[13px] transition-all"
-                style={{
-                  background: sel ? `${ACCENT[0]}18` : 'rgba(255,255,255,0.04)',
-                  border: `1.5px solid ${sel ? ACCENT[0] : 'rgba(255,255,255,0.1)'}`,
-                  color: sel ? ACCENT[0] : 'rgba(255,255,255,0.85)',
-                  fontWeight: sel ? 600 : 400,
-                }}>
-                {opt.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 슬라이더 */}
-      {'slider' in q && q.type === 'slider' && (
-        <div className="mb-8">
-          <input type="range" min={q.slider.min} max={q.slider.max} value={val as number}
-            onChange={e => setAnswer(q.id, Number(e.target.value))}
-            className="w-full cursor-pointer"
-            style={{ accentColor: ACCENT[0] }}
-          />
-          <div className="mt-4 py-3.5 px-4 rounded-xl text-center"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <span className="text-[18px] font-bold" style={{ color: ACCENT[0] }}>
-              {q.slider.labels.length > 0
-                ? q.slider.labels[val as number]
-                : `주 ${val}편`}
-            </span>
-          </div>
-        </div>
-      )}
-
-      <button onClick={next} disabled={!canProceed()}
-        className="w-full py-4 rounded-2xl font-semibold text-[15px] transition-all"
-        style={{
-          background: canProceed() ? ACCENT[0] : 'rgba(255,255,255,0.08)',
-          color: canProceed() ? '#0a0a0a' : 'rgba(255,255,255,0.3)',
-          cursor: canProceed() ? 'pointer' : 'default',
-        }}>
-        {step < QUESTIONS.length - 1 ? '다음' : '분석 시작'}
-      </button>
-    </div>
-  );
-
-  // ── 로딩 ───────────────────────────────────────────────────
-  if (screen === 'loading') return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-      style={{ background: 'var(--bg)' }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      <div className="text-4xl mb-6" style={{ display: 'inline-block', animation: 'spin 1.5s linear infinite' }}>⚙️</div>
-      <h2 className="text-[20px] font-bold text-text mb-2">페르소나 분석 중...</h2>
-      <p className="text-[13px] text-text-dim mb-8">AI가 내 채널을 분석하고 있습니다</p>
-      <div className="w-60 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
-        <div className="h-1 rounded-full transition-all duration-300"
-          style={{ width: `${progress}%`, background: ACCENT[0] }} />
-      </div>
-    </div>
-  );
-
-  // ── 결과 ───────────────────────────────────────────────────
-  if (screen === 'result' && result) return (
-    <div className="min-h-screen pb-10" style={{ background: 'var(--bg)' }}>
-      <div className="max-w-[480px] mx-auto px-5 pt-8">
-
-        {/* 페르소나 카드 */}
-        <div className="rounded-2xl p-7 mb-3 text-center"
-          style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${accent}40` }}>
-          <div className="font-mono text-[9px] tracking-[0.2em] mb-2.5" style={{ color: accent }}>YOUR PERSONA</div>
-          <div className="font-display text-[28px] font-black tracking-tight mb-1.5" style={{ color: accent }}>
-            {result.personaType}
-          </div>
-          <div className="text-[13px] text-text-dim">{result.personaTagline}</div>
-        </div>
-
-        {/* 분석 요약 */}
-        <ResultSection title="페르소나 분석" accent={accent}>
-          <p className="text-[13px] text-text leading-relaxed">{result.personaSummary}</p>
-        </ResultSection>
-
-        {/* 채널 Fit 트렌드 */}
-        <ResultSection title="채널 Fit 트렌드 TOP 3" accent={accent}>
-          {result.topTrends.map((t, i) => {
-            const lc = LIFECYCLE[t.state];
-            return (
-              <div key={i} className="flex gap-3 mb-4 last:mb-0 items-start">
-                <div className="font-mono text-[10px] font-bold min-w-[54px] pt-0.5" style={{ color: lc.color }}>
-                  {lc.icon} {lc.label}
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="text-[13px] font-semibold" style={{ color: accent }}>{t.keyword}</span>
-                    <span className="font-mono text-[10px] text-text-faint">Fit {t.fitScore}%</span>
-                  </div>
-                  <p className="text-[11px] text-text-dim leading-snug">{t.reason}</p>
-                </div>
-              </div>
-            );
-          })}
-        </ResultSection>
-
-        {/* 추천 훅 패턴 */}
-        <ResultSection title="추천 훅 패턴" accent={accent}>
-          {result.hookPatterns.map((h, i) => (
-            <div key={i} className="rounded-xl px-3.5 py-3 mb-2.5 last:mb-0"
-              style={{ background: 'rgba(255,255,255,0.05)' }}>
-              <div className="font-mono text-[9px] font-bold mb-1.5" style={{ color: accent }}>{h.type}</div>
-              <p className="text-[12px] text-text leading-snug">&ldquo;{h.example}&rdquo;</p>
-            </div>
-          ))}
-        </ResultSection>
-
-        {/* 이번 주 플랜 */}
-        <ResultSection title="이번 주 콘텐츠 플랜" accent={accent}>
-          <p className="text-[13px] text-text leading-relaxed">{result.weeklyPlan}</p>
-        </ResultSection>
-
-        {/* 지금 당장 할 일 */}
-        <ResultSection title="지금 당장 할 일 3가지" accent={accent}>
-          {result.actionItems.map((a, i) => (
-            <div key={i} className="flex gap-3 mb-4 last:mb-0">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5"
-                style={{ background: accent, color: '#0a0a0a' }}>{i + 1}</div>
-              <div>
-                <div className="text-[13px] font-semibold text-text mb-0.5">{a.title}</div>
-                <p className="text-[11px] text-text-dim leading-snug">{a.desc}</p>
-              </div>
-            </div>
-          ))}
-        </ResultSection>
-
-        {/* 의도 선택 — 어디로 갈지 */}
-        <div className="mt-5 rounded-2xl p-5"
-          style={{ background: 'rgba(200,255,87,0.04)', border: '1px solid rgba(200,255,87,0.2)' }}>
-          <div className="font-mono text-[9px] tracking-widest uppercase mb-1" style={{ color: ACCENT[0] }}>
-            NEXT STEP
-          </div>
-          <div className="text-[15px] font-semibold text-text mb-4">지금 무엇을 하고 싶나요?</div>
-          <div className="flex flex-col gap-2.5">
-            {INTENT_OPTIONS.map(opt => (
-              <button key={opt.value} onClick={() => handleIntent(opt.value)}
-                className="flex items-center gap-3 py-3.5 px-4 rounded-xl text-left transition-all"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
-              >
-                <span className="text-xl">{opt.emoji}</span>
-                <div>
-                  <div className="text-[13px] font-semibold text-text">{opt.label}</div>
-                  <div className="font-mono text-[9px] text-text-faint">{opt.sub}</div>
-                </div>
-                <span className="ml-auto font-mono text-[10px]" style={{ color: ACCENT[0] }}>→</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button
-          onClick={() => { setStep(0); setAnswers({ ...DEFAULT }); setScreen('intro'); }}
-          className="mt-3 w-full py-3 rounded-xl font-mono text-[11px] text-text-faint transition-colors hover:text-text"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          설문 다시하기
+      <div className="flex flex-col gap-3 mt-14">
+        <p className="font-mono text-[9px] tracking-[0.2em] text-center uppercase" style={{ color: BORDER }}>
+          플랫폼 · 카테고리 · 연령대
+        </p>
+        <button onClick={() => advance('step1')}
+          className="w-full py-[18px] rounded-2xl text-[15px] font-semibold tracking-wide transition-all active:scale-[0.98]"
+          style={{ background: ACCENT, color: BG, fontFamily: FONT_BODY }}>
+          시작하기
         </button>
       </div>
     </div>
   );
 
-  return null;
-}
+  // ── 로딩 ──────────────────────────────────────────────────────
 
-function ResultSection({ title, accent, children }: { title: string; accent: string; children: React.ReactNode }) {
-  return (
-    <div className="rounded-2xl p-5 mb-3"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
-      <div className="font-mono text-[9px] tracking-[0.15em] font-bold mb-3" style={{ color: accent }}>
-        {title.toUpperCase()}
+  if (screen === 'loading') return (
+    <div className="flex flex-col items-center justify-center text-center px-6"
+      style={{ background: BG, minHeight: '100%', paddingTop: '80px', paddingBottom: '80px' }}>
+      <div className="w-2.5 h-2.5 rounded-full mb-10 animate-pulse-dot"
+        style={{ background: ACCENT, boxShadow: `0 0 14px ${ACCENT}` }} />
+      <h2 className="leading-[0.9] tracking-tight mb-4"
+        style={{ fontFamily: FONT_HEADING, fontSize: '36px', color: TEXT }}>
+        페르소나<br />분석 중
+      </h2>
+      <p className="text-[13px] mb-14 leading-relaxed" style={{ fontFamily: FONT_BODY, color: DIM }}>
+        내 채널에 맞는 트렌드를<br />준비하고 있습니다
+      </p>
+      <div className="w-52 h-[2px] rounded-full" style={{ background: '#1A1A1A' }}>
+        <div className="h-[2px] rounded-full transition-all duration-300"
+          style={{ width: `${progress}%`, background: ACCENT }} />
       </div>
-      {children}
+      <p className="font-mono text-[9px] tracking-widest mt-4" style={{ color: FAINT }}>
+        {progress}%
+      </p>
+    </div>
+  );
+
+  // ── 결과 카드 ─────────────────────────────────────────────────
+
+  if (screen === 'result') return (
+    <div className="flex flex-col px-5 pt-8 pb-10 gap-3"
+      style={{ background: BG, minHeight: '100%' }}>
+
+      {/* 페르소나 헤더 카드 */}
+      <div className="rounded-2xl p-6"
+        style={{ background: SURFACE, border: `1px solid ${ACCENT}30` }}>
+        <p className="font-mono text-[9px] tracking-[0.22em] mb-4" style={{ color: ACCENT }}>
+          YOUR PERSONA
+        </p>
+        <h2 className="leading-[0.88] tracking-tight mb-2"
+          style={{ fontFamily: FONT_HEADING, fontSize: '38px', color: ACCENT }}>
+          {personaResult?.personaType ?? 'THE CREATOR'}
+        </h2>
+        <p className="text-[13px] leading-snug" style={{ fontFamily: FONT_BODY, color: DIM }}>
+          {personaResult?.personaTagline}
+        </p>
+      </div>
+
+      {/* 분석 요약 */}
+      {personaResult?.personaSummary && (
+        <div className="rounded-xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+          <p className="font-mono text-[9px] tracking-[0.15em] mb-2.5" style={{ color: FAINT }}>
+            ANALYSIS
+          </p>
+          <p className="text-[13px] leading-[1.7]" style={{ fontFamily: FONT_BODY, color: TEXT }}>
+            {personaResult.personaSummary}
+          </p>
+        </div>
+      )}
+
+      {/* 채널 Fit 트렌드 */}
+      {personaResult?.topTrends && personaResult.topTrends.length > 0 && (
+        <div className="rounded-xl p-5" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+          <p className="font-mono text-[9px] tracking-[0.15em] mb-4" style={{ color: FAINT }}>
+            FIT TRENDS TOP 3
+          </p>
+          {personaResult.topTrends.map((t, i) => {
+            const lc = LIFECYCLE_STYLE[t.state] ?? LIFECYCLE_STYLE.fading;
+            return (
+              <div key={i} className="flex gap-3 items-start mb-4 last:mb-0">
+                <span className="font-mono text-[9px] font-bold min-w-[54px] pt-0.5"
+                  style={{ color: lc.color }}>
+                  {lc.label}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-[13px] font-semibold" style={{ fontFamily: FONT_BODY, color: ACCENT }}>
+                      {t.keyword}
+                    </span>
+                    <span className="font-mono text-[9px]" style={{ color: FAINT }}>
+                      Fit {t.fitScore}%
+                    </span>
+                  </div>
+                  <p className="text-[11px] leading-snug" style={{ fontFamily: FONT_BODY, color: DIM }}>
+                    {t.reason}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* CTA */}
+      <button onClick={handleFinish}
+        className="w-full py-[18px] rounded-2xl text-[15px] font-semibold mt-2 transition-all active:scale-[0.98]"
+        style={{ background: ACCENT, color: BG, fontFamily: FONT_BODY }}>
+        트렌드 보러가기
+      </button>
+
+      <button onClick={() => { setScreen('step3'); setPersonaResult(null); }}
+        className="w-full py-3 rounded-xl font-mono text-[10px] tracking-wider transition-opacity hover:opacity-60"
+        style={{ background: 'transparent', color: FAINT }}>
+        다시 선택하기
+      </button>
+    </div>
+  );
+
+  // ── 스텝 공통 래퍼 ───────────────────────────────────────────
+
+  return (
+    <div className="flex flex-col px-6 pt-6 pb-10"
+      style={{ background: BG, minHeight: '100%' }}>
+
+      {/* 진행 표시 */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-2.5">
+          <button onClick={goBack}
+            className="font-mono text-[10px] tracking-wider transition-opacity hover:opacity-60"
+            style={{ color: FAINT }}>
+            ← 이전
+          </button>
+          <span className="font-mono text-[10px] tracking-widest" style={{ color: FAINT }}>
+            {String(currentStep).padStart(2, '0')} / 0{TOTAL_STEPS}
+          </span>
+        </div>
+        <div className="h-[2px] w-full rounded-full" style={{ background: '#1A1A1A' }}>
+          <div className="h-[2px] rounded-full transition-all duration-500"
+            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%`, background: ACCENT }} />
+        </div>
+      </div>
+
+      {/* ── Step 1: 플랫폼 선택 ──────────────────────────────── */}
+      {screen === 'step1' && (
+        <>
+          <h2 className="leading-[0.9] tracking-tight mb-8"
+            style={{ fontFamily: FONT_HEADING, fontSize: '46px', color: TEXT }}>
+            어떤 플랫폼에서<br />
+            <span style={{ color: ACCENT }}>활동하나요?</span>
+          </h2>
+
+          <div className="flex flex-col gap-3">
+            {PLATFORMS.map(p => {
+              const sel = platforms.includes(p.value);
+              return (
+                <button key={p.value} onClick={() => togglePlatform(p.value)}
+                  className="w-full py-[18px] px-5 rounded-xl text-left transition-all active:scale-[0.99]"
+                  style={{
+                    background: sel ? `${ACCENT}12` : SURFACE,
+                    border:     `1.5px solid ${sel ? ACCENT : BORDER}`,
+                    color:      sel ? ACCENT : TEXT,
+                    fontSize:   '15px',
+                    fontWeight: sel ? 600 : 400,
+                    fontFamily: FONT_BODY,
+                  }}>
+                  {p.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="mt-3 font-mono text-[9px] tracking-wider" style={{ color: FAINT }}>
+            복수 선택 가능
+          </p>
+
+          <button onClick={() => { if (platforms.length > 0) advance('step2'); }}
+            className="w-full py-[18px] rounded-2xl text-[15px] font-semibold mt-10 transition-all active:scale-[0.98]"
+            style={{
+              background: platforms.length > 0 ? ACCENT : '#1A1A1A',
+              color:      platforms.length > 0 ? BG     : '#3A3A42',
+              fontFamily: FONT_BODY,
+              cursor:     platforms.length > 0 ? 'pointer' : 'default',
+            }}>
+            다음
+          </button>
+        </>
+      )}
+
+      {/* ── Step 2: 카테고리 입력 ────────────────────────────── */}
+      {screen === 'step2' && (
+        <>
+          <h2 className="leading-[0.9] tracking-tight mb-10"
+            style={{ fontFamily: FONT_HEADING, fontSize: '46px', color: TEXT }}>
+            내 채널의<br />
+            <span style={{ color: ACCENT }}>카테고리는?</span>
+          </h2>
+
+          <div className="mb-8">
+            <input type="text" value={category} onChange={e => setCategory(e.target.value)}
+              placeholder="예: 뷰티, 먹방, 게임..." autoFocus
+              className="w-full pb-3 pt-1 bg-transparent outline-none text-[20px] transition-colors placeholder:text-text-faint"
+              style={{
+                borderBottom: `2px solid ${category.trim() ? ACCENT : BORDER}`,
+                color:        TEXT,
+                fontFamily:   FONT_BODY,
+                caretColor:   ACCENT,
+              }} />
+          </div>
+
+          <div className="min-h-[88px]">
+            {suggestedChips.length > 0 && (
+              <>
+                <p className="font-mono text-[9px] tracking-[0.18em] mb-3" style={{ color: FAINT }}>
+                  추천 태그
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedChips.map(chip => (
+                    <button key={chip} onClick={() => setCategory(chip.replace('#', ''))}
+                      className="py-1.5 px-3 rounded-full font-mono text-[11px] tracking-wider transition-all active:scale-[0.96]"
+                      style={{
+                        background: `${ACCENT}0F`,
+                        border:     `1px solid ${ACCENT}50`,
+                        color:      ACCENT,
+                      }}>
+                      {chip}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          <button onClick={() => { if (category.trim()) advance('step3'); }}
+            className="w-full py-[18px] rounded-2xl text-[15px] font-semibold mt-10 transition-all active:scale-[0.98]"
+            style={{
+              background: category.trim() ? ACCENT : '#1A1A1A',
+              color:      category.trim() ? BG     : '#3A3A42',
+              fontFamily: FONT_BODY,
+              cursor:     category.trim() ? 'pointer' : 'default',
+            }}>
+            다음
+          </button>
+        </>
+      )}
+
+      {/* ── Step 3: 연령대 선택 ──────────────────────────────── */}
+      {screen === 'step3' && (
+        <>
+          <h2 className="leading-[0.9] tracking-tight mb-8"
+            style={{ fontFamily: FONT_HEADING, fontSize: '46px', color: TEXT }}>
+            주요 시청자<br />
+            <span style={{ color: ACCENT }}>연령대는?</span>
+          </h2>
+
+          <div className="flex flex-col gap-2.5">
+            {AGE_GROUPS.map(ag => {
+              const sel = ageGroup === ag.value;
+              return (
+                <button key={ag.value} onClick={() => setAgeGroup(ag.value)}
+                  className="w-full flex items-center justify-between px-5 py-4 rounded-xl transition-all active:scale-[0.99]"
+                  style={{
+                    background: sel ? `${ACCENT}12` : SURFACE,
+                    border:     `1.5px solid ${sel ? ACCENT : BORDER}`,
+                  }}>
+                  <span style={{
+                    fontFamily: FONT_HEADING,
+                    fontSize:   '26px',
+                    lineHeight: 1,
+                    color:      sel ? ACCENT : TEXT,
+                  }}>
+                    {ag.label}
+                  </span>
+                  <span className="font-mono text-[10px] tracking-wider"
+                    style={{ color: sel ? `${ACCENT}80` : FAINT }}>
+                    {ag.range}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button onClick={handleCallPersona}
+            className="w-full py-[18px] rounded-2xl text-[15px] font-semibold mt-8 transition-all active:scale-[0.98]"
+            style={{
+              background: ageGroup ? ACCENT : '#1A1A1A',
+              color:      ageGroup ? BG     : '#3A3A42',
+              fontFamily: FONT_BODY,
+              cursor:     ageGroup ? 'pointer' : 'default',
+            }}>
+            트렌드 보러가기
+          </button>
+        </>
+      )}
     </div>
   );
 }

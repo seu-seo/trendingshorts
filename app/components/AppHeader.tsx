@@ -3,9 +3,10 @@
 import { useStore } from '@/lib/store';
 
 const TAB_LABELS: Record<string, string> = {
-  dashboard: 'WEEKLY',
-  recommend: 'FOR YOU',
+  dashboard:  'WEEKLY',
+  recommend:  'FOR YOU',
   production: 'PRODUCE',
+  my:         'PROFILE',
 };
 
 export default function AppHeader() {

@@ -69,7 +69,7 @@ export interface Persona {
   purpose?: AppPurpose;
 }
 
-export type Tab = 'dashboard' | 'recommend';
+export type Tab = 'dashboard' | 'recommend' | 'my';
 
 export type SortOrder = 'trending' | 'recent';
 
@@ -110,3 +110,19 @@ export interface PersonaResult {
 }
 
 export type AppIntent = 'explore' | 'produce';
+
+export type AgeGroup = '10s' | '20s' | '30s' | '40s' | '50+';
+
+export type FollowerTier = 1 | 2 | 3 | 4 | 5;
+
+export interface Creator {
+  handle: string;
+  followersLabel: string;
+  followers: number;
+  niche: string;
+  uploadFreq: string;
+  tier: FollowerTier;
+  growth: number;
+  score: number;
+  reason: string;
+}

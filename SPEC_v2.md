@@ -2,7 +2,7 @@
 
 > 기준: main API 정책 유지 + V6 UX 통합  
 > V6에서 가져온 항목은 `[V6 UX]` 표기, main에서 유지한 항목은 `[main]` 표기  
-> 최종 업데이트: 2026-06-03
+> 최종 업데이트: 2026-06-09 (PR #48~51 반영)
 
 ---
 
@@ -135,14 +135,25 @@
 
 > ⚠️ **데이터 제약:** 해시태그 성장률 직접 측정 불가 (TikTok만 해시태그별 누적 조회수 제공, Instagram·YouTube 미지원)
 
-#### 6.2.3 Top 5 트렌드 리스트 `[main API]`
+#### 6.2.3 이번 주 주요 이슈 `[신규 — PR #49]`
+
+- **API:** `POST /api/weekly-issues` — Gemini 2.5 Flash로 주간 이슈 분석
+- 트렌드 탭 상단에 이슈 카드 표시
+
+#### 6.2.4 키워드 인사이트 `[신규 — PR #49]`
+
+- **API:** `POST /api/keyword-insight` — Gemini 2.5 Flash
+- 카테고리별 키워드 성장률·기회 분석
+
+#### 6.2.5 Top 트렌드 리스트 `[main API]`
 
 - **API:** `GET /api/trends` (main 구현 유지) — YouTube live + TikTok·IG 스냅샷
-- 트렌드 카드: 제목 · 플랫폼 · 조회수 · 해시태그 · 저장 버튼
-- 저장 버튼 → `saveTrend()` → localStorage → 마이 탭 "내 컬렉션"
+- 트렌드 카드: 제목 · 플랫폼 · 조회수 · 해시태그
 - 카드 탭 → **TrendActionSheet** 하단 노출
-  - "원본 보기" — 외부 플랫폼 URL 열기
   - "이 트렌드로 콘텐츠 만들기 →" — 선택 트렌드 context를 콘텐츠 만들기 플로우로 전달
+  - "원본 보기" — 외부 플랫폼 URL 열기
+  - "이 영상 저장하기" → `toggleSaveTrend()` → localStorage → 마이 탭 "내 컬렉션" ✅
+  - 이미 저장된 경우: "영상 저장 취소" (빨간 버튼) → 컬렉션에서 제거 ✅
 
 > ⚠️ **데이터 제약 (main 명세 유지):**
 > - growth rate 산출 불가 (TikTok·IG: 동일 영상 재조회 구조 없음)
@@ -150,26 +161,34 @@
 
 ---
 
-### 6.3 마이 탭 (`/my`) `[V6 UX]`
+### 6.3 마이 탭 (`/my`) `[V6 UX — 구현 완료]`
 
 #### 6.3.1 프로필 카드
-닉네임 · 플랫폼 태그 · 팔로워 수 표시.
+페르소나 타입 · 카테고리 · 연령대 · 플랫폼 태그 · 연결된 계정 핸들 · 이번 주 목표(설정 시) 표시.
 
 #### 6.3.2 This Week's Insights
-주간 성과 KPI 카드 4개.
+주간 성과 KPI 카드 4개 (저장 트렌드 수 · 생성 대본 수 · 팔로워 · 이번 주 업로드).
 
-> ⚠️ **미확정:** 계정 연동 전까지 데이터 소스 확정 필요. 수동 입력 방식 검토 중.
+> ⚠️ 팔로워·업로드 수: 계정 연동 전까지 `--` 표시. 데이터베이스 연동 시 실데이터로 전환 예정.
 
 #### 6.3.3 액션 메뉴
-| 번호 | 항목 | 비고 |
+| 번호 | 항목 | 상태 |
 |------|------|------|
-| 01 | 콘텐츠 만들기 | 트렌드 context 없이 자유 제작 — 콘텐츠 만들기 플로우 진입 |
-| 02 | 목표 설정하기 | 신규 개발 |
-| 03 | 계정 연결하기 | 신규 개발 |
+| 01 | 콘텐츠 만들기 | ✅ 구현 완료 |
+| 02 | 목표 설정하기 (`/my/goal`) | ✅ 구현 완료 — 주 N회 목표 저장 |
+| 03 | 계정 연결하기 (`/my/connect`) | ✅ 구현 완료 — YouTube·TikTok·Instagram 핸들 입력 |
 
-#### 6.3.4 컬렉션
-- **내 컬렉션:** 저장한 트렌드 그리드 — `saveTrend()` → localStorage
-- **저장한 대본·콘티:** 생성 결과물 목록 — `saveContent()` → localStorage
+#### 6.3.4 내 컬렉션 `[PR #51 업데이트]`
+- 한 줄 카드 리스트 (썸네일 + 제목 + 플랫폼/heatLevel)
+- 카드 클릭 → TrendActionSheet 열림 ("이 트렌드로 콘텐츠 만들기" / "원본보기" / "영상 저장 취소")
+- "영상 저장 취소" → 컬렉션에서 즉시 제거
+- 저장소: `localStorage('sfp_saved_trends')` — 추후 DB 전환 예정
+
+#### 6.3.5 저장한 대본·콘티 `[PR #51 신규]`
+- 저장된 대본/콘티 목록 표시 (제목 + 날짜 + 콘티 배지)
+- 클릭 → 펼쳐서 HOOK · BODY · CTA 전체 내용 열람 가능
+- 삭제 버튼으로 개별 제거
+- 저장소: `localStorage('sfp_saved_scripts')` — 추후 DB 전환 예정
 
 ---
 
@@ -203,29 +222,38 @@
 - 트렌드 context가 있을 경우 프롬프트에 포함하여 전달
 - **결과 카드:** 니치 타이틀 · 설명 텍스트 · 키워드 태그 · FORMAT 추천 · PLATFORM 추천
 
-#### 6.4.3 대본 생성 `[main API]`
+#### 6.4.3 크리에이터 추천 `[PR #48 신규]`
+
+- 온보딩 팔로워 정보 기반으로 "한 단계 앞선 크리에이터" 추천
+- `CreatorRecommendSection` 컴포넌트 — `/recommend` 페이지
+
+#### 6.4.4 대본 생성 `[main API]`
 
 - `POST /api/generate` (main 엔드포인트·로직 유지)
 - 대본 3종: 정보형 · 스토리형 · 훅형
 - 구조: HOOK (첫 3초) + BODY + CTA
+- **저장하기 버튼** `[PR #51]` → hook · body · cta 전체 localStorage 저장 → 마이 탭 "저장한 대본·콘티"
 
-#### 6.4.4 콘티 생성 `[main API]`
+#### 6.4.5 콘티 생성 `[PR #50 — 구현 완료]`
 
-- `POST /api/storyboard` (main 엔드포인트 유지, 현재 minimal 구현)
+- **엔드포인트:** `POST /api/conti` (`/api/storyboard`에서 교체)
+- **AI:** Gemini 2.5 Flash로 대본을 4컷 골격으로 분해 + 동일 캐릭터 시트 생성
 - 4컷 구성:
-  | 컷 | 구간 | 내용 |
+  | 컷 | 구간 | 역할 |
   |----|------|------|
   | CUT1 | 0–3s | 훅 |
   | CUT2 | 3–6s | 전환 |
   | CUT3 | 6–12s | 본론 |
   | CUT4 | 12–15s | 클로징 |
-- 장면별: 스케치 텍스트 + 대사 + 촬영 메모
+- 장면별: 만화 이미지(Imagen 4.0 fast) + 대사 + 촬영 메모
+- **이미지 생성:** Imagen 유료 키 없을 시 `ContiSketch` SVG로 자동 폴백 (팀원 환경 보장)
+- **저장하기 버튼** `[PR #51]` → 마이 탭 "저장한 대본·콘티" (콘티 배지 표시)
 
-> ⚠️ **미확정:** Phase1 텍스트 전용 → Phase2 사전 에셋 → Phase3 이미지 생성 AI (단계별 고도화 예정)
-
-**결과 저장:**
-- [이 대본/콘티 저장하기] → `saveContent()` → localStorage → 마이 탭 "저장한 대본·콘티"
-- [마이페이지로 돌아가기]
+**결과 저장 흐름:**
+```
+대본 생성 → [저장하기] → savedScripts (localStorage) → 마이 탭 열람/삭제
+콘티 생성 → [저장하기] → savedScripts + hasConti:true → 마이 탭 "콘티" 배지
+```
 
 ---
 
@@ -247,14 +275,16 @@
 
 ### 7.2 API 엔드포인트 매핑
 
-| 호출 시점 | 엔드포인트 | 데이터 소스 | 캐싱 | 출처 |
+| 호출 시점 | 엔드포인트 | 데이터 소스 | 캐싱 | 상태 |
 |----------|-----------|------------|------|------|
-| 온보딩 완료 | `POST /api/persona` | Gemini 2.5 Flash | localStorage | main |
-| 트렌드 탭 진입 | `GET /api/trends` | YouTube live + TikTok·IG 스냅샷 | 서버 24h | main |
-| 트렌드 탭 진입 | `POST /api/insights` | Gemini 2.5 Flash | 서버 24h + Zustand | main |
-| 콘텐츠 만들기 분석 | `POST /api/recommend` | Gemini 2.5 Flash | 없음 | main |
-| 대본 요청 | `POST /api/generate` | Gemini 2.5 Flash | 없음 | main |
-| 콘티 요청 | `POST /api/storyboard` | Gemini 2.5 Flash | 없음 | main (미완성) |
+| 온보딩 완료 | `POST /api/persona` | Gemini 2.5 Flash | localStorage | ✅ |
+| 트렌드 탭 진입 | `GET /api/trends` | YouTube live + TikTok·IG 스냅샷 | 서버 24h | ✅ |
+| 트렌드 탭 진입 | `POST /api/insights` | Gemini 2.5 Flash | 서버 24h + Zustand | ✅ |
+| 트렌드 탭 진입 | `POST /api/weekly-issues` | Gemini 2.5 Flash | 없음 | ✅ 신규 |
+| 트렌드 탭 진입 | `POST /api/keyword-insight` | Gemini 2.5 Flash | 없음 | ✅ 신규 |
+| 콘텐츠 만들기 분석 | `POST /api/recommend` | Gemini 2.5 Flash | 없음 | ✅ |
+| 대본 요청 | `POST /api/generate` | Gemini 2.5 Flash | 없음 | ✅ |
+| 콘티 요청 | `POST /api/conti` | Gemini 2.5 Flash + Imagen 4.0 | 없음 | ✅ 신규 (`/api/storyboard` 대체) |
 
 ### 7.3 데이터의 본질적 한계 `[main]`
 
@@ -298,15 +328,17 @@
 | AI | Google Gemini 2.5 Flash (`@ai-sdk/google`) |
 | 호스팅 | Vercel |
 
-**Gemini 호출 5회 (최대):**
+**Gemini/Imagen 호출 (최대 7회):**
 
 | 번호 | 엔드포인트 | 호출 시점 | 캐시 |
 |------|-----------|----------|------|
 | 1 | `/api/persona` | 온보딩 완료 시 1회 | localStorage (재방문 불필요) |
 | 2 | `/api/insights` | 트렌드 탭 진입 시 | 서버 24h |
-| 3 | `/api/recommend` | 콘텐츠 만들기 — AI 분석 | 없음 |
-| 4 | `/api/generate` | 대본 요청 | 없음 |
-| 5 | `/api/storyboard` | 콘티 요청 | 없음 |
+| 3 | `/api/weekly-issues` | 트렌드 탭 진입 시 | 없음 |
+| 4 | `/api/keyword-insight` | 트렌드 탭 진입 시 | 없음 |
+| 5 | `/api/recommend` | 콘텐츠 만들기 — AI 분석 | 없음 |
+| 6 | `/api/generate` | 대본 요청 | 없음 |
+| 7 | `/api/conti` | 콘티 요청 (Gemini 분해 + Imagen 이미지) | 없음 |
 
 ---
 
@@ -358,9 +390,8 @@
 - 기회 지수 링 차트 실제 데이터 구성 방식
 - `TrendItem` 통합 스키마 (플랫폼별 필드 통일)
 - `calcOpportunityScore(platform, ageGroup, category)` 계산 로직 확정
-- `/api/storyboard` 4컷 SceneCard 완성 (현재 minimal 구현)
-- This Week's Insights KPI 데이터 소스 (계정 연동 전 수동 입력 방식 확정)
-- 페르소나 → 추천 → 대본 생성 컨텍스트 전달 방식
+- This Week's Insights KPI 데이터 소스 (DB 연동 후 확정)
+- 저장 데이터 DB 스키마 (`savedTrends`, `savedScripts` 테이블 설계)
 
 ---
 
@@ -403,37 +434,37 @@
 
 ## 13. Current Scope and Future Work
 
-### 완료 (main 기준)
-- GitHub 저장소 기본 구조
-- YouTube Data API v3 연동 모듈
-- Apify Instagram·TikTok Scraper 연동 모듈
-- Gemini 서브카테고리 자동 분류기
-- 대본 생성 V0 (`/api/generate`)
-- 페르소나 설문 V0
-- `.gitignore` 및 API 키 보안 설정
+### 구현 완료 (2026-06-09 기준 main)
 
-### 신규 개발 필요 (V6 UX 통합)
-- 온보딩 3문항 리디자인 (플랫폼·카테고리·연령대)
-- 2탭 레이아웃 (TREND | MY) 전환
-- 기회 지수 링 차트 컴포넌트 (데이터 구성 방식 확정 후)
-- 해시태그 버블 컴포넌트 (`/api/insights` 연동)
-- TrendActionSheet 컴포넌트
-- 마이 탭 전체 (프로필·Insights·메뉴·컬렉션)
-- 콘텐츠 만들기 7문항 폼 + 니치 분석 결과 카드
-- `/api/storyboard` 4컷 SceneCard 완성
+| 항목 | PR | 비고 |
+|------|----|------|
+| 온보딩 3문항 (플랫폼·카테고리·연령대) | #48 | ✅ |
+| 마이 탭 전체 (프로필·Insights·메뉴) | #48 | ✅ |
+| 목표 설정 (`/my/goal`) | #48 | ✅ |
+| 계정 연결 (`/my/connect`) | #48 | ✅ |
+| 크리에이터 추천 (`CreatorRecommendSection`) | #48 | ✅ |
+| 대시보드 V6 UX (링차트·키워드·트렌드) | #49 | ✅ |
+| 실제 YouTube 데이터 연동 + Gemini 분석 | #49 | ✅ |
+| 이번 주 주요 이슈 (`/api/weekly-issues`) | #49 | ✅ |
+| 키워드 인사이트 (`/api/keyword-insight`) | #49 | ✅ |
+| 4컷 콘티 생성 (`/api/conti` + Imagen) | #50 | ✅ |
+| SVG 콘티 폴백 (`ContiSketch`) | #50 | ✅ |
+| 영상 저장하기 / 저장 취소 (TrendActionSheet) | #51 | ✅ |
+| 내 컬렉션 — 한 줄 카드 + 액션시트 연결 | #51 | ✅ |
+| 대본 저장하기 (hook+body+cta) | #51 | ✅ |
+| 콘티 저장하기 + 마이페이지 펼쳐보기 | #51 | ✅ |
 
-### 미확정 (별도 논의)
+### 미확정 / 향후 작업
+
 | 항목 | 현황 |
 |------|------|
-| 기회 지수 링 차트 데이터 | 구성 방식 미정 |
-| This Week's Insights KPI | 계정 연동 전까지 데이터 소스 미확정 |
-| 콘티 스케치 품질 | Phase1 텍스트 → Phase2 에셋 → Phase3 이미지 AI |
-| `/api/storyboard` | minimal 구현, 4컷 완성 필요 |
-
-### 향후 작업 (V3+)
-- BGM·시각 콘텐츠 분류용 음원 ID 또는 비전 모델 연동
-- 계정 연동 및 실제 성과 데이터 수집
-- This Week's Insights 자동화
+| 저장 데이터 영속성 | localStorage → Supabase DB 연동 예정 |
+| This Week's Insights KPI | 팔로워·업로드 수: 계정 연동 전까지 `--` |
+| 기회 지수 링 차트 데이터 | 실제 데이터 구성 방식 미정 |
+| 콘티 이미지 품질 | Imagen 유료 키 없으면 SVG 폴백 |
+| 대본/콘티 캡처 저장 | html2canvas 다운로드 기능 예정 |
+| BGM·비전 모델 연동 | V3 이후 |
+| 계정 연동 실데이터 | DB 도입 후 |
 
 ---
 

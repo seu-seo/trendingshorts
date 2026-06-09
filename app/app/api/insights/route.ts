@@ -2,10 +2,16 @@ import { NextResponse } from 'next/server';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 
+export interface HashtagScore {
+  tag: string;
+  score: number;
+}
+
 export interface InsightsRequest {
   category: string;
   titles: string[];
   hashtags: string[];
+  hashtagScores?: HashtagScore[];
 }
 
 export interface KeywordItem {
@@ -19,17 +25,20 @@ export interface InsightsResponse {
   source: 'live' | 'mock';
 }
 
-function buildPrompt(category: string, titles: string[], hashtags: string[]): string {
-  const tagCloud = [...new Set(hashtags)].slice(0, 30).join(' ');
+function buildPrompt(category: string, titles: string[], hashtags: string[], hashtagScores?: HashtagScore[]): string {
   const titleSample = titles.slice(0, 10).join('\n');
+
+  const hashtagSection = hashtagScores && hashtagScores.length > 0
+    ? `[해시태그 점수 — 빈도×평균반응률, 높을수록 실제 반응이 좋은 태그]\n${hashtagScores.slice(0, 20).map((h) => `${h.tag} (${h.score.toFixed(1)})`).join(', ')}`
+    : `[주요 해시태그]\n${[...new Set(hashtags)].slice(0, 30).join(' ')}`;
+
   return `당신은 숏폼 트렌드 분석 전문가입니다.
 
 [카테고리] ${category}
 [이번 주 인기 영상 제목]
 ${titleSample}
 
-[주요 해시태그]
-${tagCloud}
+${hashtagSection}
 
 위 데이터를 분석해 다음 JSON 형식으로만 응답하세요. 마크다운 코드블록 없이 순수 JSON만:
 {
@@ -48,7 +57,7 @@ ${tagCloud}
   ]
 }
 
-- keywords: 6개, type은 hot(1~2위 급상승), rising(상승 중), ''(보통)
+- keywords: 6개. 해시태그 점수가 있으면 상위 점수 태그를 hot으로, 중간을 rising으로 선정. type은 hot(1~2위), rising(3~4위), ''(나머지)
 - bullets: 2~3개, 각 항목은 구체적 수치/사실로 시작해 후킹하게, 한국어`;
 }
 
@@ -127,7 +136,7 @@ const insightCache = new Map<string, CacheEntry>();
 
 export async function POST(req: Request) {
   const body: InsightsRequest = await req.json();
-  const { category, titles, hashtags } = body;
+  const { category, titles, hashtags, hashtagScores } = body;
 
   // 서버 캐시: 카테고리별 24시간
   const cached = insightCache.get(category);
@@ -142,7 +151,7 @@ export async function POST(req: Request) {
   try {
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
-      prompt: buildPrompt(category, titles, hashtags),
+      prompt: buildPrompt(category, titles, hashtags, hashtagScores),
     });
     const cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '').trim();
     const parsed = JSON.parse(cleaned.slice(cleaned.indexOf('{'))) as Omit<InsightsResponse, 'source'>;

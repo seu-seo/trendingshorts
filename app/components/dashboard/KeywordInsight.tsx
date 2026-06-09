@@ -1,137 +1,99 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { KeywordItem, InsightsResponse } from '@/app/api/insights/route';
 import type { Trend } from '@/lib/types';
-import { useStore } from '@/lib/store';
+import type { KeywordInsightResponse } from '@/app/api/keyword-insight/route';
 
-const BUBBLE: Record<string, { size: number; bg: string; border: string; color: string; glow: string; fs: number }> = {
-  hot:    { size: 84, bg: 'rgba(255,61,127,0.22)',  border: 'rgba(255,61,127,0.6)',   color: '#FF3D7F', glow: '0 0 20px rgba(255,61,127,0.4)',  fs: 11 },
-  rising: { size: 68, bg: 'rgba(200,255,87,0.18)',  border: 'rgba(200,255,87,0.55)',  color: '#C8FF57', glow: '0 0 16px rgba(200,255,87,0.32)', fs: 10 },
-  '':     { size: 54, bg: 'rgba(255,255,255,0.09)', border: 'rgba(255,255,255,0.22)', color: 'rgba(255,255,255,0.75)', glow: 'none', fs: 9 },
-};
-
-const BULLET_COLOR = ['#FF3D7F', '#C8FF57', '#57C8FF'];
-
-// Center-point positions for up to 6 bubbles (sorted: hot → rising → normal)
-const POS = [
-  { cx: '20%', cy: '36%' },
-  { cx: '64%', cy: '26%' },
-  { cx: '40%', cy: '74%' },
-  { cx: '80%', cy: '65%' },
-  { cx: '10%', cy: '76%' },
-  { cx: '56%', cy: '52%' },
+const BUBBLE_SIZES = [
+  { size: 96, glow: '0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.60)', wordSize: 14, pctSize: 11, pulse: true },
+  { size: 82, glow: '0 0 8px rgba(56,182,255,0.45), 0 0 18px rgba(56,182,255,0.22)', border: 'rgba(56,182,255,0.50)', wordSize: 13, pctSize: 10, pulse: false },
+  { size: 72, glow: '0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16)', border: 'rgba(56,182,255,0.40)', wordSize: 12, pctSize: 9, pulse: false },
+  { size: 72, glow: '0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16)', border: 'rgba(56,182,255,0.40)', wordSize: 12, pctSize: 9, pulse: false },
+  { size: 62, glow: '0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.28)', wordSize: 11, pctSize: 9, pulse: false },
+  { size: 62, glow: '0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.28)', wordSize: 11, pctSize: 9, pulse: false },
+  { size: 52, glow: '0 0 4px rgba(56,182,255,0.12)', border: 'rgba(56,182,255,0.18)', wordSize: 10, pctSize: 8, pulse: false },
+  { size: 52, glow: '0 0 4px rgba(56,182,255,0.12)', border: 'rgba(56,182,255,0.18)', wordSize: 10, pctSize: 8, pulse: false },
 ];
 
 export default function KeywordInsight({ trends, category }: { trends: Trend[]; category: string | null }) {
-  const insightsCache = useStore((s) => s.insightsCache);
-  const setInsightsCache = useStore((s) => s.setInsightsCache);
-  const cat = category ?? 'general';
+  const [data, setData] = useState<KeywordInsightResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const data = insightsCache.get(cat) ?? null;
 
   useEffect(() => {
-    if (trends.length === 0 || insightsCache.has(cat)) return;
-
-    const titles = trends.slice(0, 20).map((t) => t.title);
-    const hashtags = trends.flatMap((t) => t.hashtags.split(' ').filter(Boolean));
-
+    if (trends.length === 0) return;
+    setData(null);
     setLoading(true);
-    fetch('/api/insights', {
+
+    const top20 = trends.slice(0, 20);
+    fetch('/api/keyword-insight', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category: cat, titles, hashtags }),
+      body: JSON.stringify({
+        titles: top20.map(t => t.title),
+        hashtags: top20.flatMap(t => t.hashtags.split(' ').filter(Boolean)),
+        trends: top20.map(t => ({ title: t.title, hashtags: t.hashtags, engagementRate: t.engagementRate })),
+        category,
+      }),
     })
-      .then((r) => r.json())
-      .then((d: InsightsResponse) => setInsightsCache(cat, d))
+      .then(r => r.json())
+      .then((d: KeywordInsightResponse) => setData(d))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [trends, category]);
 
   if (loading) {
     return (
-      <div className="mx-6 mb-5 px-4 py-3.5 rounded-2xl animate-pulse"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="h-3 w-32 rounded mb-4" style={{ background: 'rgba(255,255,255,0.08)' }} />
-        <div className="relative w-full mb-4" style={{ height: 170 }}>
-          {[78, 78, 62, 62, 48, 48].map((s, i) => (
-            <div key={i} className="absolute rounded-full"
-              style={{ width: s, height: s, left: POS[i].cx, top: POS[i].cy, transform: 'translate(-50%,-50%)', background: 'rgba(255,255,255,0.06)' }} />
-          ))}
-        </div>
-        <div className="space-y-2">
-          {[80, 65, 72].map((w, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-[5px] h-[5px] rounded-full flex-shrink-0" style={{ background: 'rgba(255,255,255,0.1)' }} />
-              <div className="h-2.5 rounded" style={{ background: 'rgba(255,255,255,0.06)', width: `${w}%` }} />
-            </div>
+      <div className="mx-6 mb-5">
+          <div className="flex flex-wrap gap-2.5 justify-center items-center py-2">
+          {BUBBLE_SIZES.map((b, i) => (
+            <div key={i} className="rounded-full animate-pulse flex-shrink-0"
+              style={{ width: b.size, height: b.size, background: 'rgba(56,182,255,0.05)', border: '1px solid rgba(56,182,255,0.15)' }} />
           ))}
         </div>
       </div>
     );
   }
 
-  if (!data) return null;
-
-  const sorted = [...data.keywords].sort((a, b) => {
-    const order: Record<string, number> = { hot: 0, rising: 1, '': 2 };
-    return (order[a.type] ?? 2) - (order[b.type] ?? 2);
-  });
+  if (!data || data.keywords.length === 0) return null;
 
   return (
-    <div className="mx-6 mb-5 px-4 py-3.5 rounded-2xl"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-
-      {/* 헤더 */}
-      <div className="font-mono text-[9px] tracking-widest text-accent-lime uppercase mb-4 flex items-center gap-1.5">
-        <span className="w-[5px] h-[5px] rounded-full bg-accent-lime" style={{ boxShadow: '0 0 6px var(--accent-lime)' }} />
-        AI 키워드 분석
-        {data.source === 'mock' && (
-          <span className="ml-auto font-mono text-[8px] text-text-faint">(샘플)</span>
-        )}
-      </div>
-
+    <div className="mx-6 mb-5">
       {/* 버블 맵 */}
-      <div className="relative w-full mb-5" style={{ height: 170 }}>
-        {sorted.slice(0, 6).map((kw: KeywordItem, i) => {
-          const b = BUBBLE[kw.type] ?? BUBBLE[''];
-          const p = POS[i];
+      <div className="flex flex-wrap gap-2.5 justify-center items-center py-2">
+        {data.keywords.map((kw, i) => {
+          const b = BUBBLE_SIZES[i] ?? BUBBLE_SIZES[7];
           return (
-            <div key={kw.text}
-              className="absolute flex flex-col items-center justify-center rounded-full text-center"
+            <div key={kw.tag}
+              className="rounded-full flex flex-col items-center justify-center text-center flex-shrink-0"
               style={{
-                width: b.size, height: b.size,
-                left: p.cx, top: p.cy,
-                transform: 'translate(-50%, -50%)',
-                background: b.bg,
+                width: b.size,
+                height: b.size,
+                background: 'rgba(56,182,255,0.08)',
                 border: `1px solid ${b.border}`,
                 boxShadow: b.glow,
+                gap: 2,
+                cursor: 'pointer',
+                animation: b.pulse ? 'bubblePulse 2.4s ease-in-out infinite' : undefined,
               }}>
-              {kw.type !== '' && (
-                <span className="font-mono font-black leading-none mb-1"
-                  style={{ fontSize: 8, color: b.color, letterSpacing: '0.1em' }}>
-                  {kw.type === 'hot' ? 'HOT' : 'RISING'}
-                </span>
-              )}
-              <span className="font-bold leading-tight px-1.5 text-center"
-                style={{ fontSize: b.fs, color: b.color, wordBreak: 'keep-all' }}>
-                {kw.text}
+              <span className="font-bold leading-tight px-1 text-center break-keep"
+                style={{ fontSize: b.wordSize, color: i < 4 ? 'var(--text)' : 'var(--text-dim)', lineHeight: 1.2 }}>
+                {kw.tag}
+              </span>
+              <span className="font-mono font-bold"
+                style={{ fontSize: b.pctSize, color: '#38B6FF', letterSpacing: '0.02em' }}>
+                {Math.round(kw.score)}
               </span>
             </div>
           );
         })}
       </div>
 
-      {/* 인사이트 불릿 */}
-      <div className="space-y-2.5">
-        {data.bullets.map((b, i) => (
-          <div key={i} className="flex items-start gap-2.5">
-            <span className="mt-[4px] flex-shrink-0 w-[5px] h-[5px] rounded-full"
-              style={{ background: BULLET_COLOR[i] ?? BULLET_COLOR[2] }} />
-            <p className="text-[11px] text-text-dim leading-relaxed">{b}</p>
-          </div>
-        ))}
-      </div>
+      <style>{`
+        @keyframes bubblePulse {
+          0%,100% { box-shadow: 0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10); }
+          50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -59,9 +59,9 @@ export default function FeaturedCard({ trend }: { trend: Trend }) {
           </span>
           <span
             className="absolute top-3 right-3 font-mono text-[9px] font-bold px-2 py-0.5 rounded tracking-wider"
-            style={{ background: 'rgba(0,0,0,0.6)', color: trend.lifecycle === 'rising' ? '#C8FF57' : trend.lifecycle === 'peak' ? '#57C8FF' : '#666' }}
+            style={{ background: 'rgba(0,0,0,0.6)', color: trend.heatLevel === 'HOT' ? '#C8FF57' : trend.heatLevel === 'WARM' ? '#57C8FF' : '#666' }}
           >
-            {trend.lifecycle === 'rising' ? '▲ RISING' : trend.lifecycle === 'peak' ? '◆ PEAK' : '▼ FADING'}
+            {trend.engagementRate > 0 ? `${trend.engagementRate}%` : '—'} {trend.heatLevel}
           </span>
           <span
             className="relative"

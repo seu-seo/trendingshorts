@@ -1,5 +1,5 @@
 import type { Trend } from './types';
-import { deriveLifecycle, mapCategory, PLATFORM_LABEL } from './utils';
+import { deriveHeatLevel, mapCategory, PLATFORM_LABEL } from './utils';
 
 const HANGUL_RE = /[가-힣]/;
 
@@ -76,31 +76,36 @@ function krCategoryFromHashtags(tags: string[]): string {
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-function processPosts(posts: TikTokPost[]): Trend[] {
+function processPosts(posts: TikTokPost[], skipExpiry = false): Trend[] {
   const seen = new Set<string>();
   const results: Trend[] = [];
   const cutoff = Date.now() - THIRTY_DAYS_MS;
   for (const post of posts) {
     if (post.isAd || post.isSponsored) continue;
     if (seen.has(post.id)) continue;
-    if (new Date(post.createTimeISO).getTime() < cutoff) continue;
+    if (!skipExpiry && new Date(post.createTimeISO).getTime() < cutoff) continue;
     seen.add(post.id);
     const tagNames = (post.hashtags ?? []).map((h) => h.name);
     const krCategory = krCategoryFromHashtags(tagNames);
     const views = post.playCount ?? 0;
+    const likes = post.diggCount ?? 0;
+    const comments = post.commentCount ?? 0;
+    const engagementRate = views >= 1000
+      ? parseFloat(((likes + comments) / views * 100).toFixed(2))
+      : 0;
     results.push({
       id: results.length + 1,
       platform: 'tiktok' as const,
       platformLabel: PLATFORM_LABEL.tiktok,
       category: mapCategory(krCategory),
-      lifecycle: deriveLifecycle(views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0),
+      heatLevel: deriveHeatLevel(engagementRate),
       title: (post.text ?? '').replace(/\n/g, ' ').trim().slice(0, 60) || 'TikTok',
       creator: `@${post.authorMeta?.name ?? 'unknown'}`,
       views,
-      likes: post.diggCount ?? 0,
-      comments: post.commentCount ?? 0,
+      likes,
+      comments,
       shares: post.shareCount ?? 0,
-      growth: views > 0 ? Math.round(((post.diggCount ?? 0) + (post.commentCount ?? 0)) / views * 1000) : 0,
+      engagementRate,
       duration: formatDuration(post.videoMeta?.duration),
       thumb: THUMBNAIL_MAP[krCategory] ?? '♪',
       time: timeAgo(post.createTimeISO),
@@ -111,11 +116,10 @@ function processPosts(posts: TikTokPost[]): Trend[] {
   return results;
 }
 
-// DISABLE_APIFY=true 시 스냅샷 JSON을 fallback으로 사용
 export async function fetchTikTokFromSnapshot(): Promise<Trend[]> {
   try {
     const raw = (await import('./data/tiktok-snapshot.json')).default as unknown as TikTokPost[];
-    return processPosts(raw);
+    return processPosts(raw, true); // 스냅샷은 날짜 만료 없이 처리
   } catch {
     return [];
   }

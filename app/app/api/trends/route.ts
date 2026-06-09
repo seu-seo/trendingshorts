@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       ...(wantsYT ? (cache.yt?.data ?? []) : []),
       ...(wantsTT ? (fetchTT ? cache.tt!.data : ttSnap) : []),
       ...(wantsIG ? (fetchIG ? cache.ig!.data : igSnap) : []),
-    ];
+    ].sort((a, b) => b.engagementRate - a.engagementRate);
     return NextResponse.json({ data: results, source: 'snapshot' });
   }
 
@@ -101,6 +101,7 @@ export async function GET(request: NextRequest) {
   const ttData = wantsTT ? (ttLive.length > 0 ? ttLive : ttSnap) : [];
   const igData = wantsIG ? (igLive.length > 0 ? igLive : igSnap) : [];
 
-  const results: Trend[] = [...ytData, ...ttData, ...igData];
+  const results: Trend[] = [...ytData, ...ttData, ...igData]
+    .sort((a, b) => b.engagementRate - a.engagementRate);
   return NextResponse.json({ data: results, source: APIFY_DISABLED ? 'snapshot' : 'live' });
 }

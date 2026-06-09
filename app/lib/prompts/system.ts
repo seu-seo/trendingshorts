@@ -34,11 +34,11 @@ export function buildSystemPrompt(args: {
     ? persona.styles.join(', ')
     : '(미지정)';
 
-  const lifecycleHint = {
-    rising: '상승 중 (rising) — 빠른 어텐션 확보',
-    peak: '피크 (peak) — 차별화된 각도 필요',
-    fading: '하락 중 (fading) — 회고/재해석 포맷이 유리',
-  }[trend.lifecycle];
+  const heatHint = {
+    HOT: '반응 폭발 HOT (≥5%) — 빠른 어텐션 확보',
+    WARM: '안정적 반응 WARM (2~5%) — 차별화된 각도 필요',
+    COLD: '낮은 반응 COLD (<2%) — 회고/재해석 포맷이 유리',
+  }[trend.heatLevel];
 
   return `당신은 한국 숏폼 크리에이터 성장 전략가입니다. YouTube Shorts(주력), Instagram Reels, TikTok의 알고리즘 동학과 팔로워 1만 미만 초기 크리에이터의 채널 성장 전략에 깊은 전문성을 갖고 있습니다.
 
@@ -57,8 +57,8 @@ ${concept
 - 카테고리: ${category}
 - 플랫폼: ${platform}
 - 메트릭: 조회수 ${trend.views} · 좋아요 ${trend.likes} · 공유 ${trend.shares}
-- 참여율 지수: ${trend.growth} (좋아요+댓글/조회수 × 1000)
-- 라이프사이클: ${lifecycleHint}
+- 반응률(ER): ${trend.engagementRate}% (좋아요+댓글/조회수 × 100)
+- 참여 열도: ${heatHint}
 - 해시태그: ${trend.hashtags}
 - 크리에이터: ${trend.creator}
 

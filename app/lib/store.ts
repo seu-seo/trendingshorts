@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent, AgeGroup } from './types';
 import type { InsightsResponse } from '@/app/api/insights/route';
-import { ALL_TRENDS } from './data/trends';
 
 // 개별 localStorage 키 (통일된 이름)
 const LS = {
@@ -87,7 +86,6 @@ interface AppState {
   currentTab: Tab;
   setTab: (tab: Tab) => void;
 
-  // Live trends (seeded with mock, replaced by API fetch)
   trends: Trend[];
   setTrends: (t: Trend[]) => void;
 
@@ -153,6 +151,10 @@ interface AppState {
   actionSheetTrend: Trend | null;
   setActionSheetTrend: (trend: Trend | null) => void;
 
+  // Saved trends (localStorage 영속)
+  savedTrendIds: number[];
+  toggleSaveTrend: (id: number) => void;
+
   // Insights cache (카테고리별, 페이지 이동 후에도 유지)
   insightsCache: Map<string, InsightsResponse>;
   setInsightsCache: (key: string, value: InsightsResponse) => void;
@@ -164,7 +166,7 @@ export const useStore = create<AppState>((set, get) => {
   currentTab: 'dashboard',
   setTab: (tab) => set({ currentTab: tab }),
 
-  trends: ALL_TRENDS,
+  trends: [],
   setTrends: (t) => set({ trends: t }),
 
   filterPlatform: 'youtube',
@@ -249,6 +251,18 @@ export const useStore = create<AppState>((set, get) => {
 
   actionSheetTrend: null,
   setActionSheetTrend: (trend) => set({ actionSheetTrend: trend }),
+
+  savedTrendIds: (() => {
+    if (typeof window === 'undefined') return [];
+    try { return JSON.parse(localStorage.getItem('sfp_saved_trends') ?? '[]') as number[]; } catch { return []; }
+  })(),
+  toggleSaveTrend: (id) => set((s) => {
+    const next = s.savedTrendIds.includes(id)
+      ? s.savedTrendIds.filter((v) => v !== id)
+      : [...s.savedTrendIds, id];
+    try { localStorage.setItem('sfp_saved_trends', JSON.stringify(next)); } catch {}
+    return { savedTrendIds: next };
+  }),
 
   insightsCache: new Map(),
   setInsightsCache: (key, value) => set((s) => {

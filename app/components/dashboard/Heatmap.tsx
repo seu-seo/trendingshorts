@@ -15,7 +15,7 @@ const CAT_EMOJIS: Record<Category, string> = {
 function getIntensity(trends: Trend[], cat: Category, platform: Platform): number {
   const matching = trends.filter((t) => t.category === cat && t.platform === platform);
   if (matching.length === 0) return 0;
-  return matching.reduce((sum, t) => sum + Math.max(0, t.growth), 0) / matching.length;
+  return matching.reduce((sum, t) => sum + Math.max(0, t.engagementRate), 0) / matching.length;
 }
 
 export default function Heatmap() {
@@ -69,7 +69,7 @@ export default function Heatmap() {
           카테고리 적합도
         </div>
         <div className="font-mono text-[9px] text-text-faint tracking-wider uppercase">
-          이번 주 평균 성장률
+          이번 주 평균 반응률(ER)
         </div>
       </div>
 

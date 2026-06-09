@@ -2,6 +2,16 @@ import { create } from 'zustand';
 import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent, AgeGroup } from './types';
 import type { InsightsResponse } from '@/app/api/insights/route';
 
+export interface SavedScript {
+  id: string;
+  title: string;
+  hook?: string;
+  body?: string;
+  cta?: string;
+  date: string;
+  hasConti?: boolean;
+}
+
 // 개별 localStorage 키 (통일된 이름)
 const LS = {
   done:    'onboardingDone',
@@ -155,6 +165,11 @@ interface AppState {
   savedTrendIds: number[];
   toggleSaveTrend: (id: number) => void;
 
+  // Saved scripts/conti (localStorage 영속)
+  savedScripts: SavedScript[];
+  saveScript: (script: SavedScript) => void;
+  removeSavedScript: (id: string) => void;
+
   // Insights cache (카테고리별, 페이지 이동 후에도 유지)
   insightsCache: Map<string, InsightsResponse>;
   setInsightsCache: (key: string, value: InsightsResponse) => void;
@@ -262,6 +277,22 @@ export const useStore = create<AppState>((set, get) => {
       : [...s.savedTrendIds, id];
     try { localStorage.setItem('sfp_saved_trends', JSON.stringify(next)); } catch {}
     return { savedTrendIds: next };
+  }),
+
+  savedScripts: (() => {
+    if (typeof window === 'undefined') return [];
+    try { return JSON.parse(localStorage.getItem('sfp_saved_scripts') ?? '[]') as SavedScript[]; } catch { return []; }
+  })(),
+  saveScript: (script) => set((s) => {
+    if (s.savedScripts.some((x) => x.id === script.id)) return {};
+    const next = [script, ...s.savedScripts];
+    try { localStorage.setItem('sfp_saved_scripts', JSON.stringify(next)); } catch {}
+    return { savedScripts: next };
+  }),
+  removeSavedScript: (id) => set((s) => {
+    const next = s.savedScripts.filter((x) => x.id !== id);
+    try { localStorage.setItem('sfp_saved_scripts', JSON.stringify(next)); } catch {}
+    return { savedScripts: next };
   }),
 
   insightsCache: new Map(),

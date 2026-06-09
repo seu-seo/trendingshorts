@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useStore } from '@/lib/store';
 import type { Trend } from '@/lib/types';
+import type { SavedScript } from '@/lib/store';
 
 // ── 상수 ─────────────────────────────────────────────────────────
 // BG: 기존 앱과 동일 (#0A0A0B ≈ #0A0A0A). 카드: #1A1A1A (spec)
@@ -24,14 +25,101 @@ const HEAT_COLOR: Record<string, string> = {
   HOT: '#C8FF57', WARM: '#57C8FF', COLD: '#555',
 };
 
-interface SavedScript {
-  id: string;
-  title: string;
-  hook?: string;
-  date: string;
-}
 
 // ── 서브 컴포넌트 ─────────────────────────────────────────────────
+
+function CollectionRow({ trend, onClick }: { trend: Trend; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/[0.03]"
+      style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <span className="text-xl w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center flex-shrink-0">
+        {trend.thumb}
+      </span>
+      <span className="flex-1 min-w-0 text-[13px] font-medium text-text truncate">
+        {trend.title}
+      </span>
+      <div className="flex items-center gap-1.5 flex-shrink-0">
+        <span className="font-mono text-[9px] font-bold"
+          style={{ color: HEAT_COLOR[trend.heatLevel] ?? 'var(--text-faint)' }}>
+          {trend.heatLevel === 'HOT' ? '▲' : trend.heatLevel === 'WARM' ? '◆' : '▼'}
+        </span>
+        <span className="font-mono text-[9px] text-text-faint">
+          {PLATFORM_LABEL[trend.platform] ?? trend.platform}
+        </span>
+      </div>
+      <span className="font-mono text-[11px] text-text-faint flex-shrink-0">›</span>
+    </button>
+  );
+}
+
+function ScriptRow({ script, onRemove }: { script: SavedScript; onRemove: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+    >
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.03]"
+      >
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[13px] font-medium text-text truncate">{script.title}</span>
+            {script.hasConti && (
+              <span className="font-mono text-[8px] px-1.5 py-0.5 rounded flex-shrink-0"
+                style={{ background: 'rgba(200,255,87,0.12)', color: 'var(--accent-lime)' }}>
+                콘티
+              </span>
+            )}
+          </div>
+          <span className="font-mono text-[9px] text-text-faint">{script.date}</span>
+        </div>
+        <span className="font-mono text-[11px] text-text-faint transition-transform flex-shrink-0"
+          style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>
+          ›
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
+          {script.hook && (
+            <div>
+              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">HOOK · 첫 3초</div>
+              <p className="text-[13px] font-semibold text-text leading-snug">{script.hook}</p>
+            </div>
+          )}
+          {script.body && (
+            <div>
+              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">BODY · 본문</div>
+              <p className="text-[12px] text-text-dim leading-relaxed whitespace-pre-line">{script.body}</p>
+            </div>
+          )}
+          {script.cta && (
+            <div>
+              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">CTA · 마무리</div>
+              <p className="text-[12px] text-text-dim leading-relaxed italic">{script.cta}</p>
+            </div>
+          )}
+          {!script.body && !script.cta && !script.hook && (
+            <p className="text-[12px] text-text-faint italic">저장된 내용이 없어요.</p>
+          )}
+          <div className="flex justify-end pt-1">
+            <button
+              onClick={onRemove}
+              className="font-mono text-[10px] text-text-faint hover:text-red-400 transition-colors"
+            >
+              삭제
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function SectionLabel({ title, count }: { title: string; count?: number }) {
   return (
@@ -85,14 +173,12 @@ export default function MyPage() {
   const handles       = useStore((s) => s.handles);
 
   const savedTrendIds = useStore((s) => s.savedTrendIds);
-  const [savedScripts, setSavedScripts] = useState<SavedScript[]>([]);
+  const savedScripts = useStore((s) => s.savedScripts);
+  const removeSavedScript = useStore((s) => s.removeSavedScript);
+  const setActionSheetTrend = useStore((s) => s.setActionSheetTrend);
 
   useEffect(() => {
     setTab('my');
-    try {
-      const s = localStorage.getItem('sfp_saved_scripts');
-      if (s) setSavedScripts(JSON.parse(s));
-    } catch {}
   }, [setTab]);
 
   const savedTrends: Trend[] = trends.filter(t => savedTrendIds.includes(t.id));
@@ -246,30 +332,16 @@ export default function MyPage() {
       {/* ── 4. 내 컬렉션 ─────────────────────────────────────── */}
       <div className="mx-6 mt-6">
         <SectionLabel title="내 컬렉션" count={savedTrends.length} />
-
         {savedTrends.length === 0 ? (
           <EmptySlate label="저장한 트렌드가 없어요" />
         ) : (
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="flex flex-col gap-2">
             {savedTrends.map(t => (
-              <div key={t.id} className="rounded-xl p-3.5 flex flex-col gap-2"
-                style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div className="w-9 h-9 rounded-lg bg-surface-2 text-xl grid place-items-center">
-                  {t.thumb}
-                </div>
-                <p className="text-[12px] font-medium leading-snug line-clamp-2 text-text">
-                  {t.title}
-                </p>
-                <div className="flex items-center gap-1.5 mt-auto pt-1">
-                  <span className="font-mono text-[9px] font-bold"
-                    style={{ color: HEAT_COLOR[t.heatLevel] ?? 'var(--text-faint)' }}>
-                    {t.heatLevel === 'HOT' ? '▲' : t.heatLevel === 'WARM' ? '◆' : '▼'}
-                  </span>
-                  <span className="font-mono text-[9px] text-text-faint">
-                    {PLATFORM_LABEL[t.platform] ?? t.platform}
-                  </span>
-                </div>
-              </div>
+              <CollectionRow
+                key={t.id}
+                trend={t}
+                onClick={() => setActionSheetTrend(t)}
+              />
             ))}
           </div>
         )}
@@ -278,24 +350,16 @@ export default function MyPage() {
       {/* ── 5. 저장한 대본·콘티 ──────────────────────────────── */}
       <div className="mx-6 mt-6">
         <SectionLabel title="저장한 대본·콘티" count={savedScripts.length} />
-
         {savedScripts.length === 0 ? (
           <EmptySlate label="생성한 대본이 없어요" />
         ) : (
           <div className="flex flex-col gap-2">
             {savedScripts.map(s => (
-              <div key={s.id}
-                className="rounded-xl px-4 py-3.5 flex items-start justify-between gap-3"
-                style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium truncate text-text mb-0.5">{s.title}</p>
-                  {s.hook && (
-                    <p className="text-[11px] text-text-dim line-clamp-1">&ldquo;{s.hook}&rdquo;</p>
-                  )}
-                  <span className="font-mono text-[9px] text-text-faint mt-1.5 block">{s.date}</span>
-                </div>
-                <span className="font-mono text-[10px] text-text-faint flex-shrink-0 pt-0.5">→</span>
-              </div>
+              <ScriptRow
+                key={s.id}
+                script={s}
+                onRemove={() => removeSavedScript(s.id)}
+              />
             ))}
           </div>
         )}

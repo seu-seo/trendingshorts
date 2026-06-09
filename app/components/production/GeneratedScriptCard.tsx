@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import type { ScriptOutput, ScriptTone } from '@/lib/prompts';
 import type { RecommendConcept } from '@/lib/types';
-import type { StoryboardShot } from '@/app/api/storyboard/route';
-import StoryboardPanel from './StoryboardPanel';
+import type { ContiResponse } from '@/app/api/conti/route';
+import ContiPanel from './ContiPanel';
 
 const TONE_META: Record<
   ScriptTone,
@@ -37,32 +37,34 @@ export default function GeneratedScriptCard({
   concept?: RecommendConcept | null;
 }) {
   const [copied, setCopied] = useState(false);
-  const [storyboardShots, setStoryboardShots] = useState<StoryboardShot[] | null>(null);
-  const [storyboardSource, setStoryboardSource] = useState<'live' | 'mock'>('mock');
-  const [storyboardLoading, setStoryboardLoading] = useState(false);
+  const [conti, setConti] = useState<ContiResponse | null>(null);
+  const [contiLoading, setContiLoading] = useState(false);
   const meta = TONE_META[tone];
 
-  const handleStoryboard = async () => {
-    if (storyboardShots) {
-      setStoryboardShots(null);
-      return;
-    }
-    setStoryboardLoading(true);
+  const fetchConti = async () => {
+    setContiLoading(true);
     try {
-      const res = await fetch('/api/storyboard', {
+      const res = await fetch('/api/conti', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ script, tone, concept: concept ?? null }),
       });
-      if (!res.ok) throw new Error('storyboard api error');
-      const data = await res.json() as { shots: StoryboardShot[]; source: 'live' | 'mock' };
-      setStoryboardShots(data.shots);
-      setStoryboardSource(data.source);
+      if (!res.ok) throw new Error('conti api error');
+      const data = (await res.json()) as ContiResponse;
+      setConti(data);
     } catch {
       /* fallback: ignore */
     } finally {
-      setStoryboardLoading(false);
+      setContiLoading(false);
     }
+  };
+
+  const handleConti = async () => {
+    if (conti) {
+      setConti(null);
+      return;
+    }
+    await fetchConti();
   };
 
   const handleCopy = async () => {
@@ -137,17 +139,17 @@ export default function GeneratedScriptCard({
         </button>
         <button
           type="button"
-          onClick={handleStoryboard}
-          disabled={storyboardLoading}
+          onClick={handleConti}
+          disabled={contiLoading}
           className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider uppercase cursor-pointer transition-colors disabled:opacity-50"
-          style={{ color: storyboardShots ? 'var(--text-faint)' : 'var(--accent-lime)' }}
+          style={{ color: conti ? 'var(--text-faint)' : 'var(--accent-lime)' }}
         >
-          {storyboardLoading ? (
+          {contiLoading && !conti ? (
             <>
               <span className="w-3 h-3 border border-border border-t-accent-lime rounded-full animate-spin" />
               생성 중...
             </>
-          ) : storyboardShots ? (
+          ) : conti ? (
             '콘티 닫기'
           ) : (
             '콘티 생성'
@@ -155,11 +157,13 @@ export default function GeneratedScriptCard({
         </button>
       </div>
 
-      {storyboardShots && (
-        <StoryboardPanel
-          shots={storyboardShots}
-          source={storyboardSource}
-          onClose={() => setStoryboardShots(null)}
+      {conti && (
+        <ContiPanel
+          data={conti}
+          tone={tone}
+          loading={contiLoading}
+          onRegenerate={fetchConti}
+          onClose={() => setConti(null)}
         />
       )}
     </div>

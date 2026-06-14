@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { AgeGroup } from '@/lib/types';
 import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
+import type { ThemeName } from '@/lib/themes/types';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 // v7 테마 토큰. 색은 globals.css의 [data-theme] 블록이 공급한다.
 const ACCENT = 'var(--color-primary)';
@@ -49,11 +51,12 @@ export default function OnboardingPage() {
   const [catText, setCatText] = useState('');
   const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('');
 
-  // v7 PoC: 온보딩 진입 시 기본 테마(인디고) 적용, 이탈 시 해제.
+  // v7 PoC: 온보딩에서 A(인디고)/C(퍼플) 테마 전환. 이탈 시 해제.
+  const [theme, setTheme] = useState<ThemeName>('indigo');
   useEffect(() => {
-    applyTheme('indigo');
+    applyTheme(theme);
     return () => clearTheme();
-  }, []);
+  }, [theme]);
 
   const category = catText.trim() || catChip;
   const canSubmit = !!category;
@@ -83,6 +86,7 @@ export default function OnboardingPage() {
   // ── Welcome ──────────────────────────────────────────────────
   if (screen === 'welcome') return (
     <div className="flex flex-col justify-between px-6 pt-14 pb-10" style={{ background: BG, minHeight: '100%' }}>
+      <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
       <div>
         <div className="font-mono text-[10px] tracking-[0.28em] uppercase mb-14" style={{ color: ACCENT }}>
           SHORTFORM PULSE
@@ -115,6 +119,7 @@ export default function OnboardingPage() {
   // ── Setup (single scrollable page) ──────────────────────────
   return (
     <div className="flex flex-col" style={{ background: BG, minHeight: '100%' }}>
+      <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
       {/* 헤더 */}
       <div className="flex items-center justify-between px-5 py-3.5 flex-shrink-0">
         <button

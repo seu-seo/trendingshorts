@@ -117,3 +117,30 @@ html, body {
   --shadow-cta: 0 10px 26px rgba(79, 70, 229, .34);
   --page-grad: linear-gradient(165deg, #EEF1FD 0%, #F3F0FB 50%, #EAF0FA 100%);
 }
+
+/* v7 — C 퍼플 */
+[data-theme="purple"] {
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-soft: #F5F3FA;
+  --color-tint: #F3EFFB;
+  --color-border: #EFEBF5;
+  --color-border-2: #E3DCEF;
+  --color-ink: #16131F;
+  --color-ink-2: #6A6478;
+  --color-ink-3: #A6A0B5;
+  --color-primary: #7C3AED;
+  --color-primary-deep: #6D28D9;
+  --color-primary-soft: #F0EAFB;
+  --color-primary-mid: #A78BFA;
+  --color-up: #10B981;
+  --color-hot: #F43F8E;
+  --color-warm: #F59E0B;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --border-width: 1px;
+  --shadow: 0 10px 34px rgba(120, 80, 200, .12);
+  --shadow-cta: 0 10px 26px rgba(124, 58, 237, .34);
+  --page-grad: linear-gradient(165deg, #EFE9FB 0%, #FCEEF3 45%, #EAF3F0 100%);
+}

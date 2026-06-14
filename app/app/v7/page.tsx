@@ -78,8 +78,17 @@ export default function V7FlowPage() {
   const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
   const [personaCategory, setPersonaCategory] = useState<OnboardingCategory>('lifestyle');
 
-  // 대화 결과는 데모처럼 깔끔한 mock 프로필로 표시 (입력 답변이 잘리거나 난잡해지는 문제 방지)
-  const profile = PROFILE_FALLBACK;
+  // ② persona 결과를 CONTENT PROFILE 에 반영 (없는 필드/실패 시 mock fallback)
+  const profile = personaResult
+    ? {
+        direction: personaResult.personaTagline?.trim() || PROFILE_FALLBACK.direction,
+        strengths: personaResult.hookPatterns?.length
+          ? personaResult.hookPatterns.map((h) => h.type)
+          : PROFILE_FALLBACK.strengths,
+        target: PROFILE_FALLBACK.target,   // persona 스키마에 타깃 필드 없음 → mock 유지
+        format: PROFILE_FALLBACK.format,   // persona 스키마에 포맷 필드 없음 → mock 유지
+      }
+    : PROFILE_FALLBACK;
 
   // ① 온보딩 대화 답변 → persona API 호출 (키 없으면 fallback 반환)
   async function handleOnboardingDone(answers: string[]) {

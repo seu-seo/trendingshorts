@@ -69,7 +69,7 @@ export interface Persona {
   purpose?: AppPurpose;
 }
 
-export type Tab = 'dashboard' | 'recommend' | 'my';
+export type Tab = 'dashboard' | 'recommend' | 'my' | 'rivals';
 
 export type SortOrder = 'trending' | 'recent';
 

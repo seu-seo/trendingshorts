@@ -18,6 +18,18 @@ const TABS: { key: Tab; label: string; href: string; icon: React.ReactNode }[] =
     ),
   },
   {
+    key: 'rivals',
+    label: '라이벌',
+    href: '/rivals',
+    icon: (
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="12" cy="12" r="0.5" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     key: 'my',
     label: '마이페이지',
     href: '/my',

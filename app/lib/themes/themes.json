@@ -59,5 +59,34 @@
       "pageGrad": "linear-gradient(165deg,#EFE9FB 0%,#FCEEF3 45%,#EAF3F0 100%)"
     }
   },
-  "bold": {}
+  "bold": {
+    "label": "B 볼드",
+    "color": {
+      "bg": "#F5F2EC",
+      "surface": "#FFFFFF",
+      "soft": "#ECE8DF",
+      "tint": "#ECE8DF",
+      "border": "#141414",
+      "border2": "#141414",
+      "ink": "#141414",
+      "ink2": "#5C5850",
+      "ink3": "#9A958A",
+      "primary": "#D4F500",
+      "primaryDeep": "#BFE000",
+      "primarySoft": "#F4FAC2",
+      "primaryMid": "#BFE000",
+      "up": "#0A8F4E",
+      "hot": "#FF4D2E",
+      "warm": "#FF9500"
+    },
+    "structure": {
+      "radius": "0px",
+      "radiusLg": "0px",
+      "radiusXl": "0px",
+      "borderWidth": "2px",
+      "shadow": "6px 6px 0 #141414",
+      "shadowCta": "6px 6px 0 #D4F500",
+      "pageGrad": "none"
+    }
+  }
 }

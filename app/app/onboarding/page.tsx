@@ -1,85 +1,69 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
-import type { AgeGroup } from '@/lib/types';
 import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
 import type { ThemeName } from '@/lib/themes/types';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 // v7 테마 토큰. 색은 globals.css의 [data-theme] 블록이 공급한다.
 const ACCENT = 'var(--color-primary)';
-const ACCENT_SOFT = 'var(--color-primary-soft)';
 const BG = 'var(--color-bg)';
 const SURFACE = 'var(--color-surface)';
 const BORDER = 'var(--color-border)';
 const TEXT = 'var(--color-ink)';
 const DIM = 'var(--color-ink-2)';
 
-const PLATFORMS = [
-  { value: 'tiktok',    label: '틱톡' },
-  { value: 'instagram', label: '인스타그램' },
-  { value: 'youtube',   label: '유튜브' },
-];
-
-const CAT_CHIPS = [
-  { value: 'food',      label: '먹방' },
-  { value: 'beauty',    label: '뷰티' },
-  { value: 'fitness',   label: '운동' },
-  { value: 'lifestyle', label: '여행/일상' },
-  { value: 'gaming',    label: '게임' },
-  { value: 'art',       label: '음악/예술' },
-  { value: 'edu',       label: '정보/꿀팁' },
-];
-
-const AGE_GROUPS: { value: AgeGroup; label: string }[] = [
-  { value: '10s', label: '10대' },
-  { value: '20s', label: '20대' },
-  { value: '30s', label: '30대' },
-  { value: '40s', label: '40대' },
-  { value: '50+', label: '50+' },
-];
+interface ChatMessage {
+  role: 'bot' | 'user';
+  text: string;
+}
 
 export default function OnboardingPage() {
   const router = useRouter();
   const completeOnboarding = useStore((s) => s.completeOnboarding);
 
-  const [screen, setScreen] = useState<'welcome' | 'setup'>('welcome');
-  const [platforms, setPlatforms] = useState<string[]>([]);
-  const [catChip, setCatChip] = useState('');
-  const [catText, setCatText] = useState('');
-  const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('');
-
-  // v7 PoC: 온보딩에서 A(인디고)/C(퍼플) 테마 전환. 이탈 시 해제.
+  // v7 PoC: A(인디고)/C(퍼플) 테마 전환. 이탈 시 해제.
   const [theme, setTheme] = useState<ThemeName>('indigo');
   useEffect(() => {
     applyTheme(theme);
     return () => clearTheme();
   }, [theme]);
 
-  const category = catText.trim() || catChip;
-  const canSubmit = !!category;
+  const [screen, setScreen] = useState<'welcome' | 'chat'>('welcome');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  function togglePlatform(v: string) {
-    setPlatforms(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v]);
+  // 메시지가 추가되면 항상 맨 아래로 스크롤
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, [messages]);
+
+  function startChat() {
+    setScreen('chat');
+    setMessages([{ role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' }]);
   }
 
-  function selectCatChip(v: string) {
-    setCatChip(prev => prev === v ? '' : v);
-    setCatText('');
+  function send() {
+    const val = input.trim();
+    if (!val) return;
+    // 골격 단계: 유저 말풍선 + 임시 봇 응답(에코). 7문답 흐름은 다음 커밋에서.
+    setMessages((m) => [...m, { role: 'user', text: val }, { role: 'bot', text: '좋아요, 잘 들었어요!' }]);
+    setInput('');
   }
 
-  function handleTextInput(v: string) {
-    setCatText(v);
-    if (v.trim()) setCatChip('');
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
   }
 
-  function finish(skip = false) {
-    const finalCat = skip ? 'lifestyle' : category;
-    const finalAge = (skip ? '20s' : ageGroup || '20s') as AgeGroup;
-    const finalPlatforms = platforms.length > 0 ? platforms : ['youtube', 'tiktok', 'instagram'];
-    completeOnboarding(finalPlatforms, finalCat, finalAge, null);
+  function skip() {
+    completeOnboarding(['youtube', 'tiktok', 'instagram'], 'lifestyle', '20s', null);
     router.replace('/');
   }
 
@@ -101,13 +85,13 @@ export default function OnboardingPage() {
       </div>
       <div className="flex flex-col gap-3 mt-14">
         <button
-          onClick={() => setScreen('setup')}
+          onClick={startChat}
           className="w-full py-[18px] rounded-2xl text-[15px] font-semibold tracking-wide"
           style={{ background: ACCENT, color: BG }}>
           시작하기
         </button>
         <button
-          onClick={() => finish(true)}
+          onClick={skip}
           className="w-full py-3 font-mono text-[11px] tracking-widest"
           style={{ color: DIM }}>
           건너뛰기
@@ -116,148 +100,60 @@ export default function OnboardingPage() {
     </div>
   );
 
-  // ── Setup (single scrollable page) ──────────────────────────
+  // ── Chat ─────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col" style={{ background: BG, minHeight: '100%' }}>
+    <div className="flex flex-col" style={{ background: BG, height: '100%' }}>
       <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
+
       {/* 헤더 */}
       <div className="flex items-center justify-between px-5 py-3.5 flex-shrink-0">
-        <button
-          onClick={() => setScreen('welcome')}
+        <button onClick={() => setScreen('welcome')}
           className="w-9 h-9 flex items-center justify-center rounded-xl text-[20px]"
           style={{ color: TEXT }}>
           ←
         </button>
-        <span className="text-[14px] font-semibold" style={{ color: TEXT }}>취향 설정</span>
-        <button
-          onClick={() => finish(true)}
-          className="font-mono text-[12px] tracking-wider"
-          style={{ color: DIM }}>
+        <span className="text-[14px] font-semibold" style={{ color: TEXT }}>콘텐츠 방향 잡기</span>
+        <button onClick={skip} className="font-mono text-[12px] tracking-wider" style={{ color: DIM }}>
           건너뛰기
         </button>
       </div>
 
-      {/* 스크롤 영역 */}
-      <div className="flex-1 overflow-y-auto pb-4" style={{ scrollbarWidth: 'none' }}>
-
-        {/* Q1: 플랫폼 */}
-        <div className="px-5 py-5">
-          <div className="font-mono text-[9px] tracking-[0.18em] uppercase mb-1.5" style={{ color: DIM }}>플랫폼</div>
-          <div className="text-[16px] font-semibold mb-4" style={{ color: TEXT, letterSpacing: '-0.01em' }}>
-            어떤 플랫폼 자주 봐요?
+      {/* 메시지 영역 */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3" style={{ scrollbarWidth: 'none' }}>
+        {messages.map((m, i) => (
+          <div key={i} className="flex animate-fade-in" style={{ justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+            <div
+              className="max-w-[78%] px-4 py-2.5 text-[14px] leading-[1.5]"
+              style={{
+                borderRadius: 'var(--radius, 16px)',
+                background: m.role === 'user' ? ACCENT : SURFACE,
+                color: m.role === 'user' ? BG : TEXT,
+                border: m.role === 'user' ? 'none' : `1px solid ${BORDER}`,
+                whiteSpace: 'pre-wrap',
+              }}>
+              {m.text}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {PLATFORMS.map(p => {
-              const sel = platforms.includes(p.value);
-              return (
-                <button key={p.value} onClick={() => togglePlatform(p.value)}
-                  className="px-4 py-2.5 text-[14px] transition-all active:scale-95"
-                  style={{
-                    borderRadius: 4,
-                    border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? ACCENT_SOFT : 'transparent',
-                    color: sel ? ACCENT : TEXT,
-                    fontWeight: sel ? 600 : 400,
-                  }}>
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ height: 1, background: BORDER, margin: '0 20px', opacity: 0.6 }} />
-
-        {/* Q2: 카테고리 */}
-        <div className="px-5 py-5">
-          <div className="font-mono text-[9px] tracking-[0.18em] uppercase mb-1.5" style={{ color: DIM }}>카테고리</div>
-          <div className="text-[16px] font-semibold mb-4" style={{ color: TEXT, letterSpacing: '-0.01em' }}>
-            어떤 분야가 궁금해요?
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {CAT_CHIPS.map(c => {
-              const sel = catChip === c.value && !catText.trim();
-              return (
-                <button key={c.value} onClick={() => selectCatChip(c.value)}
-                  className="px-3 py-1.5 text-[12px] transition-all active:scale-95"
-                  style={{
-                    borderRadius: 3,
-                    border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? ACCENT_SOFT : 'transparent',
-                    color: sel ? ACCENT : DIM,
-                    fontWeight: sel ? 600 : 400,
-                  }}>
-                  {c.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* 또는 divider */}
-          <div className="flex items-center gap-2.5 my-3">
-            <div style={{ flex: 1, height: 1, background: BORDER }} />
-            <span className="font-mono text-[9px] tracking-[0.12em]" style={{ color: DIM }}>또는</span>
-            <div style={{ flex: 1, height: 1, background: BORDER }} />
-          </div>
-
-          {/* 직접 입력 */}
-          <input
-            type="text"
-            value={catText}
-            onChange={e => handleTextInput(e.target.value)}
-            placeholder="직접 입력 (예: 반려동물, 댄스...)"
-            className="w-full bg-transparent outline-none text-[13px] pb-2"
-            style={{
-              borderBottom: `2px solid ${catText.trim() ? ACCENT : BORDER}`,
-              color: TEXT,
-              caretColor: ACCENT,
-            }}
-          />
-        </div>
-
-        <div style={{ height: 1, background: BORDER, margin: '0 20px', opacity: 0.6 }} />
-
-        {/* Q3: 연령대 */}
-        <div className="px-5 py-5">
-          <div className="font-mono text-[9px] tracking-[0.18em] uppercase mb-1.5" style={{ color: DIM }}>시청자 연령</div>
-          <div className="text-[16px] font-semibold mb-4" style={{ color: TEXT, letterSpacing: '-0.01em' }}>
-            타깃 연령대가 어떻게 돼요?
-          </div>
-          <div className="grid grid-cols-5 gap-1.5">
-            {AGE_GROUPS.map(ag => {
-              const sel = ageGroup === ag.value;
-              return (
-                <button key={ag.value} onClick={() => setAgeGroup(ag.value)}
-                  className="py-2.5 text-center text-[13px] transition-all active:scale-95"
-                  style={{
-                    borderRadius: 4,
-                    border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? ACCENT_SOFT : 'transparent',
-                    color: sel ? ACCENT : DIM,
-                    fontWeight: sel ? 600 : 400,
-                  }}>
-                  {ag.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ height: 8 }} />
+        ))}
       </div>
 
-      {/* 하단 CTA */}
-      <div className="px-5 pb-8 pt-3 flex-shrink-0" style={{ borderTop: `1px solid ${BORDER}` }}>
+      {/* 입력 바 */}
+      <div className="flex items-end gap-2 px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${BORDER}` }}>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={onKeyDown}
+          placeholder="여기에 입력하세요…"
+          rows={1}
+          className="flex-1 bg-transparent outline-none resize-none text-[14px] py-2"
+          style={{ color: TEXT, caretColor: ACCENT, maxHeight: 96 }}
+        />
         <button
-          onClick={() => finish(false)}
-          disabled={!canSubmit}
-          className="w-full py-[18px] rounded-2xl text-[15px] font-semibold transition-all active:scale-[0.98]"
-          style={{
-            background: canSubmit ? ACCENT : SURFACE,
-            color: canSubmit ? BG : DIM,
-            cursor: canSubmit ? 'pointer' : 'default',
-          }}>
-          트렌드 보러가기
+          onClick={send}
+          disabled={!input.trim()}
+          className="w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-opacity"
+          style={{ background: ACCENT, color: BG, opacity: input.trim() ? 1 : 0.35 }}>
+          ↑
         </button>
       </div>
     </div>

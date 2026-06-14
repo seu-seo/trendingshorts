@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { requestPersona } from '@/lib/onboarding/requestPersona';
-import type { PersonaInput, PersonaResult, OnboardingCategory } from '@/lib/types';
+import type { PersonaInput, PersonaResult, OnboardingCategory, Trend } from '@/lib/types';
 
 type Step = 'onboarding' | 'profile' | 'trends' | 'rivals' | 'script';
 
@@ -74,9 +74,28 @@ const PROFILE_FALLBACK = {
 
 export default function V7FlowPage() {
   const [step, setStep] = useState<Step>('onboarding');
-  const [selectedTrend, setSelectedTrend] = useState<string>('자취생 3분 계란요리 5가지');
+  const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
   const [personaCategory, setPersonaCategory] = useState<OnboardingCategory>('lifestyle');
+  const [trends, setTrends] = useState<Trend[]>([]);
+  const [trendsLoading, setTrendsLoading] = useState(true);
+
+  // ③ 실제 트렌드 로드 (/api/trends) — 키 없으면 라우트가 snapshot/mock 반환
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/trends?platform=all');
+        const json = await res.json();
+        if (alive) setTrends(Array.isArray(json.data) ? json.data : []);
+      } catch {
+        if (alive) setTrends([]);
+      } finally {
+        if (alive) setTrendsLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
 
   // ② persona 결과를 CONTENT PROFILE 에 반영 (없는 필드/실패 시 mock fallback)
   const profile = personaResult
@@ -112,17 +131,22 @@ export default function V7FlowPage() {
   } else if (step === 'profile') {
     view = <ProfileView profile={profile} onNext={() => setStep('trends')} />;
   } else if (step === 'trends') {
+    // 내 카테고리 트렌드 우선, 없으면 전체
+    const myTrends = trends.filter((t) => t.category === personaCategory);
+    const shown = (myTrends.length ? myTrends : trends).slice(0, 6);
     view = (
       <TrendsView
         direction={profile.direction}
-        onPick={(title) => { setSelectedTrend(title); setStep('script'); }}
+        trends={shown}
+        loading={trendsLoading}
+        onPick={(t) => { setSelectedTrend(t); setStep('script'); }}
         onRivals={() => setStep('rivals')}
       />
     );
   } else if (step === 'rivals') {
     view = <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
   } else {
-    view = <ScriptContiView trend={selectedTrend} onNextTopic={() => setStep('trends')} />;
+    view = <ScriptContiView trend={selectedTrend?.title ?? '선택한 주제'} onNextTopic={() => setStep('trends')} />;
   }
 
   return (
@@ -305,14 +329,24 @@ function ProfileView({ profile, onNext }: { profile: typeof PROFILE_FALLBACK; on
   );
 }
 
-/* ── ③ 트렌드 ───────────────────────────────────────────────── */
-const TRENDS = [
-  { title: '자취생 3분 계란요리 5가지', badge: '반응 폭발', hot: true, views: '92만', er: '8.4%', why: '"N가지" 정리형 제목과 자취생 공감 키워드가 요즘 강세예요' },
-  { title: '편의점 재료로 만드는 야식', badge: '상승 중', hot: false, views: '54만', er: '6.1%', why: '"편의점" 키워드와 저비용 공감 포맷이 꾸준히 인기예요' },
-  { title: '자취 한 달 식비 공개합니다', badge: '상승 중', hot: false, views: '38만', er: '7.2%', why: '"공개" 키워드와 구체적인 숫자가 저장을 부르는 포맷이에요' },
-];
+/* ── ③ 트렌드 (실데이터 /api/trends) ────────────────────────── */
+function fmtViews(n: number): string {
+  if (n >= 100000000) return `${Math.round(n / 100000000)}억`;
+  if (n >= 10000) return `${Math.round(n / 10000)}만`;
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}천`;
+  return String(n);
+}
+function heatBadge(t: Trend): { label: string; hot: boolean } {
+  if (t.heatLevel === 'HOT') return { label: '반응 폭발', hot: true };
+  if (t.heatLevel === 'WARM') return { label: '상승 중', hot: false };
+  return { label: '꾸준', hot: false };
+}
+function trendWhy(t: Trend): string {
+  const tag = t.hashtags?.split(' ').filter(Boolean)[0];
+  return `${t.platformLabel}에서 참여율 ${t.engagementRate.toFixed(1)}%로 반응이 좋아요${tag ? ` · ${tag} 키워드 강세` : ''}`;
+}
 
-function TrendsView({ direction, onPick, onRivals }: { direction: string; onPick: (title: string) => void; onRivals: () => void }) {
+function TrendsView({ direction, trends, loading, onPick, onRivals }: { direction: string; trends: Trend[]; loading: boolean; onPick: (t: Trend) => void; onRivals: () => void }) {
   return (
     <div style={{ padding: '8px 24px 26px', flex: 1 }}>
       <span style={eyebrow}>{direction} · 지금 뜨는 영상</span>
@@ -321,26 +355,32 @@ function TrendsView({ direction, onPick, onRivals }: { direction: string; onPick
       </div>
       <div style={{ ...sub, marginBottom: 20 }}>마음에 드는 걸 누르면 바로 만들 수 있어요</div>
 
-      {TRENDS.map((t) => (
-        <div key={t.title} onClick={() => onPick(t.title)}
+      {loading && <div style={{ ...sub, textAlign: 'center', padding: '30px 0' }}>트렌드 불러오는 중…</div>}
+      {!loading && trends.length === 0 && <div style={{ ...sub, textAlign: 'center', padding: '30px 0' }}>표시할 트렌드가 없어요</div>}
+
+      {trends.map((t) => {
+        const b = heatBadge(t);
+        return (
+        <div key={t.id} onClick={() => onPick(t)}
           style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 18, marginBottom: 12, cursor: 'pointer', boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 11 }}>
             <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.4, letterSpacing: '-0.015em', color: 'var(--color-ink)' }}>{t.title}</div>
-            <span style={{ fontSize: 11, fontWeight: 800, padding: '5px 12px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0, height: 'fit-content', background: `color-mix(in srgb, ${t.hot ? 'var(--color-hot)' : 'var(--color-warm)'} 14%, transparent)`, color: t.hot ? 'var(--color-hot)' : 'var(--color-warm)' }}>{t.badge}</span>
+            <span style={{ fontSize: 11, fontWeight: 800, padding: '5px 12px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0, height: 'fit-content', background: `color-mix(in srgb, ${b.hot ? 'var(--color-hot)' : 'var(--color-warm)'} 14%, transparent)`, color: b.hot ? 'var(--color-hot)' : 'var(--color-warm)' }}>{b.label}</span>
           </div>
           <div style={{ display: 'flex', gap: 16, marginBottom: 11 }}>
-            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>조회 <b style={{ color: 'var(--color-ink)' }}>{t.views}</b></span>
-            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>참여율 <b style={{ color: 'var(--color-ink)' }}>{t.er}</b></span>
+            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>조회 <b style={{ color: 'var(--color-ink)' }}>{fmtViews(t.views)}</b></span>
+            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>참여율 <b style={{ color: 'var(--color-ink)' }}>{t.engagementRate.toFixed(1)}%</b></span>
           </div>
           <div style={{ fontSize: 13, color: 'var(--color-ink-2)', background: 'var(--color-soft)', borderRadius: 12, padding: '12px 14px', lineHeight: 1.55 }}>
-            <b style={{ color: 'var(--color-primary)', fontWeight: 700 }}>왜 떴을까요?</b> {t.why}
+            <b style={{ color: 'var(--color-primary)', fontWeight: 700 }}>왜 떴을까요?</b> {trendWhy(t)}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, marginTop: 12, fontSize: 13, fontWeight: 700, color: 'var(--color-primary)' }}>
             이걸로 만들기
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </div>
         </div>
-      ))}
+        );
+      })}
 
       <button onClick={onRivals} style={{ ...ghostFullBtn, marginTop: 6 }}>먼저 비슷한 크리에이터 구경하기</button>
     </div>

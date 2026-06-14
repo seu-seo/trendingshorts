@@ -23,6 +23,7 @@ const PROFILE_FALLBACK = {
 export default function V7FlowPage() {
   const [step, setStep] = useState<Step>('onboarding');
   const [answers, setAnswers] = useState<string[]>([]);
+  const [selectedTrend, setSelectedTrend] = useState<string>('자취생 3분 계란요리 5가지');
 
   // ① 대화 답변을 ② CONTENT PROFILE 에 반영
   const profile = {
@@ -38,8 +39,18 @@ export default function V7FlowPage() {
   if (step === 'profile') {
     return <ProfileView profile={profile} onNext={() => setStep('trends')} />;
   }
+  if (step === 'trends') {
+    return (
+      <TrendsView
+        direction={profile.direction}
+        onPick={(title) => { setSelectedTrend(title); setStep('script'); }}
+        onRivals={() => setStep('rivals')}
+      />
+    );
+  }
 
-  // ③④⑤ 는 다음 커밋에서 구현 — 임시
+  // ④⑤ 는 다음 커밋에서 구현 — 임시 (selectedTrend 참조 유지)
+  void selectedTrend;
   return (
     <div style={{ padding: '8px 24px 26px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: 12 }}>
       <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-ink)' }}>{step} 화면</div>
@@ -209,6 +220,48 @@ function ProfileView({ profile, onNext }: { profile: typeof PROFILE_FALLBACK; on
   );
 }
 
+/* ── ③ 트렌드 ───────────────────────────────────────────────── */
+const TRENDS = [
+  { title: '자취생 3분 계란요리 5가지', badge: '반응 폭발', hot: true, views: '92만', er: '8.4%', why: '"N가지" 정리형 제목과 자취생 공감 키워드가 요즘 강세예요' },
+  { title: '편의점 재료로 만드는 야식', badge: '상승 중', hot: false, views: '54만', er: '6.1%', why: '"편의점" 키워드와 저비용 공감 포맷이 꾸준히 인기예요' },
+  { title: '자취 한 달 식비 공개합니다', badge: '상승 중', hot: false, views: '38만', er: '7.2%', why: '"공개" 키워드와 구체적인 숫자가 저장을 부르는 포맷이에요' },
+];
+
+function TrendsView({ direction, onPick, onRivals }: { direction: string; onPick: (title: string) => void; onRivals: () => void }) {
+  return (
+    <div style={{ padding: '8px 24px 26px', flex: 1 }}>
+      <span style={eyebrow}>{direction} · 지금 뜨는 영상</span>
+      <div style={{ fontSize: 25, fontWeight: 800, lineHeight: 1.22, letterSpacing: '-0.04em', marginBottom: 10, color: 'var(--color-ink)' }}>
+        이런 영상이<br />요즘 <em style={{ fontStyle: 'normal', color: 'var(--color-primary)' }}>반응</em>이 좋아요
+      </div>
+      <div style={{ ...sub, marginBottom: 20 }}>마음에 드는 걸 누르면 바로 만들 수 있어요</div>
+
+      {TRENDS.map((t) => (
+        <div key={t.title} onClick={() => onPick(t.title)}
+          style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 18, marginBottom: 12, cursor: 'pointer', boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 11 }}>
+            <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.4, letterSpacing: '-0.015em', color: 'var(--color-ink)' }}>{t.title}</div>
+            <span style={{ fontSize: 11, fontWeight: 800, padding: '5px 12px', borderRadius: 999, whiteSpace: 'nowrap', flexShrink: 0, height: 'fit-content', background: `color-mix(in srgb, ${t.hot ? 'var(--color-hot)' : 'var(--color-warm)'} 14%, transparent)`, color: t.hot ? 'var(--color-hot)' : 'var(--color-warm)' }}>{t.badge}</span>
+          </div>
+          <div style={{ display: 'flex', gap: 16, marginBottom: 11 }}>
+            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>조회 <b style={{ color: 'var(--color-ink)' }}>{t.views}</b></span>
+            <span style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>참여율 <b style={{ color: 'var(--color-ink)' }}>{t.er}</b></span>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--color-ink-2)', background: 'var(--color-soft)', borderRadius: 12, padding: '12px 14px', lineHeight: 1.55 }}>
+            <b style={{ color: 'var(--color-primary)', fontWeight: 700 }}>왜 떴을까요?</b> {t.why}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, marginTop: 12, fontSize: 13, fontWeight: 700, color: 'var(--color-primary)' }}>
+            이걸로 만들기
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </div>
+        </div>
+      ))}
+
+      <button onClick={onRivals} style={{ ...ghostFullBtn, marginTop: 6 }}>먼저 비슷한 크리에이터 구경하기</button>
+    </div>
+  );
+}
+
 function ProfileRow({ k, v, children, last }: { k: string; v?: string; children?: React.ReactNode; last?: boolean }) {
   return (
     <div style={{ padding: '13px 0', borderBottom: last ? 'none' : '1px solid var(--color-border)' }}>
@@ -228,3 +281,4 @@ const sub: React.CSSProperties = { fontSize: 14, color: 'var(--color-ink-2)', li
 const chip: React.CSSProperties = { background: 'var(--color-primary-soft)', borderRadius: 999, padding: '6px 13px', fontSize: 13, color: 'var(--color-primary)', fontWeight: 700 };
 const ctaBtn: React.CSSProperties = { width: '100%', padding: 18, border: 'none', borderRadius: 999, fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--color-primary)', color: '#fff', boxShadow: 'var(--shadow-cta)' };
 const ghostBtn: React.CSSProperties = { padding: '12px 20px', border: '1px solid var(--color-border)', borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: 'var(--color-ink-2)' };
+const ghostFullBtn: React.CSSProperties = { width: '100%', padding: 18, border: '1px solid var(--color-border-2)', borderRadius: 999, fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.02em', background: 'var(--color-surface)', color: 'var(--color-ink)' };

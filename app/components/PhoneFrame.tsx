@@ -19,12 +19,14 @@ export default function PhoneFrame({ children }: { children: React.ReactNode }) 
       }}
     >
       <div
-        className="relative w-full max-w-[420px] h-full max-h-[880px] flex flex-col overflow-hidden bg-bg border border-border-bright rounded-[36px]"
+        className="relative w-full max-w-[420px] h-full max-h-[880px] flex flex-col overflow-hidden border rounded-[36px]"
         style={{
+          background: 'var(--color-bg, #0A0A0B)',
+          borderColor: 'var(--color-border-2, #3A3A42)',
           boxShadow: `
-            0 0 0 6px var(--surface-2),
+            0 0 0 6px var(--color-soft, #18181C),
             0 40px 80px rgba(0, 0, 0, 0.5),
-            0 0 60px rgba(200, 255, 87, 0.04)
+            0 0 60px color-mix(in srgb, var(--color-primary, #C8FF57) 4%, transparent)
           `,
         }}
       >

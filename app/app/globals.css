@@ -144,3 +144,30 @@ html, body {
   --shadow-cta: 0 10px 26px rgba(124, 58, 237, .34);
   --page-grad: linear-gradient(165deg, #EFE9FB 0%, #FCEEF3 45%, #EAF3F0 100%);
 }
+
+/* v7 — B 볼드 (brutalist: 각진 모서리, 하드 라인, 오프셋 그림자) */
+[data-theme="bold"] {
+  --color-bg: #F5F2EC;
+  --color-surface: #FFFFFF;
+  --color-soft: #ECE8DF;
+  --color-tint: #ECE8DF;
+  --color-border: #141414;
+  --color-border-2: #141414;
+  --color-ink: #141414;
+  --color-ink-2: #5C5850;
+  --color-ink-3: #9A958A;
+  --color-primary: #D4F500;
+  --color-primary-deep: #BFE000;
+  --color-primary-soft: #F4FAC2;
+  --color-primary-mid: #BFE000;
+  --color-up: #0A8F4E;
+  --color-hot: #FF4D2E;
+  --color-warm: #FF9500;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --border-width: 2px;
+  --shadow: 6px 6px 0 #141414;
+  --shadow-cta: 6px 6px 0 #D4F500;
+  --page-grad: none;
+}

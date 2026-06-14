@@ -1,15 +1,14 @@
 # Shortform Pulse
 
-초보 크리에이터(시작 1년 이하)를 위한 숏폼 트렌드 가이드.
+초보 크리에이터(시작 1년 이하)를 위한 숏폼 가이드.
 
-## 🚧 v7 리디자인 진행 중
+## 🚧 v7 리디자인
 
-- **새 기획 문서:** [`docs/v7/`](docs/v7/) 폴더 참고 (최신 기준)
 - **디자인 데모 A/B/C:** [`demo/v7/`](demo/v7/) 폴더 (A 인디고 / B 볼드 / C 퍼플)
-- **실제 개발:** PR #53 (`feat/v7-dev`) — `/v7` 경로, 5단계 플로우 구현 + 기존 API 연결
-- **디자인 시안:** PR #52 (`docs/v7-redesign`)
+- **v7 기획 문서:** [`docs/v7/`](docs/v7/) 폴더
+- **실제 개발:** PR #53 (`feat/v7-dev`) · **디자인 시안:** PR #52 (`docs/v7-redesign`)
 
-> 아래 일부 설명은 v7 방향으로 갱신되었습니다. v2 시절 문서(`*_v2.md`)는 히스토리로 남겨두며, **최신 문서는 [`docs/v7/`](docs/v7/)** 를 참고하세요.
+> 참고: 데모(`demo/v7/`)와 기획 문서 7종(`docs/v7/*.md`)은 **PR #52(`docs/v7-redesign`)** 에 있고, v7 구현 코드(`app/app/v7/`)는 **PR #53(`feat/v7-dev`)** 에 있습니다. 두 PR이 `main`에 머지되면 위 링크가 모두 한 곳에서 연결됩니다. 이 브랜치 단독으로는 [docs/v7/THEME-GUIDE.md](docs/v7/THEME-GUIDE.md)를 참고하세요.
 
 ## What
 
@@ -55,6 +54,7 @@ LLM 대화형 큐레이터   CONTENT PROFILE     내 주제 기반        비슷
 - [docs/v7/SPEC.md](docs/v7/SPEC.md) — v7 명세
 - [docs/v7/USERFLOW.md](docs/v7/USERFLOW.md) — 유저 플로우
 - [docs/v7/DESIGN-GUIDE.md](docs/v7/DESIGN-GUIDE.md) — 디자인 가이드 (A/B/C)
+- [docs/v7/THEME-GUIDE.md](docs/v7/THEME-GUIDE.md) — 테마 토큰 시스템 (개발)
 - [docs/v7/MANIFEST.md](docs/v7/MANIFEST.md) · [docs/v7/WHYTREE.md](docs/v7/WHYTREE.md) · [docs/v7/PREMORTEM.md](docs/v7/PREMORTEM.md)
 
 **히스토리 (v2):** [spec.md](spec.md) · [MANIFEST_v2.md](MANIFEST_v2.md) · [WHYTREE_v2.md](WHYTREE_v2.md) · [PREMORTEM_v2.md](PREMORTEM_v2.md)

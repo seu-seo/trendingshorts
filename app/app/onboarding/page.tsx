@@ -30,12 +30,18 @@ interface ChatMessage {
   role: 'bot' | 'user';
   text: string;
   hint?: string;
+  badge?: { n: number; total: number; category: string };
 }
 
-// 특정 스텝의 질문을 봇 말풍선 메시지로.
+// 특정 스텝의 질문을 봇 말풍선 메시지로 (단계뱃지 포함).
 function botQuestion(i: number): ChatMessage {
   const q = CHAT_QUESTIONS[i];
-  return { role: 'bot', text: q.q, hint: q.hint };
+  return {
+    role: 'bot',
+    text: q.q,
+    hint: q.hint,
+    badge: { n: i + 1, total: CHAT_QUESTIONS.length, category: q.category },
+  };
 }
 
 export default function OnboardingPage() {
@@ -54,41 +60,51 @@ export default function OnboardingPage() {
   const [input, setInput] = useState('');
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [typing, setTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const done = step >= CHAT_QUESTIONS.length;
   const currentQ = CHAT_QUESTIONS[step];
 
-  // 메시지가 추가되면 항상 맨 아래로 스크롤
+  // 메시지/타이핑 상태가 바뀌면 항상 맨 아래로 스크롤
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, typing]);
+
+  // 타이핑 인디케이터를 잠깐 보여준 뒤 봇 메시지를 추가 (v6 mock 연출).
+  function botSay(msg: ChatMessage, delay = 700, after?: () => void) {
+    setTyping(true);
+    setTimeout(() => {
+      setMessages((m) => [...m, msg]);
+      setTyping(false);
+      after?.();
+    }, delay);
+  }
 
   function startChat() {
     setScreen('chat');
     setStep(0);
     setAnswers([]);
-    setMessages([
-      { role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' },
-      botQuestion(0),
-    ]);
+    setMessages([]);
+    botSay({ role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' }, 600, () => {
+      botSay(botQuestion(0), 700);
+    });
   }
 
   function send() {
     const val = input.trim();
-    if (!val || done) return;
+    if (!val || done || typing) return;
     const nextStep = step + 1;
-    const newMsgs: ChatMessage[] = [{ role: 'user', text: val }];
-    if (nextStep < CHAT_QUESTIONS.length) {
-      newMsgs.push(botQuestion(nextStep));
-    } else {
-      newMsgs.push({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 잠시 후 결과를 정리해드릴게요.' });
-    }
-    setMessages((m) => [...m, ...newMsgs]);
+    setMessages((m) => [...m, { role: 'user', text: val }]);
     setAnswers((a) => [...a, val]);
     setStep(nextStep);
     setInput('');
+    if (nextStep < CHAT_QUESTIONS.length) {
+      botSay(botQuestion(nextStep));
+    } else {
+      botSay({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 잠시 후 결과를 정리해드릴게요.' });
+    }
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -157,7 +173,18 @@ export default function OnboardingPage() {
       {/* 메시지 영역 */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3" style={{ scrollbarWidth: 'none' }}>
         {messages.map((m, i) => (
-          <div key={i} className="flex animate-fade-in" style={{ justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+          <div key={i} className="flex flex-col animate-fade-in" style={{ alignItems: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+            {m.badge && (
+              <div className="flex items-center gap-2 mb-1 px-1">
+                <span className="font-mono text-[10px] px-1.5 py-0.5 rounded"
+                  style={{ background: 'var(--color-primary-soft)', color: ACCENT }}>
+                  {m.badge.n} / {m.badge.total}
+                </span>
+                <span className="font-mono text-[9px] tracking-[0.12em] uppercase" style={{ color: DIM }}>
+                  {m.badge.category}
+                </span>
+              </div>
+            )}
             <div
               className="max-w-[78%] px-4 py-2.5 text-[14px] leading-[1.5]"
               style={{
@@ -176,6 +203,19 @@ export default function OnboardingPage() {
             </div>
           </div>
         ))}
+
+        {/* 타이핑 인디케이터 */}
+        {typing && (
+          <div className="flex" style={{ justifyContent: 'flex-start' }}>
+            <div className="px-4 py-3 flex items-center gap-1"
+              style={{ borderRadius: 'var(--radius, 16px)', background: SURFACE, border: `1px solid ${BORDER}` }}>
+              {[0, 1, 2].map((d) => (
+                <span key={d}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: DIM, animation: 'pulse 1s ease-in-out infinite', animationDelay: `${d * 0.18}s` }} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 입력 바 */}
@@ -191,9 +231,9 @@ export default function OnboardingPage() {
         />
         <button
           onClick={send}
-          disabled={!input.trim() || done}
+          disabled={!input.trim() || done || typing}
           className="w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-opacity"
-          style={{ background: ACCENT, color: BG, opacity: input.trim() && !done ? 1 : 0.35 }}>
+          style={{ background: ACCENT, color: BG, opacity: input.trim() && !done && !typing ? 1 : 0.35 }}>
           ↑
         </button>
       </div>

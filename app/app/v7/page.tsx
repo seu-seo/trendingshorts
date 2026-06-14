@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { requestPersona } from '@/lib/onboarding/requestPersona';
-import type { PersonaInput, PersonaResult, OnboardingCategory, Trend } from '@/lib/types';
+import type { PersonaInput, PersonaResult, OnboardingCategory, Trend, Creator } from '@/lib/types';
+import { getCreatorRecommendations } from '@/lib/creator-recommend';
 
 type Step = 'onboarding' | 'profile' | 'trends' | 'rivals' | 'script';
 
@@ -144,7 +145,8 @@ export default function V7FlowPage() {
       />
     );
   } else if (step === 'rivals') {
-    view = <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
+    const creators = getCreatorRecommendations(personaCategory, 1, 3);
+    view = <RivalsView creators={creators} onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
   } else {
     view = <ScriptContiView trend={selectedTrend?.title ?? '선택한 주제'} onNextTopic={() => setStep('trends')} />;
   }
@@ -492,14 +494,15 @@ function MakeChoice({ label, desc, icon, onClick }: { label: string; desc: strin
   );
 }
 
-/* ── ④ 라이벌 크리에이터 (계정 + 최근 영상 + 성장 스토리) ────────── */
-const RIVALS = [
-  { ava: '민', handle: '자취요리_민지', meta: '팔로워 2,400 · 자취 집밥', grow: '3개월 전엔 50명이었대요', videos: [{ thumb: '🍳', title: '계란말이 꿀팁', views: '12만' }, { thumb: '🍚', title: '5분 덮밥', views: '8.3만' }] },
-  { ava: '혼', handle: '혼밥의정석', meta: '팔로워 3,800 · 자취 집밥', grow: '최근 한 달 +1,200', videos: [{ thumb: '🍜', title: '봉지라면 끝판왕', views: '21만' }, { thumb: '🥗', title: '귀찮을 때 한그릇', views: '15만' }] },
-  { ava: '원', handle: '원룸쿡', meta: '팔로워 5,100 · 자취 집밥', grow: '6개월 만에 5천 돌파', videos: [{ thumb: '🍳', title: '원룸 냉장고 털기', views: '33만' }, { thumb: '🍲', title: '국물요리 3종', views: '19만' }] },
+/* ── ④ 라이벌 크리에이터 (실데이터 creator-recommend) ──────────── */
+// 최근 영상은 Creator 스키마에 없어 mock 풀 유지 (계정/성장 스토리는 실데이터)
+const RIVAL_VIDEO_POOL = [
+  [{ thumb: '🎬', title: '요즘 뜨는 포맷', views: '12만' }, { thumb: '✨', title: '입문 꿀팁', views: '8.3만' }],
+  [{ thumb: '🔥', title: '반응 터진 영상', views: '21만' }, { thumb: '💡', title: '한 번에 정리', views: '15만' }],
+  [{ thumb: '📈', title: '성장 비결 공개', views: '33만' }, { thumb: '🎯', title: '초보 추천 3종', views: '19만' }],
 ];
 
-function RivalsView({ onMake, onTrends }: { onMake: () => void; onTrends: () => void }) {
+function RivalsView({ creators, onMake, onTrends }: { creators: Creator[]; onMake: () => void; onTrends: () => void }) {
   return (
     <div style={{ padding: '8px 24px 26px', flex: 1 }}>
       <span style={eyebrow}>벤치마크 크리에이터</span>
@@ -508,19 +511,22 @@ function RivalsView({ onMake, onTrends }: { onMake: () => void; onTrends: () => 
       </div>
       <div style={{ ...sub, marginBottom: 20 }}>조금 앞서가는 분들이에요. 부담 없이 참고해보세요</div>
 
-      {RIVALS.map((r) => (
-        <div key={r.handle} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 16, marginBottom: 12, boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+      {creators.map((c, i) => {
+        const ava = (c.handle.replace(/^@/, '')[0] ?? '·').toUpperCase();
+        const videos = RIVAL_VIDEO_POOL[i % RIVAL_VIDEO_POOL.length];
+        return (
+        <div key={c.handle} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 16, marginBottom: 12, boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
           <div style={{ display: 'flex', gap: 13, alignItems: 'center' }}>
-            <div style={{ width: 50, height: 50, borderRadius: 16, background: 'var(--color-primary-soft)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: 'var(--color-primary)' }}>{r.ava}</div>
+            <div style={{ width: 50, height: 50, borderRadius: 16, background: 'var(--color-primary-soft)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: 'var(--color-primary)' }}>{ava}</div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-ink)' }}>{r.handle}</div>
-              <div style={{ fontSize: 13, color: 'var(--color-ink-2)', marginTop: 2, fontWeight: 500 }}>{r.meta}</div>
-              <div style={{ fontSize: 12, color: 'var(--color-up)', fontWeight: 700, marginTop: 4 }}>↑ {r.grow}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-ink)' }}>{c.handle}</div>
+              <div style={{ fontSize: 13, color: 'var(--color-ink-2)', marginTop: 2, fontWeight: 500 }}>팔로워 {c.followersLabel} · {c.niche}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-up)', fontWeight: 700, marginTop: 4 }}>↑ {c.reason || `성장률 +${c.growth}%`}</div>
             </div>
           </div>
-          {/* 최근 영상 */}
+          {/* 최근 영상 (mock) */}
           <div style={{ display: 'flex', gap: 8, marginTop: 13 }}>
-            {r.videos.map((v) => (
+            {videos.map((v) => (
               <div key={v.title} style={{ flex: 1, background: 'var(--color-soft)', borderRadius: 12, padding: 10 }}>
                 <div style={{ fontSize: 26, lineHeight: 1, marginBottom: 7 }}>{v.thumb}</div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-ink)', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</div>
@@ -529,7 +535,8 @@ function RivalsView({ onMake, onTrends }: { onMake: () => void; onTrends: () => 
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
 
       <button onClick={onMake} style={{ ...ctaBtn, marginTop: 6 }}>나도 만들어보기<Arrow /></button>
       <button onClick={onTrends} style={{ ...ghostFullBtn, marginTop: 10 }}>다른 트렌드 다시 보기</button>

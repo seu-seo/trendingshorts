@@ -73,6 +73,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [typing, setTyping] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const done = step >= CHAT_QUESTIONS.length;
@@ -158,6 +159,7 @@ export default function OnboardingPage() {
     const category = deriveCategory(all);
     const input = buildPersonaInput(category, all);
     let result: PersonaResult | null = null;
+    setAnalyzing(true);
     try {
       result = await requestPersona(input); // 실제 페르소나 결과 (키 있으면 진짜, 없으면 fallback)
     } catch {
@@ -207,8 +209,22 @@ export default function OnboardingPage() {
 
   // ── Chat ─────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col" style={{ background: BG, height: '100%' }}>
+    <div className="flex flex-col relative" style={{ background: BG, height: '100%' }}>
       <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
+
+      {/* 분석 로딩 오버레이 */}
+      {analyzing && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 animate-fade-in"
+          style={{ background: BG }}>
+          <div className="flex items-center gap-1.5">
+            {[0, 1, 2].map((d) => (
+              <span key={d}
+                style={{ width: 8, height: 8, borderRadius: '50%', background: ACCENT, animation: 'pulse 1s ease-in-out infinite', animationDelay: `${d * 0.18}s` }} />
+            ))}
+          </div>
+          <div className="text-[13px]" style={{ color: DIM }}>AI가 콘텐츠 방향을 분석하고 있어요…</div>
+        </div>
+      )}
 
       {/* 헤더 */}
       <div className="flex items-center justify-between px-5 py-3.5 flex-shrink-0">

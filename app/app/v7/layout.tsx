@@ -1,17 +1,27 @@
+'use client';
+
+import { useEffect } from 'react';
+
 /**
  * v7 전용 풀스크린 라이트 레이아웃.
- * data-theme="indigo" 를 정적으로 지정해 --color-* 토큰을 공급한다
- * (applyTheme/clearTheme JS 없이 → 라우트 전환 시 테마 깜빡임 없음).
- * position:fixed 로 기존 PhoneFrame 다크 테두리를 덮어 데모처럼 풀스크린 흰 배경을 만든다.
+ * data-theme="indigo" 정적 지정 → --color-* 토큰 공급 (테마 깜빡임 없음).
+ * position:fixed 로 기존 PhoneFrame 영역을 덮어 데모처럼 풀스크린 흰 배경.
+ * 진입 동안 body 배경(#000)도 흰색으로 바꾸고 이탈 시 복원.
  */
 export default function V7Layout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = '#FFFFFF';
+    return () => { document.body.style.background = prev; };
+  }, []);
+
   return (
     <div
       data-theme="indigo"
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 50,
+        zIndex: 100,
         background: 'var(--color-bg)',
         color: 'var(--color-ink)',
         overflowY: 'auto',

@@ -7,6 +7,12 @@ import TabBar from './TabBar';
 export default function PhoneFrame({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isOnboarding = pathname === '/onboarding';
+
+  // v7 플로우는 데모처럼 풀스크린 — 기존 셸(헤더/탭바/다크 프레임) 없이 렌더
+  if (pathname?.startsWith('/v7')) {
+    return <>{children}</>;
+  }
+
   return (
     <div
       className="h-screen w-screen grid place-items-center p-5"

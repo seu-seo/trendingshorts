@@ -1,5 +1,34 @@
 {
-  "indigo": {},
+  "indigo": {
+    "label": "A 인디고",
+    "color": {
+      "bg": "#FFFFFF",
+      "surface": "#FFFFFF",
+      "soft": "#F5F3FA",
+      "tint": "#F3EFFB",
+      "border": "#EFEBF5",
+      "border2": "#E3DCEF",
+      "ink": "#16131F",
+      "ink2": "#6A6478",
+      "ink3": "#A6A0B5",
+      "primary": "#4F46E5",
+      "primaryDeep": "#4338CA",
+      "primarySoft": "#EEF0FD",
+      "primaryMid": "#818CF8",
+      "up": "#10B981",
+      "hot": "#F43F8E",
+      "warm": "#F59E0B"
+    },
+    "structure": {
+      "radius": "16px",
+      "radiusLg": "22px",
+      "radiusXl": "28px",
+      "borderWidth": "1px",
+      "shadow": "0 10px 34px rgba(80,80,200,.12)",
+      "shadowCta": "0 10px 26px rgba(79,70,229,.34)",
+      "pageGrad": "linear-gradient(165deg,#EEF1FD 0%,#F3F0FB 50%,#EAF0FA 100%)"
+    }
+  },
   "purple": {},
   "bold": {}
 }

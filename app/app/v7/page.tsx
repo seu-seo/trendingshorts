@@ -4,6 +4,30 @@ import { useState, useRef, useEffect } from 'react';
 
 type Step = 'onboarding' | 'profile' | 'trends' | 'rivals' | 'script';
 
+const STEP_ORDER: Step[] = ['onboarding', 'profile', 'trends', 'rivals', 'script'];
+
+/* ── 상단 스텝바 (진행 N/5 + 뒤로가기) ──────────────────────────── */
+function TopNav({ index, total, onBack }: { index: number; total: number; onBack: () => void }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 20px 8px', flexShrink: 0 }}>
+      <button
+        onClick={onBack}
+        disabled={index === 0}
+        aria-label="뒤로"
+        style={{ width: 36, height: 36, borderRadius: 12, border: 'none', background: 'var(--color-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: index === 0 ? 'default' : 'pointer', opacity: index === 0 ? 0.35 : 1 }}
+      >
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--color-ink-2)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+      </button>
+      <div style={{ flex: 1, display: 'flex', gap: 5, alignItems: 'center' }}>
+        {Array.from({ length: total }).map((_, i) => (
+          <div key={i} style={{ flex: 1, height: 5, borderRadius: 3, background: i <= index ? 'var(--color-primary)' : 'var(--color-border)', transition: '.3s' }} />
+        ))}
+      </div>
+      <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-ink-2)', flexShrink: 0, minWidth: 30, textAlign: 'right' }}>{index + 1}/{total}</div>
+    </div>
+  );
+}
+
 // 데모 v7-A-indigo 의 큐레이터 4문답
 const CONVO = [
   { ai: '안녕하세요! 함께 첫 영상을 만들어볼 Pulse 큐레이터예요. 먼저, 어떤 이유로 숏폼을 시작하고 싶으세요?', hint: '예: 취미로 즐기고 싶어서 / 부업으로 / 일상 기록용' },
@@ -33,28 +57,34 @@ export default function V7FlowPage() {
     format: PROFILE_FALLBACK.format,
   };
 
+  const idx = STEP_ORDER.indexOf(step);
+  const goBack = () => { if (idx > 0) setStep(STEP_ORDER[idx - 1]); };
+
+  let view: React.ReactNode;
   if (step === 'onboarding') {
-    return <OnboardingView onDone={(a) => { setAnswers(a); setStep('profile'); }} />;
-  }
-  if (step === 'profile') {
-    return <ProfileView profile={profile} onNext={() => setStep('trends')} />;
-  }
-  if (step === 'trends') {
-    return (
+    view = <OnboardingView onDone={(a) => { setAnswers(a); setStep('profile'); }} />;
+  } else if (step === 'profile') {
+    view = <ProfileView profile={profile} onNext={() => setStep('trends')} />;
+  } else if (step === 'trends') {
+    view = (
       <TrendsView
         direction={profile.direction}
         onPick={(title) => { setSelectedTrend(title); setStep('script'); }}
         onRivals={() => setStep('rivals')}
       />
     );
+  } else if (step === 'rivals') {
+    view = <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
+  } else {
+    view = <ScriptContiView trend={selectedTrend} onNextTopic={() => setStep('trends')} />;
   }
 
-  if (step === 'rivals') {
-    return <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
-  }
-
-  // ⑤ 스크립트/콘티
-  return <ScriptContiView trend={selectedTrend} onNextTopic={() => setStep('trends')} />;
+  return (
+    <>
+      <TopNav index={idx} total={STEP_ORDER.length} onBack={goBack} />
+      {view}
+    </>
+  );
 }
 
 /* ── ① 온보딩 대화 ───────────────────────────────────────────── */

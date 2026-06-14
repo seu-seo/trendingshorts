@@ -103,7 +103,11 @@ export default function OnboardingPage() {
     if (nextStep < CHAT_QUESTIONS.length) {
       botSay(botQuestion(nextStep));
     } else {
-      botSay({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 잠시 후 결과를 정리해드릴게요.' });
+      // 마지막 답변까지 받음 → 결과 정리 후 저장/이동
+      const allAnswers = [...answers, val];
+      botSay({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 분석 결과를 정리하고 있어요…' }, 700, () => {
+        setTimeout(() => finish(allAnswers), 1000);
+      });
     }
   }
 
@@ -112,6 +116,36 @@ export default function OnboardingPage() {
       e.preventDefault();
       send();
     }
+  }
+
+  // mock 니치 분류: 답변 키워드로 카테고리 추론 (demo/v6 buildDeepResult 참고).
+  function deriveCategory(all: string[]): string {
+    const text = all.join(' ').toLowerCase();
+    const groups: { cat: string; kws: string[] }[] = [
+      { cat: 'food', kws: ['요리', '음식', '레시피', '먹', '카페', '밥', '식당', '쿠킹', '베이킹'] },
+      { cat: 'fitness', kws: ['운동', '헬스', '다이어트', '요가', '필라', '러닝', '등산', '홈트'] },
+      { cat: 'beauty', kws: ['뷰티', '화장', '메이크업', '패션', '스킨', '코스메'] },
+      { cat: 'gaming', kws: ['게임', '롤', '배그', '스팀', '콘솔', '플스'] },
+      { cat: 'art', kws: ['음악', '예술', '그림', '드로잉', '악기', '노래', '댄스', '춤'] },
+      { cat: 'edu', kws: ['정보', '꿀팁', '공부', '자기계발', '책', '독서', '생산성', '재테크', '짠테크', '코딩', '개발', 'ai'] },
+    ];
+    let best = 'lifestyle';
+    let bestScore = 0;
+    for (const g of groups) {
+      const score = g.kws.filter((k) => text.includes(k.toLowerCase())).length;
+      if (score > bestScore) {
+        bestScore = score;
+        best = g.cat;
+      }
+    }
+    return best;
+  }
+
+  // 대화 결과를 store에 저장하고 대시보드로 이동.
+  function finish(all: string[]) {
+    const category = deriveCategory(all);
+    completeOnboarding(['youtube', 'tiktok', 'instagram'], category, '20s', null);
+    router.replace('/');
   }
 
   function skip() {

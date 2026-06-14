@@ -49,7 +49,11 @@ export default function V7FlowPage() {
     );
   }
 
-  // ④⑤ 는 다음 커밋에서 구현 — 임시 (selectedTrend 참조 유지)
+  if (step === 'rivals') {
+    return <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
+  }
+
+  // ⑤ 는 다음 커밋에서 구현 — 임시 (selectedTrend 참조 유지)
   void selectedTrend;
   return (
     <div style={{ padding: '8px 24px 26px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: 12 }}>
@@ -258,6 +262,51 @@ function TrendsView({ direction, onPick, onRivals }: { direction: string; onPick
       ))}
 
       <button onClick={onRivals} style={{ ...ghostFullBtn, marginTop: 6 }}>먼저 비슷한 크리에이터 구경하기</button>
+    </div>
+  );
+}
+
+/* ── ④ 라이벌 크리에이터 (계정 + 최근 영상 + 성장 스토리) ────────── */
+const RIVALS = [
+  { ava: '민', handle: '자취요리_민지', meta: '팔로워 2,400 · 자취 집밥', grow: '3개월 전엔 50명이었대요', videos: [{ thumb: '🍳', title: '계란말이 꿀팁', views: '12만' }, { thumb: '🍚', title: '5분 덮밥', views: '8.3만' }] },
+  { ava: '혼', handle: '혼밥의정석', meta: '팔로워 3,800 · 자취 집밥', grow: '최근 한 달 +1,200', videos: [{ thumb: '🍜', title: '봉지라면 끝판왕', views: '21만' }, { thumb: '🥗', title: '귀찮을 때 한그릇', views: '15만' }] },
+  { ava: '원', handle: '원룸쿡', meta: '팔로워 5,100 · 자취 집밥', grow: '6개월 만에 5천 돌파', videos: [{ thumb: '🍳', title: '원룸 냉장고 털기', views: '33만' }, { thumb: '🍲', title: '국물요리 3종', views: '19만' }] },
+];
+
+function RivalsView({ onMake, onTrends }: { onMake: () => void; onTrends: () => void }) {
+  return (
+    <div style={{ padding: '8px 24px 26px', flex: 1 }}>
+      <span style={eyebrow}>벤치마크 크리에이터</span>
+      <div style={{ fontSize: 25, fontWeight: 800, lineHeight: 1.22, letterSpacing: '-0.04em', marginBottom: 10, color: 'var(--color-ink)' }}>
+        이 분들도<br />비슷하게 <em style={{ fontStyle: 'normal', color: 'var(--color-primary)' }}>시작</em>했어요
+      </div>
+      <div style={{ ...sub, marginBottom: 20 }}>조금 앞서가는 분들이에요. 부담 없이 참고해보세요</div>
+
+      {RIVALS.map((r) => (
+        <div key={r.handle} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 16, marginBottom: 12, boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+          <div style={{ display: 'flex', gap: 13, alignItems: 'center' }}>
+            <div style={{ width: 50, height: 50, borderRadius: 16, background: 'var(--color-primary-soft)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, fontWeight: 800, color: 'var(--color-primary)' }}>{r.ava}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-ink)' }}>{r.handle}</div>
+              <div style={{ fontSize: 13, color: 'var(--color-ink-2)', marginTop: 2, fontWeight: 500 }}>{r.meta}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-up)', fontWeight: 700, marginTop: 4 }}>↑ {r.grow}</div>
+            </div>
+          </div>
+          {/* 최근 영상 */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 13 }}>
+            {r.videos.map((v) => (
+              <div key={v.title} style={{ flex: 1, background: 'var(--color-soft)', borderRadius: 12, padding: 10 }}>
+                <div style={{ fontSize: 26, lineHeight: 1, marginBottom: 7 }}>{v.thumb}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-ink)', lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-ink-3)', marginTop: 3 }}>조회 {v.views}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <button onClick={onMake} style={{ ...ctaBtn, marginTop: 6 }}>나도 만들어보기<Arrow /></button>
+      <button onClick={onTrends} style={{ ...ghostFullBtn, marginTop: 10 }}>다른 트렌드 다시 보기</button>
     </div>
   );
 }

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Shortform Pulse — Demo v7</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+:root{
+  --bg:#FFFFFF;--surface:#FFFFFF;--soft:#F5F3FA;--tint:#F3EFFB;
+  --border:#EFEBF5;--border2:#E3DCEF;
+  --ink:#16131F;--ink2:#6A6478;--ink3:#A6A0B5;
+  /* 퍼플 단색 메인 */
+  --pri:#4F46E5;--pri-deep:#4338CA;--pri-soft:#EEF0FD;--pri-mid:#818CF8;
+  /* 화면 배경 파스텔 그라데 */
+  --page-grad:linear-gradient(165deg,#EEF1FD 0%,#F3F0FB 50%,#EAF0FA 100%);
+  --up:#10B981;--hot:#F43F8E;--warm:#F59E0B;
+  --r:16px;--r-lg:22px;--r-xl:28px;
+  --shadow:0 10px 34px rgba(80,80,200,.12);
+  --shadow-cta:0 10px 26px rgba(79,70,229,.34);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#E9E5F0;font-family:'Pretendard',-apple-system,sans-serif;color:var(--ink);display:flex;justify-content:center;gap:36px;min-height:100vh;padding:28px;line-height:1.5}
+.side{width:240px;flex-shrink:0;position:sticky;top:28px;height:fit-content}
+.side-logo{font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:3px}
+.side-logo .d{color:var(--pri)}
+.side-tag{font-size:12px;color:var(--ink2);margin-bottom:22px}
+.steps{display:flex;flex-direction:column;gap:1px}
+.step{display:flex;gap:11px;align-items:center;padding:11px 13px;border-radius:12px;cursor:pointer;transition:.18s}
+.step:hover{background:#fff}
+.step.on{background:#fff;box-shadow:0 2px 14px rgba(80,80,200,.1)}
+.step-n{width:24px;height:24px;border-radius:8px;background:var(--soft);color:var(--ink3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:.18s}
+.step.on .step-n{background:var(--pri);color:#fff}
+.step.done .step-n{background:var(--pri-soft);color:var(--pri)}
+.step-t{font-size:13px;color:var(--ink2);font-weight:500}
+.step.on .step-t{color:var(--ink);font-weight:700}
+.phone{width:390px;height:780px;background:var(--page-grad);border-radius:38px;overflow:hidden;box-shadow:0 18px 54px rgba(70,70,180,.22);display:flex;flex-direction:column;flex-shrink:0;border:1px solid rgba(255,255,255,.7)}
+.bar{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.bar-l{font-size:13px;font-weight:800;letter-spacing:-.03em}
+.bar-l .d{color:var(--pri)}
+.bar-r{font-size:12px;color:var(--ink3);font-weight:600}
+.topnav{display:flex;align-items:center;gap:12px;padding:10px 20px 8px;flex-shrink:0}
+.nav-back{width:36px;height:36px;border-radius:12px;border:none;background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:.15s;backdrop-filter:blur(8px)}
+.nav-back:hover{background:#fff}
+.nav-back svg{width:17px;height:17px;color:var(--ink2)}
+.stepbar{flex:1;display:flex;gap:5px;align-items:center}
+.stepbar-seg{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.6);transition:.3s}
+.stepbar-seg.done,.stepbar-seg.now{background:var(--pri)}
+.step-count{font-size:12px;font-weight:700;color:var(--ink2);flex-shrink:0;min-width:30px;text-align:right}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+.screen::-webkit-scrollbar{width:0}
+.view{display:none;flex-direction:column;flex:1}
+.view.on{display:flex;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.pad{padding:8px 24px 26px}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:14px;background:rgba(255,255,255,.7);padding:6px 13px;border-radius:999px;color:var(--pri)}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--pri)}
+.h1{font-size:30px;font-weight:800;line-height:1.22;letter-spacing:-.04em;margin-bottom:10px}
+.h1 em{font-style:normal;color:var(--pri)}
+.h2{font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:6px}
+.sub{font-size:14px;color:var(--ink2);line-height:1.65}
+.btn{width:100%;padding:18px;border:none;border-radius:999px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s;letter-spacing:-.02em;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-cta{background:var(--pri);color:#fff;box-shadow:var(--shadow-cta)}
+.btn-cta:hover{background:var(--pri-deep);transform:translateY(-2px);box-shadow:0 14px 32px rgba(79,70,229,.44)}
+.btn-cta:active{transform:translateY(0) scale(.99)}
+.btn-cta svg{width:19px;height:19px}
+.btn-ghost{background:rgba(255,255,255,.7);color:var(--ink);border:1px solid var(--border2)}
+.btn-ghost:hover{background:#fff}
+.welcome{flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px 26px}
+.wmark{width:54px;height:54px;border-radius:17px;background:var(--pri);display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:var(--shadow-cta)}
+.wmark svg{width:28px;height:28px}
+.welcome .big{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-.045em;margin-bottom:14px}
+.welcome .big em{font-style:normal;color:var(--pri)}
+.welcome .desc{font-size:15px;color:var(--ink2);line-height:1.7}
+.preview-steps{display:flex;flex-direction:column;gap:10px;margin:22px 0}
+.pv{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.75);border-radius:15px;padding:14px 16px;box-shadow:0 2px 12px rgba(80,80,200,.06)}
+.pv-n{width:28px;height:28px;border-radius:9px;background:var(--pri-soft);color:var(--pri);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pv-t{font-size:13.5px;font-weight:600;color:var(--ink)}
+.welcome-foot{margin-top:4px}
+.welcome-meta{font-size:12px;color:var(--ink3);text-align:center;margin-top:13px}
+.chat-head{padding:6px 24px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-ava{width:38px;height:38px;border-radius:12px;background:var(--pri);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-ava svg{width:19px;height:19px}
+.chat-name{font-size:14px;font-weight:700}
+.chat-status{font-size:11px;color:var(--up);font-weight:600;display:flex;align-items:center;gap:4px}
+.chat-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--up)}
+.chat-body{flex:1;overflow-y:auto;padding:8px 20px;display:flex;flex-direction:column;gap:12px}
+.chat-body::-webkit-scrollbar{width:0}
+.msg{max-width:80%;font-size:14px;line-height:1.55;padding:13px 16px;border-radius:20px;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.msg-ai{align-self:flex-start;background:#fff;color:var(--ink);border-bottom-left-radius:6px;box-shadow:0 2px 10px rgba(80,80,200,.06)}
+.msg-user{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:6px}
+.typing{align-self:flex-start;background:#fff;padding:15px 17px;border-radius:20px;border-bottom-left-radius:6px;display:flex;gap:4px;box-shadow:0 2px 10px rgba(80,80,200,.06)}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--pri-mid);animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.chat-foot{padding:14px 20px 18px;flex-shrink:0}
+.hint{font-size:12px;color:var(--ink3);margin-bottom:10px;min-height:16px}
+.input-row{display:flex;gap:9px;align-items:center}
+.chat-input{flex:1;border:1px solid var(--border2);border-radius:16px;padding:14px 16px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;outline:none;transition:.15s}
+.chat-input:focus{border-color:var(--pri-mid)}
+.chat-input::placeholder{color:var(--ink3)}
+.send-btn{width:50px;height:50px;border-radius:16px;background:var(--pri);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;box-shadow:var(--shadow-cta)}
+.send-btn svg{width:20px;height:20px}
+.send-btn:hover:not(:disabled){transform:scale(1.05);background:var(--pri-deep)}
+.send-btn:disabled{background:var(--border2);cursor:not-allowed;box-shadow:none}
+.result-card{background:#fff;border-radius:var(--r-xl);padding:24px;margin-bottom:14px;box-shadow:var(--shadow)}
+.rc-mark{font-size:12px;font-weight:800;margin-bottom:16px;letter-spacing:.04em;color:var(--pri)}
+.rc-row{padding:13px 0;border-bottom:1px solid var(--border)}
+.rc-row:last-child{border-bottom:none;padding-bottom:0}
+.rc-k{font-size:12px;color:var(--ink2);font-weight:600;margin-bottom:4px}
+.rc-v{font-size:15px;color:var(--ink);font-weight:700;letter-spacing:-.01em}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+.chip{background:var(--pri-soft);border:none;border-radius:999px;padding:6px 13px;font-size:13px;color:var(--pri);font-weight:700}
+.nudge{text-align:center;padding:24px 10px 18px}
+.nudge .h2{margin-bottom:5px}
+.tcard{background:#fff;border-radius:var(--r-lg);padding:18px;margin-bottom:12px;cursor:pointer;transition:.18s;box-shadow:0 3px 16px rgba(80,80,200,.07)}
+.tcard:hover{box-shadow:0 10px 28px rgba(80,80,200,.16);transform:translateY(-2px)}
+.tcard-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:11px}
+.tcard-title{font-size:16px;font-weight:700;line-height:1.4;letter-spacing:-.015em}
+.badge{font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px;white-space:nowrap;flex-shrink:0;height:fit-content}
+.b-hot{background:#FDE8F1;color:var(--hot)}
+.b-warm{background:#FEF3E2;color:var(--warm)}
+.tcard-meta{display:flex;gap:16px;margin-bottom:11px}
+.tcard-stat{font-size:13px;color:var(--ink2);font-weight:500}
+.tcard-stat b{color:var(--ink);font-weight:700}
+.tcard-why{font-size:13px;color:var(--ink2);background:var(--soft);border-radius:12px;padding:12px 14px;line-height:1.55}
+.tcard-why b{color:var(--pri);font-weight:700}
+.tcard-cta{display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-top:12px;font-size:13px;font-weight:700;color:var(--pri)}
+.tcard-cta svg{width:15px;height:15px}
+.bcard{display:flex;gap:13px;align-items:center;background:#fff;border-radius:var(--r-lg);padding:16px;margin-bottom:12px;box-shadow:0 3px 16px rgba(80,80,200,.07)}
+.bava{width:50px;height:50px;border-radius:16px;background:var(--pri-soft);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:var(--pri)}
+.binfo{flex:1}
+.bhandle{font-size:14px;font-weight:700}
+.bmeta{font-size:13px;color:var(--ink2);margin-top:2px;font-weight:500}
+.bgrow{font-size:12px;color:var(--up);font-weight:700;margin-top:4px}
+.banner-label{font-size:11px;color:var(--ink3);font-weight:600;margin-bottom:8px;padding-left:2px}
+.banner{background:#fff;border-radius:15px;padding:14px 16px;margin-bottom:8px;font-size:14px;color:var(--ink);font-weight:700;display:flex;gap:9px;align-items:center;box-shadow:0 3px 14px rgba(80,80,200,.07)}
+.banner svg{color:var(--pri);flex-shrink:0}
+.make-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.mc{border:none;border-radius:var(--r-lg);padding:24px 16px;text-align:center;cursor:pointer;transition:.18s;background:#fff;box-shadow:0 3px 16px rgba(80,80,200,.07)}
+.mc:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(80,80,200,.16)}
+.mc-ic{width:44px;height:44px;border-radius:14px;background:var(--pri-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.mc-ic svg{width:22px;height:22px;color:var(--pri)}
+.mc:hover .mc-ic{background:var(--pri)}
+.mc:hover .mc-ic svg{color:#fff}
+.mc-t{font-size:15px;font-weight:700;margin-bottom:3px}
+.mc-d{font-size:12px;color:var(--ink2);line-height:1.45}
+.cut{border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;background:#fff;box-shadow:0 3px 16px rgba(80,80,200,.07)}
+.cut-h{background:var(--pri-soft);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.cut-l{font-size:13px;font-weight:800;color:var(--pri)}
+.cut-time{font-size:12px;color:var(--ink2);font-weight:600}
+.cut-b{display:grid;grid-template-columns:90px 1fr}
+.cut-sk{aspect-ratio:1;background:var(--tint);display:flex;align-items:center;justify-content:center}
+.cut-sk svg{width:34px;height:34px;color:var(--pri);opacity:.55}
+.cut-tx{padding:13px 15px}
+.cut-s{font-size:14px;font-weight:600;line-height:1.5;margin-bottom:5px}
+.cut-n{font-size:12px;color:var(--ink2);line-height:1.5}
+.loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;gap:16px}
+.spin{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--pri);border-radius:50%;animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loading-t{font-size:14px;color:var(--ink2);font-weight:600}
+.script-card{background:#fff;border-radius:var(--r-lg);padding:17px;margin-bottom:12px;box-shadow:0 3px 16px rgba(80,80,200,.07)}
+.sc-tag{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--pri);padding:5px 12px;border-radius:999px;margin-bottom:10px}
+.sc-text{font-size:14px;line-height:1.6;color:var(--ink)}
+.toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="side">
+  <div class="side-logo">Shortform<span class="d"> Pulse</span></div>
+  <div class="side-tag">초보 크리에이터의 첫 시작</div>
+  <div class="steps" id="steps">
+    <div class="step on" onclick="go(0)"><div class="step-n">1</div><div class="step-t">온보딩 대화</div></div>
+    <div class="step" onclick="go(1)"><div class="step-n">2</div><div class="step-t">대화 결과</div></div>
+    <div class="step" onclick="go(2)"><div class="step-n">3</div><div class="step-t">트렌드 추천</div></div>
+    <div class="step" onclick="go(3)"><div class="step-n">4</div><div class="step-t">벤치마크 크리에이터</div></div>
+    <div class="step" onclick="go(4)"><div class="step-n">5</div><div class="step-t">스크립트 · 콘티</div></div>
+  </div>
+</div>
+<div class="phone">
+  <div class="bar"><span class="bar-l">Shortform<span class="d"> Pulse</span></span><span class="bar-r">9:41</span></div>
+  <div class="topnav" id="topnav" style="display:none">
+    <button class="nav-back" id="navBack" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="stepbar" id="stepbar"><div class="stepbar-seg"></div><div class="stepbar-seg"></div><div class="stepbar-seg"></div><div class="stepbar-seg"></div><div class="stepbar-seg"></div></div>
+    <div class="step-count" id="stepCount">1/5</div>
+  </div>
+  <div class="screen" id="screen">
+
+    <div class="view on" id="v0">
+      <div class="welcome" id="welcome">
+        <div class="wmark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+        <div class="big">막막한 첫 영상,<br><em>같이</em> 만들어요</div>
+        <div class="desc">3단계면 첫 영상 콘티까지 완성돼요.</div>
+        <div class="preview-steps">
+          <div class="pv"><div class="pv-n">1</div><div class="pv-t">대화로 내 콘텐츠 방향 찾기</div></div>
+          <div class="pv"><div class="pv-n">2</div><div class="pv-t">나에게 맞는 트렌드 추천받기</div></div>
+          <div class="pv"><div class="pv-n">3</div><div class="pv-t">스크립트·콘티로 바로 제작</div></div>
+        </div>
+        <div class="welcome-foot">
+          <button class="btn btn-cta" onclick="startChat()">대화 시작하기<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <div class="welcome-meta">1분이면 충분해요</div>
+        </div>
+      </div>
+      <div id="chat" style="display:none;flex:1;flex-direction:column;min-height:0">
+        <div class="chat-head">
+          <div class="chat-ava"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+          <div><div class="chat-name">Pulse 큐레이터</div><div class="chat-status">대화 중</div></div>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-foot">
+          <div class="hint" id="hint"></div>
+          <div class="input-row" id="inputRow">
+            <input type="text" class="chat-input" id="chatInput" placeholder="여기에 답을 입력해보세요" autocomplete="off"/>
+            <button class="send-btn" id="sendBtn" onclick="sendAnswer()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="v1">
+      <div class="pad" style="padding-top:8px">
+        <span class="eyebrow">대화 분석 완료</span>
+        <div class="h1">이런 <em>크리에이터</em>가<br>되면 어울려요</div>
+        <div class="sub" style="margin-bottom:20px">방금 입력해주신 답변을 바탕으로 정리했어요</div>
+        <div class="result-card">
+          <div class="rc-mark">CONTENT PROFILE</div>
+          <div class="rc-row"><div class="rc-k">콘텐츠 방향</div><div class="rc-v">자취생을 위한 쉬운 집밥 레시피</div></div>
+          <div class="rc-row"><div class="rc-k">당신의 강점</div><div class="chips"><span class="chip">쉬운 설명</span><span class="chip">편안한 분위기</span><span class="chip">꾸준함</span></div></div>
+          <div class="rc-row"><div class="rc-k">추천 타깃</div><div class="rc-v">자취 시작한 20대</div></div>
+          <div class="rc-row"><div class="rc-k">추천 포맷</div><div class="rc-v">15초 · 자막 중심 · 얼굴 노출 최소</div></div>
+        </div>
+        <div class="nudge"><div class="h2">자, 그럼 첫 영상 찍어볼까요?</div><div class="sub">당신 주제로 지금 반응 좋은 영상을 모아왔어요</div></div>
+        <button class="btn btn-cta" onclick="go(2)">트렌드 보러가기<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="view" id="v2">
+      <div class="pad" style="padding-top:8px">
+        <span class="eyebrow">자취 집밥 · 지금 뜨는 영상</span>
+        <div class="h1" style="font-size:25px">이런 영상이<br>요즘 <em>반응</em>이 좋아요</div>
+        <div class="sub" style="margin-bottom:20px">마음에 드는 걸 누르면 바로 만들 수 있어요</div>
+        <div class="tcard" onclick="go(4)"><div class="tcard-top"><div class="tcard-title">자취생 3분 계란요리 5가지</div><span class="badge b-hot">반응 폭발</span></div><div class="tcard-meta"><span class="tcard-stat">조회 <b>92만</b></span><span class="tcard-stat">참여율 <b>8.4%</b></span></div><div class="tcard-why"><b>왜 떴을까요?</b> "N가지" 정리형 제목과 자취생 공감 키워드가 요즘 강세예요</div><div class="tcard-cta">이걸로 만들기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>
+        <div class="tcard" onclick="go(4)"><div class="tcard-top"><div class="tcard-title">편의점 재료로 만드는 야식</div><span class="badge b-warm">상승 중</span></div><div class="tcard-meta"><span class="tcard-stat">조회 <b>54만</b></span><span class="tcard-stat">참여율 <b>6.1%</b></span></div><div class="tcard-why"><b>왜 떴을까요?</b> "편의점" 키워드와 저비용 공감 포맷이 꾸준히 인기예요</div><div class="tcard-cta">이걸로 만들기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>
+        <div class="tcard" onclick="go(4)"><div class="tcard-top"><div class="tcard-title">자취 한 달 식비 공개합니다</div><span class="badge b-warm">상승 중</span></div><div class="tcard-meta"><span class="tcard-stat">조회 <b>38만</b></span><span class="tcard-stat">참여율 <b>7.2%</b></span></div><div class="tcard-why"><b>왜 떴을까요?</b> "공개" 키워드와 구체적인 숫자가 저장을 부르는 포맷이에요</div><div class="tcard-cta">이걸로 만들기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>
+        <button class="btn btn-ghost" onclick="go(3)" style="margin-top:6px">먼저 비슷한 크리에이터 구경하기</button>
+      </div>
+    </div>
+
+    <div class="view" id="v3">
+      <div class="pad" style="padding-top:8px">
+        <span class="eyebrow">벤치마크 크리에이터</span>
+        <div class="h1" style="font-size:25px">이 분들도<br>비슷하게 <em>시작</em>했어요</div>
+        <div class="sub" style="margin-bottom:20px">조금 앞서가는 분들이에요. 부담 없이 참고해보세요</div>
+        <div class="bcard"><div class="bava">민</div><div class="binfo"><div class="bhandle">자취요리_민지</div><div class="bmeta">팔로워 2,400 · 자취 집밥</div><div class="bgrow">3개월 전엔 50명이었대요</div></div></div>
+        <div class="bcard"><div class="bava">혼</div><div class="binfo"><div class="bhandle">혼밥의정석</div><div class="bmeta">팔로워 3,800 · 자취 집밥</div><div class="bgrow">최근 한 달 +1,200</div></div></div>
+        <div class="bcard"><div class="bava">원</div><div class="binfo"><div class="bhandle">원룸쿡</div><div class="bmeta">팔로워 5,100 · 자취 집밥</div><div class="bgrow">6개월 만에 5천 돌파</div></div></div>
+        <button class="btn btn-cta" onclick="go(4)" style="margin-top:6px">나도 만들어보기<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="view" id="v4">
+      <div class="pad" style="padding-top:8px">
+        <div class="banner-label">선택한 주제</div>
+        <div class="banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>자취생 3분 계란요리 5가지</div>
+        <div id="makeSelect" style="margin-top:18px">
+          <div class="h2">어떻게 만들어볼까요?</div>
+          <div class="sub" style="margin-bottom:20px">둘 다 받아볼 수도 있어요</div>
+          <div class="make-choice">
+            <div class="mc" onclick="makeScript()"><div class="mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM8 9h8M8 13h6"/></svg></div><div class="mc-t">스크립트</div><div class="mc-d">뭐라고 말할지<br>대본 3종</div></div>
+            <div class="mc" onclick="makeConti()"><div class="mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v6"/></svg></div><div class="mc-t">콘티</div><div class="mc-d">어떻게 찍을지<br>4컷 구성</div></div>
+          </div>
+        </div>
+        <div id="makeLoading" style="display:none"><div class="loading"><div class="spin"></div><div class="loading-t">만들고 있어요...</div></div></div>
+        <div id="makeResult" style="display:none"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="toast" id="toast">저장했어요!</div>
+</div>
+<script>
+const CONVO=[
+  {ai:'안녕하세요! 함께 첫 영상을 만들어볼 Pulse 큐레이터예요. 먼저, 어떤 이유로 숏폼을 시작하고 싶으세요?',hint:'예: 취미로 즐기고 싶어서 / 부업으로 / 일상 기록용'},
+  {ai:'좋아요. 그럼 평소에 어떤 걸 할 때 가장 시간 가는 줄 모르세요?',hint:'예: 요리하고 먹을 때 / 운동할 때 / 뭔가 꾸밀 때'},
+  {ai:'멋지네요! 주변에서 "넌 이거 참 잘한다" 하고 칭찬받는 게 있나요?',hint:'예: 설명을 쉽게 한다 / 분위기가 편하다 / 꾸준하다'},
+  {ai:'마지막이에요. 누가 내 영상을 봐주면 제일 기쁠 것 같아요?',hint:'예: 나처럼 자취하는 사람 / 요리 초보 / 또래 친구들'},
+];
+let cIdx=0,curView=0;
+const chatBody=()=>document.getElementById('chatBody');
+function startChat(){
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('chat').style.display='flex';
+  cIdx=0;
+  const inp=document.getElementById('chatInput');
+  inp.addEventListener('input',()=>{document.getElementById('sendBtn').disabled=inp.value.trim()==='';});
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&inp.value.trim()!=='')sendAnswer();});
+  askNext();
+}
+function askNext(){
+  const step=CONVO[cIdx];
+  setInputEnabled(false);
+  const t=document.createElement('div');t.className='typing';t.id='typing';t.innerHTML='<span></span><span></span><span></span>';
+  chatBody().appendChild(t);scrollChat();
+  setTimeout(()=>{document.getElementById('typing')?.remove();addMsg(step.ai,'ai');document.getElementById('hint').textContent=step.hint||'';setInputEnabled(true);document.getElementById('chatInput').focus();},900);
+}
+function setInputEnabled(on){const inp=document.getElementById('chatInput');inp.disabled=!on;if(!on)document.getElementById('sendBtn').disabled=true;}
+function addMsg(text,who){const m=document.createElement('div');m.className='msg msg-'+who;m.textContent=text;chatBody().appendChild(m);scrollChat();}
+function sendAnswer(){
+  const inp=document.getElementById('chatInput');const val=inp.value.trim();if(val==='')return;
+  addMsg(val,'user');inp.value='';document.getElementById('hint').textContent='';setInputEnabled(false);cIdx++;
+  if(cIdx<CONVO.length){setTimeout(askNext,500);}
+  else{
+    setTimeout(()=>{
+      const t=document.createElement('div');t.className='typing';t.id='typing';t.innerHTML='<span></span><span></span><span></span>';
+      chatBody().appendChild(t);scrollChat();
+      setTimeout(()=>{document.getElementById('typing')?.remove();addMsg('완벽해요! 당신에게 어울리는 방향을 정리하고 있어요...','ai');setTimeout(()=>go(1),1400);},900);
+    },500);
+  }
+}
+function scrollChat(){const b=chatBody();setTimeout(()=>b.scrollTop=b.scrollHeight,50);}
+function updateNav(n){
+  const topnav=document.getElementById('topnav');
+  if(n===0){topnav.style.display='none';return;}
+  topnav.style.display='flex';
+  document.getElementById('stepCount').textContent=`${n+1}/5`;
+  document.querySelectorAll('#stepbar .stepbar-seg').forEach((s,i)=>{s.classList.remove('done','now');if(i<n)s.classList.add('done');else if(i===n)s.classList.add('now');});
+}
+function goBack(){if(curView>0)go(curView-1);}
+function go(n){
+  curView=n;
+  document.querySelectorAll('.view').forEach((v,i)=>v.classList.toggle('on',i===n));
+  document.querySelectorAll('.step').forEach((s,i)=>{s.classList.remove('on','done');if(i===n)s.classList.add('on');else if(i<n)s.classList.add('done');s.querySelector('.step-n').textContent=i<n?'✓':i+1;});
+  document.getElementById('screen').scrollTop=0;
+  updateNav(n);
+  if(n===0){document.getElementById('welcome').style.display='flex';document.getElementById('chat').style.display='none';chatBody().innerHTML='';document.getElementById('hint').textContent='';document.getElementById('chatInput').value='';}
+  if(n===4){document.getElementById('makeSelect').style.display='block';document.getElementById('makeLoading').style.display='none';document.getElementById('makeResult').style.display='none';}
+}
+function makeScript(){showMaking('script');}
+function makeConti(){showMaking('conti');}
+function showMaking(type){
+  document.getElementById('makeSelect').style.display='none';
+  document.getElementById('makeLoading').style.display='block';
+  setTimeout(()=>{document.getElementById('makeLoading').style.display='none';const r=document.getElementById('makeResult');r.style.display='block';r.innerHTML=type==='script'?scriptHTML():contiHTML();document.getElementById('screen').scrollTop=0;},1500);
+}
+function scriptHTML(){
+  const items=[['정보형','"자취생이라면 꼭 알아야 할 계란요리 5가지, 지금 알려드릴게요."'],['스토리형','"자취 첫날 계란프라이도 못 했던 제가, 이제 5가지나 합니다."'],['훅형','"계란 하나로 이게 된다고요? 끝까지 보면 깜짝 놀라요."']];
+  return `<span class="eyebrow">스크립트 3종</span><div class="h2" style="margin:14px 0 16px">마음에 드는 걸로 골라보세요</div>`+items.map(([t,s])=>`<div class="script-card"><span class="sc-tag">${t}</span><div class="sc-text">${s}</div></div>`).join('')+`<button class="btn btn-ghost" onclick="document.getElementById('makeSelect').style.display='block';document.getElementById('makeResult').style.display='none';" style="margin-top:6px">콘티도 받아보기</button><button class="btn btn-cta" onclick="saveDone()" style="margin-top:9px">저장하고 다음 주제 받기</button>`;
+}
+function contiHTML(){
+  const cuts=[['CUT 1 · 훅','0-3초','M12 2v4M12 18v4','"자취생이라면 꼭 봐야 해요"','계란 들고 정면 클로즈업으로 시작'],['CUT 2 · 전환','3-6초','M5 12h14','"이거 하나로 5가지가 돼요"','프라이팬 위 계란, 손 동작 강조'],['CUT 3 · 본론','6-12초','M4 4h16v16H4z','"첫째 스크램블, 둘째..."','요리 과정 빠른 컷 편집'],['CUT 4 · 클로징','12-15초','M20 6L9 17l-5-5','"여러분도 해보세요!"','완성 요리와 먹는 모습 마무리']];
+  return `<span class="eyebrow">콘티 4컷</span><div class="h2" style="margin:14px 0 16px">이 순서로 찍어보세요</div>`+cuts.map(([l,t,p,s,n])=>`<div class="cut"><div class="cut-h"><span class="cut-l">${l}</span><span class="cut-time">${t}</span></div><div class="cut-b"><div class="cut-sk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg></div><div class="cut-tx"><div class="cut-s">${s}</div><div class="cut-n">${n}</div></div></div></div>`).join('')+`<button class="btn btn-cta" onclick="saveDone()" style="margin-top:6px">저장하고 다음 주제 받기</button>`;
+}
+function saveDone(){
+  const toast=document.getElementById('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1600);
+  document.getElementById('makeResult').innerHTML=`<div style="text-align:center;padding:56px 0"><div style="width:66px;height:66px;border-radius:20px;background:var(--pri);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;box-shadow:var(--shadow-cta)"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div class="h2">저장했어요!</div><div class="sub" style="margin-bottom:26px">이제 찍어서 올려보세요.<br>다음 주제도 준비해뒀어요.</div><button class="btn btn-cta" onclick="go(2)">다음 트렌드 보기<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>`;
+}
+</script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store';
 import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
 import type { ThemeName } from '@/lib/themes/types';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import chatConfig from '@/lib/onboarding/chat-questions.json';
 
 // v7 테마 토큰. 색은 globals.css의 [data-theme] 블록이 공급한다.
 const ACCENT = 'var(--color-primary)';
@@ -15,16 +16,11 @@ const BORDER = 'var(--color-border)';
 const TEXT = 'var(--color-ink)';
 const DIM = 'var(--color-ink-2)';
 
-// 니치 발굴용 7문답 (demo/v6 chatQuestions 참고).
-const CHAT_QUESTIONS = [
-  { category: '열정 · PASSION', q: '조회수 0이어도 1년 내내 만들고 싶은 게 있나요?', hint: '잘 될지 몰라도, 그냥 좋아서 하게 되는 것.', placeholder: '예: 오래된 물건 고치는 법, 새벽 혼밥 레시피…' },
-  { category: '소비 · SPENDING', q: '지난 1년, 가장 많이 돈 쓴 취미는?', hint: '카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.', placeholder: '예: 카페 투어, 등산 장비, 보드게임…' },
-  { category: '강점 · STRENGTH', q: '주변에서 자주 묻거나 칭찬받는 게 있어요?', hint: '"너 그거 어떻게 해?" 라는 말을 듣는 것.', placeholder: '예: 여행 코스 짜기, 다이어트 식단…' },
-  { category: '오디언스 · AUDIENCE', q: '내 영상을 누가 봐줬으면 좋겠어요?', hint: '팔로워 한 명의 모습을 구체적으로 떠올려보세요.', placeholder: '예: 자취 2년 차 직장인, 육아 중인 30대 엄마…' },
-  { category: '주제 · TOPIC', q: '이번에 만들고 싶은 영상 주제가 있나요?', hint: '트렌드 키워드와 내 니치를 엮어도 좋아요.', placeholder: '예: 짠테크 직장인 점심 도시락 5분 컷…' },
-  { category: '포맷 · FORMAT', q: '어떤 형식으로 만들 건가요?', hint: '촬영 환경과 편집 수준도 같이 적어주면 더 정확해요.', placeholder: '예: 60초 쇼츠, 집에서 혼자, 편집 초보…' },
-  { category: '훅 · HOOK', q: '첫 3초를 어떻게 열고 싶어요?', hint: '훅이 조회수의 70%를 결정해요.', placeholder: "예: 공감형 '나만 이런가요?', 충격형 '이걸 몰랐다면'…" },
-] as const;
+// 니치 발굴용 7문답 + 인사말/완료멘트 (feature/pulse-chatbot 의 데이터에서 흡수).
+const CHAT_QUESTIONS = chatConfig.questions;
+const INTRO_TEXT = chatConfig.messages.intro;
+const COMPLETE_TEXT = chatConfig.messages.complete;
+const INPUT_PLACEHOLDER = chatConfig.inputPlaceholder;
 
 interface ChatMessage {
   role: 'bot' | 'user';
@@ -87,7 +83,7 @@ export default function OnboardingPage() {
     setStep(0);
     setAnswers([]);
     setMessages([]);
-    botSay({ role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' }, 600, () => {
+    botSay({ role: 'bot', text: INTRO_TEXT }, 600, () => {
       botSay(botQuestion(0), 700);
     });
   }
@@ -105,7 +101,7 @@ export default function OnboardingPage() {
     } else {
       // 마지막 답변까지 받음 → 결과 정리 후 저장/이동
       const allAnswers = [...answers, val];
-      botSay({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 분석 결과를 정리하고 있어요…' }, 700, () => {
+      botSay({ role: 'bot', text: `${COMPLETE_TEXT} 분석 결과를 정리하고 있어요…` }, 700, () => {
         setTimeout(() => finish(allAnswers), 1000);
       });
     }
@@ -258,7 +254,7 @@ export default function OnboardingPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={done ? '답변이 모두 끝났어요' : (currentQ?.placeholder ?? '여기에 입력하세요…')}
+          placeholder={done ? '답변이 모두 끝났어요' : (currentQ?.placeholder ?? INPUT_PLACEHOLDER)}
           rows={1}
           className="flex-1 bg-transparent outline-none resize-none text-[14px] py-2"
           style={{ color: TEXT, caretColor: ACCENT, maxHeight: 96 }}

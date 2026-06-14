@@ -15,9 +15,27 @@ const BORDER = 'var(--color-border)';
 const TEXT = 'var(--color-ink)';
 const DIM = 'var(--color-ink-2)';
 
+// 니치 발굴용 7문답 (demo/v6 chatQuestions 참고).
+const CHAT_QUESTIONS = [
+  { category: '열정 · PASSION', q: '조회수 0이어도 1년 내내 만들고 싶은 게 있나요?', hint: '잘 될지 몰라도, 그냥 좋아서 하게 되는 것.', placeholder: '예: 오래된 물건 고치는 법, 새벽 혼밥 레시피…' },
+  { category: '소비 · SPENDING', q: '지난 1년, 가장 많이 돈 쓴 취미는?', hint: '카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.', placeholder: '예: 카페 투어, 등산 장비, 보드게임…' },
+  { category: '강점 · STRENGTH', q: '주변에서 자주 묻거나 칭찬받는 게 있어요?', hint: '"너 그거 어떻게 해?" 라는 말을 듣는 것.', placeholder: '예: 여행 코스 짜기, 다이어트 식단…' },
+  { category: '오디언스 · AUDIENCE', q: '내 영상을 누가 봐줬으면 좋겠어요?', hint: '팔로워 한 명의 모습을 구체적으로 떠올려보세요.', placeholder: '예: 자취 2년 차 직장인, 육아 중인 30대 엄마…' },
+  { category: '주제 · TOPIC', q: '이번에 만들고 싶은 영상 주제가 있나요?', hint: '트렌드 키워드와 내 니치를 엮어도 좋아요.', placeholder: '예: 짠테크 직장인 점심 도시락 5분 컷…' },
+  { category: '포맷 · FORMAT', q: '어떤 형식으로 만들 건가요?', hint: '촬영 환경과 편집 수준도 같이 적어주면 더 정확해요.', placeholder: '예: 60초 쇼츠, 집에서 혼자, 편집 초보…' },
+  { category: '훅 · HOOK', q: '첫 3초를 어떻게 열고 싶어요?', hint: '훅이 조회수의 70%를 결정해요.', placeholder: "예: 공감형 '나만 이런가요?', 충격형 '이걸 몰랐다면'…" },
+] as const;
+
 interface ChatMessage {
   role: 'bot' | 'user';
   text: string;
+  hint?: string;
+}
+
+// 특정 스텝의 질문을 봇 말풍선 메시지로.
+function botQuestion(i: number): ChatMessage {
+  const q = CHAT_QUESTIONS[i];
+  return { role: 'bot', text: q.q, hint: q.hint };
 }
 
 export default function OnboardingPage() {
@@ -34,7 +52,12 @@ export default function OnboardingPage() {
   const [screen, setScreen] = useState<'welcome' | 'chat'>('welcome');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const done = step >= CHAT_QUESTIONS.length;
+  const currentQ = CHAT_QUESTIONS[step];
 
   // 메시지가 추가되면 항상 맨 아래로 스크롤
   useEffect(() => {
@@ -44,14 +67,27 @@ export default function OnboardingPage() {
 
   function startChat() {
     setScreen('chat');
-    setMessages([{ role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' }]);
+    setStep(0);
+    setAnswers([]);
+    setMessages([
+      { role: 'bot', text: '안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦' },
+      botQuestion(0),
+    ]);
   }
 
   function send() {
     const val = input.trim();
-    if (!val) return;
-    // 골격 단계: 유저 말풍선 + 임시 봇 응답(에코). 7문답 흐름은 다음 커밋에서.
-    setMessages((m) => [...m, { role: 'user', text: val }, { role: 'bot', text: '좋아요, 잘 들었어요!' }]);
+    if (!val || done) return;
+    const nextStep = step + 1;
+    const newMsgs: ChatMessage[] = [{ role: 'user', text: val }];
+    if (nextStep < CHAT_QUESTIONS.length) {
+      newMsgs.push(botQuestion(nextStep));
+    } else {
+      newMsgs.push({ role: 'bot', text: '완벽해요! 답변 잘 해주셨어요 ✦ 잠시 후 결과를 정리해드릴게요.' });
+    }
+    setMessages((m) => [...m, ...newMsgs]);
+    setAnswers((a) => [...a, val]);
+    setStep(nextStep);
     setInput('');
   }
 
@@ -132,6 +168,11 @@ export default function OnboardingPage() {
                 whiteSpace: 'pre-wrap',
               }}>
               {m.text}
+              {m.hint && (
+                <div className="mt-1.5 text-[12px] leading-[1.4]" style={{ color: DIM }}>
+                  {m.hint}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -143,16 +184,16 @@ export default function OnboardingPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="여기에 입력하세요…"
+          placeholder={done ? '답변이 모두 끝났어요' : (currentQ?.placeholder ?? '여기에 입력하세요…')}
           rows={1}
           className="flex-1 bg-transparent outline-none resize-none text-[14px] py-2"
           style={{ color: TEXT, caretColor: ACCENT, maxHeight: 96 }}
         />
         <button
           onClick={send}
-          disabled={!input.trim()}
+          disabled={!input.trim() || done}
           className="w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0 transition-opacity"
-          style={{ background: ACCENT, color: BG, opacity: input.trim() ? 1 : 0.35 }}>
+          style={{ background: ACCENT, color: BG, opacity: input.trim() && !done ? 1 : 0.35 }}>
           ↑
         </button>
       </div>

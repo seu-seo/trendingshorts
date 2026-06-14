@@ -5,12 +5,11 @@ import Link from 'next/link';
 import { useStore } from '@/lib/store';
 import type { Trend } from '@/lib/types';
 import type { SavedScript } from '@/lib/store';
+import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
+import type { ThemeName } from '@/lib/themes/types';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 // ── 상수 ─────────────────────────────────────────────────────────
-// BG: 기존 앱과 동일 (#0A0A0B ≈ #0A0A0A). 카드: #1A1A1A (spec)
-
-const CARD    = '#1A1A1A';
-const ACCENT  = '#C8FF57';
 
 const PLATFORM_LABEL: Record<string, string> = {
   youtube: 'YT Shorts', tiktok: 'TikTok', instagram: 'IG Reels',
@@ -22,7 +21,7 @@ const AGE_LABEL: Record<string, string> = {
   '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50+': '50대+',
 };
 const HEAT_COLOR: Record<string, string> = {
-  HOT: '#C8FF57', WARM: '#57C8FF', COLD: '#555',
+  HOT: 'var(--color-primary)', WARM: 'var(--color-primary-mid)', COLD: 'var(--color-ink-3)',
 };
 
 
@@ -33,24 +32,26 @@ function CollectionRow({ trend, onClick }: { trend: Trend; onClick: () => void }
     <button
       onClick={onClick}
       className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/[0.03]"
-      style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
-      <span className="text-xl w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center flex-shrink-0">
+      <span className="text-xl w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+        style={{ background: 'var(--color-soft)' }}>
         {trend.thumb}
       </span>
-      <span className="flex-1 min-w-0 text-[13px] font-medium text-text truncate">
+      <span className="flex-1 min-w-0 text-[13px] font-medium truncate"
+        style={{ color: 'var(--color-ink)' }}>
         {trend.title}
       </span>
       <div className="flex items-center gap-1.5 flex-shrink-0">
         <span className="font-mono text-[9px] font-bold"
-          style={{ color: HEAT_COLOR[trend.heatLevel] ?? 'var(--text-faint)' }}>
+          style={{ color: HEAT_COLOR[trend.heatLevel] ?? 'var(--color-ink-3)' }}>
           {trend.heatLevel === 'HOT' ? '▲' : trend.heatLevel === 'WARM' ? '◆' : '▼'}
         </span>
-        <span className="font-mono text-[9px] text-text-faint">
+        <span className="font-mono text-[9px]" style={{ color: 'var(--color-ink-3)' }}>
           {PLATFORM_LABEL[trend.platform] ?? trend.platform}
         </span>
       </div>
-      <span className="font-mono text-[11px] text-text-faint flex-shrink-0">›</span>
+      <span className="font-mono text-[11px] flex-shrink-0" style={{ color: 'var(--color-ink-3)' }}>›</span>
     </button>
   );
 }
@@ -60,7 +61,7 @@ function ScriptRow({ script, onRemove }: { script: SavedScript; onRemove: () => 
   return (
     <div
       className="rounded-xl overflow-hidden"
-      style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
     >
       <button
         onClick={() => setExpanded((v) => !v)}
@@ -68,49 +69,50 @@ function ScriptRow({ script, onRemove }: { script: SavedScript; onRemove: () => 
       >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="text-[13px] font-medium text-text truncate">{script.title}</span>
+            <span className="text-[13px] font-medium truncate" style={{ color: 'var(--color-ink)' }}>{script.title}</span>
             {script.hasConti && (
               <span className="font-mono text-[8px] px-1.5 py-0.5 rounded flex-shrink-0"
-                style={{ background: 'rgba(200,255,87,0.12)', color: 'var(--accent-lime)' }}>
+                style={{ background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}>
                 콘티
               </span>
             )}
           </div>
-          <span className="font-mono text-[9px] text-text-faint">{script.date}</span>
+          <span className="font-mono text-[9px]" style={{ color: 'var(--color-ink-3)' }}>{script.date}</span>
         </div>
-        <span className="font-mono text-[11px] text-text-faint transition-transform flex-shrink-0"
-          style={{ transform: expanded ? 'rotate(90deg)' : 'none' }}>
+        <span className="font-mono text-[11px] transition-transform flex-shrink-0"
+          style={{ color: 'var(--color-ink-3)', transform: expanded ? 'rotate(90deg)' : 'none' }}>
           ›
         </span>
       </button>
 
       {expanded && (
-        <div className="px-4 pb-4 border-t border-border pt-3 space-y-3">
+        <div className="px-4 pb-4 pt-3 space-y-3" style={{ borderTop: '1px solid var(--color-border)' }}>
           {script.hook && (
             <div>
-              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">HOOK · 첫 3초</div>
-              <p className="text-[13px] font-semibold text-text leading-snug">{script.hook}</p>
+              <div className="font-mono text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-3)' }}>HOOK · 첫 3초</div>
+              <p className="text-[13px] font-semibold leading-snug" style={{ color: 'var(--color-ink)' }}>{script.hook}</p>
             </div>
           )}
           {script.body && (
             <div>
-              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">BODY · 본문</div>
-              <p className="text-[12px] text-text-dim leading-relaxed whitespace-pre-line">{script.body}</p>
+              <div className="font-mono text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-3)' }}>BODY · 본문</div>
+              <p className="text-[12px] leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-ink-2)' }}>{script.body}</p>
             </div>
           )}
           {script.cta && (
             <div>
-              <div className="font-mono text-[9px] text-text-faint uppercase tracking-widest mb-1">CTA · 마무리</div>
-              <p className="text-[12px] text-text-dim leading-relaxed italic">{script.cta}</p>
+              <div className="font-mono text-[9px] uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-3)' }}>CTA · 마무리</div>
+              <p className="text-[12px] leading-relaxed italic" style={{ color: 'var(--color-ink-2)' }}>{script.cta}</p>
             </div>
           )}
           {!script.body && !script.cta && !script.hook && (
-            <p className="text-[12px] text-text-faint italic">저장된 내용이 없어요.</p>
+            <p className="text-[12px] italic" style={{ color: 'var(--color-ink-3)' }}>저장된 내용이 없어요.</p>
           )}
           <div className="flex justify-end pt-1">
             <button
               onClick={onRemove}
-              className="font-mono text-[10px] text-text-faint hover:text-red-400 transition-colors"
+              className="font-mono text-[10px] hover:text-red-400 transition-colors"
+              style={{ color: 'var(--color-ink-3)' }}
             >
               삭제
             </button>
@@ -124,11 +126,11 @@ function ScriptRow({ script, onRemove }: { script: SavedScript; onRemove: () => 
 function SectionLabel({ title, count }: { title: string; count?: number }) {
   return (
     <div className="flex items-center justify-between mb-3">
-      <span className="font-mono text-[10px] tracking-widest text-text-faint uppercase">
+      <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--color-ink-3)' }}>
         {title}
       </span>
       {count !== undefined && (
-        <span className="font-mono text-[9px] text-text-faint">{count}개</span>
+        <span className="font-mono text-[9px]" style={{ color: 'var(--color-ink-3)' }}>{count}개</span>
       )}
     </div>
   );
@@ -138,13 +140,12 @@ function KpiCard({ label, value }: { label: string; value: string | number }) {
   const isEmpty = value === '--';
   return (
     <div className="rounded-xl p-4 flex flex-col gap-2"
-      style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
-      <span className="font-mono text-[9px] tracking-widest text-text-faint uppercase leading-none">
+      style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+      <span className="font-mono text-[9px] tracking-widest uppercase leading-none" style={{ color: 'var(--color-ink-3)' }}>
         {label}
       </span>
-      <span className={`font-display text-[30px] leading-none tracking-tight ${
-        isEmpty ? 'text-text-faint' : 'text-text'
-      }`}>
+      <span className="font-display text-[30px] leading-none tracking-tight"
+        style={{ color: isEmpty ? 'var(--color-ink-3)' : 'var(--color-ink)' }}>
         {value}
       </span>
     </div>
@@ -154,8 +155,8 @@ function KpiCard({ label, value }: { label: string; value: string | number }) {
 function EmptySlate({ label }: { label: string }) {
   return (
     <div className="rounded-xl py-10 flex items-center justify-center"
-      style={{ background: CARD, border: '1px dashed rgba(255,255,255,0.08)' }}>
-      <span className="font-mono text-[10px] tracking-widest text-text-faint">{label}</span>
+      style={{ background: 'var(--color-surface)', border: '1px dashed var(--color-border)' }}>
+      <span className="font-mono text-[10px] tracking-widest" style={{ color: 'var(--color-ink-3)' }}>{label}</span>
     </div>
   );
 }
@@ -163,6 +164,9 @@ function EmptySlate({ label }: { label: string }) {
 // ── 메인 ─────────────────────────────────────────────────────────
 
 export default function MyPage() {
+  const [theme, setTheme] = useState<ThemeName>('indigo');
+  useEffect(() => { applyTheme(theme); return () => clearTheme(); }, [theme]);
+
   const setTab        = useStore((s) => s.setTab);
   const platform      = useStore((s) => s.platform);
   const category      = useStore((s) => s.category);
@@ -192,18 +196,19 @@ export default function MyPage() {
     : (category?.[0]?.toUpperCase() ?? 'M');
 
   return (
-    <div className="bg-bg pb-10">
+    <div style={{ background: 'var(--color-bg)', minHeight: '100%' }} className="pb-10">
+      <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
 
       {/* ── 1. 프로필 카드 ───────────────────────────────────── */}
       <div className="mx-6 mt-4 rounded-2xl p-5"
-        style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
 
         <div className="flex items-start gap-4">
           {/* 아바타 */}
           <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: `${ACCENT}14`, border: `1.5px solid ${ACCENT}35` }}>
+            style={{ background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)', border: '1.5px solid color-mix(in srgb, var(--color-primary) 21%, transparent)' }}>
             <span className="font-display text-[28px] leading-none tracking-tight"
-              style={{ color: ACCENT }}>
+              style={{ color: 'var(--color-primary)' }}>
               {avatarLetter}
             </span>
           </div>
@@ -211,17 +216,17 @@ export default function MyPage() {
           {/* 텍스트 */}
           <div className="flex-1 min-w-0 pt-0.5">
             {personaResult?.personaType && (
-              <div className="font-mono text-[8px] tracking-[0.2em] text-text-faint mb-0.5">
+              <div className="font-mono text-[8px] tracking-[0.2em] mb-0.5" style={{ color: 'var(--color-ink-3)' }}>
                 PERSONA
               </div>
             )}
-            <div className="font-display text-[20px] leading-tight tracking-tight text-text mb-1">
+            <div className="font-display text-[20px] leading-tight tracking-tight mb-1" style={{ color: 'var(--color-ink)' }}>
               {personaResult?.personaType ?? 'MY CHANNEL'}
             </div>
-            <div className="font-mono text-[11px] text-text-dim">
+            <div className="font-mono text-[11px]" style={{ color: 'var(--color-ink-2)' }}>
               {category || '--'}
               {AGE_LABEL[ageGroup] && (
-                <span className="text-text-faint"> · {AGE_LABEL[ageGroup]}</span>
+                <span style={{ color: 'var(--color-ink-3)' }}> · {AGE_LABEL[ageGroup]}</span>
               )}
             </div>
 
@@ -234,7 +239,7 @@ export default function MyPage() {
                     style={{
                       background: `${PLATFORM_COLOR[p] ?? '#888'}16`,
                       border:     `1px solid ${PLATFORM_COLOR[p] ?? '#888'}35`,
-                      color:       PLATFORM_COLOR[p] ?? 'var(--text-faint)',
+                      color:       PLATFORM_COLOR[p] ?? 'var(--color-ink-3)',
                     }}>
                     {PLATFORM_LABEL[p] ?? p}
                   </span>
@@ -246,10 +251,10 @@ export default function MyPage() {
 
         {/* 연결된 핸들 */}
         {connectedHandles.length > 0 && (
-          <div className="mt-4 pt-4 flex flex-col gap-2 border-t border-border">
+          <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--color-border)' }}>
             {connectedHandles.map(h => (
               <div key={h.key} className="flex items-center justify-between">
-                <span className="font-mono text-[9px] tracking-widest text-text-faint uppercase">
+                <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'var(--color-ink-3)' }}>
                   {PLATFORM_LABEL[h.key] ?? h.key}
                 </span>
                 <span className="font-mono text-[11px]" style={{ color: PLATFORM_COLOR[h.key] }}>
@@ -261,22 +266,22 @@ export default function MyPage() {
         )}
 
         {/* 팔로워 */}
-        <div className="mt-4 pt-4 flex items-center justify-between border-t border-border">
-          <span className="font-mono text-[9px] tracking-widest text-text-faint uppercase">
+        <div className="mt-4 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid var(--color-border)' }}>
+          <span className="font-mono text-[9px] tracking-widest uppercase" style={{ color: 'var(--color-ink-3)' }}>
             팔로워
           </span>
-          <span className="font-mono text-[12px] text-text-faint">--</span>
+          <span className="font-mono text-[12px]" style={{ color: 'var(--color-ink-3)' }}>--</span>
         </div>
       </div>
 
       {/* ── 이번 주 목표 (프로필 아래) ───────────────────────── */}
       {weeklyGoal > 0 && (
         <div className="mx-6 mt-2.5 rounded-xl px-5 py-3.5 flex items-center justify-between"
-          style={{ background: CARD, border: `1px solid ${ACCENT}30` }}>
-          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: ACCENT }}>
+          style={{ background: 'var(--color-surface)', border: '1px solid color-mix(in srgb, var(--color-primary) 19%, transparent)' }}>
+          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--color-primary)' }}>
             이번 주 목표
           </span>
-          <span className="text-[13px] font-medium text-text">주 {weeklyGoal}회</span>
+          <span className="text-[13px] font-medium" style={{ color: 'var(--color-ink)' }}>주 {weeklyGoal}회</span>
         </div>
       )}
 
@@ -295,36 +300,38 @@ export default function MyPage() {
       <div className="mx-6 mt-6">
         <SectionLabel title="Quick Actions" />
         <div className="rounded-xl overflow-hidden"
-          style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
+          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
 
           {/* 01 */}
           <Link href="/recommend"
-            className="flex items-center gap-3 px-4 py-4 border-b border-border no-underline transition-colors hover:bg-white/[0.025]">
-            <span className="font-mono text-[10px] font-bold w-5" style={{ color: ACCENT }}>01</span>
-            <span className="flex-1 text-[14px] text-text">콘텐츠 만들기</span>
-            <span className="font-mono text-[11px]" style={{ color: ACCENT }}>→</span>
+            className="flex items-center gap-3 px-4 py-4 no-underline transition-colors hover:bg-white/[0.025]"
+            style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <span className="font-mono text-[10px] font-bold w-5" style={{ color: 'var(--color-primary)' }}>01</span>
+            <span className="flex-1 text-[14px]" style={{ color: 'var(--color-ink)' }}>콘텐츠 만들기</span>
+            <span className="font-mono text-[11px]" style={{ color: 'var(--color-primary)' }}>→</span>
           </Link>
 
           {/* 02 */}
           <Link href="/my/goal"
-            className="flex items-center gap-3 px-4 py-4 border-b border-border no-underline transition-colors hover:bg-white/[0.025]">
-            <span className="font-mono text-[10px] font-bold w-5" style={{ color: ACCENT }}>02</span>
-            <span className="flex-1 text-[14px] text-text">목표 설정하기</span>
+            className="flex items-center gap-3 px-4 py-4 no-underline transition-colors hover:bg-white/[0.025]"
+            style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <span className="font-mono text-[10px] font-bold w-5" style={{ color: 'var(--color-primary)' }}>02</span>
+            <span className="flex-1 text-[14px]" style={{ color: 'var(--color-ink)' }}>목표 설정하기</span>
             {weeklyGoal > 0 && (
-              <span className="font-mono text-[10px] text-text-faint">주 {weeklyGoal}회</span>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--color-ink-3)' }}>주 {weeklyGoal}회</span>
             )}
-            <span className="font-mono text-[11px]" style={{ color: ACCENT }}>→</span>
+            <span className="font-mono text-[11px]" style={{ color: 'var(--color-primary)' }}>→</span>
           </Link>
 
           {/* 03 */}
           <Link href="/my/connect"
             className="flex items-center gap-3 px-4 py-4 no-underline transition-colors hover:bg-white/[0.025]">
-            <span className="font-mono text-[10px] font-bold w-5" style={{ color: ACCENT }}>03</span>
-            <span className="flex-1 text-[14px] text-text">계정 연결하기</span>
+            <span className="font-mono text-[10px] font-bold w-5" style={{ color: 'var(--color-primary)' }}>03</span>
+            <span className="flex-1 text-[14px]" style={{ color: 'var(--color-ink)' }}>계정 연결하기</span>
             {connectedHandles.length > 0 && (
-              <span className="font-mono text-[10px] text-text-faint">{connectedHandles.length}개 연결됨</span>
+              <span className="font-mono text-[10px]" style={{ color: 'var(--color-ink-3)' }}>{connectedHandles.length}개 연결됨</span>
             )}
-            <span className="font-mono text-[11px]" style={{ color: ACCENT }}>→</span>
+            <span className="font-mono text-[11px]" style={{ color: 'var(--color-primary)' }}>→</span>
           </Link>
         </div>
       </div>
@@ -369,8 +376,8 @@ export default function MyPage() {
       <div className="mx-6 mt-8">
         <button
           onClick={() => { useStore.getState().resetOnboarding(); window.location.replace('/onboarding'); }}
-          className="w-full py-3 rounded-xl font-mono text-[10px] tracking-widest text-text-faint transition-opacity hover:opacity-60"
-          style={{ background: CARD, border: '1px solid rgba(255,255,255,0.07)' }}>
+          className="w-full py-3 rounded-xl font-mono text-[10px] tracking-widest transition-opacity hover:opacity-60"
+          style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-ink-3)' }}>
           온보딩 다시하기
         </button>
       </div>

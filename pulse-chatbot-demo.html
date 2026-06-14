@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse Chatbot — 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  body {
+    margin: 0; background: #020204; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 20px; font-family: 'Instrument Sans', 'Pretendard', sans-serif;
+  }
+  /* 이 박스 크기/모양은 동료가 자유롭게 바꿔도 됨. 챗봇은 100% 높이를 채움 */
+  .chat-frame {
+    width: 390px; height: 640px;
+    border-radius: 24px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    border: 1px solid #1a1a1f;
+  }
+</style>
+</head>
+<body>
+
+  <!-- 1) 챗봇이 들어갈 빈 컨테이너 -->
+  <div class="chat-frame">
+    <div id="chatbot"></div>
+  </div>
+
+  <!-- 2) 엔진 불러오기 -->
+  <script src="pulse-chatbot.js"></script>
+
+  <!-- 3) 실행 -->
+  <script>
+    /*
+     * 두 가지 방법 중 하나를 쓰면 됩니다.
+     *
+     * 방법 A) JSON 파일을 fetch 해서 쓰기 (웹서버에 올렸을 때 권장)
+     *   PulseChatbot.mountFromUrl('#chatbot', 'pulse-chatbot.json', {
+     *     onComplete: (answers) => console.log(answers)
+     *   });
+     *
+     * 방법 B) JSON 내용을 직접 넣어 쓰기 (file:// 로 그냥 더블클릭해 열어도 작동)
+     *   아래는 방법 B 예시입니다. pulse-chatbot.json 내용을 그대로 붙여 넣었어요.
+     */
+    var CONFIG = {
+      "theme": {
+        "bg": "#050507",
+        "primary": "#C8FF57",
+        "ink": "#ECEDEE",
+        "inkMuted": "#8A8A92",
+        "line": "#2A2A30",
+        "userBubbleText": "#0a0a0a"
+      },
+      "messages": {
+        "intro": "안녕하세요! 같이 콘텐츠 방향을 잡아볼게요 ✦",
+        "complete": "완벽해요! 답변 잘 해주셨어요 ✦"
+      },
+      "inputPlaceholder": "여기에 입력하세요…",
+      "questions": [
+        { "category": "열정 · PASSION", "q": "조회수 0이어도 1년 내내 만들고 싶은 게 있나요?", "hint": "잘 될지 몰라도, 그냥 좋아서 하게 되는 것.", "placeholder": "예: 오래된 물건 고치는 법, 새벽 혼밥 레시피…" },
+        { "category": "소비 · SPENDING", "q": "지난 1년, 가장 많이 돈 쓴 취미는?", "hint": "카드 내역에 가장 자주 뜨는 카테고리가 힌트예요.", "placeholder": "예: 카페 투어, 등산 장비, 보드게임…" },
+        { "category": "강점 · STRENGTH", "q": "주변에서 자주 묻거나 칭찬받는 게 있어요?", "hint": "\"너 그거 어떻게 해?\" 라는 말을 듣는 것.", "placeholder": "예: 여행 코스 짜기, 다이어트 식단…" },
+        { "category": "오디언스 · AUDIENCE", "q": "내 영상을 누가 봐줬으면 좋겠어요?", "hint": "팔로워 한 명의 모습을 구체적으로 떠올려보세요.", "placeholder": "예: 자취 2년 차 직장인, 육아 중인 30대 엄마…" },
+        { "category": "주제 · TOPIC", "q": "이번에 만들고 싶은 영상 주제가 있나요?", "hint": "트렌드 키워드와 내 니치를 엮어도 좋아요.", "placeholder": "예: 짠테크 직장인 점심 도시락 5분 컷…" },
+        { "category": "포맷 · FORMAT", "q": "어떤 형식으로 만들 건가요?", "hint": "촬영 환경과 편집 수준도 같이 적어주면 더 정확해요.", "placeholder": "예: 60초 쇼츠, 집에서 혼자, 편집 초보…" },
+        { "category": "훅 · HOOK", "q": "첫 3초를 어떻게 열고 싶어요?", "hint": "훅이 조회수의 70%를 결정해요.", "placeholder": "예: 공감형 '나만 이런가요?', 충격형 '이걸 몰랐다면'…" }
+      ]
+    };
+
+    PulseChatbot.mount('#chatbot', CONFIG, {
+      onComplete: function (answers) {
+        // 질문이 모두 끝나면 여기로 답변 배열이 들어옵니다.
+        // 동료는 이 자리에서 AI 분석 화면으로 넘기거나, 서버로 보내면 됩니다.
+        console.log('수집된 답변:', answers);
+      }
+    });
+  </script>
+
+</body>
+</html>

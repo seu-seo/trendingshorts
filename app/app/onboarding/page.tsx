@@ -1,16 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import type { AgeGroup } from '@/lib/types';
+import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
 
-const ACCENT = '#C8FF57';
-const BG = '#0A0A0A';
-const SURFACE = '#111114';
-const BORDER = '#2A2A30';
-const TEXT = '#F2F0EB';
-const DIM = '#8A8A92';
+// v7 테마 토큰. 색은 globals.css의 [data-theme] 블록이 공급한다.
+const ACCENT = 'var(--color-primary)';
+const ACCENT_SOFT = 'var(--color-primary-soft)';
+const BG = 'var(--color-bg)';
+const SURFACE = 'var(--color-surface)';
+const BORDER = 'var(--color-border)';
+const TEXT = 'var(--color-ink)';
+const DIM = 'var(--color-ink-2)';
 
 const PLATFORMS = [
   { value: 'tiktok',    label: '틱톡' },
@@ -45,6 +48,12 @@ export default function OnboardingPage() {
   const [catChip, setCatChip] = useState('');
   const [catText, setCatText] = useState('');
   const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('');
+
+  // v7 PoC: 온보딩 진입 시 기본 테마(인디고) 적용, 이탈 시 해제.
+  useEffect(() => {
+    applyTheme('indigo');
+    return () => clearTheme();
+  }, []);
 
   const category = catText.trim() || catChip;
   const canSubmit = !!category;
@@ -141,7 +150,7 @@ export default function OnboardingPage() {
                   style={{
                     borderRadius: 4,
                     border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? `${ACCENT}18` : 'transparent',
+                    background: sel ? ACCENT_SOFT : 'transparent',
                     color: sel ? ACCENT : TEXT,
                     fontWeight: sel ? 600 : 400,
                   }}>
@@ -169,7 +178,7 @@ export default function OnboardingPage() {
                   style={{
                     borderRadius: 3,
                     border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? `${ACCENT}18` : 'transparent',
+                    background: sel ? ACCENT_SOFT : 'transparent',
                     color: sel ? ACCENT : DIM,
                     fontWeight: sel ? 600 : 400,
                   }}>
@@ -218,7 +227,7 @@ export default function OnboardingPage() {
                   style={{
                     borderRadius: 4,
                     border: `1px solid ${sel ? ACCENT : BORDER}`,
-                    background: sel ? `${ACCENT}18` : 'transparent',
+                    background: sel ? ACCENT_SOFT : 'transparent',
                     color: sel ? ACCENT : DIM,
                     fontWeight: sel ? 600 : 400,
                   }}>

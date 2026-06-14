@@ -200,7 +200,7 @@ function OnboardingView({ onDone }: { onDone: (answers: string[]) => void }) {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) send(); }}
             placeholder="여기에 답을 입력해보세요"
             autoComplete="off"
             style={{ flex: 1, border: '1px solid var(--color-border-2)', borderRadius: 16, padding: '14px 16px', fontSize: 14, color: 'var(--color-ink)', background: 'var(--color-surface)', outline: 'none' }}

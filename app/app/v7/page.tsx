@@ -53,15 +53,8 @@ export default function V7FlowPage() {
     return <RivalsView onMake={() => setStep('script')} onTrends={() => setStep('trends')} />;
   }
 
-  // ⑤ 는 다음 커밋에서 구현 — 임시 (selectedTrend 참조 유지)
-  void selectedTrend;
-  return (
-    <div style={{ padding: '8px 24px 26px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: 12 }}>
-      <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-ink)' }}>{step} 화면</div>
-      <div style={sub}>다음 단계에서 구현 예정이에요.</div>
-      <button onClick={() => setStep('profile')} style={ghostBtn}>← 대화 결과로</button>
-    </div>
-  );
+  // ⑤ 스크립트/콘티
+  return <ScriptContiView trend={selectedTrend} onNextTopic={() => setStep('trends')} />;
 }
 
 /* ── ① 온보딩 대화 ───────────────────────────────────────────── */
@@ -266,6 +259,111 @@ function TrendsView({ direction, onPick, onRivals }: { direction: string; onPick
   );
 }
 
+/* ── ⑤ 스크립트 / 콘티 ──────────────────────────────────────── */
+const SCRIPTS = [
+  ['정보형', '"자취생이라면 꼭 알아야 할 계란요리 5가지, 지금 알려드릴게요."'],
+  ['스토리형', '"자취 첫날 계란프라이도 못 했던 제가, 이제 5가지나 합니다."'],
+  ['훅형', '"계란 하나로 이게 된다고요? 끝까지 보면 깜짝 놀라요."'],
+];
+const CUTS = [
+  ['CUT 1 · 훅', '0-3초', 'M12 2v4M12 18v4', '"자취생이라면 꼭 봐야 해요"', '계란 들고 정면 클로즈업으로 시작'],
+  ['CUT 2 · 전환', '3-6초', 'M5 12h14', '"이거 하나로 5가지가 돼요"', '프라이팬 위 계란, 손 동작 강조'],
+  ['CUT 3 · 본론', '6-12초', 'M4 4h16v16H4z', '"첫째 스크램블, 둘째..."', '요리 과정 빠른 컷 편집'],
+  ['CUT 4 · 클로징', '12-15초', 'M20 6L9 17l-5-5', '"여러분도 해보세요!"', '완성 요리와 먹는 모습 마무리'],
+];
+
+function ScriptContiView({ trend, onNextTopic }: { trend: string; onNextTopic: () => void }) {
+  const [mode, setMode] = useState<'select' | 'loading' | 'script' | 'conti'>('select');
+
+  function make(target: 'script' | 'conti') {
+    setMode('loading');
+    setTimeout(() => setMode(target), 1500);
+  }
+
+  return (
+    <div style={{ padding: '8px 24px 26px', flex: 1 }}>
+      <div style={{ fontSize: 11, color: 'var(--color-ink-3)', fontWeight: 600, marginBottom: 8, paddingLeft: 2 }}>선택한 주제</div>
+      <div style={{ background: 'var(--color-surface)', borderRadius: 15, padding: '14px 16px', marginBottom: 18, fontSize: 14, color: 'var(--color-ink)', fontWeight: 700, display: 'flex', gap: 9, alignItems: 'center', boxShadow: '0 3px 14px rgba(80,80,200,.07)' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+        {trend}
+      </div>
+
+      {mode === 'select' && (
+        <>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 6, color: 'var(--color-ink)' }}>어떻게 만들어볼까요?</div>
+          <div style={{ ...sub, marginBottom: 20 }}>둘 다 받아볼 수도 있어요</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <MakeChoice label="스크립트" desc={'뭐라고 말할지\n대본 3종'} onClick={() => make('script')}
+              icon={<path d="M4 4h16v16H4zM8 9h8M8 13h6" />} />
+            <MakeChoice label="콘티" desc={'어떻게 찍을지\n4컷 구성'} onClick={() => make('conti')}
+              icon={<><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18M9 4v6" /></>} />
+          </div>
+        </>
+      )}
+
+      {mode === 'loading' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '50px 0', gap: 16 }}>
+          <div style={{ width: 32, height: 32, border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'v7rot .8s linear infinite' }} />
+          <div style={{ fontSize: 14, color: 'var(--color-ink-2)', fontWeight: 600 }}>만들고 있어요...</div>
+          <style>{`@keyframes v7rot{to{transform:rotate(360deg)}}`}</style>
+        </div>
+      )}
+
+      {mode === 'script' && (
+        <>
+          <span style={eyebrow}>스크립트 3종</span>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', margin: '4px 0 16px', color: 'var(--color-ink)' }}>마음에 드는 걸로 골라보세요</div>
+          {SCRIPTS.map(([tag, text]) => (
+            <div key={tag} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg, 22px)', padding: 17, marginBottom: 12, boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+              <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 800, color: '#fff', background: 'var(--color-primary)', padding: '5px 12px', borderRadius: 999, marginBottom: 10 }}>{tag}</span>
+              <div style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--color-ink)' }}>{text}</div>
+            </div>
+          ))}
+          <button onClick={() => setMode('select')} style={{ ...ghostFullBtn, marginTop: 6 }}>콘티도 받아보기</button>
+          <button onClick={onNextTopic} style={{ ...ctaBtn, marginTop: 10 }}>저장하고 다음 주제 받기<Arrow /></button>
+        </>
+      )}
+
+      {mode === 'conti' && (
+        <>
+          <span style={eyebrow}>콘티 4컷</span>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', margin: '4px 0 16px', color: 'var(--color-ink)' }}>이 순서로 찍어보세요</div>
+          {CUTS.map(([label, time, path, line, note]) => (
+            <div key={label} style={{ borderRadius: 'var(--radius-lg, 22px)', overflow: 'hidden', marginBottom: 12, background: 'var(--color-surface)', boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+              <div style={{ background: 'var(--color-primary-soft)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--color-primary)' }}>{label}</span>
+                <span style={{ fontSize: 12, color: 'var(--color-ink-2)', fontWeight: 600 }}>{time}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '90px 1fr' }}>
+                <div style={{ aspectRatio: '1', background: 'var(--color-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.55 }}><path d={path} /></svg>
+                </div>
+                <div style={{ padding: '13px 15px' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.5, marginBottom: 5, color: 'var(--color-ink)' }}>{line}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-ink-2)', lineHeight: 1.5 }}>{note}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <button onClick={onNextTopic} style={{ ...ctaBtn, marginTop: 6 }}>저장하고 다음 주제 받기<Arrow /></button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MakeChoice({ label, desc, icon, onClick }: { label: string; desc: string; icon: React.ReactNode; onClick: () => void }) {
+  return (
+    <div onClick={onClick} style={{ borderRadius: 'var(--radius-lg, 22px)', padding: '24px 16px', textAlign: 'center', cursor: 'pointer', background: 'var(--color-surface)', boxShadow: '0 3px 16px rgba(80,80,200,.07)' }}>
+      <div style={{ width: 44, height: 44, borderRadius: 14, background: 'var(--color-primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+      </div>
+      <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, color: 'var(--color-ink)' }}>{label}</div>
+      <div style={{ fontSize: 12, color: 'var(--color-ink-2)', lineHeight: 1.45, whiteSpace: 'pre-line' }}>{desc}</div>
+    </div>
+  );
+}
+
 /* ── ④ 라이벌 크리에이터 (계정 + 최근 영상 + 성장 스토리) ────────── */
 const RIVALS = [
   { ava: '민', handle: '자취요리_민지', meta: '팔로워 2,400 · 자취 집밥', grow: '3개월 전엔 50명이었대요', videos: [{ thumb: '🍳', title: '계란말이 꿀팁', views: '12만' }, { thumb: '🍚', title: '5분 덮밥', views: '8.3만' }] },
@@ -329,5 +427,4 @@ const eyebrow: React.CSSProperties = { display: 'inline-flex', alignItems: 'cent
 const sub: React.CSSProperties = { fontSize: 14, color: 'var(--color-ink-2)', lineHeight: 1.65 };
 const chip: React.CSSProperties = { background: 'var(--color-primary-soft)', borderRadius: 999, padding: '6px 13px', fontSize: 13, color: 'var(--color-primary)', fontWeight: 700 };
 const ctaBtn: React.CSSProperties = { width: '100%', padding: 18, border: 'none', borderRadius: 999, fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'var(--color-primary)', color: '#fff', boxShadow: 'var(--shadow-cta)' };
-const ghostBtn: React.CSSProperties = { padding: '12px 20px', border: '1px solid var(--color-border)', borderRadius: 999, fontSize: 14, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: 'var(--color-ink-2)' };
 const ghostFullBtn: React.CSSProperties = { width: '100%', padding: 18, border: '1px solid var(--color-border-2)', borderRadius: 999, fontSize: 16, fontWeight: 700, cursor: 'pointer', letterSpacing: '-0.02em', background: 'var(--color-surface)', color: 'var(--color-ink)' };

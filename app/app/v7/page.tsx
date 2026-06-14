@@ -1,8 +1,36 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { requestPersona } from '@/lib/onboarding/requestPersona';
+import type { PersonaInput, PersonaResult, OnboardingCategory } from '@/lib/types';
 
 type Step = 'onboarding' | 'profile' | 'trends' | 'rivals' | 'script';
+
+// 대화 답변 → persona API 고정 스키마(PersonaInput) 매핑
+const CATEGORY_KW: { cat: OnboardingCategory; kws: string[] }[] = [
+  { cat: 'food', kws: ['요리', '음식', '레시피', '먹', '카페', '밥', '베이킹', '집밥'] },
+  { cat: 'fitness', kws: ['운동', '헬스', '다이어트', '요가', '러닝', '등산', '홈트'] },
+  { cat: 'beauty', kws: ['뷰티', '화장', '메이크업', '패션', '스킨', '코디', '꾸미'] },
+  { cat: 'gaming', kws: ['게임', '롤', '배그', '스팀', '플스'] },
+  { cat: 'art', kws: ['음악', '그림', '드로잉', '악기', '노래', '댄스', '춤', '예술'] },
+  { cat: 'edu', kws: ['정보', '꿀팁', '공부', '책', '독서', '재테크', '코딩', '개발'] },
+];
+function deriveCategory(answers: string[]): OnboardingCategory {
+  const text = answers.join(' ').toLowerCase();
+  for (const g of CATEGORY_KW) if (g.kws.some((k) => text.includes(k.toLowerCase()))) return g.cat;
+  return 'lifestyle';
+}
+function buildPersonaInput(answers: string[]): PersonaInput {
+  return {
+    platform: 'multi',
+    category: deriveCategory(answers),
+    experience: 1,
+    goal: 'growth',
+    styles: answers.filter(Boolean),
+    pain: 'idea',
+    uploadFreq: 'mid',
+  };
+}
 
 const STEP_ORDER: Step[] = ['onboarding', 'profile', 'trends', 'rivals', 'script'];
 
@@ -47,16 +75,31 @@ const PROFILE_FALLBACK = {
 export default function V7FlowPage() {
   const [step, setStep] = useState<Step>('onboarding');
   const [selectedTrend, setSelectedTrend] = useState<string>('자취생 3분 계란요리 5가지');
+  const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
+  const [personaCategory, setPersonaCategory] = useState<OnboardingCategory>('lifestyle');
 
   // 대화 결과는 데모처럼 깔끔한 mock 프로필로 표시 (입력 답변이 잘리거나 난잡해지는 문제 방지)
   const profile = PROFILE_FALLBACK;
+
+  // ① 온보딩 대화 답변 → persona API 호출 (키 없으면 fallback 반환)
+  async function handleOnboardingDone(answers: string[]) {
+    const input = buildPersonaInput(answers);
+    setPersonaCategory(input.category);
+    try {
+      const result = await requestPersona(input);
+      setPersonaResult(result);
+    } catch {
+      // 호출 실패해도 흐름은 진행 (personaResult = null → mock 프로필 fallback)
+    }
+    setStep('profile');
+  }
 
   const idx = STEP_ORDER.indexOf(step);
   const goBack = () => { if (idx > 0) setStep(STEP_ORDER[idx - 1]); };
 
   let view: React.ReactNode;
   if (step === 'onboarding') {
-    view = <OnboardingView onDone={() => setStep('profile')} />;
+    view = <OnboardingView onDone={handleOnboardingDone} />;
   } else if (step === 'profile') {
     view = <ProfileView profile={profile} onNext={() => setStep('trends')} />;
   } else if (step === 'trends') {
@@ -82,12 +125,13 @@ export default function V7FlowPage() {
 }
 
 /* ── ① 온보딩 대화 ───────────────────────────────────────────── */
-function OnboardingView({ onDone }: { onDone: (answers: string[]) => void }) {
+function OnboardingView({ onDone }: { onDone: (answers: string[]) => void | Promise<void> }) {
   const [started, setStarted] = useState(false);
   const [messages, setMessages] = useState<{ who: 'ai' | 'user'; text: string }[]>([]);
   const [hint, setHint] = useState('');
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [idx, setIdx] = useState(0);
   const answersRef = useRef<string[]>([]);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -126,8 +170,19 @@ function OnboardingView({ onDone }: { onDone: (answers: string[]) => void }) {
     if (next < CONVO.length) {
       setTimeout(() => ask(next), 500);
     } else {
+      setSubmitting(true);
       setTimeout(() => onDone(answersRef.current), 600);
     }
+  }
+
+  if (submitting) {
+    return (
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: '24px 26px' }}>
+        <div style={{ width: 32, height: 32, border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'v7rot .8s linear infinite' }} />
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-ink-2)' }}>AI가 당신의 콘텐츠 방향을 정리하고 있어요…</div>
+        <style>{`@keyframes v7rot{to{transform:rotate(360deg)}}`}</style>
+      </div>
+    );
   }
 
   if (!started) {

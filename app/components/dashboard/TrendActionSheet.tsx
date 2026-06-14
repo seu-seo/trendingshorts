@@ -43,23 +43,23 @@ export default function TrendActionSheet() {
         className="fixed bottom-0 left-1/2 z-50 w-full max-w-[420px] rounded-t-3xl px-5 pt-5 pb-8"
         style={{
           transform: 'translateX(-50%)',
-          background: 'var(--surface-1)',
-          borderTop: '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--color-surface)',
+          borderTop: '1px solid var(--color-border)',
         }}
       >
         {/* 핸들 */}
-        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'rgba(255,255,255,0.2)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'var(--color-border-2)' }} />
 
         {/* 영상 정보 */}
         <div className="flex gap-3 items-center mb-5 px-1">
-          <div className="text-3xl w-12 h-12 rounded-xl bg-surface-2 grid place-items-center flex-shrink-0">
+          <div className="text-3xl w-12 h-12 rounded-xl grid place-items-center flex-shrink-0" style={{ background: 'var(--color-soft)' }}>
             {trend.thumb}
           </div>
           <div className="min-w-0">
-            <div className="text-[13px] font-semibold text-text leading-snug line-clamp-2 mb-0.5">
+            <div className="text-[13px] font-semibold leading-snug line-clamp-2 mb-0.5" style={{ color: 'var(--color-ink)' }}>
               {trend.title}
             </div>
-            <div className="font-mono text-[10px] text-text-faint">
+            <div className="font-mono text-[10px]" style={{ color: 'var(--color-ink-3)' }}>
               {trend.creator} · {trend.platformLabel}
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function TrendActionSheet() {
           <button
             onClick={handleProduce}
             className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
-            style={{ background: 'var(--accent-lime)', color: '#0a0a0a' }}
+            style={{ background: 'var(--color-primary)', color: 'var(--color-bg)' }}
           >
             이 트렌드로 콘텐츠 만들기 →
           </button>
@@ -79,9 +79,9 @@ export default function TrendActionSheet() {
             disabled={!trend.videoUrl}
             className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
             style={{
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.12)',
-              color: trend.videoUrl ? 'var(--text)' : 'var(--text-faint)',
+              background: 'var(--color-soft)',
+              border: '1px solid var(--color-border)',
+              color: trend.videoUrl ? 'var(--color-ink)' : 'var(--color-ink-3)',
               cursor: trend.videoUrl ? 'pointer' : 'not-allowed',
             }}
           >
@@ -92,9 +92,9 @@ export default function TrendActionSheet() {
               onClick={() => { toggleSaveTrend(trend.id); close(); }}
               className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
               style={{
-                background: 'rgba(255,60,60,0.08)',
-                border: '1px solid rgba(255,60,60,0.25)',
-                color: '#ff6b6b',
+                background: 'color-mix(in srgb, var(--color-hot) 8%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--color-hot) 25%, transparent)',
+                color: 'var(--color-hot)',
               }}
             >
               영상 저장 취소
@@ -104,9 +104,9 @@ export default function TrendActionSheet() {
               onClick={() => { toggleSaveTrend(trend.id); close(); }}
               className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: 'var(--text)',
+                background: 'var(--color-soft)',
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-ink)',
               }}
             >
               이 영상 저장하기

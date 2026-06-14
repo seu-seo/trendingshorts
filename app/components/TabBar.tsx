@@ -51,9 +51,10 @@ export default function TabBar() {
 
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 border-t border-border flex justify-around z-10 pt-2.5 pb-5"
+      className="absolute bottom-0 left-0 right-0 border-t flex justify-around z-10 pt-2.5 pb-5"
       style={{
-        background: 'rgba(10, 10, 11, 0.95)',
+        borderColor: 'var(--color-border, #2A2A30)',
+        background: 'var(--color-surface, rgba(10, 10, 11, 0.95))',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
       }}
@@ -65,9 +66,8 @@ export default function TabBar() {
             key={t.key}
             href={t.href}
             onClick={() => setTab(t.key)}
-            className={`flex flex-col items-center gap-1 px-6 py-1 transition-colors ${
-              active ? 'text-accent-lime' : 'text-text-faint hover:text-text'
-            }`}
+            className="flex flex-col items-center gap-1 px-6 py-1 transition-colors"
+            style={{ color: active ? 'var(--color-primary, #C8FF57)' : 'var(--color-ink-3, #5A5A62)' }}
           >
             <div className="w-[22px] h-[22px] grid place-items-center">{t.icon}</div>
             <div className="font-mono text-[9px] tracking-wider uppercase">{t.label}</div>

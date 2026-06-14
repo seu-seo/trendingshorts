@@ -7,6 +7,22 @@ import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
 import type { ThemeName } from '@/lib/themes/types';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import chatConfig from '@/lib/onboarding/chat-questions.json';
+import { requestPersona } from '@/lib/onboarding/requestPersona';
+import type { PersonaInput, OnboardingCategory } from '@/lib/types';
+
+// 7문답 자유서술 답변을 persona API 의 고정 스키마(PersonaInput)로 매핑.
+// 한계: 열정/강점/오디언스 서술은 스키마에 슬롯이 없어 styles(주제/포맷/훅)만 전달.
+function buildPersonaInput(category: string, answers: string[]): PersonaInput {
+  return {
+    platform: 'multi',
+    category: category as OnboardingCategory,
+    experience: 1,
+    goal: 'growth',
+    styles: answers.slice(4).filter(Boolean),
+    pain: 'idea',
+    uploadFreq: 'mid',
+  };
+}
 
 // v7 테마 토큰. 색은 globals.css의 [data-theme] 블록이 공급한다.
 const ACCENT = 'var(--color-primary)';
@@ -137,9 +153,15 @@ export default function OnboardingPage() {
     return best;
   }
 
-  // 대화 결과를 store에 저장하고 대시보드로 이동.
-  function finish(all: string[]) {
+  // 대화 결과로 persona API 를 호출하고 대시보드로 이동. (결과 저장은 다음 커밋)
+  async function finish(all: string[]) {
     const category = deriveCategory(all);
+    const input = buildPersonaInput(category, all);
+    try {
+      await requestPersona(input); // persona API 연결 (응답 활용은 다음 단계)
+    } catch {
+      // 호출 실패해도 온보딩 완료 흐름은 진행
+    }
     completeOnboarding(['youtube', 'tiktok', 'instagram'], category, '20s', null);
     router.replace('/');
   }

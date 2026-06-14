@@ -84,3 +84,36 @@ html, body {
 .animate-slide-up {
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ============================================================
+   v7 theme tokens — light themes selected via [data-theme].
+   These use a separate --color-*/structure namespace so they
+   never collide with the legacy dark :root tokens above.
+   ============================================================ */
+
+/* v7 — A 인디고 */
+[data-theme="indigo"] {
+  --color-bg: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-soft: #F5F3FA;
+  --color-tint: #F3EFFB;
+  --color-border: #EFEBF5;
+  --color-border-2: #E3DCEF;
+  --color-ink: #16131F;
+  --color-ink-2: #6A6478;
+  --color-ink-3: #A6A0B5;
+  --color-primary: #4F46E5;
+  --color-primary-deep: #4338CA;
+  --color-primary-soft: #EEF0FD;
+  --color-primary-mid: #818CF8;
+  --color-up: #10B981;
+  --color-hot: #F43F8E;
+  --color-warm: #F59E0B;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --border-width: 1px;
+  --shadow: 0 10px 34px rgba(80, 80, 200, .12);
+  --shadow-cta: 0 10px 26px rgba(79, 70, 229, .34);
+  --page-grad: linear-gradient(165deg, #EEF1FD 0%, #F3F0FB 50%, #EAF0FA 100%);
+}

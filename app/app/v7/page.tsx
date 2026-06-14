@@ -46,23 +46,17 @@ const PROFILE_FALLBACK = {
 
 export default function V7FlowPage() {
   const [step, setStep] = useState<Step>('onboarding');
-  const [answers, setAnswers] = useState<string[]>([]);
   const [selectedTrend, setSelectedTrend] = useState<string>('자취생 3분 계란요리 5가지');
 
-  // ① 대화 답변을 ② CONTENT PROFILE 에 반영
-  const profile = {
-    direction: answers[1]?.trim() || PROFILE_FALLBACK.direction,
-    strengths: answers[2]?.trim() ? [answers[2].trim()] : PROFILE_FALLBACK.strengths,
-    target: answers[3]?.trim() || PROFILE_FALLBACK.target,
-    format: PROFILE_FALLBACK.format,
-  };
+  // 대화 결과는 데모처럼 깔끔한 mock 프로필로 표시 (입력 답변이 잘리거나 난잡해지는 문제 방지)
+  const profile = PROFILE_FALLBACK;
 
   const idx = STEP_ORDER.indexOf(step);
   const goBack = () => { if (idx > 0) setStep(STEP_ORDER[idx - 1]); };
 
   let view: React.ReactNode;
   if (step === 'onboarding') {
-    view = <OnboardingView onDone={(a) => { setAnswers(a); setStep('profile'); }} />;
+    view = <OnboardingView onDone={() => setStep('profile')} />;
   } else if (step === 'profile') {
     view = <ProfileView profile={profile} onNext={() => setStep('trends')} />;
   } else if (step === 'trends') {

@@ -55,7 +55,18 @@ const THUMBNAIL_MAP: Record<string, string> = {
 
 interface VideoDetail {
   id: string;
-  snippet: { title: string; channelTitle: string; publishedAt: string; categoryId: string; tags?: string[] };
+  snippet: {
+    title: string;
+    channelTitle: string;
+    publishedAt: string;
+    categoryId: string;
+    tags?: string[];
+    thumbnails?: {
+      maxres?: { url: string };
+      high?: { url: string };
+      medium?: { url: string };
+    };
+  };
   statistics: { viewCount?: string; likeCount?: string; commentCount?: string };
   contentDetails: { duration: string };
 }
@@ -109,7 +120,7 @@ function processVideos(items: (VideoDetail & { requestedCid: string })[]): Trend
       shares: 0,
       engagementRate,
       duration: formatDuration(seconds),
-      thumb: THUMBNAIL_MAP[video.requestedCid] || '🎬',
+      thumb: video.snippet.thumbnails?.maxres?.url || video.snippet.thumbnails?.high?.url || video.snippet.thumbnails?.medium?.url || '',
       time: timeAgo(video.snippet.publishedAt),
       hashtags: tags.length ? tags.join(' ') : '#shorts',
       videoUrl: `https://www.youtube.com/shorts/${video.id}`,

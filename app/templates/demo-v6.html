@@ -4433,6 +4433,11 @@
   .profile-chip:nth-child(2) { background: rgba(255,66,116,0.10); color: #FF4274; border-color: rgba(255,66,116,0.28); }
   .profile-chip:nth-child(3) { background: rgba(56,182,255,0.10); color: #38B6FF; border-color: rgba(56,182,255,0.28); }
 
+  .persona-chat-insight { margin-bottom: 16px; }
+  .pci-label { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
+  .pci-item { background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; }
+  .pci-q { font-size: 10px; color: var(--gray); margin-bottom: 4px; line-height: 1.4; }
+  .pci-a { font-size: 13px; color: var(--ink); font-weight: 500; line-height: 1.5; }
   .persona-nudge { text-align: center; padding: 16px 8px 14px; }
   .persona-nudge-title { font-family: var(--font-body); font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .persona-nudge-sub { font-family: var(--font-body); font-size: 13px; color: var(--gray); margin-bottom: 18px; line-height: 1.6; }
@@ -4829,8 +4834,8 @@
         <div class="persona-sub">방금 답해주신 내용을 바탕으로 정리했어요</div>
         <div class="persona-hero">
           <div class="persona-hero-label">CONTENT PROFILE</div>
-          <div class="persona-hero-type">자취생을 위한<br><em>쉬운 집밥</em> 크리에이터</div>
-          <div class="persona-hero-tags">
+          <div class="persona-hero-type" id="persona-hero-type">자취생을 위한<br><em>쉬운 집밥</em> 크리에이터</div>
+          <div class="persona-hero-tags" id="persona-hero-tags">
             <span class="persona-hero-tag phero-lime">집밥</span>
             <span class="persona-hero-tag phero-pink">자취생</span>
             <span class="persona-hero-tag phero-blue">쇼츠</span>
@@ -4858,6 +4863,7 @@
             <span class="profile-chip">꾸준함</span>
           </div>
         </div>
+        <div class="persona-chat-insight" id="persona-chat-insight" style="display:none;"></div>
         <div class="persona-nudge">
           <div class="persona-nudge-title">자, 그럼 첫 영상 찍어볼까요?</div>
           <div class="persona-nudge-sub">당신 주제로 지금 반응 좋은 영상을 모아왔어요</div>
@@ -4873,7 +4879,7 @@
         <button class="v7-back-btn" onclick="goTo('screen-persona')">←</button>
       </div>
       <div class="v7-content">
-        <span class="v7-eyebrow">자취 집밥 · 지금 뜨는 영상</span>
+        <span class="v7-eyebrow" id="v7-eyebrow-text">자취 집밥 · 지금 뜨는 영상</span>
         <div class="v7-title">이런 영상이<br>요즘 <em>반응</em>이 좋아요</div>
         <div class="v7-sub">마음에 드는 걸 누르면 바로 만들 수 있어요</div>
         <div class="v7-search-wrap">
@@ -7305,6 +7311,8 @@
   });
 
   /* ── CHATBOT ONBOARDING ── */
+  let cbAnswers = [];
+
   const CB_CONVO = [
     { q: '조회수 0이어도 1년 내내 만들고 싶은 게 있나요?',                                               hint: '예: 요리 영상, 일상 브이로그, 게임 리뷰...' },
     { q: '지난 1년, 가장 많은 돈을 쓴 취미는?',                                                          hint: '예: 카페 투어, 헬스장, 레고, 여행...' },
@@ -7314,7 +7322,7 @@
   let cbIdx = 0, cbTyping = false;
 
   function cbReset() {
-    cbIdx = 0; cbTyping = false;
+    cbIdx = 0; cbTyping = false; cbAnswers = [];
     document.getElementById('cb-body').innerHTML = '';
     document.getElementById('cb-hint').textContent = '';
     document.getElementById('cb-online-label').textContent = '온라인';
@@ -7382,6 +7390,7 @@
     document.getElementById('cb-body').appendChild(bubble);
     inp.value = ''; document.getElementById('cb-send').disabled = true;
     document.getElementById('cb-hint').textContent = '';
+    cbAnswers.push({ q: CB_CONVO[cbIdx].q.split('\n')[0], a: val });
     cbSetInput(false); cbScroll(); cbIdx++; cbUpdateProg();
     if (cbIdx < CB_CONVO.length) { setTimeout(cbAskNext, 500); }
     else {
@@ -7420,16 +7429,79 @@
   function v7MakeScript() { v7ShowMaking('script'); }
   function v7MakeConti()  { v7ShowMaking('conti'); }
 
-  function v7ShowMaking(type) {
+  async function v7ShowMaking(type) {
     document.getElementById('v7-make-select').style.display = 'none';
     document.getElementById('v7-make-loading').style.display = 'block';
+
+    if (type === 'conti') {
+      try {
+        const catLabels = { food: '먹방/요리', beauty: '뷰티', fitness: '운동', travel: '여행', game: '게임', fashion: '패션' };
+        const userCats = answers.categories.length > 0 ? answers.categories.map(c => catLabels[c] || c).join(', ') : '일반';
+        const platformHint = answers.platforms.length > 0 ? answers.platforms.join(', ') : 'youtube';
+        const res = await fetch('http://localhost:3001/api/conti', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            script: {
+              hook: `${v7Topic}에 대해 꼭 알아야 할 것, 지금 알려드릴게요.`,
+              body: `${v7Topic}의 핵심 포인트를 단계별로 설명해드릴게요. 카테고리: ${userCats}`,
+              cta: `${v7Topic} 지금 바로 따라해보세요! (플랫폼: ${platformHint})`
+            },
+            tone: 'hooking',
+            concept: null
+          })
+        });
+        const data = await res.json();
+        document.getElementById('v7-make-loading').style.display = 'none';
+        const r = document.getElementById('v7-make-result');
+        r.style.display = 'block';
+        r.innerHTML = v7ContiHTMLFromAPI(data);
+      } catch (e) {
+        document.getElementById('v7-make-loading').style.display = 'none';
+        const r = document.getElementById('v7-make-result');
+        r.style.display = 'block';
+        r.innerHTML = v7ContiHTML();
+      }
+      document.querySelector('#screen-v7-make .v7-content').scrollTop = 0;
+      return;
+    }
+
     setTimeout(() => {
       document.getElementById('v7-make-loading').style.display = 'none';
       const r = document.getElementById('v7-make-result');
       r.style.display = 'block';
-      r.innerHTML = type === 'script' ? v7ScriptHTML() : v7ContiHTML();
+      r.innerHTML = v7ScriptHTML();
       document.querySelector('#screen-v7-make .v7-content').scrollTop = 0;
     }, 1500);
+  }
+
+  function v7ContiHTMLFromAPI(data) {
+    const { cuts = [], trendPoint = '' } = data;
+    const svgMap = {
+      closeup: 'M12 2C9.2 2 7 4.2 7 7s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 12c-5.3 0-8 2.7-8 4v2h16v-2c0-1.3-2.7-4-8-4z',
+      split:   'M3 4h18v16H3zM12 4v16',
+      front:   'M3 4h18v16H3zM9 4v16',
+      upper:   'M3 8h18v12H3zM12 2v6',
+    };
+    return `<span class="v7-section-eyebrow">콘티 4컷${data.source === 'live' ? ' · AI 생성' : ' · 미리보기'}</span>
+      <div class="v7-result-title">이 순서로 찍어보세요</div>
+      ${trendPoint ? `<div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">${trendPoint}</div>` : ''}
+      ${cuts.map(cut => `
+        <div class="v7-conti-card">
+          <div class="v7-conti-head"><span class="v7-conti-lbl">CUT ${cut.index} · ${cut.part}</span><span class="v7-conti-time">${cut.timeRange}</span></div>
+          <div class="v7-conti-body">
+            <div class="v7-conti-thumb">
+              ${cut.imageUrl
+                ? `<img src="${cut.imageUrl}" style="width:100%;height:100%;object-fit:cover;" />`
+                : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="${svgMap[cut.sketchType] || svgMap.front}"/></svg>`}
+            </div>
+            <div class="v7-conti-tx">
+              <div class="v7-conti-s">${cut.dialogue}</div>
+              <div class="v7-conti-n">${cut.shootingMemo}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+      <button class="welcome-start-btn" onclick="v7SaveDone()" style="max-width:100%;margin:6px 0 0;">저장하고 다음 주제 받기</button>`;
   }
 
   function v7ScriptHTML() {
@@ -7478,8 +7550,223 @@
       </div>`;
   }
 
+  // ── 카테고리별 페르소나 데이터 ──
+  const PERSONA_DB = {
+    food:    { keyword: '맛있는 요리',  tags: ['요리', '먹방', '레시피'],  direction: '쉽고 맛있는 요리 레시피 콘텐츠',     strengths: ['따라하기 쉬운 설명', '식욕 자극', '실용적인 팁'] },
+    beauty:  { keyword: '뷰티·메이크업', tags: ['뷰티', '메이크업', '스킨케어'], direction: '트렌드 뷰티 & 메이크업 팁 콘텐츠', strengths: ['트렌드 감각', '꼼꼼한 설명', '공감대 형성'] },
+    fitness: { keyword: '운동·홈트',    tags: ['홈트', '운동', '다이어트'], direction: '집에서 따라하는 운동 루틴 콘텐츠',     strengths: ['동기부여', '쉬운 따라하기', '꾸준함'] },
+    travel:  { keyword: '여행·브이로그', tags: ['여행', '브이로그', '여행팁'], direction: '현실적인 여행 후기 & 꿀팁 콘텐츠',  strengths: ['생동감', '정보력', '공감대'] },
+    game:    { keyword: '게임',          tags: ['게임', '리뷰', '공략'],    direction: '솔직한 게임 리뷰 & 공략 콘텐츠',       strengths: ['전문성', '유머감각', '빠른 업데이트'] },
+    fashion: { keyword: '패션·코디',    tags: ['패션', '코디', '스타일'],  direction: '실용적인 데일리 코디 & 트렌드 콘텐츠', strengths: ['트렌드 감각', '스타일링', '가성비 추천'] },
+  };
+
+  function v7RenderPersona() {
+    const cats = answers.categories.length > 0 ? answers.categories : ['food'];
+    const platforms = answers.platforms.length > 0 ? answers.platforms : ['youtube'];
+    const age = answers.age;
+
+    const primary = PERSONA_DB[cats[0]] || PERSONA_DB.food;
+    const keyword = cats.length > 1
+      ? cats.slice(0, 2).map(c => PERSONA_DB[c]?.keyword || c).join(' & ')
+      : primary.keyword;
+
+    // 히어로 타입
+    const heroEl = document.getElementById('persona-hero-type');
+    if (heroEl) heroEl.innerHTML = `<em>${keyword}</em><br>크리에이터`;
+
+    // 태그
+    const tagColors = ['phero-lime', 'phero-pink', 'phero-blue'];
+    const allTags = [...new Set(cats.flatMap(c => PERSONA_DB[c]?.tags || []))].slice(0, 3);
+    const tagsEl = document.getElementById('persona-hero-tags');
+    if (tagsEl) tagsEl.innerHTML = allTags.map((t, i) => `<span class="persona-hero-tag ${tagColors[i % 3]}">${t}</span>`).join('');
+
+    // 콘텐츠 방향
+    const dirEl = document.getElementById('persona-direction');
+    if (dirEl) dirEl.textContent = primary.direction;
+
+    // 추천 타깃
+    const targetEl = document.getElementById('persona-target');
+    if (targetEl) {
+      const ageLabel = age ? `${age}대` : 'MZ세대';
+      targetEl.textContent = `${ageLabel} ${keyword.split('·')[0].trim()} 관심층`;
+    }
+
+    // 추천 포맷
+    const formatEl = document.getElementById('persona-format');
+    if (formatEl) {
+      const fmtMap = { tiktok: '15초 · 빠른 컷', instagram: '30초 · 릴스 중심', youtube: '60초 · 자막 중심' };
+      formatEl.textContent = fmtMap[platforms[0]] || '15초 · 자막 중심';
+    }
+
+    // 강점
+    const strengthsEl = document.getElementById('persona-strengths');
+    if (strengthsEl) {
+      const strengths = [...new Set(cats.flatMap(c => PERSONA_DB[c]?.strengths || []))].slice(0, 3);
+      strengthsEl.innerHTML = strengths.map(s => `<span class="profile-chip">${s}</span>`).join('');
+    }
+
+    // 챗봇 답변 인사이트
+    const insightEl = document.getElementById('persona-chat-insight');
+    if (insightEl && cbAnswers.length > 0) {
+      insightEl.style.display = 'block';
+      const shortQs = ['만들고 싶은 것', '좋아하는 취미', '잘한다고 칭찬받은 것', '봐줬으면 하는 사람'];
+      insightEl.innerHTML = `
+        <div class="pci-label">당신이 직접 말한 것들</div>
+        ${cbAnswers.map((item, i) => `
+          <div class="pci-item">
+            <div class="pci-q">${shortQs[i] || item.q}</div>
+            <div class="pci-a">${item.a}</div>
+          </div>`).join('')}`;
+    } else if (insightEl) {
+      insightEl.style.display = 'none';
+    }
+  }
+
+  // ── 카테고리별 트렌드 데이터 ──
+  const TREND_DB = {
+    food: {
+      label: '먹방·요리',
+      trends: [
+        { title: '자취생 3분 계란요리 5가지', badge: 'hot', badgeText: '반응 폭발', views: '92만', eng: '8.4%', thumb: 'https://i.ytimg.com/vi/o9BHS3mavQ0/maxresdefault.jpg' },
+        { title: '편의점 재료로 만드는 야식', badge: 'warm', badgeText: '상승 중', views: '54만', eng: '6.1%', thumb: 'https://i.ytimg.com/vi/d8iGCFHMnwg/maxresdefault.jpg' },
+        { title: '냉장고 털어서 만드는 한 그릇 식사', badge: 'new', badgeText: '신규', views: '31만', eng: '5.8%', thumb: 'https://i.ytimg.com/vi/xFIZVfAnrNg/maxresdefault.jpg' },
+      ]
+    },
+    beauty: {
+      label: '뷰티',
+      trends: [
+        { title: '여름 수분 스킨케어 루틴 공개', badge: 'hot', badgeText: '반응 폭발', views: '145만', eng: '9.2%', thumb: 'https://i.ytimg.com/vi/TqyLhVQlnmE/maxresdefault.jpg' },
+        { title: '5분 완성 데일리 메이크업', badge: 'warm', badgeText: '상승 중', views: '87만', eng: '7.8%', thumb: 'https://i.ytimg.com/vi/bFr5WiJBTRg/maxresdefault.jpg' },
+        { title: '요즘 핫한 립 컬러 총정리', badge: 'new', badgeText: '신규', views: '43만', eng: '6.5%', thumb: 'https://i.ytimg.com/vi/K_KLUE8rH4o/maxresdefault.jpg' },
+      ]
+    },
+    fitness: {
+      label: '운동',
+      trends: [
+        { title: '집에서 하는 10분 전신 운동', badge: 'hot', badgeText: '반응 폭발', views: '210만', eng: '10.1%', thumb: 'https://i.ytimg.com/vi/UBMk30rjy0o/maxresdefault.jpg' },
+        { title: '초보자 홈트 루틴 공개', badge: 'warm', badgeText: '상승 중', views: '78만', eng: '7.3%', thumb: 'https://i.ytimg.com/vi/HKhbRiMrEnQ/maxresdefault.jpg' },
+        { title: '헬스장 없이 복근 만들기', badge: 'new', badgeText: '신규', views: '55만', eng: '6.8%', thumb: 'https://i.ytimg.com/vi/1f8yoFFdkcY/maxresdefault.jpg' },
+      ]
+    },
+    travel: {
+      label: '여행',
+      trends: [
+        { title: '제주도 혼자 여행 현실 후기', badge: 'hot', badgeText: '반응 폭발', views: '187만', eng: '8.9%', thumb: 'https://i.ytimg.com/vi/n8zkCFn_bAU/maxresdefault.jpg' },
+        { title: '도쿄 2박 3일 여행 경비 공개', badge: 'warm', badgeText: '상승 중', views: '94만', eng: '7.1%', thumb: 'https://i.ytimg.com/vi/5eiPAuTbYMc/maxresdefault.jpg' },
+        { title: '국내 숨은 여행지 5곳 추천', badge: 'new', badgeText: '신규', views: '62만', eng: '6.2%', thumb: 'https://i.ytimg.com/vi/7Jh5Km4nPEg/maxresdefault.jpg' },
+      ]
+    },
+    game: {
+      label: '게임',
+      trends: [
+        { title: '이 게임 왜 이렇게 중독되냐', badge: 'hot', badgeText: '반응 폭발', views: '320만', eng: '11.2%', thumb: 'https://i.ytimg.com/vi/FqnKB22pOC0/maxresdefault.jpg' },
+        { title: '지금 당장 해야 할 무료 게임 5개', badge: 'warm', badgeText: '상승 중', views: '143만', eng: '8.7%', thumb: 'https://i.ytimg.com/vi/WmW6NV0WsR4/maxresdefault.jpg' },
+        { title: '랭킹 1위 게임 솔직 리뷰', badge: 'new', badgeText: '신규', views: '89만', eng: '7.4%', thumb: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg' },
+      ]
+    },
+    fashion: {
+      label: '패션',
+      trends: [
+        { title: '2026 여름 트렌드 코디 총정리', badge: 'hot', badgeText: '반응 폭발', views: '176만', eng: '9.5%', thumb: 'https://i.ytimg.com/vi/Zi9FGZM_FgQ/maxresdefault.jpg' },
+        { title: '아무거나 입어도 멋있는 법칙', badge: 'warm', badgeText: '상승 중', views: '98만', eng: '8.1%', thumb: 'https://i.ytimg.com/vi/4fndeDfaWCg/maxresdefault.jpg' },
+        { title: '5만원으로 완성하는 코디', badge: 'new', badgeText: '신규', views: '67만', eng: '6.9%', thumb: 'https://i.ytimg.com/vi/0gzLhTFf96M/maxresdefault.jpg' },
+      ]
+    },
+  };
+
+  async function v7RenderTrends() {
+    const cats = answers.categories.length > 0 ? answers.categories : ['food'];
+    const platforms = answers.platforms.length > 0 ? answers.platforms : ['youtube'];
+    const eyebrow = document.getElementById('v7-eyebrow-text');
+    if (eyebrow) {
+      const label = cats.map(c => TREND_DB[c]?.label || c).join(' · ');
+      eyebrow.textContent = `${label} · 지금 뜨는 영상`;
+    }
+
+    // 카테고리 매핑 (온보딩 → API Category 타입)
+    const catApiMap = { food: 'food', beauty: 'beauty', fitness: 'fitness', travel: 'lifestyle', game: 'gaming', fashion: 'lifestyle' };
+    const apiCats = new Set(cats.map(c => catApiMap[c] || 'food'));
+
+    // 챗봇 답변 키워드 (첫 번째 답변: 만들고 싶은 것)
+    const cbKeyword = cbAnswers[0]?.a?.toLowerCase() || '';
+
+    const heartSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    const arrowSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+    const container = document.getElementById('trend-original-cards');
+    if (!container) return;
+
+    try {
+      const platform = platforms[0] === 'tiktok' ? 'tiktok' : platforms[0] === 'instagram' ? 'instagram' : 'youtube';
+      const res = await fetch(`http://localhost:3001/api/trends?platform=${platform}`);
+      const { data } = await res.json();
+
+      // 카테고리 필터링
+      let filtered = data.filter(t => apiCats.has(t.category));
+
+      // 챗봇 답변으로 추가 정렬 (키워드 매치 우선)
+      if (cbKeyword) {
+        filtered.sort((a, b) => {
+          const aMatch = a.title.toLowerCase().includes(cbKeyword) ? 1 : 0;
+          const bMatch = b.title.toLowerCase().includes(cbKeyword) ? 1 : 0;
+          return bMatch - aMatch || b.engagementRate - a.engagementRate;
+        });
+      }
+
+      // 카테고리 매치가 없으면 전체에서 engagement 상위
+      if (filtered.length === 0) filtered = [...data].sort((a, b) => b.engagementRate - a.engagementRate);
+
+      const trends = filtered.slice(0, 5);
+      const badgeMap = { HOT: ['hot', '반응 폭발'], WARM: ['warm', '상승 중'], COLD: ['new', '신규'] };
+      const fmtViews = v => v >= 10000 ? `${Math.round(v / 10000)}만` : v >= 1000 ? `${Math.round(v / 1000)}천` : String(v);
+
+      container.innerHTML = trends.map(t => {
+        const [badge, badgeText] = badgeMap[t.heatLevel] || ['new', '신규'];
+        const views = fmtViews(t.views);
+        const eng = `${t.engagementRate.toFixed(1)}%`;
+        const safeTitle = t.title.replace(/'/g, "\\'");
+        return `
+          <div class="v7-tcard" onclick="v7SelectTopic('${safeTitle}')">
+            <div class="v7-tcard-top">
+              <div class="v7-tcard-title">${t.title}</div>
+              <span class="v7-badge v7-badge-${badge}">${badgeText}</span>
+              <button class="v7-save-btn" onclick="v7ToggleTrend(this,'${safeTitle}','${views}','${eng}','${badgeText}');event.stopPropagation();">${heartSvg}</button>
+            </div>
+            <div class="v7-tcard-meta">
+              <span class="v7-tcard-stat">조회 <b>${views}</b></span>
+              <span class="v7-tcard-stat">참여율 <b>${eng}</b></span>
+            </div>
+            ${t.thumb ? `<img class="v7-tcard-thumb" src="${t.thumb}" alt="${t.title}" loading="lazy" onerror="this.style.display='none'">` : ''}
+            <div class="v7-tcard-cta">이걸로 만들기 ${arrowSvg}</div>
+          </div>`;
+      }).join('');
+    } catch {
+      // API 실패 시 로컬 TREND_DB fallback
+      let allTrends = cats.flatMap(c => TREND_DB[c]?.trends || []).slice(0, 5);
+      const arrowS = arrowSvg;
+      container.innerHTML = allTrends.map(t => `
+        <div class="v7-tcard" onclick="v7SelectTopic('${t.title.replace(/'/g, "\\'")}')">
+          <div class="v7-tcard-top">
+            <div class="v7-tcard-title">${t.title}</div>
+            <span class="v7-badge v7-badge-${t.badge}">${t.badgeText}</span>
+            <button class="v7-save-btn" onclick="v7ToggleTrend(this,'${t.title.replace(/'/g, "\\'")}','${t.views}','${t.eng}','${t.badgeText}');event.stopPropagation();">${heartSvg}</button>
+          </div>
+          <div class="v7-tcard-meta">
+            <span class="v7-tcard-stat">조회 <b>${t.views}</b></span>
+            <span class="v7-tcard-stat">참여율 <b>${t.eng}</b></span>
+          </div>
+          <img class="v7-tcard-thumb" src="${t.thumb}" alt="${t.title}" loading="lazy" onerror="this.style.display='none'">
+          <div class="v7-tcard-cta">이걸로 만들기 ${arrowS}</div>
+        </div>`).join('');
+    }
+  }
+
   const _origGoTo = goTo;
-  goTo = function(id) { _origGoTo(id); if (id === 'screen-chatbot') cbReset(); };
+  goTo = function(id) {
+    _origGoTo(id);
+    if (id === 'screen-chatbot') cbReset();
+    if (id === 'screen-persona') v7RenderPersona();
+    if (id === 'screen-v7-trends') v7RenderTrends();
+  };
 
   // ── v7 save: trends & benchmark creators ──
   let v7SavedTrends = [];

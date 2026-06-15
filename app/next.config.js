@@ -9,8 +9,10 @@ const nextConfig = {
       },
     ],
   },
-  outputFileTracingIncludes: {
-    '/demo': ['./templates/**/*'],
+  experimental: {
+    outputFileTracingIncludes: {
+      '/demo': ['./templates/**/*'],
+    },
   },
 };
 

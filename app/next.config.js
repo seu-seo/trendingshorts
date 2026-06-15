@@ -9,6 +9,11 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    outputFileTracingIncludes: {
+      '/demo': ['./templates/**/*'],
+    },
+  },
 };
 
 module.exports = nextConfig;

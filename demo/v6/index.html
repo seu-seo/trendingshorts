@@ -151,6 +151,8 @@
     scrollbar-width: none;
     position: relative;
     padding-bottom: 100px;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
   .screen-content::-webkit-scrollbar { display: none; }
 
@@ -1614,7 +1616,7 @@
 
   /* COLLECTION SECTION */
   .collection-section {
-    padding: 16px 0;
+    padding: 16px 16px;
     border-top: 1px solid var(--line);
   }
   .collection-empty {
@@ -1897,27 +1899,24 @@
   }
   .bubble:hover { transform: scale(1.07); }
   .bubble-word { font-weight: 700; color: var(--ink); line-height: 1.2; }
-  .bubble-pct  { font-family: var(--font-mono); color: #38B6FF; letter-spacing: 0.02em; }
+  .bubble-pct  { font-family: var(--font-mono); color: #FF4274; letter-spacing: 0.02em; }
   @keyframes bubblePulse {
-    0%,100% { box-shadow: 0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10); }
-    50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
+    0%,100% { box-shadow: 0 0 12px rgba(255,66,116,0.55), 0 0 28px rgba(255,66,116,0.28), 0 0 48px rgba(255,66,116,0.10); }
+    50%      { box-shadow: 0 0 18px rgba(255,66,116,0.75), 0 0 38px rgba(255,66,116,0.38), 0 0 64px rgba(255,66,116,0.16); }
   }
-  .donut-svg circle {
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .bubble.b1 { width:96px; height:96px; animation: bubblePulse 2.4s ease-in-out infinite; border-color: rgba(56,182,255,0.6); }
+  .bubble.b1 { width:96px; height:96px; animation: bubblePulse 2.4s ease-in-out infinite; border-color: rgba(255,66,116,0.6); }
   .bubble.b1 .bubble-word { font-size: 14px; }
   .bubble.b1 .bubble-pct  { font-size: 11px; }
-  .bubble.b2 { width:82px; height:82px; box-shadow: 0 0 8px rgba(56,182,255,0.45), 0 0 18px rgba(56,182,255,0.22); border-color: rgba(56,182,255,0.5); }
+  .bubble.b2 { width:82px; height:82px; box-shadow: 0 0 8px rgba(255,66,116,0.45), 0 0 18px rgba(255,66,116,0.22); border-color: rgba(255,66,116,0.5); }
   .bubble.b2 .bubble-word { font-size: 13px; }
   .bubble.b2 .bubble-pct  { font-size: 10px; }
-  .bubble.b3 { width:72px; height:72px; box-shadow: 0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16); border-color: rgba(56,182,255,0.4); }
+  .bubble.b3 { width:72px; height:72px; box-shadow: 0 0 6px rgba(255,66,116,0.35), 0 0 13px rgba(255,66,116,0.16); border-color: rgba(255,66,116,0.4); }
   .bubble.b3 .bubble-word { font-size: 12px; }
   .bubble.b3 .bubble-pct  { font-size: 9px; }
-  .bubble.b4 { width:62px; height:62px; box-shadow: 0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10); border-color: rgba(56,182,255,0.28); }
+  .bubble.b4 { width:62px; height:62px; box-shadow: 0 0 5px rgba(255,66,116,0.22), 0 0 10px rgba(255,66,116,0.10); border-color: rgba(255,66,116,0.28); }
   .bubble.b4 .bubble-word { font-size: 11px; color: var(--ink-soft); }
   .bubble.b4 .bubble-pct  { font-size: 9px; }
-  .bubble.b5 { width:52px; height:52px; box-shadow: 0 0 4px rgba(56,182,255,0.12); border-color: rgba(56,182,255,0.18); background: rgba(56,182,255,0.04); }
+  .bubble.b5 { width:52px; height:52px; box-shadow: 0 0 4px rgba(255,66,116,0.12); border-color: rgba(255,66,116,0.18); background: rgba(255,66,116,0.04); }
   .bubble.b5 .bubble-word { font-size: 10px; color: var(--gray); }
   .bubble.b5 .bubble-pct  { font-size: 8px; color: var(--gray-mid); }
   .keyword-list {
@@ -2216,7 +2215,11 @@
     padding: 12px 24px 40px; z-index: 100;
     transform: translateY(100%); transition: transform .35s var(--ease-out);
     border-top: 1px solid var(--line);
+    max-height: 85%; overflow-y: auto; scrollbar-width: none; z-index: 110; padding-bottom: 84px;
   }
+  .log-sheet::-webkit-scrollbar { display: none; }
+  .log-sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .log-sheet-close { background: none; border: none; cursor: pointer; color: var(--gray); font-size: 20px; line-height: 1; padding: 4px; }
   .log-sheet.open { transform: translateY(0); }
   .log-sheet-handle {
     width: 36px; height: 4px; background: var(--line-strong); border-radius: 2px;
@@ -2261,6 +2264,79 @@
     z-index: 99; display: none;
   }
   .log-overlay.open { display: block; }
+
+  /* ===== UPLOAD CALENDAR ===== */
+  .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .cal-nav-btn { background:none; border:none; color:var(--ink-soft); font-size:18px; cursor:pointer; padding:4px 8px; line-height:1; border-radius:8px; }
+  .cal-nav-btn:active { background:var(--bg-card); }
+  .cal-month-label { font-size:13px; font-weight:700; color:var(--ink); font-family:var(--font-body); }
+  .cal-plat-row { display:flex; gap:6px; margin-bottom:12px; }
+  .cal-plat-btn { flex:1; padding:5px 0; font-size:11px; font-weight:600; font-family:var(--font-body); border-radius:20px; border:1.5px solid var(--line); background:none; color:var(--gray); cursor:pointer; transition:all .2s; }
+  .cal-plat-btn.active-tt { border-color:#5CE1E6; color:#5CE1E6; background:rgba(92,225,230,.1); }
+  .cal-plat-btn.active-ig { border-color:#FF4274; color:#FF4274; background:rgba(255,66,116,.1); }
+  .cal-plat-btn.active-yt { border-color:#FF5555; color:#FF5555; background:rgba(255,85,85,.1); }
+  .cal-day-headers { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; margin-bottom:4px; }
+  .cal-day-hdr { font-size:9px; color:var(--gray); font-family:var(--font-mono); padding:2px 0; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-cell { aspect-ratio:1; border-radius:50%; border:none; background:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:11px; font-family:var(--font-body); color:var(--ink); position:relative; transition:background .15s; gap:1px; }
+  .cal-cell:active { opacity:.7; }
+  .cal-cell.today { border:1.5px solid var(--primary); color:var(--primary); font-weight:700; }
+  .cal-cell.empty { pointer-events:none; }
+  .cal-cell.upload-tt { background:rgba(92,225,230,.18); color:#5CE1E6; font-weight:700; }
+  .cal-cell.upload-ig { background:rgba(255,66,116,.18); color:#FF4274; font-weight:700; }
+  .cal-cell.upload-yt { background:rgba(255,85,85,.18); color:#FF5555; font-weight:700; }
+  .cal-upload-dot { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; }
+
+  /* ===== SEARCH BAR ===== */
+  .v7-search-wrap {
+    display:flex; align-items:center; gap:10px;
+    background:var(--bg-card); border:1.5px solid var(--line);
+    border-radius:14px; padding:10px 14px; margin-bottom:14px;
+    transition:border-color .2s;
+  }
+  .v7-search-wrap:focus-within { border-color:var(--primary); }
+  .v7-search-icon { flex-shrink:0; color:var(--gray); }
+  .v7-search-input {
+    flex:1; background:none; border:none; outline:none;
+    color:var(--ink); font-size:14px; font-family:var(--font-body);
+  }
+  .v7-search-input::placeholder { color:var(--gray); }
+  .v7-search-clear {
+    background:none; border:none; color:var(--gray); cursor:pointer;
+    font-size:14px; padding:0; line-height:1; flex-shrink:0;
+  }
+  .v7-search-count {
+    font-size:10px; color:var(--gray); font-family:var(--font-mono);
+    letter-spacing:0.04em; margin-bottom:8px;
+  }
+  .v7-search-empty {
+    text-align:center; padding:32px 0; color:var(--gray);
+    font-family:var(--font-body); font-size:13px; line-height:1.6;
+  }
+  .v7-result-card {
+    background:var(--bg-card); border:1px solid var(--line);
+    border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;
+    transition:border-color .2s;
+  }
+  .v7-result-card:active { border-color:var(--primary); }
+  .v7-result-thumb-placeholder {
+    width:100%; aspect-ratio:16/9; border-radius:10px;
+    margin:10px 0 6px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:rgba(255,255,255,0.3); font-family:var(--font-mono);
+    letter-spacing:0.06em;
+  }
+  .v7-bcard-search {
+    display:flex; align-items:center; gap:12px;
+    background:var(--bg-card); border:1px solid var(--line);
+    border-radius:16px; padding:14px 16px; margin-bottom:10px; cursor:pointer;
+    transition:border-color .2s;
+  }
+  .v7-bcard-search:active { border-color:var(--primary); }
+  .v7-bava-initial {
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:700; font-family:var(--font-body);
+  }
 
   /* ===== COMPARE SCREEN ===== */
   .compare-info { font-size: 12px; color: var(--ink-soft); line-height: 1.6; }
@@ -4275,6 +4351,180 @@
     padding: 16px 20px 32px;
     background: linear-gradient(to top, var(--bg) 70%, transparent);
   }
+
+  /* ── CHATBOT ONBOARDING ── */
+  .chatbot-screen { background: var(--bg); }
+  .cb-header { display: flex; align-items: center; gap: 10px; padding: 8px 20px 12px; flex-shrink: 0; }
+  .cb-ava { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .cb-ava svg { width: 17px; height: 17px; }
+  .cb-meta { flex: 1; }
+  .cb-name { font-family: var(--font-body); font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .cb-online { font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--primary); letter-spacing: 0.04em; }
+  .cb-skip { font-family: var(--font-mono); font-size: 11px; color: var(--gray); background: none; border: none; cursor: pointer; padding: 4px 8px; }
+  .cb-skip:hover { color: var(--ink); }
+  .cb-body { flex: 1; overflow-y: auto; padding: 8px 20px 12px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+  .cb-body::-webkit-scrollbar { display: none; }
+  .cb-bubble { max-width: 78%; padding: 11px 15px; border-radius: 18px; font-family: var(--font-body); font-size: 14px; line-height: 1.6; animation: cbPop 0.22s var(--ease-out); }
+  @keyframes cbPop { from { opacity: 0; transform: scale(0.92) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .cb-bubble-ai { align-self: flex-start; background: var(--bg-card); color: var(--ink); border: 1px solid var(--line); border-bottom-left-radius: 5px; white-space: pre-wrap; }
+  .cb-bubble-user { align-self: flex-end; background: var(--primary); color: var(--on-primary); font-weight: 600; border-bottom-right-radius: 5px; }
+  .cb-cursor { display: inline-block; width: 2px; height: 14px; background: var(--primary); margin-left: 1px; vertical-align: text-bottom; animation: cbBlink 0.7s steps(1) infinite; }
+  @keyframes cbBlink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+  .cb-typing-indicator { align-self: flex-start; background: var(--bg-card); border: 1px solid var(--line); padding: 12px 16px; border-radius: 18px; border-bottom-left-radius: 5px; display: flex; gap: 4px; align-items: center; animation: cbPop 0.22s var(--ease-out); }
+  .cb-typing-indicator span { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); opacity: 0.5; animation: cbDot 1.2s infinite; }
+  .cb-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  .cb-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes cbDot { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+  .cb-footer { padding: 10px 20px 22px; flex-shrink: 0; border-top: 1px solid var(--line); }
+  .cb-hint { font-family: var(--font-mono); font-size: 10px; color: var(--gray); min-height: 14px; margin-bottom: 8px; padding: 0 2px; letter-spacing: 0.02em; }
+  .cb-input-row { display: flex; gap: 8px; align-items: center; }
+  .cb-input { flex: 1; background: var(--bg-card); border: 1px solid var(--line); border-radius: 22px; padding: 12px 18px; font-size: 14px; font-family: var(--font-body); color: var(--ink); outline: none; transition: border-color 0.15s; }
+  .cb-input:focus { border-color: var(--primary); }
+  .cb-input::placeholder { color: var(--gray-mid); }
+  .cb-input:disabled { opacity: 0.4; }
+  .cb-send { width: 46px; height: 46px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; }
+  .cb-send:disabled { opacity: 0.25; cursor: not-allowed; }
+  .cb-send:not(:disabled):active { transform: scale(0.92); }
+  .cb-send svg { width: 20px; height: 20px; }
+  .cb-prog { display: flex; gap: 5px; justify-content: center; padding-bottom: 10px; }
+  .cb-prog-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--line-strong); transition: background 0.3s, transform 0.3s; }
+  .cb-prog-dot.active { background: var(--primary); transform: scale(1.3); }
+  .cb-prog-dot.done   { background: var(--primary); opacity: 0.45; }
+
+  /* ── PERSONA RESULT ── */
+  .persona-screen { background: var(--bg); }
+  .persona-content { flex: 1; overflow-y: auto; padding: 16px 22px 100px; scrollbar-width: none; }
+  .persona-content::-webkit-scrollbar { display: none; }
+  .persona-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; padding: 6px 12px; border: 1px solid rgba(200,255,87,0.25); border-radius: 999px; background: rgba(200,255,87,0.06); }
+  .persona-eyebrow::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); animation: pulse-glow 1.6s ease-in-out infinite; }
+  .persona-title { font-family: var(--font-cute); font-size: 28px; line-height: 1.3; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 8px; }
+  .persona-title em { font-style: normal; color: var(--primary); }
+  .persona-sub { font-family: var(--font-body); font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; }
+
+  /* persona hero */
+  .persona-hero { border-radius: 20px; padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; background: linear-gradient(135deg, #0e1f06 0%, #060e1a 55%, #120820 100%); border: 1px solid rgba(200,255,87,0.18); }
+  .persona-hero::before { content: ''; position: absolute; top: -50px; right: -30px; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(200,255,87,0.16) 0%, transparent 70%); pointer-events: none; }
+  .persona-hero::after { content: ''; position: absolute; bottom: -40px; left: -20px; width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(56,182,255,0.12) 0%, transparent 70%); pointer-events: none; }
+  .persona-hero-label { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; position: relative; z-index: 1; }
+  .persona-hero-type { font-family: var(--font-cute); font-size: 22px; line-height: 1.3; color: var(--ink); margin-bottom: 14px; position: relative; z-index: 1; }
+  .persona-hero-type em { font-style: normal; color: var(--primary); }
+  .persona-hero-tags { display: flex; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
+  .persona-hero-tag { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 999px; font-family: var(--font-body); border: 1px solid; }
+  .phero-lime { background: rgba(200,255,87,0.12); color: var(--primary); border-color: rgba(200,255,87,0.28); }
+  .phero-pink { background: rgba(255,66,116,0.12); color: #FF4274; border-color: rgba(255,66,116,0.28); }
+  .phero-blue { background: rgba(56,182,255,0.12); color: #38B6FF; border-color: rgba(56,182,255,0.28); }
+
+  .pstat-wide { border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; background: rgba(245,184,0,0.06); border: 1px solid rgba(245,184,0,0.2); }
+  .pstat-wide-label { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #F5B800; margin-bottom: 5px; }
+  .pstat-wide-value { font-family: var(--font-body); font-size: 14px; font-weight: 700; color: var(--ink); }
+
+  .pstat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .pstat { border-radius: 14px; padding: 14px 13px; border: 1px solid; }
+  .pstat-label { font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 7px; }
+  .pstat-value { font-family: var(--font-body); font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4; }
+  .pstat.pink { background: rgba(255,66,116,0.07); border-color: rgba(255,66,116,0.18); }
+  .pstat.pink .pstat-label { color: #FF4274; }
+  .pstat.blue { background: rgba(56,182,255,0.07); border-color: rgba(56,182,255,0.18); }
+  .pstat.blue .pstat-label { color: #38B6FF; }
+
+  .profile-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .profile-chip { border-radius: 999px; padding: 4px 11px; font-size: 11px; font-weight: 700; font-family: var(--font-body); border: 1px solid; }
+  .profile-chip:nth-child(1) { background: rgba(200,255,87,0.12); color: var(--primary); border-color: rgba(200,255,87,0.28); }
+  .profile-chip:nth-child(2) { background: rgba(255,66,116,0.10); color: #FF4274; border-color: rgba(255,66,116,0.28); }
+  .profile-chip:nth-child(3) { background: rgba(56,182,255,0.10); color: #38B6FF; border-color: rgba(56,182,255,0.28); }
+
+  .persona-nudge { text-align: center; padding: 16px 8px 14px; }
+  .persona-nudge-title { font-family: var(--font-body); font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .persona-nudge-sub { font-family: var(--font-body); font-size: 13px; color: var(--gray); margin-bottom: 18px; line-height: 1.6; }
+
+  /* ── V7 FLOW ── */
+  .v7-screen { background: var(--bg); }
+  .v7-content { flex: 1; overflow-y: auto; padding: 8px 22px 100px; scrollbar-width: none; }
+  .v7-content::-webkit-scrollbar { display: none; }
+  .v7-back-row { display: flex; align-items: center; gap: 10px; padding: 6px 20px 10px; flex-shrink: 0; }
+  .v7-back-btn { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg-card); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .v7-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(200,255,87,0.25); background: rgba(200,255,87,0.06); margin-bottom: 14px; }
+  .v7-eyebrow::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+  .v7-title { font-family: var(--font-cute); font-size: 26px; line-height: 1.3; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 6px; }
+  .v7-title em { font-style: normal; color: var(--primary); }
+  .v7-sub { font-size: 13px; color: var(--gray); margin-bottom: 20px; line-height: 1.6; font-family: var(--font-body); }
+  .v7-tcard { background: var(--bg-card); border: 1px solid var(--line); border-radius: 18px; padding: 17px; margin-bottom: 12px; cursor: pointer; transition: border-color 0.2s, transform 0.18s; }
+  .v7-tcard:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .v7-tcard-top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+  .v7-tcard-title { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.4; flex: 1; }
+  .v7-badge { font-family: var(--font-mono); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; height: fit-content; }
+  .v7-badge-hot { background: rgba(255,66,116,0.14); color: #FF4274; }
+  .v7-badge-warm { background: rgba(245,184,0,0.14); color: #F5B800; }
+  .v7-tcard-meta { display: flex; gap: 14px; margin-bottom: 10px; }
+  .v7-tcard-stat { font-size: 12px; color: var(--gray); font-family: var(--font-body); }
+  .v7-tcard-stat b { color: var(--ink); font-weight: 700; }
+  .v7-tcard-why { font-size: 12px; color: var(--gray); background: var(--bg); border-radius: 10px; padding: 10px 12px; line-height: 1.6; border: 1px solid var(--line); }
+  .v7-tcard-why b { color: var(--primary); }
+  .v7-tcard-cta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--primary); font-family: var(--font-body); }
+  .v7-tcard-cta svg { width: 13px; height: 13px; }
+  .v7-tcard-thumb { width: 100%; aspect-ratio: 16/9; border-radius: 10px; object-fit: cover; margin: 8px 0 4px; display: block; }
+  .v7-btn-ghost { width: 100%; padding: 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-card); color: var(--ink); font-size: 14px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: border-color 0.15s; margin-top: 6px; }
+  .v7-btn-ghost:hover { border-color: var(--primary); }
+  .v7-bcard { display: flex; gap: 14px; align-items: center; background: var(--bg-card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 10px; }
+  .v7-bava { width: 48px; height: 48px; border-radius: 14px; background: rgba(200,255,87,0.08); border: 1px solid rgba(200,255,87,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-pop); font-size: 18px; font-weight: 800; color: var(--primary); overflow: hidden; }
+  .v7-bava img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+  .v7-binfo { flex: 1; }
+  .v7-bhandle { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .v7-bmeta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .v7-bgrow { font-size: 11px; color: var(--primary); font-weight: 600; margin-top: 3px; }
+  .v7-save-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--gray); transition: color 0.2s, transform 0.15s; flex-shrink: 0; display: flex; align-items: center; }
+  .v7-save-btn:hover { color: var(--primary); transform: scale(1.15); }
+  .v7-save-btn.saved { color: #FF4274; }
+  .v7-save-btn.saved svg { fill: #FF4274; stroke: #FF4274; }
+  .v7-save-btn svg { width: 17px; height: 17px; }
+  .v7-saved-trend-item { background: var(--bg-card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .v7-saved-trend-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .v7-saved-trend-meta { font-size: 12px; color: var(--gray); }
+  .v7-saved-bench-item { background: var(--bg-card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+  .v7-saved-bench-ava { width: 38px; height: 38px; border-radius: 12px; background: rgba(200,255,87,0.08); border: 1px solid rgba(200,255,87,0.2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--primary); overflow: hidden; }
+  .v7-saved-bench-info { flex: 1; }
+  .v7-saved-bench-handle { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .v7-saved-bench-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .v7-saved-remove { background: none; border: none; cursor: pointer; color: var(--gray); font-size: 18px; padding: 4px; transition: color 0.2s; line-height: 1; }
+  .v7-saved-remove:hover { color: #FF4274; }
+  .v7-topic-label { font-family: var(--font-mono); font-size: 10px; color: var(--gray); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+  .v7-topic-banner { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; font-weight: 600; color: var(--ink); display: flex; gap: 8px; align-items: center; }
+  .v7-topic-banner svg { color: var(--primary); flex-shrink: 0; }
+  .v7-make-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+  .v7-make-sub { font-size: 13px; color: var(--gray); margin-bottom: 18px; }
+  .v7-make-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .v7-mc { border: 1.5px solid var(--line); border-radius: 18px; padding: 22px 14px; text-align: center; cursor: pointer; background: var(--bg-card); transition: border-color 0.18s, transform 0.18s; }
+  .v7-mc:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .v7-mc-ic { width: 42px; height: 42px; border-radius: 12px; background: rgba(200,255,87,0.08); border: 1px solid rgba(200,255,87,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .v7-mc-ic svg { width: 20px; height: 20px; color: var(--primary); }
+  .v7-mc-t { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+  .v7-mc-d { font-size: 11px; color: var(--gray); line-height: 1.4; }
+  .v7-make-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; gap: 14px; }
+  .v7-spin { width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid var(--line); border-top-color: var(--primary); animation: v7rot 0.8s linear infinite; }
+  @keyframes v7rot { to { transform: rotate(360deg); } }
+  .v7-loading-t { font-size: 13px; color: var(--gray); font-weight: 600; }
+  .v7-section-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(200,255,87,0.25); background: rgba(200,255,87,0.06); margin-bottom: 14px; }
+  .v7-result-title { font-size: 17px; font-weight: 700; color: var(--ink); margin: 0 0 16px; }
+  .v7-script-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 10px; }
+  .v7-sc-tag { display: inline-block; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--on-primary); background: var(--primary); padding: 4px 11px; border-radius: 999px; margin-bottom: 10px; letter-spacing: 0.05em; }
+  .v7-sc-text { font-size: 14px; line-height: 1.65; color: var(--ink); }
+  .v7-conti-card { border-radius: 14px; overflow: hidden; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--line); }
+  .v7-conti-head { background: rgba(200,255,87,0.06); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+  .v7-conti-lbl { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--primary); }
+  .v7-conti-time { font-family: var(--font-mono); font-size: 10px; color: var(--gray); }
+  .v7-conti-body { display: grid; grid-template-columns: 76px 1fr; }
+  .v7-conti-thumb { aspect-ratio: 1; background: var(--bg); display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--line); }
+  .v7-conti-thumb svg { width: 26px; height: 26px; color: var(--primary); opacity: 0.35; }
+  .v7-conti-tx { padding: 12px 14px; }
+  .v7-conti-s { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.5; margin-bottom: 4px; }
+  .v7-conti-n { font-size: 11px; color: var(--gray); line-height: 1.5; }
+  .v7-save-done { text-align: center; padding: 50px 10px; }
+  .v7-save-done-icon { width: 60px; height: 60px; border-radius: 18px; background: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .v7-save-done-icon svg { width: 28px; height: 28px; }
+  .v7-save-done-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .v7-save-done-sub { font-size: 13px; color: var(--gray); margin-bottom: 22px; line-height: 1.6; }
+  .v7-toast { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary); color: var(--on-primary); font-size: 13px; font-weight: 700; padding: 11px 20px; border-radius: 999px; opacity: 0; transition: 0.3s; pointer-events: none; white-space: nowrap; z-index: 99; }
+  .v7-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -4307,8 +4557,39 @@
         </div>
 
         <div class="welcome-actions">
-          <button class="welcome-start-btn" onclick="goTo('screen-q-all')">시작하기</button>
+          <button class="welcome-start-btn" onclick="goTo('screen-chatbot')">시작하기</button>
           <button class="welcome-login-btn" onclick="loginAndGo()">이미 계정이 있나요? 로그인</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: CHATBOT ONBOARDING ============ -->
+    <div class="screen chatbot-screen" id="screen-chatbot">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="cb-header">
+        <div class="cb-ava">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--on-primary)" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="cb-meta">
+          <div class="cb-name">Pulse 큐레이터</div>
+          <div class="cb-online" id="cb-online-label">온라인</div>
+        </div>
+        <button class="cb-skip" onclick="goTo('screen-q-all')">건너뛰기</button>
+      </div>
+      <div class="cb-body" id="cb-body"></div>
+      <div class="cb-footer">
+        <div class="cb-prog" id="cb-prog">
+          <div class="cb-prog-dot active"></div>
+          <div class="cb-prog-dot"></div>
+          <div class="cb-prog-dot"></div>
+          <div class="cb-prog-dot"></div>
+        </div>
+        <div class="cb-hint" id="cb-hint"></div>
+        <div class="cb-input-row">
+          <input type="text" class="cb-input" id="cb-input" placeholder="답을 입력해보세요" autocomplete="off"/>
+          <button class="cb-send" id="cb-send" onclick="cbSend()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--on-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -4539,6 +4820,151 @@
       </div>
     </div>
 
+    <!-- ============ SCREEN: PERSONA RESULT ============ -->
+    <div class="screen persona-screen" id="screen-persona">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="persona-content">
+        <span class="persona-eyebrow">대화 분석 완료</span>
+        <div class="persona-title">이런 <em>크리에이터</em>가<br>되면 어울려요</div>
+        <div class="persona-sub">방금 답해주신 내용을 바탕으로 정리했어요</div>
+        <div class="persona-hero">
+          <div class="persona-hero-label">CONTENT PROFILE</div>
+          <div class="persona-hero-type">자취생을 위한<br><em>쉬운 집밥</em> 크리에이터</div>
+          <div class="persona-hero-tags">
+            <span class="persona-hero-tag phero-lime">집밥</span>
+            <span class="persona-hero-tag phero-pink">자취생</span>
+            <span class="persona-hero-tag phero-blue">쇼츠</span>
+          </div>
+        </div>
+        <div class="pstat-wide">
+          <div class="pstat-wide-label">콘텐츠 방향</div>
+          <div class="pstat-wide-value" id="persona-direction">자취생을 위한 쉬운 집밥 레시피</div>
+        </div>
+        <div class="pstat-grid">
+          <div class="pstat pink">
+            <div class="pstat-label">추천 타깃</div>
+            <div class="pstat-value" id="persona-target">자취 시작한 20대</div>
+          </div>
+          <div class="pstat blue">
+            <div class="pstat-label">추천 포맷</div>
+            <div class="pstat-value" id="persona-format">15초 · 자막 중심</div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;">당신의 강점</div>
+          <div class="profile-chips" id="persona-strengths">
+            <span class="profile-chip">쉬운 설명</span>
+            <span class="profile-chip">편안한 분위기</span>
+            <span class="profile-chip">꾸준함</span>
+          </div>
+        </div>
+        <div class="persona-nudge">
+          <div class="persona-nudge-title">자, 그럼 첫 영상 찍어볼까요?</div>
+          <div class="persona-nudge-sub">당신 주제로 지금 반응 좋은 영상을 모아왔어요</div>
+          <button class="welcome-start-btn" onclick="goTo('screen-v7-trends')" style="max-width:100%;margin:0;">트렌드 보러가기 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: V7 TRENDS ============ -->
+    <div class="screen v7-screen" id="screen-v7-trends">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="v7-back-row">
+        <button class="v7-back-btn" onclick="goTo('screen-persona')">←</button>
+      </div>
+      <div class="v7-content">
+        <span class="v7-eyebrow">자취 집밥 · 지금 뜨는 영상</span>
+        <div class="v7-title">이런 영상이<br>요즘 <em>반응</em>이 좋아요</div>
+        <div class="v7-sub">마음에 드는 걸 누르면 바로 만들 수 있어요</div>
+        <div class="v7-search-wrap">
+          <svg class="v7-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="v7-search-input" id="trend-search-input" type="text" placeholder="키워드로 트렌드 검색..." oninput="searchTrends(this.value)">
+          <button class="v7-search-clear" id="trend-search-clear" onclick="clearTrendSearch()" style="display:none">✕</button>
+        </div>
+        <div id="trend-search-results" style="display:none"></div>
+        <div id="trend-original-cards">
+        <div class="v7-tcard" onclick="v7SelectTopic('자취생 3분 계란요리 5가지')">
+          <div class="v7-tcard-top"><div class="v7-tcard-title">자취생 3분 계란요리 5가지</div><span class="v7-badge v7-badge-hot">반응 폭발</span><button class="v7-save-btn" data-title="자취생 3분 계란요리 5가지" onclick="v7ToggleTrend(this,'자취생 3분 계란요리 5가지','92만','8.4%','반응 폭발');event.stopPropagation();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+          <div class="v7-tcard-meta"><span class="v7-tcard-stat">조회 <b>92만</b></span><span class="v7-tcard-stat">참여율 <b>8.4%</b></span></div>
+          <img class="v7-tcard-thumb" src="https://i.ytimg.com/vi/o9BHS3mavQ0/maxresdefault.jpg" alt="자취생 3분 계란요리" loading="lazy">
+          <div class="v7-tcard-cta">이걸로 만들기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="v7-tcard" onclick="v7SelectTopic('편의점 재료로 만드는 야식')">
+          <div class="v7-tcard-top"><div class="v7-tcard-title">편의점 재료로 만드는 야식</div><span class="v7-badge v7-badge-warm">상승 중</span><button class="v7-save-btn" data-title="편의점 재료로 만드는 야식" onclick="v7ToggleTrend(this,'편의점 재료로 만드는 야식','54만','6.1%','상승 중');event.stopPropagation();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+          <div class="v7-tcard-meta"><span class="v7-tcard-stat">조회 <b>54만</b></span><span class="v7-tcard-stat">참여율 <b>6.1%</b></span></div>
+          <img class="v7-tcard-thumb" src="https://i.ytimg.com/vi/8vraAd5Al8Q/maxresdefault.jpg" alt="편의점 재료로 만드는 야식" loading="lazy">
+          <div class="v7-tcard-cta">이걸로 만들기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        </div>
+        <div class="v7-tcard" onclick="v7SelectTopic('자취 한 달 식비 공개합니다')">
+          <div class="v7-tcard-top"><div class="v7-tcard-title">자취 한 달 식비 공개합니다</div><span class="v7-badge v7-badge-warm">상승 중</span><button class="v7-save-btn" data-title="자취 한 달 식비 공개합니다" onclick="v7ToggleTrend(this,'자취 한 달 식비 공개합니다','38만','7.2%','상승 중');event.stopPropagation();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+          <div class="v7-tcard-meta"><span class="v7-tcard-stat">조회 <b>38만</b></span><span class="v7-tcard-stat">참여율 <b>7.2%</b></span></div>
+          <img class="v7-tcard-thumb" src="https://i.ytimg.com/vi/-_UGPIDSLos/maxresdefault.jpg" alt="자취 한 달 식비" loading="lazy">
+          <div class="v7-tcard-cta">이걸로 만들기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        </div>
+        </div><!-- /trend-original-cards -->
+        <button class="v7-btn-ghost" onclick="goTo('screen-v7-bench')">먼저 비슷한 크리에이터 구경하기</button>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 L8 13 L12 17 L21 6"/><path d="M16 6 L21 6 L21 11"/></svg>
+          </div>
+          <div class="tab-label">트렌드</div>
+        </div>
+        <div class="tab-item" onclick="goTo('screen-my')">
+          <div class="tab-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="tab-label">마이페이지</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: V7 BENCHMARK ============ -->
+    <div class="screen v7-screen" id="screen-v7-bench">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="v7-back-row"><button class="v7-back-btn" onclick="goTo('screen-v7-trends')">←</button></div>
+      <div class="v7-content">
+        <span class="v7-eyebrow">벤치마크 크리에이터</span>
+        <div class="v7-title">이 분들도<br>비슷하게 <em>시작</em>했어요</div>
+        <div class="v7-sub">조금 앞서가는 분들이에요. 부담 없이 참고해보세요</div>
+        <div class="v7-search-wrap">
+          <svg class="v7-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="v7-search-input" id="bench-search-input" type="text" placeholder="크리에이터 이름 또는 분야 검색..." oninput="searchBench(this.value)">
+          <button class="v7-search-clear" id="bench-search-clear" onclick="clearBenchSearch()" style="display:none">✕</button>
+        </div>
+        <div id="bench-search-results" style="display:none"></div>
+        <div class="v7-bcard"><div class="v7-bava"><img src="data:image/jpeg;base64,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" alt="자취요리_민지"/></div><div class="v7-binfo"><div class="v7-bhandle">자취요리_민지</div><div class="v7-bmeta">팔로워 2,400 · 자취 집밥</div><div class="v7-bgrow">3개월 전엔 50명이었대요</div></div><button class="v7-save-btn" data-handle="자취요리_민지" onclick="v7ToggleBench(this,'data:image/jpeg;base64,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','자취요리_민지','팔로워 2,400 · 자취 집밥','3개월 전엔 50명이었대요')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+        <div class="v7-bcard"><div class="v7-bava"><img src="data:image/jpeg;base64,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" alt="혼밥의정석"/></div><div class="v7-binfo"><div class="v7-bhandle">혼밥의정석</div><div class="v7-bmeta">팔로워 3,800 · 자취 집밥</div><div class="v7-bgrow">최근 한 달 +1,200</div></div><button class="v7-save-btn" data-handle="혼밥의정석" onclick="v7ToggleBench(this,'data:image/jpeg;base64,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','혼밥의정석','팔로워 3,800 · 자취 집밥','최근 한 달 +1,200')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+        <div class="v7-bcard"><div class="v7-bava"><img src="data:image/jpeg;base64,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" alt="원룸쿡"/></div><div class="v7-binfo"><div class="v7-bhandle">원룸쿡</div><div class="v7-bmeta">팔로워 5,100 · 자취 집밥</div><div class="v7-bgrow">6개월 만에 5천 돌파</div></div><button class="v7-save-btn" data-handle="원룸쿡" onclick="v7ToggleBench(this,'data:image/jpeg;base64,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','원룸쿡','팔로워 5,100 · 자취 집밥','6개월 만에 5천 돌파')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div>
+        <button class="welcome-start-btn" onclick="v7SelectTopic('자취생 3분 계란요리 5가지')" style="max-width:100%;margin:16px 0 0;">나도 만들어보기 →</button>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: V7 MAKE ============ -->
+    <div class="screen v7-screen" id="screen-v7-make">
+      <div class="status-bar"><span>9:41</span><span style="font-size:12px;">􀙇 􀛪</span></div>
+      <div class="v7-back-row"><button class="v7-back-btn" onclick="goTo('screen-v7-trends')">←</button></div>
+      <div class="v7-content">
+        <div class="v7-topic-label">선택한 주제</div>
+        <div class="v7-topic-banner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span id="v7-topic-text">자취생 3분 계란요리 5가지</span>
+        </div>
+        <div id="v7-make-select">
+          <div class="v7-make-title">어떻게 만들어볼까요?</div>
+          <div class="v7-make-sub">둘 다 받아볼 수도 있어요</div>
+          <div class="v7-make-grid">
+            <div class="v7-mc" onclick="v7MakeScript()"><div class="v7-mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM8 9h8M8 13h6"/></svg></div><div class="v7-mc-t">스크립트</div><div class="v7-mc-d">뭐라고 말할지<br>대본 3종</div></div>
+            <div class="v7-mc" onclick="v7MakeConti()"><div class="v7-mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v6"/></svg></div><div class="v7-mc-t">콘티</div><div class="v7-mc-d">어떻게 찍을지<br>4컷 구성</div></div>
+          </div>
+        </div>
+        <div id="v7-make-loading" style="display:none;"><div class="v7-make-loading"><div class="v7-spin"></div><div class="v7-loading-t">만들고 있어요...</div></div></div>
+        <div id="v7-make-result" style="display:none;"></div>
+      </div>
+      <div class="v7-toast" id="v7-toast">저장했어요!</div>
+    </div>
+
     <!-- ============ SCREEN: DASHBOARD ============ -->
     <div class="screen dash-screen" id="screen-trend">
       <div class="status-bar">
@@ -4580,42 +5006,56 @@
           <div class="progress-arrow">→</div>
         </div>
 
-        <!-- HEADLINE -->
-        <div class="headline-block">
-          <div class="headline-top-row">
-            <div class="headline-tag">
-              <span class="pulse-dot"></span>
-              <span id="headline-tag-text">플랫폼 트렌드</span>
+        <!-- AI BRIEFING -->
+        <div class="ai-briefing" id="ai-briefing">
+          <div class="briefing-header">
+            <div class="briefing-tag">
+              <span class="briefing-tag-dot"></span>
+              AI Daily Briefing
             </div>
-            <div class="headline-time">LIVE · 오늘</div>
+            <div class="briefing-time">9:30 AM</div>
           </div>
-          <div style="display:flex; align-items:center; gap:20px;">
-            <svg class="donut-svg" viewBox="0 0 120 120" width="120" height="120" style="flex-shrink:0;">
-              <circle id="donut-insta"   cx="60" cy="60" r="40" fill="none" stroke="#FF4274" stroke-width="13"
-                stroke-dasharray="130.7 120.6" stroke-dashoffset="62.8"  stroke-linecap="round"/>
-              <circle id="donut-youtube" cx="60" cy="60" r="40" fill="none" stroke="#00BFFF" stroke-width="13"
-                stroke-dasharray="55.1 196.2"  stroke-dashoffset="-73.9" stroke-linecap="round"/>
-              <circle id="donut-tiktok"  cx="60" cy="60" r="40" fill="none" stroke="#00FF7F" stroke-width="13"
-                stroke-dasharray="47.5 203.8"  stroke-dashoffset="-135.0" stroke-linecap="round"/>
-              <text x="60" y="54" text-anchor="middle" font-size="9" fill="#6B6B72" font-family="JetBrains Mono,monospace" letter-spacing="1">TODAY</text>
-              <text x="60" y="72" text-anchor="middle" font-size="14" fill="#C8FF57" font-family="JetBrains Mono,monospace" font-weight="700">+312%</text>
-            </svg>
-            <div style="display:flex; flex-direction:column; gap:12px; flex:1;">
-              <div id="donut-legend-insta" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#FF4274;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">인스타</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#FF4274;">+480%</div>
+
+          <div class="briefing-teaser" onclick="expandBriefing()">
+            <div class="briefing-teaser-text">
+              <span class="teaser-highlight">3줄</span>도 못읽는데 괜찮겠어요?
+            </div>
+            <div class="briefing-teaser-read">읽어볼게요 →</div>
+          </div>
+
+          <div class="briefing-body">
+            <div class="briefing-greeting">
+              안녕하세요, <span class="name">수진</span>님.<br/>
+              오늘 트렌드를 정리했어요.
+            </div>
+            <div class="briefing-summary">
+              오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
+              출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
+              짧고 실용적인 게 통하는 날이에요.
+            </div>
+            <div class="briefing-points">
+              <div class="briefing-point">
+                <div class="briefing-point-num">01</div>
+                <div class="briefing-point-text">
+                  <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
+                </div>
               </div>
-              <div id="donut-legend-youtube" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#00BFFF;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">유튜브</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#00BFFF;">+215%</div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">02</div>
+                <div class="briefing-point-text">
+                  <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
+                </div>
               </div>
-              <div id="donut-legend-tiktok" style="display:flex; align-items:center; gap:8px;">
-                <div style="width:8px;height:8px;border-radius:50%;background:#00FF7F;flex-shrink:0;"></div>
-                <div style="flex:1;font-family:'Instrument Sans','Pretendard',sans-serif;font-size:13px;color:var(--ink-soft);">틱톡</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#00FF7F;">+188%</div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">03</div>
+                <div class="briefing-point-text">
+                  인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
+                </div>
               </div>
+            </div>
+            <div class="briefing-footer">
+              <div class="briefing-source">SOURCE: 오늘 · IG + YT + TT</div>
+              <button class="briefing-collapse-btn" onclick="collapseBriefing()">접기 ↑</button>
             </div>
           </div>
         </div>
@@ -5351,95 +5791,113 @@
         </div>
 
         <!-- 토스 시그니처 — 친근한 인사이트 카드 -->
-        <div class="insight-card">
-          <div class="insight-eyebrow">This Week's Insights</div>
-          <div class="insight-headline">
-            지난주보다 <span class="num">+42%</span><br/>
-            더 잘했어요
+        <div class="ai-briefing" id="ai-briefing-my">
+          <div class="briefing-header">
+            <div class="briefing-tag">
+              <span class="briefing-tag-dot"></span>
+              AI Daily Briefing
+            </div>
+            <div class="briefing-time">9:30 AM</div>
           </div>
-          <div class="mini-stats">
-            <div class="mini-stat">
-              <div class="mini-stat-label">Saved Trends</div>
-              <div class="mini-stat-value accent" id="saved-trends-count">0</div>
+
+          <div class="briefing-teaser" onclick="expandBriefing('ai-briefing-my')">
+            <div class="briefing-teaser-text">
+              <span class="teaser-highlight">3줄</span>도 못읽는데 괜찮겠어요?
             </div>
-            <div class="mini-stat">
-              <div class="mini-stat-label">Posts Tried</div>
-              <div class="mini-stat-value">8</div>
+            <div class="briefing-teaser-read">읽어볼게요 →</div>
+          </div>
+
+          <div class="briefing-body">
+            <div class="briefing-greeting">
+              안녕하세요, <span class="name">수진</span>님.<br/>
+              오늘 트렌드를 정리했어요.
             </div>
-            <div class="mini-stat">
-              <div class="mini-stat-label">Avg. Views</div>
-              <div class="mini-stat-value up">+42%</div>
+            <div class="briefing-summary">
+              오늘은 <span class="highlight">직장인 콘텐츠가 강세</span>예요.
+              출근·퇴근 루틴 관련이 Top 5에 3개나 있어요.
+              짧고 실용적인 게 통하는 날이에요.
             </div>
-            <div class="mini-stat">
-              <div class="mini-stat-label">Viral Candidates</div>
-              <div class="mini-stat-value">3</div>
+            <div class="briefing-points">
+              <div class="briefing-point">
+                <div class="briefing-point-num">01</div>
+                <div class="briefing-point-text">
+                  <strong>"출근길 5분 루틴"이 +312%</strong> — 오늘의 빅 트렌드. 5월 들어 출근 시간이 평균 7분 늘었어요.
+                </div>
+              </div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">02</div>
+                <div class="briefing-point-text">
+                  <strong>짠테크·홈카페</strong>가 함께 떠올랐어요. 절약+자기관리 콤보가 30대에서 화제예요.
+                </div>
+              </div>
+              <div class="briefing-point">
+                <div class="briefing-point-num">03</div>
+                <div class="briefing-point-text">
+                  인스타그램이 어제보다 <strong>2배 활발</strong>. 릴스 업로드가 평소보다 많아요.
+                </div>
+              </div>
+            </div>
+            <div class="briefing-footer">
+              <div class="briefing-source">SOURCE: 오늘 · IG + YT + TT</div>
+              <button class="briefing-collapse-btn" onclick="collapseBriefing('ai-briefing-my')">접기 ↑</button>
             </div>
           </div>
         </div>
 
-        <div class="actions">
-          <div class="action-list">
-            <div class="action-item" onclick="openDeepProfile()">
-              <div class="action-num">01</div>
-              <div class="action-body">
-                <div class="action-title">콘텐츠 만들기</div>
-                <div class="action-desc">주관식 4문항 · 약 2분</div>
-              </div>
-              <div class="action-arrow">→</div>
-            </div>
-            <div class="action-item" onclick="goTo('screen-goal')">
-              <div class="action-num">02</div>
-              <div class="action-body">
-                <div class="action-title">목표 설정하기</div>
-                <div class="action-desc">달성하고 싶은 KPI 설정</div>
-              </div>
-              <div class="action-arrow">→</div>
-            </div>
-            <div class="action-item">
-              <div class="action-num">03</div>
-              <div class="action-body">
-                <div class="action-title">계정 연결하기</div>
-                <div class="action-desc">실제 채널 데이터로 분석</div>
-              </div>
-              <div class="action-arrow">→</div>
-            </div>
-          </div>
+        <!-- 선택 바꾸기 -->
+        <div style="display:flex; gap:10px; margin:0 16px 16px;">
+          <button onclick="goTo('screen-v7-trends')" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(200,255,87,0.3); border-radius:14px; padding:14px 12px; font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; text-align:left; transition:all 0.2s; backdrop-filter:blur(4px);">
+            <div style="font-size:10px; color:rgba(200,255,87,0.6); font-family:var(--font-mono); letter-spacing:0.06em; margin-bottom:4px;">TREND</div>
+            <span style="color:rgba(255,255,255,0.85);">트렌드 다시 고르기 <span style="color:#C8FF57;">→</span></span>
+          </button>
+          <button onclick="goTo('screen-v7-bench')" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(200,255,87,0.3); border-radius:14px; padding:14px 12px; font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; text-align:left; transition:all 0.2s; backdrop-filter:blur(4px);">
+            <div style="font-size:10px; color:rgba(200,255,87,0.6); font-family:var(--font-mono); letter-spacing:0.06em; margin-bottom:4px;">CREATOR</div>
+            <span style="color:rgba(255,255,255,0.85);">크리에이터 다시 고르기 <span style="color:#C8FF57;">→</span></span>
+          </button>
         </div>
 
-        <!-- 내 컬렉션 -->
+        <!-- 내 채널 성장 기록 버튼 -->
+        <div style="margin: 0 16px 16px;">
+          <button onclick="goTo('screen-my-growth')" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(200,255,87,0.3); border-radius:14px; padding:16px 18px; font-family:var(--font-body); font-size:13px; font-weight:600; cursor:pointer; text-align:left; transition:all 0.2s; display:flex; align-items:center; justify-content:space-between; backdrop-filter:blur(4px);">
+            <div>
+              <div style="font-size:10px; color:rgba(200,255,87,0.6); font-family:var(--font-mono); letter-spacing:0.06em; margin-bottom:4px;">GROWTH</div>
+              <span style="color:rgba(255,255,255,0.85);">내 채널 성장 기록</span>
+            </div>
+            <span style="color:#C8FF57; font-size:18px;">→</span>
+          </button>
+        </div>
+
+        <!-- 저장한 트렌드 영상 -->
         <div class="collection-section">
           <div class="section-head">
-            <div class="section-title">내 컬렉션</div>
-            <div class="section-meta" id="collection-count-badge" style="display:none;">
-              <span id="collection-count">0</span>개
-            </div>
+            <div class="section-title">저장한 트렌드 영상</div>
+            <div class="section-meta" id="v7-trend-save-badge" style="display:none;"><span id="v7-trend-save-count">0</span>개</div>
           </div>
-          <div class="collection-empty" id="collection-empty">
-            <div class="collection-empty-text">저장한 트렌드가 없어요</div>
-            <div class="collection-empty-sub">트렌드 카드에서 저장 버튼을 눌러보세요</div>
+          <div class="collection-empty" id="v7-trend-save-empty">
+            <div class="collection-empty-text">저장한 트렌드 영상이 없어요</div>
+            <div class="collection-empty-sub">트렌드 카드의 북마크 버튼을 눌러보세요</div>
           </div>
-          <div class="collection-grid" id="collection-grid"></div>
+          <div id="v7-trend-save-list"></div>
         </div>
 
-        <!-- 저장한 대본·콘티 -->
+        <!-- 저장한 벤치마크 크리에이터 -->
         <div class="collection-section">
           <div class="section-head">
-            <div class="section-title">저장한 대본·콘티</div>
-            <div class="section-meta" id="saved-content-badge" style="display:none;">
-              <span id="saved-content-count">0</span>개
-            </div>
+            <div class="section-title">저장한 크리에이터</div>
+            <div class="section-meta" id="v7-bench-save-badge" style="display:none;"><span id="v7-bench-save-count">0</span>개</div>
           </div>
-          <div class="collection-empty" id="saved-content-empty">
-            <div class="collection-empty-text">저장한 대본·콘티가 없어요</div>
-            <div class="collection-empty-sub">콘티·대본 추천 결과에서 저장해보세요</div>
+          <div class="collection-empty" id="v7-bench-save-empty">
+            <div class="collection-empty-text">저장한 크리에이터가 없어요</div>
+            <div class="collection-empty-sub">벤치마크 크리에이터에서 저장해보세요</div>
           </div>
-          <div id="saved-content-list"></div>
+          <div id="v7-bench-save-list"></div>
         </div>
 
       </div>
 
+
       <div class="tab-bar">
-        <div class="tab-item" onclick="switchTab('trend')">
+        <div class="tab-item" onclick="goTo('screen-v7-trends')">
           <div class="tab-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 18 L8 13 L12 17 L21 6"/>
@@ -5458,6 +5916,114 @@
           <div class="tab-label">마이페이지</div>
         </div>
       </div>
+    </div>
+
+    <!-- 내 채널 성장 기록 화면 -->
+    <div class="screen" id="screen-my-growth" style="flex-direction:column;">
+      <div class="screen-content">
+        <!-- 헤더 -->
+        <div style="display:flex; align-items:center; gap:10px; padding:20px 20px 8px;">
+          <button onclick="goTo('screen-my')" style="background:none; border:none; color:var(--ink); font-size:20px; cursor:pointer; padding:4px 8px 4px 0; line-height:1;">←</button>
+          <div>
+            <div style="font-size:16px; font-weight:700; color:var(--ink); font-family:var(--font-body);">내 채널 성장</div>
+            <div style="font-size:11px; color:var(--gray); font-family:var(--font-mono); margin-top:2px; letter-spacing:0.04em;">첫 일주일 조회수 추이</div>
+          </div>
+          <button onclick="toggleMyLogSheet()" style="margin-left:auto; background:var(--primary); color:var(--on-primary); border:none; border-radius:20px; padding:6px 14px; font-size:12px; font-weight:700; font-family:var(--font-body); cursor:pointer;">기록하기 +</button>
+        </div>
+
+        <!-- 업로드 달력 트래커 -->
+        <div style="margin: 4px 16px 16px; background:var(--bg-card); border-radius:16px; padding:16px; border:1px solid var(--line);">
+          <div class="cal-header">
+            <button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button>
+            <div id="cal-month-label" class="cal-month-label">2025년 6월</div>
+            <button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button>
+          </div>
+          <div class="cal-plat-row">
+            <button class="cal-plat-btn active-tt" id="cal-btn-tiktok" onclick="selectCalPlatform('tiktok')">틱톡</button>
+            <button class="cal-plat-btn" id="cal-btn-instagram" onclick="selectCalPlatform('instagram')">인스타</button>
+            <button class="cal-plat-btn" id="cal-btn-youtube" onclick="selectCalPlatform('youtube')">유튜브</button>
+          </div>
+          <div class="cal-day-headers">
+            <div class="cal-day-hdr" style="color:#FF6B6B;">일</div>
+            <div class="cal-day-hdr">월</div>
+            <div class="cal-day-hdr">화</div>
+            <div class="cal-day-hdr">수</div>
+            <div class="cal-day-hdr">목</div>
+            <div class="cal-day-hdr">금</div>
+            <div class="cal-day-hdr" style="color:#6BA3FF;">토</div>
+          </div>
+          <div id="cal-grid" class="cal-grid"></div>
+          <div id="cal-legend" style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 플랫폼별 개별 차트 -->
+        <div class="platform-graphs" style="margin: 8px 16px 16px;">
+
+          <div class="platform-graph-item">
+            <div class="platform-graph-label">
+              <span class="platform-dot insta"></span>인스타그램
+              <span class="platform-graph-val" id="my-graph-val-instagram">+18%</span>
+            </div>
+            <svg id="my-graph-svg-instagram" class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+              <defs><linearGradient id="grad-ig-my" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E1306C" stop-opacity="0.3"/><stop offset="100%" stop-color="#E1306C" stop-opacity="0"/></linearGradient></defs>
+              <path id="my-graph-area-instagram" class="chart-area" fill="url(#grad-ig-my)" d="M0,42 L25,44 L50,40 L75,35 L100,38 L125,30 L150,25 L175,20 L200,15 L200,50 L0,50 Z"/>
+              <path id="my-graph-line-instagram" class="chart-line ig" fill="none" d="M0,42 L25,44 L50,40 L75,35 L100,38 L125,30 L150,25 L175,20 L200,15"/>
+            </svg>
+            <div id="my-graph-dates-instagram" class="graph-date-labels"></div>
+          </div>
+
+          <div class="platform-graph-item">
+            <div class="platform-graph-label">
+              <span class="platform-dot tiktok"></span>틱톡
+              <span class="platform-graph-val" id="my-graph-val-tiktok">+24%</span>
+            </div>
+            <svg id="my-graph-svg-tiktok" class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+              <defs><linearGradient id="grad-tt-my" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#69C9D0" stop-opacity="0.3"/><stop offset="100%" stop-color="#69C9D0" stop-opacity="0"/></linearGradient></defs>
+              <path id="my-graph-area-tiktok" class="chart-area" fill="url(#grad-tt-my)" d="M0,45 L25,40 L50,38 L75,32 L100,28 L125,22 L150,18 L175,12 L200,8 L200,50 L0,50 Z"/>
+              <path id="my-graph-line-tiktok" class="chart-line tt" fill="none" d="M0,45 L25,40 L50,38 L75,32 L100,28 L125,22 L150,18 L175,12 L200,8"/>
+            </svg>
+            <div id="my-graph-dates-tiktok" class="graph-date-labels"></div>
+          </div>
+
+          <div class="platform-graph-item">
+            <div class="platform-graph-label">
+              <span class="platform-dot youtube"></span>유튜브
+              <span class="platform-graph-val" id="my-graph-val-youtube" style="color:#FF0000">+5%</span>
+            </div>
+            <svg id="my-graph-svg-youtube" class="mini-line-chart" viewBox="0 0 200 50" preserveAspectRatio="none">
+              <defs><linearGradient id="grad-yt-my" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF0000" stop-opacity="0.25"/><stop offset="100%" stop-color="#FF0000" stop-opacity="0"/></linearGradient></defs>
+              <path id="my-graph-area-youtube" class="chart-area" fill="url(#grad-yt-my)" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30 L200,50 L0,50 Z"/>
+              <path id="my-graph-line-youtube" class="chart-line yt" fill="none" d="M0,40 L25,42 L50,44 L75,41 L100,38 L125,36 L150,34 L175,32 L200,30"/>
+            </svg>
+            <div id="my-graph-dates-youtube" class="graph-date-labels"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 조회수 기록 시트 -->
+      <div class="log-sheet" id="log-sheet-my">
+        <div class="log-sheet-handle"></div>
+        <div class="log-sheet-header">
+          <div class="log-sheet-title" style="margin-bottom:0;">조회수 기록하기</div>
+          <button class="log-sheet-close" onclick="toggleMyLogSheet()">✕</button>
+        </div>
+        <div class="log-platforms" id="my-log-platforms">
+          <button class="log-platform-btn active" onclick="selectMyLogPlatform(this,'tiktok')">틱톡</button>
+          <button class="log-platform-btn" onclick="selectMyLogPlatform(this,'instagram')">인스타</button>
+          <button class="log-platform-btn" onclick="selectMyLogPlatform(this,'youtube')">유튜브</button>
+        </div>
+        <div class="log-input-row">
+          <div class="log-input-label">날짜</div>
+          <input class="log-input log-date-input" id="my-log-date-input" type="date"/>
+        </div>
+        <div class="log-input-row">
+          <div class="log-input-label">조회수</div>
+          <input class="log-input" id="my-log-views-input" type="number" placeholder="12,400" inputmode="numeric"/>
+        </div>
+        <button class="log-submit-btn" onclick="submitMyLog()">기록 완료</button>
+      </div>
+      <div class="log-overlay" id="log-overlay-my" onclick="toggleMyLogSheet()"></div>
     </div>
 
   </div>
@@ -5654,6 +6220,7 @@
     const sc = document.querySelector('#' + id + ' .screen-content');
     if (sc) sc.scrollTop = 0;
     if (id === 'screen-trend') updateDonutChart();
+    if (id === 'screen-my-growth') { ['tiktok','instagram','youtube'].forEach(renderMyPageGraph); renderCalendar(); }
   }
 
   function updateHeadlineTag() {
@@ -5845,7 +6412,7 @@
     setTimeout(() => {
       clearInterval(interval);
       updateMyTags();
-      goTo('screen-trend');
+      goTo('screen-persona');
     }, 2600);
   }
 
@@ -5861,7 +6428,7 @@
     answers.age = '30s';
     updateMyTags();
     document.querySelectorAll('.tab-item.disabled').forEach(t => t.classList.remove('disabled'));
-    goTo('screen-trend');
+    goTo('screen-v7-trends');
   }
 
   const TREND_DETAILS = {
@@ -6502,11 +7069,11 @@
 
   }
 
-  function expandBriefing() {
-    document.getElementById('ai-briefing').classList.add('expanded');
+  function expandBriefing(id) {
+    document.getElementById(id || 'ai-briefing').classList.add('expanded');
   }
-  function collapseBriefing() {
-    document.getElementById('ai-briefing').classList.remove('expanded');
+  function collapseBriefing(id) {
+    document.getElementById(id || 'ai-briefing').classList.remove('expanded');
   }
 
   function togglePulseCard(el, event) {
@@ -6736,6 +7303,670 @@
       content.insertBefore(keywords, headline.nextSibling);
     }
   });
+
+  /* ── CHATBOT ONBOARDING ── */
+  const CB_CONVO = [
+    { q: '조회수 0이어도 1년 내내 만들고 싶은 게 있나요?',                                               hint: '예: 요리 영상, 일상 브이로그, 게임 리뷰...' },
+    { q: '지난 1년, 가장 많은 돈을 쓴 취미는?',                                                          hint: '예: 카페 투어, 헬스장, 레고, 여행...' },
+    { q: '주변에서 "넌 이거 참 잘한다" 하고 칭찬받은 게 있나요?',                                         hint: '예: 설명 잘한다, 분위기 만든다, 손재주 있다...' },
+    { q: '내일 갑자기 팔로워 2만 명이 생겼다면,\n어떤 사람들이 당신 콘텐츠를 봐줬으면 해요?',              hint: '예: 자취하는 20대, 운동 시작한 직장인...' },
+  ];
+  let cbIdx = 0, cbTyping = false;
+
+  function cbReset() {
+    cbIdx = 0; cbTyping = false;
+    document.getElementById('cb-body').innerHTML = '';
+    document.getElementById('cb-hint').textContent = '';
+    document.getElementById('cb-online-label').textContent = '온라인';
+    const inp = document.getElementById('cb-input');
+    inp.value = ''; inp.disabled = true;
+    document.getElementById('cb-send').disabled = true;
+    inp.oninput = () => { if (!cbTyping) document.getElementById('cb-send').disabled = inp.value.trim() === ''; };
+    inp.onkeydown = (e) => { if (e.key === 'Enter' && !cbTyping && inp.value.trim()) cbSend(); };
+    cbUpdateProg();
+    setTimeout(cbAskNext, 400);
+  }
+
+  function cbAskNext() {
+    cbSetInput(false);
+    cbShowTyping(() => cbTypewrite(CB_CONVO[cbIdx].q, () => {
+      document.getElementById('cb-hint').textContent = CB_CONVO[cbIdx].hint || '';
+      cbSetInput(true);
+      document.getElementById('cb-input').focus();
+    }));
+  }
+
+  function cbShowTyping(cb) {
+    const el = document.createElement('div');
+    el.className = 'cb-typing-indicator'; el.id = 'cb-typing';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    document.getElementById('cb-body').appendChild(el); cbScroll();
+    setTimeout(() => { el.remove(); cb(); }, 900);
+  }
+
+  function cbTypewrite(text, onDone) {
+    cbTyping = true;
+    document.getElementById('cb-send').disabled = true;
+    const bubble = document.createElement('div');
+    bubble.className = 'cb-bubble cb-bubble-ai';
+    const cursor = document.createElement('span'); cursor.className = 'cb-cursor';
+    bubble.appendChild(cursor);
+    document.getElementById('cb-body').appendChild(bubble); cbScroll();
+    const lines = text.split('\n'); let li = 0, ci = 0;
+    const node = document.createTextNode('');
+    bubble.insertBefore(node, cursor);
+    const tick = setInterval(() => {
+      const line = lines[li];
+      if (ci < line.length) { node.textContent += line[ci++]; }
+      else if (li < lines.length - 1) { node.textContent += '\n'; li++; ci = 0; }
+      else {
+        clearInterval(tick); cursor.remove(); cbTyping = false; cbScroll();
+        if (onDone) onDone(); return;
+      }
+      cbScroll();
+    }, 28);
+  }
+
+  function cbSetInput(on) {
+    const inp = document.getElementById('cb-input');
+    inp.disabled = !on;
+    if (!on) document.getElementById('cb-send').disabled = true;
+  }
+
+  function cbSend() {
+    if (cbTyping) return;
+    const inp = document.getElementById('cb-input');
+    const val = inp.value.trim(); if (!val) return;
+    const bubble = document.createElement('div');
+    bubble.className = 'cb-bubble cb-bubble-user'; bubble.textContent = val;
+    document.getElementById('cb-body').appendChild(bubble);
+    inp.value = ''; document.getElementById('cb-send').disabled = true;
+    document.getElementById('cb-hint').textContent = '';
+    cbSetInput(false); cbScroll(); cbIdx++; cbUpdateProg();
+    if (cbIdx < CB_CONVO.length) { setTimeout(cbAskNext, 500); }
+    else {
+      setTimeout(() => {
+        cbShowTyping(() => cbTypewrite('좋아요! 취향에 맞는 트렌드를 찾아볼게요 ✦', () => {
+          document.getElementById('cb-online-label').textContent = '분석 중...';
+          setTimeout(() => goTo('screen-q-all'), 900);
+        }));
+      }, 400);
+    }
+  }
+
+  function cbScroll() { const b = document.getElementById('cb-body'); setTimeout(() => { b.scrollTop = b.scrollHeight; }, 40); }
+
+  function cbUpdateProg() {
+    document.querySelectorAll('#cb-prog .cb-prog-dot').forEach((d, i) => {
+      d.classList.remove('active', 'done');
+      if (i < cbIdx) d.classList.add('done');
+      else if (i === cbIdx) d.classList.add('active');
+    });
+  }
+
+  /* ── V7 FLOW JS ── */
+  let v7Topic = '자취생 3분 계란요리 5가지';
+
+  function v7SelectTopic(title) {
+    v7Topic = title;
+    document.getElementById('v7-topic-text').textContent = title;
+    document.getElementById('v7-make-select').style.display = 'none';
+    document.getElementById('v7-make-loading').style.display = 'none';
+    document.getElementById('v7-make-result').style.display = 'none';
+    goTo('screen-v7-make');
+    v7ShowMaking('conti');
+  }
+
+  function v7MakeScript() { v7ShowMaking('script'); }
+  function v7MakeConti()  { v7ShowMaking('conti'); }
+
+  function v7ShowMaking(type) {
+    document.getElementById('v7-make-select').style.display = 'none';
+    document.getElementById('v7-make-loading').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('v7-make-loading').style.display = 'none';
+      const r = document.getElementById('v7-make-result');
+      r.style.display = 'block';
+      r.innerHTML = type === 'script' ? v7ScriptHTML() : v7ContiHTML();
+      document.querySelector('#screen-v7-make .v7-content').scrollTop = 0;
+    }, 1500);
+  }
+
+  function v7ScriptHTML() {
+    const items = [
+      ['정보형', `"${v7Topic}을(를) 꼭 알아야 할 이유, 지금 알려드릴게요."`],
+      ['스토리형', `"처음엔 저도 몰랐어요. 근데 이제는 자신 있게 만들어요."`],
+      ['훅형', `"이게 된다고요? 끝까지 보면 깜짝 놀라요."`],
+    ];
+    return `<span class="v7-section-eyebrow">스크립트 3종</span>
+      <div class="v7-result-title">마음에 드는 걸로 골라보세요</div>
+      ${items.map(([t, s]) => `<div class="v7-script-card"><span class="v7-sc-tag">${t}</span><div class="v7-sc-text">${s}</div></div>`).join('')}
+      <button class="v7-btn-ghost" onclick="document.getElementById('v7-make-select').style.display='block';document.getElementById('v7-make-result').style.display='none';" style="margin-bottom:10px;">콘티도 받아보기</button>
+      <button class="welcome-start-btn" onclick="v7SaveDone()" style="max-width:100%;margin:0;">저장하고 다음 주제 받기</button>`;
+  }
+
+  function v7ContiHTML() {
+    const cuts = [
+      ['CUT 1 · 훅',    '0-3초',    'M12 2v4M12 18v4',  `"꼭 봐야 해요"`,          '정면 클로즈업으로 시작'],
+      ['CUT 2 · 전환',  '3-6초',    'M5 12h14',          `"이거 하나로 다 돼요"`,    '손 동작 강조'],
+      ['CUT 3 · 본론',  '6-12초',   'M4 4h16v16H4z',    `"첫째... 둘째..."`,        '빠른 컷 편집'],
+      ['CUT 4 · 클로징','12-15초',  'M20 6L9 17l-5-5',  `"여러분도 해보세요!"`,     '완성본 + 먹방 마무리'],
+    ];
+    return `<span class="v7-section-eyebrow">콘티 4컷</span>
+      <div class="v7-result-title">이 순서로 찍어보세요</div>
+      ${cuts.map(([l, t, p, s, n]) => `
+        <div class="v7-conti-card">
+          <div class="v7-conti-head"><span class="v7-conti-lbl">${l}</span><span class="v7-conti-time">${t}</span></div>
+          <div class="v7-conti-body">
+            <div class="v7-conti-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${p}"/></svg></div>
+            <div class="v7-conti-tx"><div class="v7-conti-s">${s}</div><div class="v7-conti-n">${n}</div></div>
+          </div>
+        </div>`).join('')}
+      <button class="welcome-start-btn" onclick="v7SaveDone()" style="max-width:100%;margin:6px 0 0;">저장하고 다음 주제 받기</button>`;
+  }
+
+  function v7SaveDone() {
+    const toast = document.getElementById('v7-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1600);
+    document.getElementById('v7-make-result').innerHTML = `
+      <div class="v7-save-done">
+        <div class="v7-save-done-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--on-primary)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="v7-save-done-title">저장했어요!</div>
+        <div class="v7-save-done-sub">이제 찍어서 올려보세요.<br>다음 주제도 준비해뒀어요.</div>
+        <button class="welcome-start-btn" onclick="goTo('screen-v7-trends')" style="max-width:100%;margin:0;">다음 트렌드 보기 →</button>
+      </div>`;
+  }
+
+  const _origGoTo = goTo;
+  goTo = function(id) { _origGoTo(id); if (id === 'screen-chatbot') cbReset(); };
+
+  // ── v7 save: trends & benchmark creators ──
+  let v7SavedTrends = [];
+  let v7SavedBench  = [];
+
+  function v7ToggleTrend(btn, title, views, eng, badge) {
+    const idx = v7SavedTrends.findIndex(t => t.title === title);
+    if (idx >= 0) {
+      v7SavedTrends.splice(idx, 1);
+      btn.classList.remove('saved');
+    } else {
+      v7SavedTrends.push({ title, views, eng, badge });
+      btn.classList.add('saved');
+    }
+    v7RenderSavedTrends();
+  }
+
+  function v7ToggleBench(btn, ava, handle, meta, grow) {
+    const idx = v7SavedBench.findIndex(b => b.handle === handle);
+    if (idx >= 0) {
+      v7SavedBench.splice(idx, 1);
+      btn.classList.remove('saved');
+    } else {
+      v7SavedBench.push({ ava, handle, meta, grow });
+      btn.classList.add('saved');
+    }
+    v7RenderSavedBench();
+  }
+
+  function v7RenderSavedTrends() {
+    const list  = document.getElementById('v7-trend-save-list');
+    const empty = document.getElementById('v7-trend-save-empty');
+    const badge = document.getElementById('v7-trend-save-badge');
+    if (!v7SavedTrends.length) {
+      empty.style.display = ''; badge.style.display = 'none'; list.innerHTML = ''; return;
+    }
+    empty.style.display = 'none'; badge.style.display = '';
+    document.getElementById('v7-trend-save-count').textContent = v7SavedTrends.length;
+    list.innerHTML = v7SavedTrends.map((t, i) => `
+      <div class="v7-saved-trend-item">
+        <div>
+          <div class="v7-saved-trend-title">${t.title}</div>
+          <div class="v7-saved-trend-meta">조회 ${t.views} · 참여율 ${t.eng}</div>
+        </div>
+        <button class="v7-saved-remove" onclick="v7RemoveTrend(${i})">×</button>
+      </div>`).join('');
+  }
+
+  function v7RemoveTrend(i) {
+    const removed = v7SavedTrends.splice(i, 1)[0];
+    document.querySelectorAll('.v7-save-btn[data-title]').forEach(btn => {
+      if (btn.dataset.title === removed.title) btn.classList.remove('saved');
+    });
+    v7RenderSavedTrends();
+  }
+
+  function v7RenderSavedBench() {
+    const list  = document.getElementById('v7-bench-save-list');
+    const empty = document.getElementById('v7-bench-save-empty');
+    const badge = document.getElementById('v7-bench-save-badge');
+    if (!v7SavedBench.length) {
+      empty.style.display = ''; badge.style.display = 'none'; list.innerHTML = ''; return;
+    }
+    empty.style.display = 'none'; badge.style.display = '';
+    document.getElementById('v7-bench-save-count').textContent = v7SavedBench.length;
+    list.innerHTML = v7SavedBench.map((b, i) => `
+      <div class="v7-saved-bench-item">
+        <div class="v7-saved-bench-ava">${b.ava.startsWith('http') ? `<img src="${b.ava}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">` : b.ava}</div>
+        <div class="v7-saved-bench-info">
+          <div class="v7-saved-bench-handle">${b.handle}</div>
+          <div class="v7-saved-bench-meta">${b.meta}</div>
+        </div>
+        <button class="v7-saved-remove" onclick="v7RemoveBench(${i})">×</button>
+      </div>`).join('');
+  }
+
+  function v7RemoveBench(i) {
+    const removed = v7SavedBench.splice(i, 1)[0];
+    document.querySelectorAll('.v7-save-btn[data-handle]').forEach(btn => {
+      if (btn.dataset.handle === removed.handle) btn.classList.remove('saved');
+    });
+    v7RenderSavedBench();
+  }
+
+  // ── 마이페이지 조회수 기록 ────────────────────────────────────────────────
+  let myLogPlatform = 'tiktok';
+  let myLogSheetOpen = false;
+
+  function renderMyPageGraph(platform) {
+    const logs = [...uploadLogs[platform]].sort((a,b) => a.date.localeCompare(b.date)).slice(-7);
+    if (logs.length < 2) return;
+    const views = logs.map(l => l.views);
+    const maxV = Math.max(...views), minV = Math.min(...views);
+    const range = maxV - minV || 1;
+    const W = 200, H = 50, pad = 4;
+    const pts = logs.map((l, i) => {
+      const x = (i / (logs.length - 1)) * W;
+      const y = H - pad - ((l.views - minV) / range) * (H - pad * 2);
+      return [Math.round(x*10)/10, Math.round(y*10)/10];
+    });
+    const line = pts.map((p,i) => (i===0?'M':'L') + p[0] + ',' + p[1]).join(' ');
+    const area = line + ' L' + W + ',' + H + ' L0,' + H + ' Z';
+    const lineEl = document.getElementById('my-graph-line-' + platform);
+    const areaEl = document.getElementById('my-graph-area-' + platform);
+    if (lineEl) lineEl.setAttribute('d', line);
+    if (areaEl) areaEl.setAttribute('d', area);
+    const pct = Math.round(((views[views.length-1] - views[views.length-2]) / views[views.length-2]) * 100);
+    const valEl = document.getElementById('my-graph-val-' + platform);
+    if (valEl) {
+      valEl.textContent = (pct >= 0 ? '+' : '') + pct + '%';
+      if (platform !== 'youtube') valEl.style.color = '';
+    }
+    const dateEl = document.getElementById('my-graph-dates-' + platform);
+    if (dateEl) {
+      dateEl.innerHTML = '';
+      const show = [0, Math.floor((logs.length-1)/2), logs.length-1];
+      logs.forEach((l, i) => {
+        const el = document.createElement('div');
+        el.className = 'graph-date-label' + (i === logs.length-1 ? ' latest' : '');
+        el.textContent = show.includes(i) ? fmtDate(l.date) : '';
+        dateEl.appendChild(el);
+      });
+    }
+  }
+
+  function toggleMyLogSheet() {
+    myLogSheetOpen = !myLogSheetOpen;
+    if (myLogSheetOpen) {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('my-log-date-input').value = today;
+    }
+    document.getElementById('log-sheet-my').classList.toggle('open', myLogSheetOpen);
+    document.getElementById('log-overlay-my').classList.toggle('open', myLogSheetOpen);
+  }
+
+  function selectMyLogPlatform(btn, platform) {
+    myLogPlatform = platform;
+    document.querySelectorAll('#my-log-platforms .log-platform-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function submitMyLog() {
+    const val = document.getElementById('my-log-views-input').value;
+    const date = document.getElementById('my-log-date-input').value;
+    if (!val || !date) return;
+    const views = parseInt(val);
+    const logs = uploadLogs[myLogPlatform];
+    const existing = logs.findIndex(l => l.date === date);
+    if (existing >= 0) logs[existing].views = views;
+    else logs.push({date, views});
+    renderMyPageGraph(myLogPlatform);
+    renderPlatformGraph(myLogPlatform);
+    document.getElementById('my-log-views-input').value = '';
+    toggleMyLogSheet();
+  }
+
+  // 마이페이지 진입 시 그래프 초기 렌더
+  ['tiktok','instagram','youtube'].forEach(renderMyPageGraph);
+
+  // ── 합쳐서 보기 / 각각 보기 ─────────────────────────────────────────────
+  let myChartView = 'comb';
+
+  function setMyChartView(view) {
+    myChartView = view;
+    document.getElementById('my-graphs-sep').style.display  = view === 'sep'  ? '' : 'none';
+    document.getElementById('my-graphs-comb').style.display = view === 'comb' ? '' : 'none';
+    const btnSep  = document.getElementById('my-view-sep');
+    const btnComb = document.getElementById('my-view-comb');
+    if (view === 'sep') {
+      btnSep.style.background = 'var(--primary)'; btnSep.style.color = 'var(--on-primary)'; btnSep.style.borderColor = 'var(--primary)';
+      btnComb.style.background = 'none'; btnComb.style.color = 'var(--gray)'; btnComb.style.borderColor = 'var(--line)';
+    } else {
+      btnComb.style.background = 'var(--primary)'; btnComb.style.color = 'var(--on-primary)'; btnComb.style.borderColor = 'var(--primary)';
+      btnSep.style.background = 'none'; btnSep.style.color = 'var(--gray)'; btnSep.style.borderColor = 'var(--line)';
+      renderMyCombinedGraph();
+    }
+  }
+
+  function smoothPath(pts) {
+    if (pts.length < 2) return '';
+    let d = 'M' + pts[0][0] + ',' + pts[0][1];
+    for (let i = 1; i < pts.length; i++) {
+      const prev = pts[i-1], curr = pts[i];
+      const cpx = (prev[0] + curr[0]) / 2;
+      d += ' C' + cpx + ',' + prev[1] + ' ' + cpx + ',' + curr[1] + ' ' + curr[0] + ',' + curr[1];
+    }
+    return d;
+  }
+
+  function renderMyCombinedGraph() {
+    const W = 220, H = 80, padT = 8, padB = 8, padR = 32;
+    const platforms = ['instagram', 'tiktok', 'youtube'];
+    const ids = {instagram:'ig', tiktok:'tt', youtube:'yt'};
+    const labels = {instagram:'인스타', tiktok:'틱톡', youtube:'유튜브'};
+
+    let allDates = new Set();
+    const seriesData = {};
+    platforms.forEach(p => {
+      const logs = [...uploadLogs[p]].sort((a,b) => a.date.localeCompare(b.date)).slice(-7);
+      seriesData[p] = logs;
+      logs.forEach(l => allDates.add(l.date));
+    });
+    const sortedDates = [...allDates].sort().slice(-7);
+    const n = sortedDates.length;
+    if (n < 2) return;
+
+    platforms.forEach(p => {
+      const logs = seriesData[p];
+      const views = logs.map(l => l.views);
+      const maxV = Math.max(...views), minV = Math.min(...views);
+      const range = maxV - minV || 1;
+      const pts = logs.map(l => {
+        const xi = sortedDates.indexOf(l.date);
+        const x = (xi / (n - 1)) * W;
+        const y = H - padB - ((l.views - minV) / range) * (H - padT - padB);
+        return [Math.round(x*10)/10, Math.round(y*10)/10];
+      });
+      const id = ids[p];
+      const linePath = smoothPath(pts);
+      const last = pts[pts.length - 1];
+      const areaPath = linePath + ' L' + last[0] + ',' + H + ' L' + pts[0][0] + ',' + H + ' Z';
+
+      document.getElementById('comb-line-' + id).setAttribute('d', linePath);
+      document.getElementById('comb-area-' + id).setAttribute('d', areaPath);
+
+      // End dot
+      document.getElementById('comb-dot-' + id).setAttribute('cx', last[0]);
+      document.getElementById('comb-dot-' + id).setAttribute('cy', last[1]);
+
+      // Inline label
+      const pct = Math.round(((views[views.length-1] - views[views.length-2]) / views[views.length-2]) * 100);
+      const lbl = document.getElementById('comb-lbl-' + id);
+      lbl.setAttribute('x', last[0] + 5);
+      lbl.setAttribute('y', last[1]);
+      lbl.textContent = (pct >= 0 ? '+' : '') + pct + '%';
+    });
+
+    // Date labels
+    const dateEl = document.getElementById('my-combined-dates');
+    dateEl.innerHTML = '';
+    const show = [0, Math.floor((n-1)/2), n-1];
+    sortedDates.forEach((d, i) => {
+      const el = document.createElement('div');
+      el.className = 'graph-date-label' + (i === n-1 ? ' latest' : '');
+      el.textContent = show.includes(i) ? fmtDate(d) : '';
+      dateEl.appendChild(el);
+    });
+  }
+
+  // ── 업로드 달력 트래커 ───────────────────────────────────────────────────
+  const uploadCalendar = {}; // 'YYYY-MM-DD' → Set<'tiktok'|'instagram'|'youtube'>
+  let calYear = new Date().getFullYear();
+  let calMonth = new Date().getMonth();
+  let calPlatform = 'tiktok';
+
+  const CAL_COLORS = { tiktok: '#5CE1E6', instagram: '#FF4274', youtube: '#FF5555' };
+  const CAL_ACTIVE = { tiktok: 'active-tt', instagram: 'active-ig', youtube: 'active-yt' };
+  const CAL_LABELS = { tiktok: '틱톡', instagram: '인스타', youtube: '유튜브' };
+
+  function renderCalendar() {
+    const label = document.getElementById('cal-month-label');
+    if (!label) return;
+    label.textContent = calYear + '년 ' + (calMonth + 1) + '월';
+
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    const today = new Date().toISOString().split('T')[0];
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'cal-cell empty';
+      grid.appendChild(blank);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const mm = String(calMonth + 1).padStart(2, '0');
+      const dd = String(d).padStart(2, '0');
+      const dateStr = calYear + '-' + mm + '-' + dd;
+      const plats = uploadCalendar[dateStr] ? [...uploadCalendar[dateStr]] : [];
+
+      const cell = document.createElement('button');
+      cell.className = 'cal-cell';
+      cell.style.flexDirection = 'column';
+      cell.style.gap = '1px';
+
+      // Number
+      const num = document.createElement('span');
+      num.textContent = d;
+      if (plats.length === 1) { num.style.color = CAL_COLORS[plats[0]]; num.style.fontWeight = '700'; }
+      else if (plats.length > 1) { num.style.fontWeight = '700'; }
+      cell.appendChild(num);
+
+      // Dots row
+      if (plats.length > 0) {
+        const dotsRow = document.createElement('div');
+        dotsRow.style.cssText = 'display:flex; gap:2px; justify-content:center;';
+        plats.forEach(p => {
+          const dot = document.createElement('div');
+          dot.style.cssText = 'width:3px; height:3px; border-radius:50%; background:' + CAL_COLORS[p];
+          dotsRow.appendChild(dot);
+        });
+        cell.appendChild(dotsRow);
+
+        if (plats.length === 1) {
+          cell.style.background = CAL_COLORS[plats[0]] + '22';
+        } else {
+          cell.style.background = 'rgba(255,255,255,0.07)';
+        }
+      }
+
+      // Ring if current platform recorded on this date
+      if (plats.includes(calPlatform)) {
+        cell.style.boxShadow = '0 0 0 1.5px ' + CAL_COLORS[calPlatform];
+      }
+
+      if (dateStr === today) cell.classList.add('today');
+
+      cell.onclick = () => {
+        if (!uploadCalendar[dateStr]) uploadCalendar[dateStr] = new Set();
+        if (uploadCalendar[dateStr].has(calPlatform)) {
+          uploadCalendar[dateStr].delete(calPlatform);
+          if (uploadCalendar[dateStr].size === 0) delete uploadCalendar[dateStr];
+        } else {
+          uploadCalendar[dateStr].add(calPlatform);
+        }
+        renderCalendar();
+      };
+      grid.appendChild(cell);
+    }
+
+    // Legend: uploads per platform this month
+    const legend = document.getElementById('cal-legend');
+    legend.innerHTML = '';
+    const counts = { tiktok: 0, instagram: 0, youtube: 0 };
+    Object.entries(uploadCalendar).forEach(([date, platSet]) => {
+      const [y, m] = date.split('-');
+      if (parseInt(y) === calYear && parseInt(m) === calMonth + 1) {
+        platSet.forEach(p => counts[p]++);
+      }
+    });
+    ['tiktok', 'instagram', 'youtube'].forEach(p => {
+      if (counts[p] === 0) return;
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex; align-items:center; gap:4px; font-size:10px; font-family:var(--font-mono); color:' + CAL_COLORS[p];
+      item.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:' + CAL_COLORS[p] + ';display:inline-block;"></span>' + CAL_LABELS[p] + ' ' + counts[p] + '회';
+      legend.appendChild(item);
+    });
+  }
+
+  function changeCalMonth(dir) {
+    calMonth += dir;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderCalendar();
+  }
+
+  function selectCalPlatform(platform) {
+    calPlatform = platform;
+    ['tiktok', 'instagram', 'youtube'].forEach(p => {
+      const btn = document.getElementById('cal-btn-' + p);
+      if (!btn) return;
+      btn.className = 'cal-plat-btn' + (p === platform ? ' ' + CAL_ACTIVE[p] : '');
+    });
+    renderCalendar();
+  }
+
+  renderCalendar();
+  // ── 트렌드 검색 ──────────────────────────────────────────────────────────
+  const TREND_POOL = [
+    { title: '자취생 3분 계란요리 5가지', views: '92만', engage: '8.4%', badge: '반응 폭발', hot: true },
+    { title: '편의점 재료로 만드는 야식', views: '54만', engage: '6.1%', badge: '상승 중', hot: false },
+    { title: '자취 한 달 식비 공개합니다', views: '38만', engage: '7.2%', badge: '상승 중', hot: false },
+    { title: '1만원으로 일주일 버티기', views: '127만', engage: '9.1%', badge: '반응 폭발', hot: true },
+    { title: '자취방 냉장고 정리 꿀팁', views: '44만', engage: '5.8%', badge: '상승 중', hot: false },
+    { title: '혼자 먹기 좋은 10분 파스타', views: '71만', engage: '7.5%', badge: '반응 폭발', hot: true },
+    { title: '자취생 주간 식단 루틴', views: '33만', engage: '6.4%', badge: '상승 중', hot: false },
+    { title: '다이소 주방템 솔직 리뷰', views: '85만', engage: '8.9%', badge: '반응 폭발', hot: true },
+    { title: '5분 완성 자취 밥상', views: '49만', engage: '7.0%', badge: '상승 중', hot: false },
+    { title: '편의점 도시락 꿀조합', views: '61만', engage: '6.7%', badge: '상승 중', hot: false },
+    { title: '자취생 냉동식품 솔직 후기', views: '29만', engage: '5.2%', badge: '새로 뜨는', hot: false },
+    { title: '혼밥 고수의 냉장고 털기', views: '78만', engage: '8.2%', badge: '반응 폭발', hot: true },
+    { title: '라면 업그레이드 레시피 7가지', views: '93만', engage: '9.4%', badge: '반응 폭발', hot: true },
+    { title: '자취생 밀프렙 완벽 가이드', views: '36만', engage: '5.9%', badge: '상승 중', hot: false },
+    { title: '월 30만원 식비 챌린지', views: '56만', engage: '7.8%', badge: '상승 중', hot: false },
+    { title: '기숙사에서 몰래 해먹는 요리', views: '112만', engage: '10.2%', badge: '반응 폭발', hot: true },
+    { title: '집에서 편의점 음식 따라 만들기', views: '68만', engage: '7.3%', badge: '반응 폭발', hot: true },
+    { title: '자취생 아침 루틴 + 식사', views: '41만', engage: '6.0%', badge: '상승 중', hot: false },
+    { title: '혼자 사는 사람들의 냉동실', views: '52만', engage: '6.8%', badge: '상승 중', hot: false },
+    { title: '자취 6개월 현실 공개', views: '98만', engage: '9.7%', badge: '반응 폭발', hot: true },
+  ];
+
+  const svgArrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:middle;margin-left:4px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  function searchTrends(q) {
+    const clearBtn = document.getElementById('trend-search-clear');
+    const resultsEl = document.getElementById('trend-search-results');
+    const originalEl = document.getElementById('trend-original-cards');
+    if (!q.trim()) { clearTrendSearch(); return; }
+    clearBtn.style.display = '';
+    const filtered = TREND_POOL.filter(t => t.title.includes(q));
+    originalEl.style.display = 'none';
+    resultsEl.style.display = '';
+    if (filtered.length === 0) {
+      resultsEl.innerHTML = '<div class="v7-search-empty">🔍<br><b>"' + q + '"</b> 검색 결과가 없어요<br><span style="font-size:11px;margin-top:4px;display:block;">다른 키워드를 입력해 보세요</span></div>';
+      return;
+    }
+    const badgeSVG = (t) => '<span class="v7-badge ' + (t.hot ? 'v7-badge-hot' : 'v7-badge-warm') + '">' + t.badge + '</span>';
+    const gradBg = (t) => t.hot ? 'linear-gradient(135deg,#1c0808,#2d1010)' : 'linear-gradient(135deg,#0a120a,#101d10)';
+    resultsEl.innerHTML = '<div class="v7-search-count">' + filtered.length + '개의 트렌드 발견</div>' +
+      filtered.map(t =>
+        '<div class="v7-result-card" onclick="v7SelectTopic(' + JSON.stringify(t.title) + ')">' +
+        '<div class="v7-tcard-top"><div class="v7-tcard-title">' + t.title + '</div>' + badgeSVG(t) + '</div>' +
+        '<div class="v7-tcard-meta"><span class="v7-tcard-stat">조회 <b>' + t.views + '</b></span><span class="v7-tcard-stat">참여율 <b>' + t.engage + '</b></span></div>' +
+        '<div class="v7-result-thumb-placeholder" style="background:' + gradBg(t) + '">SHORTFORM · TREND</div>' +
+        '<div class="v7-tcard-cta">이걸로 만들기 ' + svgArrow + '</div>' +
+        '</div>'
+      ).join('');
+  }
+
+  function clearTrendSearch() {
+    const inp = document.getElementById('trend-search-input');
+    if (inp) inp.value = '';
+    const clr = document.getElementById('trend-search-clear');
+    if (clr) clr.style.display = 'none';
+    const res = document.getElementById('trend-search-results');
+    if (res) res.style.display = 'none';
+    const orig = document.getElementById('trend-original-cards');
+    if (orig) orig.style.display = '';
+  }
+
+  // ── 크리에이터 검색 ──────────────────────────────────────────────────────
+  const BENCH_POOL = [
+    { name: '자취의신', niche: '자취 요리', subs: '42만', avg: '87만', color: '#C8FF57' },
+    { name: '혼밥러닝', niche: '혼자 먹는 일상', subs: '18만', avg: '43만', color: '#FF6B6B' },
+    { name: '편의점매니아', niche: '편의점 리뷰', subs: '31만', avg: '64만', color: '#5CE1E6' },
+    { name: '식비절약왕', niche: '절약 요리', subs: '28만', avg: '51만', color: '#FF9A3C' },
+    { name: '10분요리사', niche: '빠른 요리 레시피', subs: '55만', avg: '110만', color: '#FF4274' },
+    { name: '자취라이프', niche: '자취 브이로그', subs: '22만', avg: '38만', color: '#A78BFA' },
+    { name: '냉장고탈탈', niche: '냉장고 요리', subs: '15만', avg: '29만', color: '#34D399' },
+    { name: '혼자요리왕', niche: '1인 요리', subs: '39만', avg: '75만', color: '#F472B6' },
+    { name: '대학생밥상', niche: '학생 요리', subs: '11만', avg: '22만', color: '#60A5FA' },
+    { name: '간편밥그릇', niche: '간편식 리뷰', subs: '19만', avg: '44만', color: '#FBBF24' },
+    { name: '밥이최고야', niche: '한식 요리', subs: '63만', avg: '130만', color: '#C8FF57' },
+    { name: '자취요리연구소', niche: '요리 실험', subs: '24만', avg: '58만', color: '#5CE1E6' },
+    { name: '오늘뭐먹지', niche: '음식 추천', subs: '47만', avg: '92만', color: '#FF6B6B' },
+    { name: '백원요리사', niche: '저렴한 요리', subs: '33만', avg: '67만', color: '#FF9A3C' },
+  ];
+
+  function searchBench(q) {
+    const clearBtn = document.getElementById('bench-search-clear');
+    const resultsEl = document.getElementById('bench-search-results');
+    if (!q.trim()) { clearBenchSearch(); return; }
+    clearBtn.style.display = '';
+    const filtered = BENCH_POOL.filter(c => c.name.includes(q) || c.niche.includes(q));
+    resultsEl.style.display = '';
+    if (filtered.length === 0) {
+      resultsEl.innerHTML = '<div class="v7-search-empty">🔍<br><b>"' + q + '"</b> 검색 결과가 없어요<br><span style="font-size:11px;margin-top:4px;display:block;">다른 키워드를 입력해 보세요</span></div>';
+      return;
+    }
+    resultsEl.innerHTML = '<div class="v7-search-count">' + filtered.length + '명의 크리에이터 발견</div>' +
+      filtered.map(c =>
+        '<div class="v7-bcard-search">' +
+        '<div class="v7-bava-initial" style="background:' + c.color + '22;color:' + c.color + '">' + c.name[0] + '</div>' +
+        '<div style="flex:1;min-width:0;">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--ink);font-family:var(--font-body);margin-bottom:2px;">@' + c.name + '</div>' +
+        '<div style="font-size:11px;color:var(--gray);font-family:var(--font-mono);margin-bottom:6px;">' + c.niche + '</div>' +
+        '<div style="display:flex;gap:12px;">' +
+        '<span style="font-size:11px;color:var(--ink-soft);">구독자 <b style="color:var(--ink)">' + c.subs + '</b></span>' +
+        '<span style="font-size:11px;color:var(--ink-soft);">평균 조회 <b style="color:var(--ink)">' + c.avg + '</b></span>' +
+        '</div></div>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gray)" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>' +
+        '</div>'
+      ).join('');
+  }
+
+  function clearBenchSearch() {
+    const inp = document.getElementById('bench-search-input');
+    if (inp) inp.value = '';
+    const clr = document.getElementById('bench-search-clear');
+    if (clr) clr.style.display = 'none';
+    const res = document.getElementById('bench-search-results');
+    if (res) res.style.display = 'none';
+  }
+
 </script>
 
 <div class="toast" id="toast"></div>

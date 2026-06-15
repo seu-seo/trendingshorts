@@ -19,9 +19,9 @@ const LEFT_BG_OPACITY  = [0.06, 0.03, 0,    0,    0   ];
 
 // Rank text color per rank (demo v6)
 function rankColor(rank: number): string {
-  if (rank === 1) return 'var(--accent-lime)';
-  if (rank === 2) return 'rgba(236,237,238,0.7)';
-  return 'rgba(236,237,238,0.4)';
+  if (rank === 1) return 'var(--color-primary)';
+  if (rank === 2) return 'var(--color-ink-2)';
+  return 'var(--color-ink-3)';
 }
 
 export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }) {
@@ -36,17 +36,17 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
 
   const erPct = trend.engagementRate > 0 ? `${trend.engagementRate.toFixed(1)}%` : '—';
   const HEAT_COLOR: Record<string, string> = {
-    HOT: 'var(--accent-lime)',
-    WARM: '#57C8FF',
-    COLD: 'rgba(255,255,255,0.3)',
+    HOT: 'var(--color-primary)',
+    WARM: 'var(--color-primary-mid)',
+    COLD: 'var(--color-ink-3)',
   };
 
   return (
     <div
       className="flex gap-3 items-center py-3.5 transition-all"
       style={{
-        borderLeft: `3px solid rgba(200,255,87,${barOpacity})`,
-        background: bgOpacity > 0 ? `rgba(200,255,87,${bgOpacity})` : 'transparent',
+        borderLeft: `3px solid color-mix(in srgb, var(--color-primary) ${Math.round(barOpacity * 100)}%, transparent)`,
+        background: bgOpacity > 0 ? `color-mix(in srgb, var(--color-primary) ${Math.round(bgOpacity * 100)}%, transparent)` : 'transparent',
         paddingLeft: 12,
       }}
     >
@@ -60,18 +60,18 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
 
       {/* 본문 */}
       <button className="flex-1 min-w-0 text-left" onClick={() => setActionSheetTrend(trend)}>
-        <div className="text-[15px] font-medium leading-snug mb-1 overflow-hidden text-ellipsis whitespace-nowrap text-text"
-          style={{ letterSpacing: '-0.01em' }}>
+        <div className="text-[15px] font-medium leading-snug mb-1 overflow-hidden text-ellipsis whitespace-nowrap"
+          style={{ letterSpacing: '-0.01em', color: 'var(--color-ink)' }}>
           {trend.title}
         </div>
         <div className="flex items-center gap-2 font-mono text-[11px]">
           <span className="font-semibold uppercase tracking-wider"
-            style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, letterSpacing: '0.06em' }}>
+            style={{ color: 'var(--color-ink-3)', fontSize: 10, letterSpacing: '0.06em' }}>
             {PLATFORM_KR[trend.platform] ?? trend.platform}
           </span>
           <span className="w-[2px] h-[2px] rounded-full flex-shrink-0"
-            style={{ background: 'rgba(255,255,255,0.2)' }} />
-          <span style={{ color: 'var(--text-faint)' }}>{formatViews(trend.views)}</span>
+            style={{ background: 'var(--color-border-2)' }} />
+          <span style={{ color: 'var(--color-ink-3)' }}>{formatViews(trend.views)}</span>
         </div>
       </button>
 
@@ -90,12 +90,12 @@ export default function TrendRow({ trend, rank }: { trend: Trend; rank: number }
         <button
           onClick={(e) => { e.stopPropagation(); toggleSaveTrend(trend.id); }}
           className="w-8 h-8 grid place-items-center rounded-full transition-all"
-          style={{ background: isSaved ? 'rgba(200,255,87,0.12)' : 'transparent' }}
+          style={{ background: isSaved ? 'var(--color-primary-soft)' : 'transparent' }}
           aria-label={isSaved ? '저장 취소' : '저장'}
         >
           <svg width="18" height="18" viewBox="0 0 24 24"
-            fill={isSaved ? '#C8FF57' : 'none'}
-            stroke={isSaved ? '#C8FF57' : 'rgba(255,255,255,0.35)'}
+            fill={isSaved ? 'var(--color-primary)' : 'none'}
+            stroke={isSaved ? 'var(--color-primary)' : 'var(--color-ink-3)'}
             strokeWidth="2">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
           </svg>

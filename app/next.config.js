@@ -9,10 +9,14 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    outputFileTracingIncludes: {
-      '/demo': ['./templates/**/*'],
-    },
+  async redirects() {
+    return [
+      {
+        source: '/demo',
+        destination: '/demo.html',
+        permanent: false,
+      },
+    ];
   },
 };
 

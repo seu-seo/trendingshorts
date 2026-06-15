@@ -304,6 +304,16 @@ async function attachImages(
   );
 }
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function POST(req: NextRequest) {
   let body: ContiRequest;
   try {
@@ -327,7 +337,7 @@ export async function POST(req: NextRequest) {
       character: fallback.character,
       subject: fallback.subject,
       source: 'mock',
-    } satisfies ContiResponse);
+    } satisfies ContiResponse, { headers: CORS_HEADERS });
   }
 
   // 1) 4컷 분해 + 캐릭터/소개대상 시트 (Gemini text)
@@ -350,5 +360,5 @@ export async function POST(req: NextRequest) {
     character: parsed.character,
     subject: parsed.subject,
     source: 'live',
-  } satisfies ContiResponse);
+  } satisfies ContiResponse, { headers: CORS_HEADERS });
 }

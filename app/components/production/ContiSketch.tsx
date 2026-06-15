@@ -13,14 +13,14 @@ type Palette = { accent: string; tint: string; dot: string };
 
 // sketchType ↔ 파트(훅/전환/본론/클로징) 색을 1:1 고정 (ContiPanel의 PART_COLOR와 정렬)
 const PALETTE: Record<SketchType, Palette> = {
-  closeup: { accent: '#ff3d7f', tint: '#2a1620', dot: 'rgba(255,61,127,0.30)' }, // 훅
-  upper: { accent: '#57c8ff', tint: '#0f2230', dot: 'rgba(87,200,255,0.30)' }, // 전환
-  split: { accent: '#c8ff57', tint: '#1c2410', dot: 'rgba(200,255,87,0.28)' }, // 본론
-  front: { accent: '#ffd700', tint: '#2a2410', dot: 'rgba(255,215,0,0.28)' }, // 클로징
+  closeup: { accent: 'var(--color-hot)', tint: 'var(--color-surface)', dot: 'color-mix(in srgb, var(--color-hot) 30%, transparent)' }, // 훅
+  upper: { accent: 'var(--color-primary-mid)', tint: 'var(--color-surface)', dot: 'color-mix(in srgb, var(--color-primary-mid) 30%, transparent)' }, // 전환
+  split: { accent: 'var(--color-primary)', tint: 'var(--color-surface)', dot: 'color-mix(in srgb, var(--color-primary) 28%, transparent)' }, // 본론
+  front: { accent: 'var(--color-warm)', tint: 'var(--color-surface)', dot: 'color-mix(in srgb, var(--color-warm) 28%, transparent)' }, // 클로징
 };
 
-const INK = '#0c0c0d';
-const PAPER = '#f6f1e6'; // 인물/오브젝트 셀 컬러
+const INK = 'var(--color-ink)';
+const PAPER = 'var(--color-soft)'; // 인물/오브젝트 셀 컬러
 const STROKE = 3.2;
 
 function speedLines(corner: 'tl' | 'tr' | 'bl' | 'br', accent: string) {

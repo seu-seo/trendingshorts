@@ -5,7 +5,10 @@ import { useStore } from '@/lib/store';
 import type { SurveyAnswers, RecommendConcept } from '@/lib/types';
 import type { GenerateResponse } from '@/lib/prompts';
 import GeneratedScriptCard from '@/components/production/GeneratedScriptCard';
-import CreatorRecommendSection from '@/components/recommend/CreatorRecommendSection';
+import CreatorRecommendV7 from '@/components/recommend/CreatorRecommendV7';
+import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
+import type { ThemeName } from '@/lib/themes/types';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 const TREND_OPTIONS: { value: string; label: string; sub: string }[] = [
   { value: 'trend-full', label: '트렌드 그대로', sub: '지금 유행 편승' },
@@ -51,6 +54,9 @@ export default function RecommendPage() {
   useEffect(() => {
     setTab('recommend');
   }, [setTab]);
+
+  const [theme, setTheme] = useState<ThemeName>('indigo');
+  useEffect(() => { applyTheme(theme); return () => clearTheme(); }, [theme]);
 
   const canSubmit = trendUsage.length > 0 && energy.length > 0 && targetAudience.trim().length > 0;
 
@@ -133,237 +139,240 @@ export default function RecommendPage() {
   };
 
   return (
-    <div className="pb-8">
-      {/* 헤더 */}
-      <div className="px-6 pb-5 pt-1">
-        <div className="font-mono text-[10px] tracking-widest text-accent-pink uppercase mb-2.5 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent-pink" style={{ boxShadow: '0 0 8px var(--accent-pink)' }} />
-          추천 · 제작
-        </div>
-        <div className="font-display text-[34px] leading-none tracking-tight mb-1">
-          <span className="text-accent-pink">소재</span> 추천
-        </div>
-        <div className="text-[13px] text-text-dim">
-          오늘 찍을 영상 방향을 알려주면 맞춤 소재를 추천해드려요
-        </div>
-      </div>
-
-      {/* 설문 */}
-      <div className="px-6 flex flex-col gap-6">
-
-        {/* Q1: 트렌드 활용도 */}
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
-        >
-          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q1</div>
-          <div className="text-[15px] font-semibold text-text mb-3">이번 영상, 유행을 얼마나 탈 건가요?</div>
-          <div className="grid grid-cols-3 gap-2">
-            {TREND_OPTIONS.map((opt) => {
-              const selected = trendUsage === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => setTrendUsage(opt.value)}
-                  className="py-3 px-2 rounded-xl border text-center transition-all"
-                  style={selected
-                    ? { background: 'rgba(200,255,87,0.18)', border: '1px solid rgba(200,255,87,0.7)' }
-                    : { background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }
-                  }
-                >
-                  <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'rgb(200,255,87)' : 'rgba(255,255,255,0.9)' }}>
-                    {opt.label}
-                  </div>
-                  <div className="font-mono text-[9px]" style={{ color: selected ? 'rgba(200,255,87,0.55)' : 'rgba(255,255,255,0.4)' }}>{opt.sub}</div>
-                </button>
-              );
-            })}
+    <div style={{ background: 'var(--color-bg)', minHeight: '100%' }}>
+      <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
+      <div className="pb-8">
+        {/* 헤더 */}
+        <div className="px-6 pb-5 pt-1">
+          <div className="font-mono text-[10px] tracking-widest uppercase mb-2.5 flex items-center gap-2" style={{ color: 'var(--color-hot)' }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-hot)', boxShadow: '0 0 8px var(--color-hot)' }} />
+            추천 · 제작
+          </div>
+          <div className="font-display text-[34px] leading-none tracking-tight mb-1">
+            <span style={{ color: 'var(--color-hot)' }}>소재</span> 추천
+          </div>
+          <div className="text-[13px]" style={{ color: 'var(--color-ink-2)' }}>
+            오늘 찍을 영상 방향을 알려주면 맞춤 소재를 추천해드려요
           </div>
         </div>
 
-        {/* Q2: 영상 에너지 */}
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
-        >
-          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q2</div>
-          <div className="text-[15px] font-semibold text-text mb-3">어떤 느낌의 영상으로 갈 건가요?</div>
-          <div className="grid grid-cols-2 gap-2">
-            {ENERGY_OPTIONS.map((opt) => {
-              const selected = energy === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  onClick={() => setEnergy(opt.value)}
-                  className="py-3 px-3 rounded-xl border text-center transition-all"
-                  style={selected
-                    ? { background: 'rgba(200,255,87,0.18)', border: '1px solid rgba(200,255,87,0.7)' }
-                    : { background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }
-                  }
-                >
-                  <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'rgb(200,255,87)' : 'rgba(255,255,255,0.9)' }}>
-                    {opt.label}
-                  </div>
-                  <div className="font-mono text-[9px]" style={{ color: selected ? 'rgba(200,255,87,0.55)' : 'rgba(255,255,255,0.4)' }}>{opt.sub}</div>
-                </button>
-              );
-            })}
+        {/* 설문 */}
+        <div className="px-6 flex flex-col gap-6">
+
+          {/* Q1: 트렌드 활용도 */}
+          <div
+            className="rounded-2xl p-4"
+            style={{ background: 'color-mix(in srgb, var(--color-primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 18%, transparent)' }}
+          >
+            <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'color-mix(in srgb, var(--color-primary) 50%, transparent)' }}>Q1</div>
+            <div className="text-[15px] font-semibold mb-3" style={{ color: 'var(--color-ink)' }}>이번 영상, 유행을 얼마나 탈 건가요?</div>
+            <div className="grid grid-cols-3 gap-2">
+              {TREND_OPTIONS.map((opt) => {
+                const selected = trendUsage === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setTrendUsage(opt.value)}
+                    className="py-3 px-2 rounded-xl border text-center transition-all"
+                    style={selected
+                      ? { background: 'color-mix(in srgb, var(--color-primary) 18%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 70%, transparent)' }
+                      : { background: 'var(--color-tint)', border: '1px solid var(--color-border)' }
+                    }
+                  >
+                    <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'var(--color-primary)' : 'var(--color-ink)' }}>
+                      {opt.label}
+                    </div>
+                    <div className="font-mono text-[9px]" style={{ color: selected ? 'color-mix(in srgb, var(--color-primary) 55%, transparent)' : 'var(--color-ink-3)' }}>{opt.sub}</div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Q2: 영상 에너지 */}
+          <div
+            className="rounded-2xl p-4"
+            style={{ background: 'color-mix(in srgb, var(--color-primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 18%, transparent)' }}
+          >
+            <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'color-mix(in srgb, var(--color-primary) 50%, transparent)' }}>Q2</div>
+            <div className="text-[15px] font-semibold mb-3" style={{ color: 'var(--color-ink)' }}>어떤 느낌의 영상으로 갈 건가요?</div>
+            <div className="grid grid-cols-2 gap-2">
+              {ENERGY_OPTIONS.map((opt) => {
+                const selected = energy === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => setEnergy(opt.value)}
+                    className="py-3 px-3 rounded-xl border text-center transition-all"
+                    style={selected
+                      ? { background: 'color-mix(in srgb, var(--color-primary) 18%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 70%, transparent)' }
+                      : { background: 'var(--color-tint)', border: '1px solid var(--color-border)' }
+                    }
+                  >
+                    <div className="text-[13px] font-semibold mb-0.5" style={{ color: selected ? 'var(--color-primary)' : 'var(--color-ink)' }}>
+                      {opt.label}
+                    </div>
+                    <div className="font-mono text-[9px]" style={{ color: selected ? 'color-mix(in srgb, var(--color-primary) 55%, transparent)' : 'var(--color-ink-3)' }}>{opt.sub}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Q3: 타겟 오디언스 */}
+          <div
+            className="rounded-2xl p-4"
+            style={{ background: 'color-mix(in srgb, var(--color-primary) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary) 18%, transparent)' }}
+          >
+            <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'color-mix(in srgb, var(--color-primary) 50%, transparent)' }}>Q3</div>
+            <div className="text-[15px] font-semibold mb-3" style={{ color: 'var(--color-ink)' }}>누구를 위한 영상인가요?</div>
+            <textarea
+              value={targetAudience}
+              onChange={(e) => setTargetAudience(e.target.value)}
+              placeholder="예) 20대 직장인, 요리 배우고 싶은 입문자, 운동 관심 있는 학생..."
+              rows={3}
+              className="w-full rounded-xl px-4 py-3 text-[13px] placeholder:text-[color:var(--color-ink-3)] resize-none focus:outline-none transition-colors"
+              style={{ color: 'var(--color-ink)', background: 'var(--color-tint)', border: '1px solid var(--color-border)' }}
+            />
+          </div>
+
         </div>
 
-        {/* Q3: 타겟 오디언스 */}
-        <div
-          className="rounded-2xl p-4"
-          style={{ background: 'rgba(200,255,87,0.06)', border: '1px solid rgba(200,255,87,0.18)' }}
-        >
-          <div className="font-mono text-[10px] tracking-wider uppercase mb-1" style={{ color: 'rgba(200,255,87,0.5)' }}>Q3</div>
-          <div className="text-[15px] font-semibold text-text mb-3">누구를 위한 영상인가요?</div>
-          <textarea
-            value={targetAudience}
-            onChange={(e) => setTargetAudience(e.target.value)}
-            placeholder="예) 20대 직장인, 요리 배우고 싶은 입문자, 운동 관심 있는 학생..."
-            rows={3}
-            className="w-full rounded-xl px-4 py-3 text-[13px] text-text placeholder:text-text-dim resize-none focus:outline-none transition-colors"
-            style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)' }}
+        {/* 성장 레퍼런스 — 온보딩 완료 시 표시 */}
+        {personaInput && (
+          <CreatorRecommendV7
+            category={personaInput.category}
+            experience={personaInput.experience}
           />
-        </div>
-
-      </div>
-
-      {/* 성장 레퍼런스 — 온보딩 완료 시 표시 */}
-      {personaInput && (
-        <CreatorRecommendSection
-          category={personaInput.category}
-          experience={personaInput.experience}
-        />
-      )}
-
-      <div className="px-6 flex flex-col gap-6">
-        {/* CTA */}
-        <button
-          onClick={handleRecommend}
-          disabled={!canSubmit || loading}
-          className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all flex items-center justify-center gap-2"
-          style={{
-            background: canSubmit && !loading ? 'var(--accent-lime)' : 'rgba(200,255,87,0.12)',
-            color: canSubmit && !loading ? '#0a0a0a' : 'rgba(200,255,87,0.4)',
-            cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
-          }}
-        >
-          {loading ? (
-            <>
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              Gemini 분석 중...
-            </>
-          ) : (
-            <>✨ 소재·컨셉 추천받기</>
-          )}
-        </button>
-
-        {error && (
-          <div className="text-[12px] text-red-400 font-mono text-center">{error}</div>
         )}
-      </div>
 
-      {/* ── STEP 2: 컨셉 카드 ── */}
-      {recommendResult && (
-        <div className="px-6 mt-8">
-          <div className="flex items-center justify-between mb-1">
-            <div className="font-mono text-[10px] tracking-widest text-accent-lime uppercase flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-lime animate-pulse" />
-              이런 영상 어때요?
-            </div>
-            {recommendResult.source === 'mock' && (
-              <span className="font-mono text-[8px] text-text-faint border border-border px-2 py-0.5 rounded-full">MOCK</span>
+        <div className="px-6 flex flex-col gap-6">
+          {/* CTA */}
+          <button
+            onClick={handleRecommend}
+            disabled={!canSubmit || loading}
+            className="w-full py-4 rounded-2xl font-semibold text-[15px] tracking-wide transition-all flex items-center justify-center gap-2"
+            style={{
+              background: canSubmit && !loading ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-primary) 12%, transparent)',
+              color: canSubmit && !loading ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-primary) 40%, transparent)',
+              cursor: canSubmit && !loading ? 'pointer' : 'not-allowed',
+            }}
+          >
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                Gemini 분석 중...
+              </>
+            ) : (
+              <>✨ 소재·컨셉 추천받기</>
             )}
-          </div>
-          <div className="text-[11px] text-text-dim mb-4">
-            컨셉을 선택하면 바로 대본 3종을 생성해드려요
-          </div>
-          <div className="flex flex-col gap-3">
-            {recommendResult.concepts.map((concept, i) => (
-              <ConceptCard
-                key={i}
-                concept={concept}
-                index={i}
-                active={activeConceptIndex === i}
-                onSelect={() => handlePickConcept(i, concept)}
-              />
-            ))}
-          </div>
+          </button>
+
+          {error && (
+            <div className="text-[12px] text-red-400 font-mono text-center">{error}</div>
+          )}
         </div>
-      )}
 
-      {/* ── STEP 3: 대본 생성 ── */}
-      {(scriptLoading || scriptData || scriptError) && (
-        <div ref={scriptRef} className="px-6 mt-8">
-          <div className="font-mono text-[10px] tracking-widest text-accent-blue uppercase flex items-center gap-2 mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue" style={{ boxShadow: '0 0 8px var(--accent-blue)' }} />
-            대본 생성
-          </div>
-
-          {activeConceptIndex != null && recommendResult && (
-            <div className="text-[11px] text-text-dim mb-4">
-              &ldquo;{recommendResult.concepts[activeConceptIndex].title}&rdquo; 기반 대본 3종
+        {/* ── STEP 2: 컨셉 카드 ── */}
+        {recommendResult && (
+          <div className="px-6 mt-8">
+            <div className="flex items-center justify-between mb-1">
+              <div className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2" style={{ color: 'var(--color-primary)' }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-primary)' }} />
+                이런 영상 어때요?
+              </div>
+              {recommendResult.source === 'mock' && (
+                <span className="font-mono text-[8px] px-2 py-0.5 rounded-full" style={{ color: 'var(--color-ink-3)', border: '1px solid var(--color-border)' }}>MOCK</span>
+              )}
             </div>
-          )}
-
-          {scriptLoading && (
+            <div className="text-[11px] mb-4" style={{ color: 'var(--color-ink-2)' }}>
+              컨셉을 선택하면 바로 대본 3종을 생성해드려요
+            </div>
             <div className="flex flex-col gap-3">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="bg-surface-1 border border-border rounded-[18px] p-[18px] animate-pulse">
-                  <div className="h-3 w-24 bg-border rounded mb-3" />
-                  <div className="h-4 w-full bg-border rounded mb-2" />
-                  <div className="h-4 w-5/6 bg-border rounded mb-4" />
-                  <div className="h-3 w-full bg-border rounded mb-1.5" />
-                  <div className="h-3 w-2/3 bg-border rounded" />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {scriptError && !scriptLoading && (
-            <div className="p-4 border border-dashed rounded-xl mb-4"
-              style={{ borderColor: 'rgba(255,61,127,0.4)', background: 'rgba(255,61,127,0.05)' }}
-            >
-              <div className="font-mono text-[10px] uppercase tracking-widest mb-1 text-accent-pink">FAILED</div>
-              <div className="text-[12px] text-text-dim">{scriptError}</div>
-            </div>
-          )}
-
-          {scriptData && !scriptLoading && (
-            <div className="flex flex-col gap-3.5">
-              {TONE_ORDER.map((tone, i) => (
-                <GeneratedScriptCard
-                  key={tone}
-                  tone={tone}
-                  script={scriptData.scripts[tone]}
-                  index={i + 1}
-                  total={3}
-                  recommended={scriptData.recommendedTone === tone}
-                  concept={activeConcept}
+              {recommendResult.concepts.map((concept, i) => (
+                <ConceptCard
+                  key={i}
+                  concept={concept}
+                  index={i}
+                  active={activeConceptIndex === i}
+                  onSelect={() => handlePickConcept(i, concept)}
                 />
               ))}
-              <div
-                className="p-3 px-3.5 border border-dashed rounded-[10px] flex gap-2.5 items-start mt-1"
-                style={{ background: 'rgba(255,215,0,0.06)', borderColor: 'rgba(255,215,0,0.3)' }}
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 3: 대본 생성 ── */}
+        {(scriptLoading || scriptData || scriptError) && (
+          <div ref={scriptRef} className="px-6 mt-8">
+            <div className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-2 mb-1" style={{ color: 'var(--color-primary-mid)' }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-primary-mid)', boxShadow: '0 0 8px var(--color-primary-mid)' }} />
+              대본 생성
+            </div>
+
+            {activeConceptIndex != null && recommendResult && (
+              <div className="text-[11px] mb-4" style={{ color: 'var(--color-ink-2)' }}>
+                &ldquo;{recommendResult.concepts[activeConceptIndex].title}&rdquo; 기반 대본 3종
+              </div>
+            )}
+
+            {scriptLoading && (
+              <div className="flex flex-col gap-3">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="rounded-[18px] p-[18px] animate-pulse" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <div className="h-3 w-24 rounded mb-3" style={{ background: 'var(--color-border)' }} />
+                    <div className="h-4 w-full rounded mb-2" style={{ background: 'var(--color-border)' }} />
+                    <div className="h-4 w-5/6 rounded mb-4" style={{ background: 'var(--color-border)' }} />
+                    <div className="h-3 w-full rounded mb-1.5" style={{ background: 'var(--color-border)' }} />
+                    <div className="h-3 w-2/3 rounded" style={{ background: 'var(--color-border)' }} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {scriptError && !scriptLoading && (
+              <div className="p-4 border border-dashed rounded-xl mb-4"
+                style={{ borderColor: 'rgba(255,61,127,0.4)', background: 'rgba(255,61,127,0.05)' }}
               >
+                <div className="font-mono text-[10px] uppercase tracking-widest mb-1" style={{ color: 'var(--color-hot)' }}>FAILED</div>
+                <div className="text-[12px]" style={{ color: 'var(--color-ink-2)' }}>{scriptError}</div>
+              </div>
+            )}
+
+            {scriptData && !scriptLoading && (
+              <div className="flex flex-col gap-3.5">
+                {TONE_ORDER.map((tone, i) => (
+                  <GeneratedScriptCard
+                    key={tone}
+                    tone={tone}
+                    script={scriptData.scripts[tone]}
+                    index={i + 1}
+                    total={3}
+                    recommended={scriptData.recommendedTone === tone}
+                    concept={activeConcept}
+                  />
+                ))}
                 <div
-                  className="font-mono text-[11px] font-bold py-0.5 px-1.5 rounded flex-shrink-0"
-                  style={{ color: 'var(--peak)', background: 'rgba(255,215,0,0.15)' }}
+                  className="p-3 px-3.5 border border-dashed rounded-[10px] flex gap-2.5 items-start mt-1"
+                  style={{ background: 'rgba(255,215,0,0.06)', borderColor: 'rgba(255,215,0,0.3)' }}
                 >
-                  {scriptData.meta.source === 'live' ? 'LIVE' : 'MOCK'}
-                </div>
-                <div className="text-[11px] text-text-dim leading-relaxed">
-                  {scriptData.meta.source === 'live'
-                    ? `Gemini 단일 호출로 3톤 동시 생성. prompt v${scriptData.meta.promptVersion}.`
-                    : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — mock fallback.'}
+                  <div
+                    className="font-mono text-[11px] font-bold py-0.5 px-1.5 rounded flex-shrink-0"
+                    style={{ color: 'var(--peak)', background: 'rgba(255,215,0,0.15)' }}
+                  >
+                    {scriptData.meta.source === 'live' ? 'LIVE' : 'MOCK'}
+                  </div>
+                  <div className="text-[11px] leading-relaxed" style={{ color: 'var(--color-ink-2)' }}>
+                    {scriptData.meta.source === 'live'
+                      ? `Gemini 단일 호출로 3톤 동시 생성. prompt v${scriptData.meta.promptVersion}.`
+                      : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — mock fallback.'}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -383,48 +392,48 @@ function ConceptCard({
     <div
       className="border rounded-2xl p-4 relative overflow-hidden transition-all"
       style={active
-        ? { background: 'rgba(87,200,255,0.06)', border: '1px solid rgba(87,200,255,0.35)' }
-        : { background: 'var(--surface-1)', border: '1px solid var(--border)' }
+        ? { background: 'color-mix(in srgb, var(--color-primary-mid) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary-mid) 35%, transparent)' }
+        : { background: 'var(--color-surface)', border: '1px solid var(--color-border)' }
       }
     >
       <div
         className="absolute top-0 left-0 right-0 h-[2px] opacity-60"
-        style={{ background: 'linear-gradient(to right, var(--accent-lime), var(--accent-pink))' }}
+        style={{ background: 'linear-gradient(to right, var(--color-primary), var(--color-hot))' }}
       />
 
       <div className="flex items-start gap-2.5 mt-1 mb-2">
-        <span className="font-mono text-[9px] text-text-faint tracking-widest mt-0.5 flex-shrink-0">
+        <span className="font-mono text-[9px] tracking-widest mt-0.5 flex-shrink-0" style={{ color: 'var(--color-ink-3)' }}>
           0{index + 1}
         </span>
-        <div className="text-[15px] font-semibold leading-snug text-text">{concept.title}</div>
+        <div className="text-[15px] font-semibold leading-snug" style={{ color: 'var(--color-ink)' }}>{concept.title}</div>
       </div>
 
       <div
         className="rounded-lg px-3 py-2 mb-2.5 flex items-start gap-2"
-        style={{ background: 'rgba(138,180,248,0.06)', border: '1px solid rgba(138,180,248,0.15)' }}
+        style={{ background: 'color-mix(in srgb, var(--color-primary-mid) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--color-primary-mid) 15%, transparent)' }}
       >
-        <span className="font-mono text-[8px] text-[#8ab4f8] tracking-widest uppercase mt-0.5 flex-shrink-0">근거</span>
-        <div className="text-[11px] text-text leading-relaxed">{concept.trendBasis}</div>
+        <span className="font-mono text-[8px] tracking-widest uppercase mt-0.5 flex-shrink-0" style={{ color: 'var(--color-primary-mid)' }}>근거</span>
+        <div className="text-[11px] leading-relaxed" style={{ color: 'var(--color-ink)' }}>{concept.trendBasis}</div>
       </div>
 
-      <div className="text-[12px] text-text italic mb-2.5 leading-relaxed pl-1">{concept.hook}</div>
+      <div className="text-[12px] italic mb-2.5 leading-relaxed pl-1" style={{ color: 'var(--color-ink)' }}>{concept.hook}</div>
 
       <div className="flex flex-wrap gap-1 mb-3">
         {concept.keywords.map((kw) => (
-          <span key={kw} className="font-mono text-[9px] px-2 py-0.5 rounded-full bg-surface-2 border border-border text-text-dim">
+          <span key={kw} className="font-mono text-[9px] px-2 py-0.5 rounded-full" style={{ background: 'var(--color-soft)', border: '1px solid var(--color-border)', color: 'var(--color-ink-2)' }}>
             {kw}
           </span>
         ))}
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="font-mono text-[10px] text-accent-lime">예상: {concept.expectedReaction}</div>
+        <div className="font-mono text-[10px]" style={{ color: 'var(--color-primary)' }}>예상: {concept.expectedReaction}</div>
         <button
           onClick={onSelect}
           className="font-semibold text-[11px] px-3 py-1.5 rounded-full transition-all"
           style={active
-            ? { background: 'rgba(87,200,255,0.2)', color: 'var(--accent-blue)', border: '1px solid rgba(87,200,255,0.4)' }
-            : { background: 'var(--accent-lime)', color: '#0a0a0a' }
+            ? { background: 'color-mix(in srgb, var(--color-primary-mid) 20%, transparent)', color: 'var(--color-primary-mid)', border: '1px solid color-mix(in srgb, var(--color-primary-mid) 40%, transparent)' }
+            : { background: 'var(--color-primary)', color: 'var(--color-bg)' }
           }
         >
           {active ? '생성 중 / 재생성 →' : '대본 생성 →'}

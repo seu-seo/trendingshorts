@@ -13,9 +13,9 @@ const TONE_LABEL: Record<ScriptTone, string> = {
 };
 
 const PART_COLOR: Record<string, string> = {
-  훅: 'var(--accent-pink)',
-  전환: 'var(--accent-blue)',
-  본론: 'var(--accent-lime)',
+  훅: 'var(--color-hot)',
+  전환: 'var(--color-primary-mid)',
+  본론: 'var(--color-primary)',
   클로징: 'var(--peak)',
 };
 
@@ -39,13 +39,13 @@ function CutVisual({ cut }: { cut: ContiCut }) {
         onError={() => setImgState('error')}
       />
       {imgState === 'loading' && (
-        <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
-          <div className="w-5 h-5 border-2 border-border border-t-accent-lime rounded-full animate-spin" />
+        <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--color-border)' }}>
+          <div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--color-border)', borderTopColor: 'var(--color-primary)' }} />
         </div>
       )}
       <span
         className="absolute bottom-1.5 right-2 font-mono text-[8px] font-bold tracking-wide px-1 rounded-sm"
-        style={{ color: '#0c0c0d', background: 'rgba(255,255,255,0.85)' }}
+        style={{ color: 'var(--color-bg)', background: 'var(--color-ink)' }}
       >
         {cut.shotType}
       </span>
@@ -54,18 +54,18 @@ function CutVisual({ cut }: { cut: ContiCut }) {
 }
 
 function CutCard({ cut }: { cut: ContiCut }) {
-  const accent = PART_COLOR[cut.part] ?? 'var(--accent-lime)';
+  const accent = PART_COLOR[cut.part] ?? 'var(--color-primary)';
   return (
-    <div className="rounded-[14px] border border-border overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <div className="rounded-[14px] border border-border overflow-hidden" style={{ background: 'var(--color-border)' }}>
       {/* CUT 헤더 */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border">
         <div className="flex items-center gap-2">
           <span className="font-mono text-[11px] font-bold tracking-wider" style={{ color: accent }}>
             CUT {cut.index}
           </span>
-          <span className="font-mono text-[10px] text-text-dim">· {cut.part}</span>
+          <span className="font-mono text-[10px]" style={{ color: 'var(--color-ink-2)' }}>· {cut.part}</span>
         </div>
-        <span className="font-mono text-[10px] text-text-faint tracking-wider">{cut.timeRange}</span>
+        <span className="font-mono text-[10px] tracking-wider" style={{ color: 'var(--color-ink-3)' }}>{cut.timeRange}</span>
       </div>
 
       {/* 장면: 만화 이미지(또는 SVG fallback) */}
@@ -76,17 +76,17 @@ function CutCard({ cut }: { cut: ContiCut }) {
       {/* 대사 + 촬영 메모 */}
       <div className="px-3.5 pb-3.5 space-y-2.5">
         <div>
-          <div className="font-mono text-[8px] text-text-faint uppercase tracking-widest mb-1">대사</div>
-          <div className="text-[13px] text-text leading-snug italic">&ldquo;{cut.dialogue}&rdquo;</div>
+          <div className="font-mono text-[8px] uppercase tracking-widest mb-1" style={{ color: 'var(--color-ink-3)' }}>대사</div>
+          <div className="text-[13px] leading-snug italic" style={{ color: 'var(--color-ink)' }}>&ldquo;{cut.dialogue}&rdquo;</div>
         </div>
         <div className="flex items-start gap-2 pt-2 border-t border-dashed border-border">
           <span
             className="font-mono text-[8px] tracking-widest uppercase px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5"
-            style={{ color: accent, background: 'rgba(255,255,255,0.05)' }}
+            style={{ color: accent, background: 'var(--color-border)' }}
           >
             {cut.shotType}
           </span>
-          <div className="text-[11px] text-text-dim leading-relaxed">{cut.shootingMemo}</div>
+          <div className="text-[11px] leading-relaxed" style={{ color: 'var(--color-ink-2)' }}>{cut.shootingMemo}</div>
         </div>
       </div>
     </div>
@@ -125,32 +125,32 @@ export default function ContiPanel({
   };
 
   return (
-    <div className="mt-4 rounded-[18px] border border-border overflow-hidden" style={{ background: 'rgba(200,255,87,0.03)' }}>
+    <div className="mt-4 rounded-[18px] border border-border overflow-hidden" style={{ background: 'color-mix(in srgb, var(--color-primary) 3%, transparent)' }}>
       {/* 헤더 */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ background: 'rgba(200,255,87,0.05)' }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ background: 'color-mix(in srgb, var(--color-primary) 5%, transparent)' }}>
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--accent-lime)' }}>
+          <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: 'var(--color-primary)' }}>
             콘티 가이드 · {TONE_LABEL[tone]}
           </span>
           <span
             className="font-mono text-[8px] px-1.5 py-0.5 rounded"
             style={{
-              background: data.source === 'live' ? 'rgba(200,255,87,0.15)' : 'rgba(255,255,255,0.06)',
-              color: data.source === 'live' ? 'var(--accent-lime)' : 'var(--text-faint)',
+              background: data.source === 'live' ? 'color-mix(in srgb, var(--color-primary) 15%, transparent)' : 'var(--color-border)',
+              color: data.source === 'live' ? 'var(--color-primary)' : 'var(--color-ink-3)',
             }}
           >
             {data.source === 'live' ? 'LIVE' : 'MOCK'}
           </span>
         </div>
-        <button type="button" onClick={onClose} className="font-mono text-[10px] text-text-faint hover:text-text transition-colors">
+        <button type="button" onClick={onClose} className="font-mono text-[10px] transition-colors" style={{ color: 'var(--color-ink-3)' }}>
           닫기
         </button>
       </div>
 
       {/* 트렌드 포인트 */}
-      <div className="mx-4 mt-4 mb-1 p-3 rounded-[10px] border" style={{ background: 'rgba(138,180,248,0.05)', borderColor: 'rgba(138,180,248,0.18)' }}>
-        <div className="font-mono text-[8px] text-[#8ab4f8] tracking-widest uppercase mb-1">트렌드 포인트</div>
-        <div className="text-[11px] text-text leading-relaxed">{data.trendPoint}</div>
+      <div className="mx-4 mt-4 mb-1 p-3 rounded-[10px] border" style={{ background: 'color-mix(in srgb, var(--color-primary-mid) 5%, transparent)', borderColor: 'color-mix(in srgb, var(--color-primary-mid) 18%, transparent)' }}>
+        <div className="font-mono text-[8px] tracking-widest uppercase mb-1" style={{ color: 'var(--color-primary-mid)' }}>트렌드 포인트</div>
+        <div className="text-[11px] leading-relaxed" style={{ color: 'var(--color-ink)' }}>{data.trendPoint}</div>
       </div>
 
       {/* CUT 카드 (세로) */}
@@ -168,8 +168,8 @@ export default function ContiPanel({
           className="flex-1 py-2.5 rounded-full font-semibold text-[12px] tracking-wide transition-all"
           style={
             shot
-              ? { background: 'rgba(200,255,87,0.18)', color: 'var(--accent-lime)', border: '1px solid rgba(200,255,87,0.5)' }
-              : { background: 'var(--accent-lime)', color: '#0a0a0a', border: '1px solid var(--accent-lime)' }
+              ? { background: 'color-mix(in srgb, var(--color-primary) 18%, transparent)', color: 'var(--color-primary)', border: '1px solid color-mix(in srgb, var(--color-primary) 50%, transparent)' }
+              : { background: 'var(--color-primary)', color: 'var(--color-bg)', border: '1px solid var(--color-primary)' }
           }
         >
           {shot ? '✓ 촬영 완료' : '촬영했어요'}
@@ -181,8 +181,8 @@ export default function ContiPanel({
           className="px-4 py-2.5 rounded-full font-mono text-[11px] tracking-wider uppercase border transition-colors disabled:cursor-default"
           style={
             isSaved
-              ? { borderColor: 'rgba(200,255,87,0.4)', color: 'var(--accent-lime)', background: 'rgba(200,255,87,0.08)' }
-              : { borderColor: 'rgba(255,255,255,0.15)', color: 'var(--text-dim)', background: 'transparent' }
+              ? { borderColor: 'color-mix(in srgb, var(--color-primary) 40%, transparent)', color: 'var(--color-primary)', background: 'color-mix(in srgb, var(--color-primary) 8%, transparent)' }
+              : { borderColor: 'var(--color-border-2)', color: 'var(--color-ink-2)', background: 'transparent' }
           }
         >
           {isSaved ? '✓ 저장됨' : '저장하기'}
@@ -192,7 +192,8 @@ export default function ContiPanel({
             type="button"
             onClick={onRegenerate}
             disabled={loading}
-            className="px-4 py-2.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-border text-text-dim hover:text-text hover:border-text-faint transition-colors disabled:opacity-50"
+            className="px-4 py-2.5 rounded-full font-mono text-[11px] tracking-wider uppercase border border-border transition-colors disabled:opacity-50"
+            style={{ color: 'var(--color-ink-2)' }}
           >
             {loading ? '생성 중…' : '↺ 재생성'}
           </button>
@@ -200,7 +201,7 @@ export default function ContiPanel({
       </div>
 
       <div className="px-4 pb-3">
-        <p className="font-mono text-[9px] text-text-faint">
+        <p className="font-mono text-[9px]" style={{ color: 'var(--color-ink-3)' }}>
           {data.source === 'live'
             ? 'Gemini 4컷 분해 + 만화 생성 (1·4 인물 / 2·3 제품, 동일 화풍). 이미지 실패 시 SVG로 대체'
             : 'GOOGLE_GENERATIVE_AI_API_KEY 미설정 — 대본 기반 mock 콘티 (SVG 스케치)'}

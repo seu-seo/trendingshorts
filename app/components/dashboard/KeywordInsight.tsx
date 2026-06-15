@@ -4,15 +4,20 @@ import { useEffect, useState } from 'react';
 import type { Trend } from '@/lib/types';
 import type { KeywordInsightResponse } from '@/app/api/keyword-insight/route';
 
+// 키워드 버블 색은 보조 액센트(--color-primary-mid). 불투명도는 color-mix 로.
+const BUBBLE_COLOR = 'var(--color-primary-mid)';
+const mix = (pct: number) => `color-mix(in srgb, ${BUBBLE_COLOR} ${pct}%, transparent)`;
+const glow = (layers: [number, number][]) => layers.map(([px, pct]) => `0 0 ${px}px ${mix(pct)}`).join(', ');
+
 const BUBBLE_SIZES = [
-  { size: 96, glow: '0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.60)', wordSize: 14, pctSize: 11, pulse: true },
-  { size: 82, glow: '0 0 8px rgba(56,182,255,0.45), 0 0 18px rgba(56,182,255,0.22)', border: 'rgba(56,182,255,0.50)', wordSize: 13, pctSize: 10, pulse: false },
-  { size: 72, glow: '0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16)', border: 'rgba(56,182,255,0.40)', wordSize: 12, pctSize: 9, pulse: false },
-  { size: 72, glow: '0 0 6px rgba(56,182,255,0.35), 0 0 13px rgba(56,182,255,0.16)', border: 'rgba(56,182,255,0.40)', wordSize: 12, pctSize: 9, pulse: false },
-  { size: 62, glow: '0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.28)', wordSize: 11, pctSize: 9, pulse: false },
-  { size: 62, glow: '0 0 5px rgba(56,182,255,0.22), 0 0 10px rgba(56,182,255,0.10)', border: 'rgba(56,182,255,0.28)', wordSize: 11, pctSize: 9, pulse: false },
-  { size: 52, glow: '0 0 4px rgba(56,182,255,0.12)', border: 'rgba(56,182,255,0.18)', wordSize: 10, pctSize: 8, pulse: false },
-  { size: 52, glow: '0 0 4px rgba(56,182,255,0.12)', border: 'rgba(56,182,255,0.18)', wordSize: 10, pctSize: 8, pulse: false },
+  { size: 96, glow: glow([[12, 55], [28, 28], [48, 10]]), border: mix(60), wordSize: 14, pctSize: 11, pulse: true },
+  { size: 82, glow: glow([[8, 45], [18, 22]]), border: mix(50), wordSize: 13, pctSize: 10, pulse: false },
+  { size: 72, glow: glow([[6, 35], [13, 16]]), border: mix(40), wordSize: 12, pctSize: 9, pulse: false },
+  { size: 72, glow: glow([[6, 35], [13, 16]]), border: mix(40), wordSize: 12, pctSize: 9, pulse: false },
+  { size: 62, glow: glow([[5, 22], [10, 10]]), border: mix(28), wordSize: 11, pctSize: 9, pulse: false },
+  { size: 62, glow: glow([[5, 22], [10, 10]]), border: mix(28), wordSize: 11, pctSize: 9, pulse: false },
+  { size: 52, glow: glow([[4, 12]]), border: mix(18), wordSize: 10, pctSize: 8, pulse: false },
+  { size: 52, glow: glow([[4, 12]]), border: mix(18), wordSize: 10, pctSize: 8, pulse: false },
 ];
 
 export default function KeywordInsight({ trends, category }: { trends: Trend[]; category: string | null }) {
@@ -47,7 +52,7 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
           <div className="flex flex-wrap gap-2.5 justify-center items-center py-2">
           {BUBBLE_SIZES.map((b, i) => (
             <div key={i} className="rounded-full animate-pulse flex-shrink-0"
-              style={{ width: b.size, height: b.size, background: 'rgba(56,182,255,0.05)', border: '1px solid rgba(56,182,255,0.15)' }} />
+              style={{ width: b.size, height: b.size, background: mix(5), border: `1px solid ${mix(15)}` }} />
           ))}
         </div>
       </div>
@@ -68,7 +73,7 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
               style={{
                 width: b.size,
                 height: b.size,
-                background: 'rgba(56,182,255,0.08)',
+                background: mix(8),
                 border: `1px solid ${b.border}`,
                 boxShadow: b.glow,
                 gap: 2,
@@ -76,11 +81,11 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
                 animation: b.pulse ? 'bubblePulse 2.4s ease-in-out infinite' : undefined,
               }}>
               <span className="font-bold leading-tight px-1 text-center break-keep"
-                style={{ fontSize: b.wordSize, color: i < 4 ? 'var(--text)' : 'var(--text-dim)', lineHeight: 1.2 }}>
+                style={{ fontSize: b.wordSize, color: i < 4 ? 'var(--color-ink)' : 'var(--color-ink-2)', lineHeight: 1.2 }}>
                 {kw.tag}
               </span>
               <span className="font-mono font-bold"
-                style={{ fontSize: b.pctSize, color: '#38B6FF', letterSpacing: '0.02em' }}>
+                style={{ fontSize: b.pctSize, color: BUBBLE_COLOR, letterSpacing: '0.02em' }}>
                 {Math.round(kw.score)}
               </span>
             </div>
@@ -90,8 +95,8 @@ export default function KeywordInsight({ trends, category }: { trends: Trend[]; 
 
       <style>{`
         @keyframes bubblePulse {
-          0%,100% { box-shadow: 0 0 12px rgba(56,182,255,0.55), 0 0 28px rgba(56,182,255,0.28), 0 0 48px rgba(56,182,255,0.10); }
-          50%      { box-shadow: 0 0 18px rgba(56,182,255,0.75), 0 0 38px rgba(56,182,255,0.38), 0 0 64px rgba(56,182,255,0.16); }
+          0%,100% { box-shadow: ${glow([[12, 55], [28, 28], [48, 10]])}; }
+          50%      { box-shadow: ${glow([[18, 75], [38, 38], [64, 16]])}; }
         }
       `}</style>
     </div>

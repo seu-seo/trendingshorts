@@ -4,6 +4,16 @@ import { fetchTikTokTrends, fetchTikTokFromSnapshot } from '@/lib/tiktok';
 import { fetchInstagramTrends, fetchInstagramFromSnapshot } from '@/lib/instagram';
 import type { Trend } from '@/lib/types';
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
+}
+
 // Apify 토큰 없거나 명시적으로 비활성화된 경우 mock 데이터 사용
 const APIFY_DISABLED = process.env.DISABLE_APIFY === 'true' || !process.env.APIFY_API_TOKEN;
 
@@ -76,7 +86,7 @@ export async function GET(request: NextRequest) {
       ...(wantsTT ? (fetchTT ? cache.tt!.data : ttSnap) : []),
       ...(wantsIG ? (fetchIG ? cache.ig!.data : igSnap) : []),
     ].sort((a, b) => b.engagementRate - a.engagementRate);
-    return NextResponse.json({ data: results, source: 'snapshot' });
+    return NextResponse.json({ data: results, source: 'snapshot' }, { headers: CORS_HEADERS });
   }
 
   // 캐시 없으면 실제 fetch (병렬)
@@ -103,5 +113,5 @@ export async function GET(request: NextRequest) {
 
   const results: Trend[] = [...ytData, ...ttData, ...igData]
     .sort((a, b) => b.engagementRate - a.engagementRate);
-  return NextResponse.json({ data: results, source: APIFY_DISABLED ? 'snapshot' : 'live' });
+  return NextResponse.json({ data: results, source: APIFY_DISABLED ? 'snapshot' : 'live' }, { headers: CORS_HEADERS });
 }

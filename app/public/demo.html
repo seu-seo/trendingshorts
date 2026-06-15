@@ -7710,6 +7710,52 @@
     return CREATOR_TYPES[sorted[0][0]];
   }
 
+  function cbPersonalAnalysis(ct) {
+    const want      = cbAnswers[0]?.a.trim() || '';
+    const sustain   = cbAnswers[1]?.a.trim() || '';
+    const strength  = cbAnswers[2]?.a.trim() || '';
+    const target    = cbAnswers[3]?.a.trim() || '';
+    const typeKey   = Object.keys(CREATOR_TYPES).find(k => CREATOR_TYPES[k] === ct) || 'storyteller';
+
+    const sentences = [];
+
+    if (want && strength) {
+      sentences.push(`<strong>${want}</strong>을 만들고 싶은 데다 <strong>${strength}</strong>까지 갖췄으니, ${ct.name} 유형 중에서도 가능성이 높아요.`);
+    } else if (want) {
+      sentences.push(`<strong>${want}</strong>을 콘텐츠로 담고 싶다는 게 이미 좋은 출발점이에요.`);
+    } else if (strength) {
+      sentences.push(`<strong>${strength}</strong>는 ${ct.name}에게 가장 중요한 능력이에요.`);
+    }
+
+    if (sustain) {
+      const sustainMap = {
+        explorer:     `<strong>${sustain}</strong>처럼 직접 경험할 수 있는 소재는 탐험가형에게 완벽한 재료예요.`,
+        analyst:      `<strong>${sustain}</strong>를 꾸준히 파고들면 그 분야에서 신뢰받는 채널이 될 수 있어요.`,
+        storyteller:  `<strong>${sustain}</strong>에서 감성적인 서사를 찾아내는 게 스토리텔러형의 핵심이에요.`,
+        entertainer:  `<strong>${sustain}</strong>도 재미있게 풀어내면 알고리즘이 밀어주는 콘텐츠가 돼요.`,
+        expert:       `<strong>${sustain}</strong>를 꾸준히 쌓아가면 그게 곧 전문성이 돼요.`,
+        connector:    `<strong>${sustain}</strong>를 진심으로 나누면 비슷한 고민을 가진 사람들이 모여들어요.`,
+      };
+      sentences.push(sustainMap[typeKey] || `<strong>${sustain}</strong>처럼 꾸준히 할 수 있는 소재가 있다는 게 큰 장점이에요.`);
+    }
+
+    if (target) {
+      const targetMap = {
+        explorer:     `<strong>${target}</strong>에게는 '직접 가봤어요' 한마디가 가장 강력한 훅이에요.`,
+        analyst:      `<strong>${target}</strong>에게는 핵심만 콕 집어주는 짧은 영상이 최고예요.`,
+        storyteller:  `<strong>${target}</strong>의 마음을 움직이려면 진짜 감정이 담겨야 해요.`,
+        entertainer:  `<strong>${target}</strong>의 눈길을 잡으려면 첫 3초가 모든 걸 결정해요.`,
+        expert:       `<strong>${target}</strong>에게는 '몰랐던 사실'을 알려줄 때 신뢰가 쌓여요.`,
+        connector:    `<strong>${target}</strong>의 이야기를 먼저 들어주는 콘텐츠가 팬을 만들어요.`,
+      };
+      sentences.push(targetMap[typeKey] || `<strong>${target}</strong> 타겟이라면 — ${ct.advice}`);
+    } else {
+      sentences.push(ct.advice);
+    }
+
+    return sentences.join('<br><br>');
+  }
+
   function cbIsInsufficient() {
     if (cbAnswers.length < 4) return true;
     const vagueWords = ['없음', '모름', '몰라', '모르겠', '없어', '그냥', '??', '...', 'ㅋ', 'ㅎ', '글쎄'];
@@ -7793,7 +7839,7 @@
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
               ${ct.traits.map(t => `<span style="font-size:11px;font-weight:600;color:var(--primary);background:rgba(200,255,87,0.08);border:1px solid rgba(200,255,87,0.2);border-radius:999px;padding:4px 11px;">${t}</span>`).join('')}
             </div>
-            <div style="font-size:12px;color:var(--gray);line-height:1.65;background:rgba(255,255,255,0.03);border-radius:10px;padding:10px 13px;border-left:2px solid var(--primary);">"${ct.advice}"</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.8;background:rgba(255,255,255,0.03);border-radius:10px;padding:12px 14px;border-left:2px solid var(--primary);">${cbPersonalAnalysis(ct)}</div>
           </div>
           <div style="background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px;">
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);letter-spacing:0.08em;margin-bottom:12px;">YOUR ANSWERS</div>

@@ -1,0 +1,394 @@
+{
+  "_meta": {
+    "app": "Shortform Pulse",
+    "version": "v6",
+    "description": "숏폼 크리에이터를 위한 트렌드 분석 및 콘텐츠 제작 도우미 앱 데이터",
+    "lastUpdated": "2026-06-15"
+  },
+
+  "platforms": [
+    {
+      "id": "tiktok",
+      "label": "틱톡",
+      "color": "#5CE1E6",
+      "primaryAudience": "10-20대"
+    },
+    {
+      "id": "instagram",
+      "label": "인스타그램",
+      "color": "#FF4274",
+      "primaryAudience": "20-30대"
+    },
+    {
+      "id": "youtube",
+      "label": "유튜브",
+      "color": "#FF5555",
+      "primaryAudience": "전 연령"
+    }
+  ],
+
+  "trends": [
+    {
+      "id": "trend_001",
+      "title": "자취생 3분 계란요리 5가지",
+      "views": "92만",
+      "engagementRate": "8.4%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": "o9BHS3mavQ0",
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_002",
+      "title": "편의점 재료로 만드는 야식",
+      "views": "54만",
+      "engagementRate": "6.1%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": "8vraAd5Al8Q",
+      "niche": "편의점 요리"
+    },
+    {
+      "id": "trend_003",
+      "title": "자취 한 달 식비 공개합니다",
+      "views": "38만",
+      "engagementRate": "7.2%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": "-_UGPIDSLos",
+      "niche": "자취 라이프"
+    },
+    {
+      "id": "trend_004",
+      "title": "1만원으로 일주일 버티기",
+      "views": "127만",
+      "engagementRate": "9.1%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "절약 챌린지"
+    },
+    {
+      "id": "trend_005",
+      "title": "자취방 냉장고 정리 꿀팁",
+      "views": "44만",
+      "engagementRate": "5.8%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 라이프"
+    },
+    {
+      "id": "trend_006",
+      "title": "혼자 먹기 좋은 10분 파스타",
+      "views": "71만",
+      "engagementRate": "7.5%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_007",
+      "title": "자취생 주간 식단 루틴",
+      "views": "33만",
+      "engagementRate": "6.4%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_008",
+      "title": "다이소 주방템 솔직 리뷰",
+      "views": "85만",
+      "engagementRate": "8.9%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "리뷰"
+    },
+    {
+      "id": "trend_009",
+      "title": "5분 완성 자취 밥상",
+      "views": "49만",
+      "engagementRate": "7.0%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_010",
+      "title": "편의점 도시락 꿀조합",
+      "views": "61만",
+      "engagementRate": "6.7%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "편의점 요리"
+    },
+    {
+      "id": "trend_011",
+      "title": "자취생 냉동식품 솔직 후기",
+      "views": "29만",
+      "engagementRate": "5.2%",
+      "badge": "새로 뜨는",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "리뷰"
+    },
+    {
+      "id": "trend_012",
+      "title": "혼밥 고수의 냉장고 털기",
+      "views": "78만",
+      "engagementRate": "8.2%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_013",
+      "title": "라면 업그레이드 레시피 7가지",
+      "views": "93만",
+      "engagementRate": "9.4%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_014",
+      "title": "자취생 밀프렙 완벽 가이드",
+      "views": "36만",
+      "engagementRate": "5.9%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_015",
+      "title": "월 30만원 식비 챌린지",
+      "views": "56만",
+      "engagementRate": "7.8%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "절약 챌린지"
+    },
+    {
+      "id": "trend_016",
+      "title": "기숙사에서 몰래 해먹는 요리",
+      "views": "112만",
+      "engagementRate": "10.2%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "자취 요리"
+    },
+    {
+      "id": "trend_017",
+      "title": "집에서 편의점 음식 따라 만들기",
+      "views": "68만",
+      "engagementRate": "7.3%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "편의점 요리"
+    },
+    {
+      "id": "trend_018",
+      "title": "자취생 아침 루틴 + 식사",
+      "views": "41만",
+      "engagementRate": "6.0%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 라이프"
+    },
+    {
+      "id": "trend_019",
+      "title": "혼자 사는 사람들의 냉동실",
+      "views": "52만",
+      "engagementRate": "6.8%",
+      "badge": "상승 중",
+      "hot": false,
+      "youtubeThumbnailId": null,
+      "niche": "자취 라이프"
+    },
+    {
+      "id": "trend_020",
+      "title": "자취 6개월 현실 공개",
+      "views": "98만",
+      "engagementRate": "9.7%",
+      "badge": "반응 폭발",
+      "hot": true,
+      "youtubeThumbnailId": null,
+      "niche": "자취 라이프"
+    }
+  ],
+
+  "creators": [
+    {
+      "id": "creator_001",
+      "handle": "자취의신",
+      "niche": "자취 요리",
+      "subscribers": "42만",
+      "avgViews": "87만",
+      "accentColor": "#C8FF57"
+    },
+    {
+      "id": "creator_002",
+      "handle": "혼밥러닝",
+      "niche": "혼자 먹는 일상",
+      "subscribers": "18만",
+      "avgViews": "43만",
+      "accentColor": "#FF6B6B"
+    },
+    {
+      "id": "creator_003",
+      "handle": "편의점매니아",
+      "niche": "편의점 리뷰",
+      "subscribers": "31만",
+      "avgViews": "64만",
+      "accentColor": "#5CE1E6"
+    },
+    {
+      "id": "creator_004",
+      "handle": "식비절약왕",
+      "niche": "절약 요리",
+      "subscribers": "28만",
+      "avgViews": "51만",
+      "accentColor": "#FF9A3C"
+    },
+    {
+      "id": "creator_005",
+      "handle": "10분요리사",
+      "niche": "빠른 요리 레시피",
+      "subscribers": "55만",
+      "avgViews": "110만",
+      "accentColor": "#FF4274"
+    },
+    {
+      "id": "creator_006",
+      "handle": "자취라이프",
+      "niche": "자취 브이로그",
+      "subscribers": "22만",
+      "avgViews": "38만",
+      "accentColor": "#A78BFA"
+    },
+    {
+      "id": "creator_007",
+      "handle": "냉장고탈탈",
+      "niche": "냉장고 요리",
+      "subscribers": "15만",
+      "avgViews": "29만",
+      "accentColor": "#34D399"
+    },
+    {
+      "id": "creator_008",
+      "handle": "혼자요리왕",
+      "niche": "1인 요리",
+      "subscribers": "39만",
+      "avgViews": "75만",
+      "accentColor": "#F472B6"
+    },
+    {
+      "id": "creator_009",
+      "handle": "대학생밥상",
+      "niche": "학생 요리",
+      "subscribers": "11만",
+      "avgViews": "22만",
+      "accentColor": "#60A5FA"
+    },
+    {
+      "id": "creator_010",
+      "handle": "간편밥그릇",
+      "niche": "간편식 리뷰",
+      "subscribers": "19만",
+      "avgViews": "44만",
+      "accentColor": "#FBBF24"
+    },
+    {
+      "id": "creator_011",
+      "handle": "밥이최고야",
+      "niche": "한식 요리",
+      "subscribers": "63만",
+      "avgViews": "130만",
+      "accentColor": "#C8FF57"
+    },
+    {
+      "id": "creator_012",
+      "handle": "자취요리연구소",
+      "niche": "요리 실험",
+      "subscribers": "24만",
+      "avgViews": "58만",
+      "accentColor": "#5CE1E6"
+    },
+    {
+      "id": "creator_013",
+      "handle": "오늘뭐먹지",
+      "niche": "음식 추천",
+      "subscribers": "47만",
+      "avgViews": "92만",
+      "accentColor": "#FF6B6B"
+    },
+    {
+      "id": "creator_014",
+      "handle": "백원요리사",
+      "niche": "저렴한 요리",
+      "subscribers": "33만",
+      "avgViews": "67만",
+      "accentColor": "#FF9A3C"
+    }
+  ],
+
+  "mockViewLogs": {
+    "description": "크리에이터 채널별 주간 조회수 샘플 데이터 (첫 일주일 추이)",
+    "tiktok": [
+      { "date": "2026-04-01", "views": 8200 },
+      { "date": "2026-04-08", "views": 9500 },
+      { "date": "2026-04-15", "views": 10200 },
+      { "date": "2026-04-22", "views": 11800 },
+      { "date": "2026-04-29", "views": 13400 },
+      { "date": "2026-05-06", "views": 15100 },
+      { "date": "2026-05-13", "views": 17800 },
+      { "date": "2026-05-20", "views": 21000 }
+    ],
+    "instagram": [
+      { "date": "2026-04-02", "views": 5100 },
+      { "date": "2026-04-09", "views": 4900 },
+      { "date": "2026-04-16", "views": 6200 },
+      { "date": "2026-04-23", "views": 7100 },
+      { "date": "2026-04-30", "views": 6800 },
+      { "date": "2026-05-07", "views": 8400 },
+      { "date": "2026-05-14", "views": 9600 },
+      { "date": "2026-05-21", "views": 11200 }
+    ],
+    "youtube": [
+      { "date": "2026-04-03", "views": 3200 },
+      { "date": "2026-04-10", "views": 3000 },
+      { "date": "2026-04-17", "views": 3500 },
+      { "date": "2026-04-24", "views": 3300 },
+      { "date": "2026-05-01", "views": 3700 },
+      { "date": "2026-05-08", "views": 3900 },
+      { "date": "2026-05-15", "views": 4100 },
+      { "date": "2026-05-22", "views": 4400 }
+    ]
+  },
+
+  "onboarding": {
+    "platformOptions": ["tiktok", "instagram", "youtube"],
+    "categoryOptions": [
+      "자취 요리", "편의점 요리", "절약 챌린지",
+      "자취 라이프", "리뷰", "브이로그"
+    ],
+    "ageGroups": ["10s", "20s", "30s", "40s", "50s"],
+    "ageLabels": {
+      "10s": "10대", "20s": "20대", "30s": "30대",
+      "40s": "40대", "50s": "50대"
+    }
+  }
+}

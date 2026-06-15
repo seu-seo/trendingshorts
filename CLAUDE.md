@@ -1,18 +1,18 @@
 
 ## Deploy Configuration (configured by /setup-deploy)
 - Platform: Vercel
-- Production URL: https://web-v2-sand.vercel.app
+- Production URL: https://trendingshorts-azure.vercel.app
 - Deploy workflow: auto-deploy on push to main (or `vercel deploy --prod` from `web-v2/`)
 - Deploy status command: `vercel ls --prod`
 - Merge method: squash
 - Project type: Next.js web app (App Router)
-- Post-deploy health check: https://web-v2-sand.vercel.app
+- Post-deploy health check: https://trendingshorts-azure.vercel.app
 
 ### Custom deploy hooks
 - Pre-merge: none
 - Deploy trigger: `cd web-v2 && vercel deploy --prod`
 - Deploy status: `vercel ls --prod`
-- Health check: https://web-v2-sand.vercel.app
+- Health check: https://trendingshorts-azure.vercel.app
 
 ## Skill routing
 

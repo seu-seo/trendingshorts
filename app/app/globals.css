@@ -87,7 +87,7 @@ html, body {
 
 /* ============================================================
    v7 theme tokens — light themes selected via [data-theme].
-   These use a separate --color-*/structure namespace so they
+   These use a separate --color-* namespace so they
    never collide with the legacy dark :root tokens above.
    ============================================================ */
 

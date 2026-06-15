@@ -40,8 +40,9 @@ export default function TrendActionSheet() {
 
       {/* 바텀 시트 */}
       <div
-        className="fixed bottom-0 left-1/2 z-50 w-full max-w-[420px] rounded-t-3xl px-5 pt-5 pb-8"
+        className="fixed bottom-0 z-50 w-full max-w-[420px] rounded-t-3xl px-5 pt-5 pb-8"
         style={{
+          left: '50%',
           transform: 'translateX(-50%)',
           background: 'var(--color-surface)',
           borderTop: '1px solid var(--color-border)',

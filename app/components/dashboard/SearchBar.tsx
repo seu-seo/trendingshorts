@@ -15,7 +15,8 @@ export default function SearchBar() {
     <div className="mx-6 mb-4 flex gap-2">
       <div className="flex-1 relative">
         <svg
-          className="absolute left-[14px] top-1/2 -translate-y-1/2 text-text-faint pointer-events-none"
+          className="absolute left-[14px] text-text-faint pointer-events-none"
+          style={{ top: '50%', transform: 'translateY(-50%)' }}
           width="16"
           height="16"
           viewBox="0 0 24 24"

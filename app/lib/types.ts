@@ -113,6 +113,13 @@ export type AppIntent = 'explore' | 'produce';
 
 export type AgeGroup = '10s' | '20s' | '30s' | '40s' | '50+';
 
+// 온보딩 취향설정 (screen-q-all)
+export interface OnboardingPrefs {
+  platform: PlatformFilter;       // 틱톡/인스타/유튜브/전체
+  categories: string[];           // 멀티선택 카테고리 (preset value 또는 직접 입력)
+  age: AgeGroup | null;           // 타깃 연령대
+}
+
 export type FollowerTier = 1 | 2 | 3 | 4 | 5;
 
 export interface Creator {
@@ -125,4 +132,45 @@ export interface Creator {
   growth: number;
   score: number;
   reason: string;
+}
+
+export type RivalChannelSize = 'nano' | 'micro' | 'mid';
+export type RivalUploadFreq = 'daily' | 'weekly-mid' | 'weekly-low';
+export type RivalContentTone = 'info' | 'vlog' | 'entertainment';
+export type RivalGender = 'male' | 'female' | 'any';
+
+export interface RivalSurvey {
+  topics: string[];
+  channelSize: RivalChannelSize;
+  uploadFreq: RivalUploadFreq;
+  contentTone: RivalContentTone;
+  gender: RivalGender;
+  lang: 'ko' | 'global';
+}
+
+export interface RivalCandidate {
+  channelId: string;
+  channelTitle: string;
+  handle: string;
+  description: string;
+  subscribers: number;
+  videoCount: number;
+  avgUploadDays: number;
+  recentTitles: string[];
+  thumbnailUrl: string;
+  sampleThumbnails: string[];
+}
+
+export interface RivalResult {
+  channelId: string;
+  channelTitle: string;
+  handle: string;
+  subscribers: number;
+  subscribersLabel: string;
+  thumbnail: string;
+  niche: string;
+  similarityScore: number;
+  matchReasons: string[];
+  sampleThumbnails: string[];
+  channelUrl: string;
 }

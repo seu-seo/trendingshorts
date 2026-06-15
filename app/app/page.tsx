@@ -1,175 +1,222 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
-import { useStore } from '@/lib/store';
-import WeeklyIssues from '@/components/dashboard/WeeklyIssues';
-import KeywordInsight from '@/components/dashboard/KeywordInsight';
-import TrendRow from '@/components/dashboard/TrendRow';
-import TrendActionSheet from '@/components/dashboard/TrendActionSheet';
-import { applyTheme, clearTheme } from '@/lib/themes/applyTheme';
-import type { ThemeName } from '@/lib/themes/types';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
+import { useCallback, useState } from 'react';
+import type { Category, OnboardingCategory, OnboardingPrefs, PersonaInput, PersonaResult, RivalResult, Trend } from '@/lib/types';
+import { saveItem } from '@/lib/saved-items';
+import type { GenerateResponse } from '@/lib/prompts/types';
+import type { ContiResponse } from '@/app/api/conti/route';
+import WelcomeScreen from '@/components/screens/WelcomeScreen';
+import ChatbotScreen from '@/components/screens/ChatbotScreen';
+import OnboardingPrefsScreen from '@/components/screens/OnboardingPrefsScreen';
+import LoadingScreen from '@/components/screens/LoadingScreen';
+import PersonaScreen from '@/components/screens/PersonaScreen';
+import TrendsScreen from '@/components/screens/TrendsScreen';
+import TrendDetailScreen from '@/components/screens/TrendDetailScreen';
+import ContentTopicScreen from '@/components/screens/ContentTopicScreen';
+import RivalsScreen from '@/components/screens/RivalsScreen';
+import ProductionScreen from '@/components/screens/ProductionScreen';
+import ScriptScreen from '@/components/screens/ScriptScreen';
+import StoryboardScreen from '@/components/screens/StoryboardScreen';
+import DashboardScreen from '@/components/screens/DashboardScreen';
+import MyScreen from '@/components/screens/MyScreen';
+import MyGrowthScreen from '@/components/screens/MyGrowthScreen';
 
-// v7 테마 토큰 (globals.css [data-theme] 공급)
-const BG = 'var(--color-bg)';
-const ACCENT = 'var(--color-primary)';   // 메인 액센트 (구 라임)
-const ACCENT2 = 'var(--color-primary-mid)'; // 보조 액센트 (구 블루)
-const INK = 'var(--color-ink)';
-const DIM3 = 'var(--color-ink-3)';
+type Screen =
+  | 'welcome'
+  | 'chatbot'
+  | 'prefs'
+  | 'loading'
+  | 'persona'
+  | 'trends'
+  | 'trend-detail'
+  | 'content-topic'
+  | 'rivals'
+  | 'production'
+  | 'script'
+  | 'storyboard'
+  | 'dashboard'
+  | 'my'
+  | 'my-growth';
 
-const CATEGORY_LABEL: Record<string, string> = {
-  food: '요리/먹방', beauty: '뷰티/패션', lifestyle: '라이프스타일',
-  edu: '정보/자기계발', gaming: '게임', fitness: '운동/건강', art: '예술/음악',
-};
+// 취향설정의 플랫폼(PlatformFilter)을 페르소나 입력(Platform | 'multi')으로 변환.
+function toPersonaPlatform(p: OnboardingPrefs['platform']): PersonaInput['platform'] {
+  return p === 'all' ? 'multi' : p;
+}
 
-const AGE_LABEL: Record<string, string> = {
-  '10s': '10대', '20s': '20대', '30s': '30대', '40s': '40대', '50+': '50대+',
-};
+// 취향설정의 카테고리 목록 중 첫 preset을 페르소나 카테고리로 사용. 없으면 기본값.
+const PRESET_CATEGORIES: OnboardingCategory[] = ['food', 'beauty', 'lifestyle', 'edu', 'gaming', 'fitness', 'art'];
+function toPersonaCategory(cats: string[]): OnboardingCategory {
+  const preset = cats.find((c): c is Category => (PRESET_CATEGORIES as string[]).includes(c));
+  return preset ?? 'lifestyle';
+}
 
-export default function DashboardPage() {
-  const setTab = useStore((s) => s.setTab);
-  const trends = useStore((s) => s.trends);
-  const setTrends = useStore((s) => s.setTrends);
-  const filterCategory = useStore((s) => s.filterCategory);
-  const ageGroup = useStore((s) => s.ageGroup);
-  const personaResult = useStore((s) => s.personaResult);
-  const category = useStore((s) => s.category);
+// 챗봇 자유 답변 + 취향설정을 /api/persona 입력 스키마로 변환. 답변 컨텍스트는
+// styles에 담고, 플랫폼/카테고리는 취향설정 값을 반영한다.
+function buildPersonaInput(answers: string[], prefs: OnboardingPrefs | null): PersonaInput {
+  return {
+    platform: prefs ? toPersonaPlatform(prefs.platform) : 'multi',
+    category: prefs ? toPersonaCategory(prefs.categories) : 'lifestyle',
+    experience: 1,
+    goal: 'growth',
+    styles: [...answers, ...(prefs?.categories ?? [])].filter(Boolean),
+    pain: 'idea',
+    uploadFreq: 'mid',
+  };
+}
 
-  useEffect(() => { setTab('dashboard'); }, [setTab]);
+export default function App() {
+  const [screen, setScreen] = useState<Screen>('welcome');
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [prefs, setPrefs] = useState<OnboardingPrefs | null>(null);
+  const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
+  const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
+  const [cachedTrendId, setCachedTrendId] = useState<number | null>(null);
+  const [script, setScript] = useState<GenerateResponse | null>(null);
+  const [conti, setConti] = useState<ContiResponse | null>(null);
 
-  // v7 PoC: A(인디고)/C(퍼플) 테마 전환. 이탈 시 해제.
-  const [theme, setTheme] = useState<ThemeName>('indigo');
-  useEffect(() => {
-    applyTheme(theme);
-    return () => clearTheme();
-  }, [theme]);
+  const fetchPersona = useCallback(async (chatAnswers: string[], chosenPrefs: OnboardingPrefs | null) => {
+    try {
+      const res = await fetch('/api/persona', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildPersonaInput(chatAnswers, chosenPrefs)),
+      });
+      const data: PersonaResult = await res.json();
+      setPersonaResult(data);
+    } catch {
+      setPersonaResult(null);
+    }
+    setScreen('persona');
+  }, []);
 
-  useEffect(() => {
-    const platforms = ['youtube', 'tiktok', 'instagram'] as const;
-    const OFFSET: Record<string, number> = { youtube: 0, tiktok: 10000, instagram: 20000 };
-    (async () => {
-      const results = await Promise.all(
-        platforms.map(async (platform) => {
-          try {
-            const res = await fetch(`/api/trends?platform=${platform}`);
-            const json = await res.json();
-            const offset = OFFSET[platform] ?? 0;
-            return (json.data ?? []).map((t: typeof trends[number]) => ({
-              ...t,
-              id: t.id + offset,
-            }));
-          } catch {
-            return [] as typeof trends;
-          }
-        })
-      );
-      setTrends(results.flat());
-    })();
-  }, [setTrends]);
+  // 챗봇 완료 → 취향 설정(q-all)으로 이동.
+  const handleChatComplete = useCallback((chatAnswers: string[]) => {
+    setAnswers(chatAnswers);
+    setScreen('prefs');
+  }, []);
 
-  // ER 내림차순 정렬 (카테고리 필터 적용)
-  const sorted = useMemo(() => {
-    let result = trends;
-    if (filterCategory) result = result.filter((t) => t.category === filterCategory);
-    return [...result].sort((a, b) => b.engagementRate - a.engagementRate);
-  }, [trends, filterCategory]);
+  // 취향 설정 완료 → 로딩 후 persona 호출(취향 데이터 포함).
+  const handlePrefsComplete = useCallback((chosenPrefs: OnboardingPrefs) => {
+    setPrefs(chosenPrefs);
+    setScreen('loading');
+    void fetchPersona(answers, chosenPrefs);
+  }, [answers, fetchPersona]);
 
-  const top10 = sorted.slice(0, 10);
-
-  // 개인화 헤더 ("30대 유튜브 트렌드" 등)
-  const personaName = personaResult?.personaType
-    ? personaResult.personaType.replace(/^THE\s+/i, '')
-    : null;
-  const ageLabelStr = ageGroup ? AGE_LABEL[ageGroup] : null;
-  const catLabelStr = filterCategory ? CATEGORY_LABEL[filterCategory] : (category ? category : null);
+  const navigate = useCallback((next: string) => {
+    setScreen(next as Screen);
+  }, []);
 
   return (
-    <div style={{ background: BG, minHeight: '100%' }}>
-      <ThemeSwitcher value={theme} onChange={setTheme} options={['indigo', 'purple']} />
+    <div className="stage">
+      <div className="phone">
+        <div className="notch"></div>
 
-      {/* ── 헤더 ──────────────────────────────────────────── */}
-      <div className="px-6 pt-1 pb-4 flex items-center justify-between">
-        <div>
-          <div className="font-mono text-[10px] tracking-widest uppercase mb-1" style={{ color: ACCENT }}>
-            SHORTFORM PULSE
-          </div>
-          <div className="font-display text-[26px] leading-tight tracking-tight" style={{ color: INK }}>
-            {personaName
-              ? <><span style={{ color: ACCENT }}>{personaName}</span>님을 위한<br />오늘의 트렌드</>
-              : ageLabelStr
-              ? <>{ageLabelStr} {catLabelStr ?? ''}<br /><span style={{ color: ACCENT }}>트렌드</span></>
-              : <>이번 주<br /><span style={{ color: ACCENT }}>인기 트렌드</span></>
-            }
-          </div>
-        </div>
-        <Link href="/my" onClick={() => useStore.getState().setTab('my')}
-          className="w-9 h-9 rounded-full grid place-items-center font-display text-[15px] no-underline flex-shrink-0"
-          style={{ background: 'var(--color-primary-soft)', color: ACCENT, border: '1px solid var(--color-primary-mid)' }}>
-          {personaName?.[0] ?? (category?.[0]?.toUpperCase() ?? 'M')}
-        </Link>
+        {screen === 'welcome' && (
+          <WelcomeScreen onStart={() => setScreen('chatbot')} />
+        )}
+
+        {screen === 'chatbot' && (
+          <ChatbotScreen onComplete={handleChatComplete} />
+        )}
+
+        {screen === 'prefs' && (
+          <OnboardingPrefsScreen
+            onComplete={handlePrefsComplete}
+            onBack={() => setScreen('chatbot')}
+            onSkip={() => { setScreen('loading'); void fetchPersona(answers, null); }}
+          />
+        )}
+
+        {screen === 'loading' && (
+          <LoadingScreen message="당신에게 맞는 트렌드를 찾고 있어요" />
+        )}
+
+        {screen === 'persona' && personaResult && (
+          <PersonaScreen personaResult={personaResult} answers={answers} onNext={() => setScreen('trends')} />
+        )}
+
+        {screen === 'trends' && (
+          <TrendsScreen
+            category={personaResult?.personaTagline ?? '지금'}
+            platform={prefs?.platform}
+            categories={prefs?.categories}
+            chatKeyword={answers[0]}
+            onSelect={(t) => { setSelectedTrend(t); setScreen('production'); }}
+            onBack={() => setScreen('persona')}
+            onViewRivals={() => setScreen('rivals')}
+            onNavigate={navigate}
+          />
+        )}
+
+        {screen === 'trend-detail' && selectedTrend && (
+          <TrendDetailScreen
+            trend={selectedTrend}
+            onBack={() => setScreen('dashboard')}
+            onMake={(t) => { setSelectedTrend(t); setScreen('content-topic'); }}
+          />
+        )}
+
+        {screen === 'content-topic' && selectedTrend && (
+          <ContentTopicScreen
+            trend={selectedTrend}
+            onNext={() => setScreen('production')}
+            onBack={() => setScreen('trends')}
+            onSkip={() => setScreen('trends')}
+          />
+        )}
+
+        {screen === 'rivals' && (
+          <RivalsScreen
+            categories={prefs?.categories ?? []}
+            chatAnswers={answers}
+            onNext={() => setScreen('trends')}
+            onBack={() => setScreen('trends')}
+            onSave={(r: RivalResult) => saveItem({ type: 'creator', id: `creator_${r.channelId}`, channelTitle: r.channelTitle, handle: r.handle, niche: r.niche, subscribersLabel: r.subscribersLabel, thumbnail: r.thumbnail, savedAt: new Date().toISOString() })}
+          />
+        )}
+
+        {screen === 'production' && selectedTrend && personaResult && (
+          <ProductionScreen
+            trend={selectedTrend}
+            persona={personaResult}
+            initialConti={selectedTrend.id === cachedTrendId ? conti ?? undefined : undefined}
+            onNext={() => setScreen('trends')}
+            onBack={() => setScreen('trends')}
+            onScriptReady={(s) => { setScript(s); setScreen('script'); }}
+            onContiReady={(c) => { setConti(c); setScreen('storyboard'); }}
+            onContiGenerated={(c) => { setConti(c); setCachedTrendId(selectedTrend.id); }}
+          />
+        )}
+
+        {screen === 'script' && script && (
+          <ScriptScreen
+            script={script}
+            onNext={() => setScreen('trends')}
+            onBack={() => setScreen('production')}
+          />
+        )}
+
+        {screen === 'storyboard' && conti && (
+          <StoryboardScreen
+            conti={conti.cuts}
+            subtitle={conti.trendPoint}
+            onNext={() => setScreen('trends')}
+            onBack={() => setScreen('production')}
+          />
+        )}
+
+        {screen === 'dashboard' && (
+          <DashboardScreen onNavigate={navigate} onSelectTrend={(t) => { setSelectedTrend(t); setScreen('trend-detail'); }} />
+        )}
+
+        {screen === 'my' && (
+          <MyScreen onNavigate={navigate} />
+        )}
+
+        {screen === 'my-growth' && (
+          <MyGrowthScreen onBack={() => setScreen('my')} />
+        )}
       </div>
-
-      {/* 온보딩 미완료 시 CTA */}
-      {!personaResult && (
-        <Link
-          href="/recommend"
-          className="mx-6 mb-4 px-3.5 py-3 rounded-xl border border-dashed flex items-center justify-between gap-3 no-underline transition-all hover:translate-y-[-1px]"
-          style={{
-            background: 'var(--color-primary-soft)',
-            borderColor: 'var(--color-primary-mid)',
-          }}
-        >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="text-base">✨</div>
-            <div className="min-w-0">
-              <div className="font-mono text-[9px] tracking-widest uppercase mb-0.5" style={{ color: ACCENT }}>소재 추천</div>
-              <div className="text-[12px] leading-tight" style={{ color: INK }}>영상 방향 설문 → 맞춤 소재 + 대본 자동 생성</div>
-            </div>
-          </div>
-          <div className="font-mono text-[10px] tracking-wider uppercase whitespace-nowrap flex-shrink-0" style={{ color: ACCENT }}>시작 →</div>
-        </Link>
-      )}
-
-      {/* ── 1. 트렌드 분석 ──────────────────────────────────── */}
-      <div className="px-6 mb-1 flex items-center gap-2">
-        <span className="w-[5px] h-[5px] rounded-full flex-shrink-0 animate-pulse-dot"
-          style={{ background: ACCENT, boxShadow: '0 0 6px var(--color-primary)' }} />
-        <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: ACCENT }}>트렌드 분석</span>
-      </div>
-      <WeeklyIssues category={filterCategory} trendTitles={top10.map(t => t.title)} />
-
-      {/* ── 2. 키워드 분석 ──────────────────────────────────── */}
-      <div className="px-6 mb-1 flex items-center gap-2">
-        <span className="w-[5px] h-[5px] rounded-full flex-shrink-0"
-          style={{ background: ACCENT2, boxShadow: '0 0 6px var(--color-primary-mid)' }} />
-        <span className="font-mono text-[10px] tracking-widest uppercase" style={{ color: ACCENT2 }}>키워드 분석</span>
-      </div>
-      <KeywordInsight trends={sorted} category={filterCategory} />
-
-      {/* ── 3. 지금 뜨고 있어요 ──────────────────────────────── */}
-      <div className="px-6 mb-3 flex items-baseline justify-between">
-        <div className="font-display text-[18px] leading-none tracking-tight"
-          style={{ letterSpacing: '-0.02em', color: INK }}>
-          지금 뜨고 있어요
-        </div>
-        <span className="font-mono text-[9px] tracking-wider" style={{ color: DIM3 }}>더보기 →</span>
-      </div>
-
-      {top10.length === 0 ? (
-        <div className="text-center py-14 px-8">
-          <div className="text-4xl mb-4 opacity-30">📭</div>
-          <div className="font-mono text-[11px] tracking-wider" style={{ color: DIM3 }}>트렌드 데이터를 불러오는 중이에요</div>
-        </div>
-      ) : (
-        <div className="pb-6">
-          {top10.map((t, i) => (
-            <TrendRow key={t.id} trend={t} rank={i + 1} />
-          ))}
-        </div>
-      )}
-
-      <TrendActionSheet />
     </div>
   );
 }

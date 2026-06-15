@@ -7649,6 +7649,77 @@
     fashion: { keyword: '패션·코디',    tags: ['패션', '코디', '스타일'],  direction: '실용적인 데일리 코디 & 트렌드 콘텐츠', strengths: ['트렌드 감각', '스타일링', '가성비 추천'] },
   };
 
+  // ── 크리에이터 유형 (MBTI-like) ──
+  const CREATOR_TYPES = {
+    explorer: {
+      name: '탐험가형', emoji: '🧭', tag: 'EXPLORER',
+      desc: '새로운 경험을 콘텐츠로 기록하는 크리에이터',
+      traits: ['호기심 왕성', '현장감 있는 영상', '실행력 강함'],
+      advice: '직접 경험한 것만 찍어도 충분해요. 진짜 반응이 최고의 콘텐츠예요.',
+      keywords: ['여행', '맛집', '카페', '탐험', '체험', '투어', '나들이', '먹어', '가봤', '다녀'],
+    },
+    analyst: {
+      name: '분석가형', emoji: '🔍', tag: 'ANALYST',
+      desc: '깊이 있는 정보로 신뢰를 쌓는 크리에이터',
+      traits: ['꼼꼼한 리뷰', '논리적 설명', '정보 신뢰도 높음'],
+      advice: '한 주제를 깊게 파면 팬이 생겨요. 쇼츠는 핵심 1개만 전달하세요.',
+      keywords: ['게임', '리뷰', '분석', '공부', '정보', '비교', '추천', '공략', '설명', '기술'],
+    },
+    storyteller: {
+      name: '스토리텔러형', emoji: '📖', tag: 'STORYTELLER',
+      desc: '감성적인 서사로 공감을 이끄는 크리에이터',
+      traits: ['감성적 연출', '이야기 구성력', '공감대 형성'],
+      advice: '일상의 작은 순간도 스토리로 만들 수 있어요. 감정이 담긴 영상이 오래 기억돼요.',
+      keywords: ['일상', '브이로그', '이야기', '사진', '감성', '글', '일기', '기록', '순간', '추억'],
+    },
+    entertainer: {
+      name: '엔터테이너형', emoji: '🎭', tag: 'ENTERTAINER',
+      desc: '에너지와 재미로 시선을 사로잡는 크리에이터',
+      traits: ['높은 에너지', '트렌드 민감', '빠른 편집 감각'],
+      advice: '첫 3초가 전부예요. 강렬한 훅으로 시작하면 알고리즘이 밀어줘요.',
+      keywords: ['재미', '유머', '웃음', '트렌드', '챌린지', '반응', '예능', '개그', '신나', '핫'],
+    },
+    expert: {
+      name: '전문가형', emoji: '💡', tag: 'EXPERT',
+      desc: '한 분야의 깊은 지식을 나누는 크리에이터',
+      traits: ['전문 지식', '신뢰도 높음', '충성 팬 형성'],
+      advice: '이미 아는 것에서 시작하세요. 전문성은 가장 강력한 차별점이에요.',
+      keywords: ['운동', '헬스', '요리', '뷰티', '패션', '코딩', '영어', '강사', '배운', '가르'],
+    },
+    connector: {
+      name: '공감형', emoji: '🤝', tag: 'CONNECTOR',
+      desc: '진심 어린 소통으로 팬과 연결되는 크리에이터',
+      traits: ['감정 공감력', '소통 중심', '커뮤니티 형성'],
+      advice: '댓글 하나하나가 콘텐츠 아이디어예요. 팬과 함께 만드는 채널을 지향하세요.',
+      keywords: ['소통', '공감', '함께', '같이', '위로', '힘들', '고민', '친구', '응원', '커뮤'],
+    },
+  };
+
+  function cbDeriveCreatorType() {
+    const allText = cbAnswers.map(a => a.a).join(' ');
+    const scores = {};
+    for (const [key, type] of Object.entries(CREATOR_TYPES)) {
+      scores[key] = type.keywords.filter(kw => allText.includes(kw)).length;
+    }
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    if (sorted[0][1] === 0) {
+      const catTypeMap = { food: 'expert', beauty: 'expert', fitness: 'expert', travel: 'explorer', game: 'analyst', fashion: 'explorer' };
+      const cat = answers.categories[0] || '';
+      return CREATOR_TYPES[catTypeMap[cat] || 'storyteller'];
+    }
+    return CREATOR_TYPES[sorted[0][0]];
+  }
+
+  function cbIsInsufficient() {
+    if (cbAnswers.length < 4) return true;
+    const vagueWords = ['없음', '모름', '몰라', '모르겠', '없어', '그냥', '??', '...', 'ㅋ', 'ㅎ', '글쎄'];
+    const vagueCnt = cbAnswers.filter(a => {
+      const v = a.a.trim();
+      return v.length < 4 || vagueWords.some(w => v.includes(w));
+    }).length;
+    return vagueCnt >= 2;
+  }
+
   function v7RenderPersona() {
     const cats = answers.categories.length > 0 ? answers.categories : ['food'];
     const platforms = answers.platforms.length > 0 ? answers.platforms : ['youtube'];
@@ -7694,20 +7765,48 @@
       strengthsEl.innerHTML = strengths.map(s => `<span class="profile-chip">${s}</span>`).join('');
     }
 
-    // 챗봇 답변 인사이트
+    // 챗봇 답변 → 크리에이터 유형 분석
     const insightEl = document.getElementById('persona-chat-insight');
-    if (insightEl && cbAnswers.length > 0) {
-      insightEl.style.display = 'block';
+    if (insightEl) {
       const shortQs = ['만들고 싶은 것', '좋아하는 취미', '잘한다고 칭찬받은 것', '봐줬으면 하는 사람'];
-      insightEl.innerHTML = `
-        <div class="pci-label">당신이 직접 말한 것들</div>
-        ${cbAnswers.map((item, i) => `
-          <div class="pci-item">
-            <div class="pci-q">${shortQs[i] || item.q}</div>
-            <div class="pci-a">${item.a}</div>
-          </div>`).join('')}`;
-    } else if (insightEl) {
-      insightEl.style.display = 'none';
+      if (cbAnswers.length === 0) {
+        insightEl.style.display = 'none';
+      } else if (cbIsInsufficient()) {
+        insightEl.style.display = 'block';
+        insightEl.innerHTML = `
+          <div style="background:rgba(255,100,80,0.06);border:1px solid rgba(255,100,80,0.2);border-radius:16px;padding:20px;text-align:center;">
+            <div style="font-size:28px;margin-bottom:10px;">🤔</div>
+            <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:6px;">크리에이터 유형을 분석하기 어려워요</div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.7;margin-bottom:16px;">챗봇 답변이 너무 짧아서 정확한 성향을 파악하기 어렵네요.<br>조금 더 자세히 이야기해주면 나에게 딱 맞는 유형을 알 수 있어요.</div>
+            <button onclick="goTo('screen-chatbot')" style="background:var(--primary);color:#000;font-weight:700;font-size:13px;border:none;border-radius:10px;padding:11px 24px;cursor:pointer;width:100%;">챗봇 다시 하기 →</button>
+          </div>`;
+      } else {
+        const ct = cbDeriveCreatorType();
+        insightEl.style.display = 'block';
+        insightEl.innerHTML = `
+          <div style="background:linear-gradient(135deg,rgba(200,255,87,0.08),rgba(56,182,255,0.05));border:1px solid rgba(200,255,87,0.22);border-radius:16px;padding:18px;margin-bottom:12px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--primary);letter-spacing:0.1em;margin-bottom:12px;">CREATOR TYPE</div>
+            <div style="display:flex;align-items:center;gap:13px;margin-bottom:14px;">
+              <div style="width:54px;height:54px;border-radius:15px;background:rgba(200,255,87,0.1);border:1px solid rgba(200,255,87,0.28);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">${ct.emoji}</div>
+              <div>
+                <div style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-0.03em;line-height:1.2;">${ct.name}</div>
+                <div style="font-size:11px;color:var(--gray);margin-top:3px;line-height:1.4;">${ct.desc}</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+              ${ct.traits.map(t => `<span style="font-size:11px;font-weight:600;color:var(--primary);background:rgba(200,255,87,0.08);border:1px solid rgba(200,255,87,0.2);border-radius:999px;padding:4px 11px;">${t}</span>`).join('')}
+            </div>
+            <div style="font-size:12px;color:var(--gray);line-height:1.65;background:rgba(255,255,255,0.03);border-radius:10px;padding:10px 13px;border-left:2px solid var(--primary);">"${ct.advice}"</div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:14px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gray);letter-spacing:0.08em;margin-bottom:12px;">YOUR ANSWERS</div>
+            ${cbAnswers.map((item, i) => `
+              <div style="margin-bottom:${i < cbAnswers.length - 1 ? '10px' : '0'};padding-bottom:${i < cbAnswers.length - 1 ? '10px' : '0'};${i < cbAnswers.length - 1 ? 'border-bottom:1px solid var(--line);' : ''}">
+                <div style="font-size:10px;color:var(--gray);margin-bottom:3px;">${shortQs[i] || item.q}</div>
+                <div style="font-size:13px;color:var(--ink);font-weight:600;line-height:1.45;">${item.a}</div>
+              </div>`).join('')}
+          </div>`;
+      }
     }
   }
 

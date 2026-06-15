@@ -7652,42 +7652,42 @@
   // ── 크리에이터 유형 (MBTI-like) ──
   const CREATOR_TYPES = {
     explorer: {
-      name: '탐험가형', emoji: '🧭', tag: 'EXPLORER',
+      name: '탐험가형', emoji: '', tag: 'EXPLORER',
       desc: '새로운 경험을 콘텐츠로 기록하는 크리에이터',
       traits: ['호기심 왕성', '현장감 있는 영상', '실행력 강함'],
       advice: '직접 경험한 것만 찍어도 충분해요. 진짜 반응이 최고의 콘텐츠예요.',
       keywords: ['여행', '맛집', '카페', '탐험', '체험', '투어', '나들이', '먹어', '가봤', '다녀'],
     },
     analyst: {
-      name: '분석가형', emoji: '🔍', tag: 'ANALYST',
+      name: '분석가형', emoji: '', tag: 'ANALYST',
       desc: '깊이 있는 정보로 신뢰를 쌓는 크리에이터',
       traits: ['꼼꼼한 리뷰', '논리적 설명', '정보 신뢰도 높음'],
       advice: '한 주제를 깊게 파면 팬이 생겨요. 쇼츠는 핵심 1개만 전달하세요.',
       keywords: ['게임', '리뷰', '분석', '공부', '정보', '비교', '추천', '공략', '설명', '기술'],
     },
     storyteller: {
-      name: '스토리텔러형', emoji: '📖', tag: 'STORYTELLER',
+      name: '스토리텔러형', emoji: '', tag: 'STORYTELLER',
       desc: '감성적인 서사로 공감을 이끄는 크리에이터',
       traits: ['감성적 연출', '이야기 구성력', '공감대 형성'],
       advice: '일상의 작은 순간도 스토리로 만들 수 있어요. 감정이 담긴 영상이 오래 기억돼요.',
       keywords: ['일상', '브이로그', '이야기', '사진', '감성', '글', '일기', '기록', '순간', '추억'],
     },
     entertainer: {
-      name: '엔터테이너형', emoji: '🎭', tag: 'ENTERTAINER',
+      name: '엔터테이너형', emoji: '', tag: 'ENTERTAINER',
       desc: '에너지와 재미로 시선을 사로잡는 크리에이터',
       traits: ['높은 에너지', '트렌드 민감', '빠른 편집 감각'],
       advice: '첫 3초가 전부예요. 강렬한 훅으로 시작하면 알고리즘이 밀어줘요.',
       keywords: ['재미', '유머', '웃음', '트렌드', '챌린지', '반응', '예능', '개그', '신나', '핫'],
     },
     expert: {
-      name: '전문가형', emoji: '💡', tag: 'EXPERT',
+      name: '전문가형', emoji: '', tag: 'EXPERT',
       desc: '한 분야의 깊은 지식을 나누는 크리에이터',
       traits: ['전문 지식', '신뢰도 높음', '충성 팬 형성'],
       advice: '이미 아는 것에서 시작하세요. 전문성은 가장 강력한 차별점이에요.',
       keywords: ['운동', '헬스', '요리', '뷰티', '패션', '코딩', '영어', '강사', '배운', '가르'],
     },
     connector: {
-      name: '공감형', emoji: '🤝', tag: 'CONNECTOR',
+      name: '공감형', emoji: '', tag: 'CONNECTOR',
       desc: '진심 어린 소통으로 팬과 연결되는 크리에이터',
       traits: ['감정 공감력', '소통 중심', '커뮤니티 형성'],
       advice: '댓글 하나하나가 콘텐츠 아이디어예요. 팬과 함께 만드는 채널을 지향하세요.',
@@ -7786,12 +7786,9 @@
         insightEl.innerHTML = `
           <div style="background:linear-gradient(135deg,rgba(200,255,87,0.08),rgba(56,182,255,0.05));border:1px solid rgba(200,255,87,0.22);border-radius:16px;padding:18px;margin-bottom:12px;">
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--primary);letter-spacing:0.1em;margin-bottom:12px;">CREATOR TYPE</div>
-            <div style="display:flex;align-items:center;gap:13px;margin-bottom:14px;">
-              <div style="width:54px;height:54px;border-radius:15px;background:rgba(200,255,87,0.1);border:1px solid rgba(200,255,87,0.28);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">${ct.emoji}</div>
-              <div>
-                <div style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-0.03em;line-height:1.2;">${ct.name}</div>
-                <div style="font-size:11px;color:var(--gray);margin-top:3px;line-height:1.4;">${ct.desc}</div>
-              </div>
+            <div style="margin-bottom:14px;">
+              <div style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-0.03em;line-height:1.2;">${ct.name}</div>
+              <div style="font-size:11px;color:var(--gray);margin-top:4px;line-height:1.4;">${ct.desc}</div>
             </div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
               ${ct.traits.map(t => `<span style="font-size:11px;font-weight:600;color:var(--primary);background:rgba(200,255,87,0.08);border:1px solid rgba(200,255,87,0.2);border-radius:999px;padding:4px 11px;">${t}</span>`).join('')}

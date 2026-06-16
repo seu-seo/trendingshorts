@@ -17,12 +17,13 @@ const PLATFORMS: { val: PlatformFilter; label: string }[] = [
 ];
 
 const CATEGORIES: { cat: string; label: string }[] = [
-  { cat: 'food', label: '먹방' },
+  { cat: 'food', label: '먹방/요리' },
   { cat: 'beauty', label: '뷰티' },
-  { cat: 'fitness', label: '운동' },
-  { cat: 'travel', label: '여행' },
-  { cat: 'game', label: '게임' },
-  { cat: 'fashion', label: '패션' },
+  { cat: 'fitness', label: '운동/홈트' },
+  { cat: 'lifestyle', label: '여행/라이프' },
+  { cat: 'gaming', label: '게임' },
+  { cat: 'art', label: '패션/아트' },
+  { cat: 'edu', label: '교육/정보' },
 ];
 
 const AGES: { val: AgeGroup; label: string }[] = [

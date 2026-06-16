@@ -20,6 +20,9 @@ import StoryboardScreen from '@/components/screens/StoryboardScreen';
 import DashboardScreen from '@/components/screens/DashboardScreen';
 import MyScreen from '@/components/screens/MyScreen';
 import MyGrowthScreen from '@/components/screens/MyGrowthScreen';
+import GoalScreen from '@/components/screens/GoalScreen';
+import CompareScreen from '@/components/screens/CompareScreen';
+import DeepProfileScreen from '@/components/screens/DeepProfileScreen';
 
 type Screen =
   | 'welcome'
@@ -36,7 +39,10 @@ type Screen =
   | 'storyboard'
   | 'dashboard'
   | 'my'
-  | 'my-growth';
+  | 'my-growth'
+  | 'goal'
+  | 'compare'
+  | 'deep-profile';
 
 // 취향설정의 플랫폼(PlatformFilter)을 페르소나 입력(Platform | 'multi')으로 변환.
 function toPersonaPlatform(p: OnboardingPrefs['platform']): PersonaInput['platform'] {
@@ -218,6 +224,23 @@ export default function App() {
 
         {screen === 'my-growth' && (
           <MyGrowthScreen onBack={() => setScreen('my')} />
+        )}
+
+        {screen === 'goal' && (
+          <GoalScreen onBack={() => setScreen('my')} onCompare={() => setScreen('compare')} />
+        )}
+
+        {screen === 'compare' && (
+          <CompareScreen onBack={() => setScreen('goal')} />
+        )}
+
+        {screen === 'deep-profile' && (
+          <DeepProfileScreen
+            onBack={() => setScreen('my')}
+            onScript={() => setScreen('content-topic')}
+            onStoryboard={() => setScreen('storyboard')}
+            personaResult={personaResult}
+          />
         )}
       </div>
     </div>

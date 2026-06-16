@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shortform Pulse — User Flow</title>
+<title>Shortform Pulse — User Flow v8</title>
 <style>
   :root {
     --bg: #090909; --surface: #131313; --surface-2: #1c1c1c;
@@ -11,7 +11,7 @@
     --text: #e8e8e8; --dim: #888; --faint: #444;
     --lime: #c8ff57; --pink: #ff3d7f; --blue: #69c9d0;
     --orange: #ff8657; --gemini: #8ab4f8; --purple: #b57fff;
-    --green: #4caf82;
+    --yt: #ff0000;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -24,20 +24,16 @@
   .target-chip { margin-left: auto; display: flex; align-items: center; gap: 6px; background: rgba(181,127,255,.08); border: 1px solid rgba(181,127,255,.25); border-radius: 20px; padding: 5px 12px; font-family: monospace; font-size: 9px; color: var(--purple); letter-spacing: .08em; }
 
   .scroll-wrap { overflow-x: auto; padding: 48px; }
-  .canvas { position: relative; width: 1100px; height: 1680px; margin: 0 auto; }
+  .canvas { position: relative; width: 1200px; height: 2360px; margin: 0 auto; }
   .svg-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 
-  .node { position: absolute; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; overflow: hidden; }
+  .node { position: absolute; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
   .n-lime   { border-color: rgba(200,255,87,.28);  background: linear-gradient(145deg, rgba(200,255,87,.05),  var(--surface)); }
   .n-blue   { border-color: rgba(105,201,208,.28); background: linear-gradient(145deg, rgba(105,201,208,.05), var(--surface)); }
   .n-pink   { border-color: rgba(255,61,127,.28);  background: linear-gradient(145deg, rgba(255,61,127,.05),  var(--surface)); }
   .n-gemini { border-color: rgba(138,180,248,.28); background: linear-gradient(145deg, rgba(138,180,248,.06), var(--surface)); }
-  .n-done   { border-color: rgba(76,175,130,.28);  background: linear-gradient(145deg, rgba(76,175,130,.05),  var(--surface)); }
+  .n-purple { border-color: rgba(181,127,255,.28); background: linear-gradient(145deg, rgba(181,127,255,.05), var(--surface)); }
   .n-oval   { border-radius: 100px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; }
-  .n-diamond { background: transparent; border: none; display: flex; align-items: center; justify-content: center; }
-  .d-shape  { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-  .d-shape::before { content: ''; position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border-hi); clip-path: polygon(50% 0%,100% 50%,50% 100%,0% 50%); }
-  .d-shape span { position: relative; z-index: 1; font-family: monospace; font-size: 10px; color: var(--dim); letter-spacing: .04em; text-align: center; line-height: 1.4; }
 
   .nh { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
   .nt { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
@@ -51,33 +47,42 @@
   .ni.p { color: var(--pink);   opacity:.88; } .ni.p::before { color: var(--pink); }
   .ni.m { color: var(--gemini); opacity:.88; } .ni.m::before { color: var(--gemini); }
   .ni.u { color: var(--purple); opacity:.88; } .ni.u::before { color: var(--purple); }
-  .ni.ok{ color: var(--green);  opacity:.88; } .ni.ok::before{ color: var(--green); }
   .ni.f { color: var(--faint); font-size: 9px; }
+  .ni.warn { color: var(--orange); opacity:.88; } .ni.warn::before { color: var(--orange); }
+  .ni.yt { color: var(--yt); opacity:.88; } .ni.yt::before { color: var(--yt); }
 
   .badge { font-family: monospace; font-size: 8px; letter-spacing: .09em; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
   .bg  { background: rgba(200,255,87,.1);  border: 1px solid rgba(200,255,87,.3);  color: var(--lime); }
   .bb  { background: rgba(105,201,208,.1); border: 1px solid rgba(105,201,208,.3); color: var(--blue); }
-  .bk  { background: rgba(76,175,130,.1);  border: 1px solid rgba(76,175,130,.3);  color: var(--green); }
+  .bm  { background: rgba(138,180,248,.1); border: 1px solid rgba(138,180,248,.3); color: var(--gemini); }
   .bd  { background: rgba(255,134,87,.1);  border: 1px solid rgba(255,134,87,.35); color: var(--orange); }
-
-  .done-banner { margin: 8px -16px -14px; padding: 6px 16px; background: rgba(76,175,130,.06); border-top: 1px solid rgba(76,175,130,.2); font-family: monospace; font-size: 9px; color: var(--green); letter-spacing: .06em; display: flex; align-items: center; gap: 5px; }
+  .bu  { background: rgba(181,127,255,.1); border: 1px solid rgba(181,127,255,.3); color: var(--purple); }
+  .bp  { background: rgba(255,61,127,.1);  border: 1px solid rgba(255,61,127,.3);  color: var(--pink); }
+  .byt { background: rgba(255,0,0,.08);    border: 1px solid rgba(255,0,0,.3);     color: #ff6060; }
 
   .gemini-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(138,180,248,.1); border: 1px solid rgba(138,180,248,.25); color: var(--gemini); font-family: monospace; font-size: 8px; letter-spacing: .07em; padding: 3px 8px; border-radius: 5px; margin-top: 9px; }
   .g-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gemini); animation: blink 1.8s ease-in-out infinite; flex-shrink: 0; }
-
-  .n-cta { position: absolute; background: rgba(200,255,87,.07); border: 1px solid rgba(200,255,87,.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .cta-text { font-size: 12px; font-weight: 700; color: var(--lime); }
-  .cta-sub  { font-family: monospace; font-size: 9px; color: rgba(200,255,87,.55); }
 
   .n-tabbar { position: absolute; background: var(--surface-2); border: 1px solid var(--border-hi); border-radius: 16px; display: flex; align-items: stretch; overflow: hidden; }
   .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 10px 8px; border-right: 1px solid var(--border); }
   .tab-item:last-child { border-right: none; }
   .tab-item.active { background: rgba(200,255,87,.06); }
-  .tab-icon  { font-size: 16px; line-height: 1; }
-  .tab-label { font-family: monospace; font-size: 9px; letter-spacing: .08em; color: var(--dim); }
+  .tab-label { font-family: monospace; font-size: 10px; letter-spacing: .1em; color: var(--dim); font-weight: 600; }
   .tab-item.active .tab-label { color: var(--lime); }
 
-  .col-label { position: absolute; font-family: monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
+  .col-label { position: absolute; font-family: monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+
+  .sheet-node { position: absolute; background: rgba(26,26,26,.97); border: 1px solid rgba(200,255,87,.2); border-radius: 12px; padding: 10px 12px; }
+  .sheet-handle { width: 28px; height: 3px; background: var(--border-hi); border-radius: 2px; margin: 0 auto 10px; }
+  .sheet-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; font-size: 10px; font-weight: 600; margin-bottom: 6px; }
+  .sb-save { background: rgba(255,255,255,.05); border: 1px solid var(--border-hi); color: var(--dim); }
+  .sb-make { background: var(--lime); border: none; color: #000; }
+
+  .stage-row { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 9px; color: var(--faint); padding: 4px 0; }
+  .stage-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .stage-done { background: var(--lime); }
+  .stage-wait { background: var(--faint); }
+  .stage-label { color: var(--dim); }
 
   .legend { display: flex; flex-wrap: wrap; gap: 18px; padding: 24px 48px 40px; border-top: 1px solid var(--border); }
   .legend-item { display: flex; align-items: center; gap: 7px; font-family: monospace; font-size: 10px; color: var(--dim); letter-spacing: .07em; }
@@ -87,9 +92,9 @@
 <body>
 
 <div class="page-header">
-  <div class="page-title"><span class="dot"></span>Shortform Pulse — User Flow</div>
-  <div class="page-sub">AS-IS · 2026.05.16 기준 구현 완료</div>
-  <div class="target-chip">🎯 타겟: 30대 직장인 · 구독자 1만 이하 스몰 크리에이터</div>
+  <div class="page-title"><span class="dot"></span>Shortform Pulse — User Flow v8</div>
+  <div class="page-sub">feat/v8-next.js · SPA 아키텍처 · 2026.06.15</div>
+  <div class="target-chip">팔로워 1만 이하 한국 초기 크리에이터</div>
 </div>
 
 <div class="scroll-wrap">
@@ -97,259 +102,316 @@
 
 <svg class="svg-layer">
 <defs>
-  <marker id="a0" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#404040"/></marker>
-  <marker id="ag" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(200,255,87,.65)"/></marker>
-  <marker id="am" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(138,180,248,.65)"/></marker>
-  <marker id="ak" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(76,175,130,.65)"/></marker>
+  <marker id="a0"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#404040"/></marker>
+  <marker id="ag"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(200,255,87,.7)"/></marker>
+  <marker id="am"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(138,180,248,.7)"/></marker>
+  <marker id="ap"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(255,61,127,.7)"/></marker>
+  <marker id="ab"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(105,201,208,.7)"/></marker>
+  <marker id="au"  markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="rgba(181,127,255,.7)"/></marker>
 </defs>
 
-<!-- START → 온보딩 완료? -->
-<line x1="550" y1="76" x2="550" y2="112" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
+<!-- WELCOME → CHATBOT -->
+<line x1="300" y1="82" x2="300" y2="116" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
 
-<!-- DIAMOND NO → ONBOARDING -->
-<polyline points="405,150 165,150 165,226" fill="none" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<text x="228" y="141" font-family="monospace" font-size="9" fill="#666" letter-spacing=".04em">NO · 미완료</text>
+<!-- CHATBOT → PREFS -->
+<line x1="300" y1="316" x2="300" y2="350" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
 
-<!-- DIAMOND YES → PURPOSE DIAMOND -->
-<line x1="550" y1="188" x2="550" y2="530" stroke="rgba(200,255,87,.5)" stroke-width="1.5" marker-end="url(#ag)"/>
-<text x="558" y="360" font-family="monospace" font-size="9" fill="rgba(200,255,87,.5)" letter-spacing=".04em">YES · 재진입</text>
+<!-- PREFS → LOADING -->
+<line x1="300" y1="538" x2="300" y2="572" stroke="rgba(200,255,87,.5)" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="308" y="560" font-family="monospace" font-size="9" fill="rgba(200,255,87,.45)" letter-spacing=".03em">POST /api/persona</text>
 
-<!-- ONBOARDING → PURPOSE DIAMOND -->
-<line x1="165" y1="490" x2="165" y2="556" stroke="rgba(200,255,87,.5)" stroke-width="1.5"/>
-<path d="M 165 556 L 405 556" fill="none" stroke="rgba(200,255,87,.4)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#ag)"/>
-<text x="200" y="548" font-family="monospace" font-size="9" fill="rgba(200,255,87,.5)" letter-spacing=".04em">저장 완료 (localStorage)</text>
+<!-- LOADING → PERSONA -->
+<line x1="300" y1="622" x2="300" y2="656" stroke="rgba(138,180,248,.6)" stroke-width="1.5" marker-end="url(#am)"/>
+<text x="308" y="644" font-family="monospace" font-size="9" fill="rgba(138,180,248,.5)" letter-spacing=".03em">Gemini 응답</text>
 
-<!-- PURPOSE → LEFT 대시보드 -->
-<path d="M 470 592 L 255 592 L 255 662" fill="none" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<text x="282" y="584" font-family="monospace" font-size="8" fill="#666" letter-spacing=".03em">트렌드 탐색</text>
+<!-- PERSONA → TRENDS -->
+<line x1="300" y1="736" x2="300" y2="770" stroke="rgba(200,255,87,.5)" stroke-width="1.5" marker-end="url(#ag)"/>
 
-<!-- PURPOSE → RIGHT 추천·제작 -->
-<path d="M 630 592 L 845 592 L 845 662" fill="none" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<text x="660" y="584" font-family="monospace" font-size="8" fill="#666" letter-spacing=".03em">제작 도움</text>
+<!-- TRENDS → RIVALS (branch right) -->
+<polyline points="510,950 760,950" fill="none" stroke="rgba(105,201,208,.5)" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="560" y="942" font-family="monospace" font-size="8" fill="rgba(105,201,208,.5)" letter-spacing=".03em">비슷한 크리에이터 구경하기</text>
 
-<!-- col divider -->
-<line x1="548" y1="650" x2="548" y2="1620" stroke="#1e1e1e" stroke-width="1" stroke-dasharray="5,4"/>
+<!-- TRENDS bottom sheet → PRODUCTION -->
+<polyline points="300,1080 300,1120 300,1130" fill="none" stroke="rgba(200,255,87,.6)" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="308" y="1108" font-family="monospace" font-size="8" fill="rgba(200,255,87,.55)" letter-spacing=".03em">이걸로 만들기 →</text>
 
-<!-- LEFT arrows -->
-<line x1="255" y1="742" x2="255" y2="762" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<line x1="255" y1="902" x2="255" y2="922" stroke="rgba(138,180,248,.55)" stroke-width="1.5" marker-end="url(#am)"/>
-<text x="263" y="916" font-family="monospace" font-size="9" fill="rgba(138,180,248,.55)" letter-spacing=".04em">Gemini 분석</text>
-<line x1="255" y1="1092" x2="255" y2="1112" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<line x1="255" y1="1192" x2="255" y2="1212" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<text x="263" y="1206" font-family="monospace" font-size="8" fill="#666" letter-spacing=".03em">카드 탭 시</text>
+<!-- PRODUCTION → SCRIPT -->
+<polyline points="230,1400 170,1400 170,1444" fill="none" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
 
-<!-- RIGHT arrows -->
-<line x1="845" y1="852" x2="845" y2="876" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
-<line x1="845" y1="930" x2="845" y2="954" stroke="rgba(138,180,248,.55)" stroke-width="1.5" marker-end="url(#am)"/>
-<text x="853" y="946" font-family="monospace" font-size="9" fill="rgba(138,180,248,.55)" letter-spacing=".04em">Gemini 호출</text>
-<line x1="845" y1="1126" x2="845" y2="1150" stroke="rgba(138,180,248,.55)" stroke-width="1.5" marker-end="url(#am)"/>
-<text x="853" y="1142" font-family="monospace" font-size="9" fill="rgba(138,180,248,.55)" letter-spacing=".04em">Gemini 호출</text>
-<line x1="845" y1="1382" x2="845" y2="1406" stroke="rgba(76,175,130,.5)" stroke-width="1.5" marker-end="url(#ak)"/>
+<!-- PRODUCTION → STORYBOARD -->
+<polyline points="370,1400 430,1400 430,1444" fill="none" stroke="#404040" stroke-width="1.5" marker-end="url(#a0)"/>
 
-<text x="440" y="644" font-family="monospace" font-size="8" fill="#555" letter-spacing=".04em">* 모든 탭은 언제든 접근 가능</text>
+<!-- SAVE arrows from Trends/Rivals/Production to MY -->
+<!-- Trends save → MY -->
+<polyline points="510,870 680,870 680,780" fill="none" stroke="rgba(255,61,127,.3)" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#ap)"/>
+<text x="518" y="862" font-family="monospace" font-size="8" fill="rgba(255,61,127,.4)" letter-spacing=".02em">저장</text>
+
+<!-- Rivals save → MY -->
+<polyline points="1000,900 1050,900 1050,790" fill="none" stroke="rgba(255,61,127,.3)" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#ap)"/>
+<text x="1008" y="892" font-family="monospace" font-size="8" fill="rgba(255,61,127,.4)" letter-spacing=".02em">저장</text>
+
+<!-- Production save → MY -->
+<polyline points="510,1270 680,1270 680,900" fill="none" stroke="rgba(255,61,127,.3)" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#ap)"/>
+<text x="518" y="1262" font-family="monospace" font-size="8" fill="rgba(255,61,127,.4)" letter-spacing=".02em">저장</text>
+
+<!-- Rivals back → Trends -->
+<polyline points="760,1060 728,1060 728,1000 510,1000" fill="none" stroke="rgba(105,201,208,.3)" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#ab)"/>
+<text x="640" y="1052" font-family="monospace" font-size="8" fill="rgba(105,201,208,.4)" letter-spacing=".02em">트렌드 보러가기</text>
+
+<!-- Tab bar to Trends / My  -->
+<text x="308" y="761" font-family="monospace" font-size="8" fill="rgba(200,255,87,.4)" letter-spacing=".02em">탭 바 진입</text>
 </svg>
 
-<!-- START -->
-<div class="node n-oval" style="left:470px;top:32px;width:160px;height:44px;">
-  <div style="font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;">
-    <span class="dot"></span>앱 시작
+
+<!-- ════ COLUMN LABELS ════ -->
+<div class="col-label" style="left:185px;top:20px;color:rgba(200,255,87,.4);">● MAIN FLOW</div>
+<div class="col-label" style="left:760px;top:20px;color:rgba(105,201,208,.4);">● RIVALS</div>
+<div class="col-label" style="left:1030px;top:20px;color:rgba(255,61,127,.4);">● MY PAGE</div>
+
+
+<!-- ════ WELCOME ════ -->
+<div class="node n-oval" style="left:200px;top:40px;width:200px;height:42px;">
+  <div style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;">
+    <span style="color:var(--lime)">▶</span> Welcome
   </div>
 </div>
 
-<!-- DIAMOND: 온보딩 완료? -->
-<div class="node n-diamond" style="left:405px;top:112px;width:290px;height:76px;">
-  <div class="d-shape"><span>온보딩<br>완료?</span></div>
-</div>
 
-<!-- ONBOARDING -->
-<div class="node n-lime" style="left:30px;top:226px;width:270px;height:264px;">
+<!-- ════ CHATBOT ════ -->
+<div class="node n-gemini" style="left:90px;top:116px;width:420px;">
   <div class="nh">
-    <div class="nt">📋 온보딩 설문</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--gemini)">◈</span> Chatbot</div>
+    <span class="badge bm">LLM 대화형</span>
   </div>
-  <div class="np">/onboarding &nbsp;·&nbsp; 7문항</div>
+  <div class="np">ChatbotScreen — Gemini 4문답</div>
   <div class="nd"></div>
-  <div class="ni ok">Q1. 플랫폼 (YouTube / TikTok / Instagram / 멀티)</div>
-  <div class="ni ok">Q2. 채널 카테고리 (7개)</div>
-  <div class="ni ok">Q3. 크리에이터 경력 (슬라이더 0~5)</div>
-  <div class="ni ok">Q4. 목표 (팔로워 / 수익화 / 브랜드 / 팬덤)</div>
-  <div class="ni ok">Q5. 콘텐츠 스타일 키워드 (최대 3개)</div>
-  <div class="ni ok">Q6. 가장 힘든 부분 (4지선다)</div>
-  <div class="ni ok">Q7. 주당 업로드 편수 (객관식 4개)</div>
-  <div style="height:4px;"></div>
-  <div class="ni f">→ Gemini 페르소나 생성 + localStorage 저장</div>
-  <div class="done-banner">✅ 구현 완료 · Gemini 2.5 Flash 연동</div>
+  <div class="ni m">온보딩 대화형 큐레이터 — 4개 질문 순차 진행</div>
+  <div class="ni">자유 텍스트 입력 → answers: string[] 수집</div>
+  <div class="ni f">건너뛰기 시 빈 배열로 Prefs 진행</div>
+  <div class="gemini-tag"><span class="g-dot"></span>Gemini 2.5 Flash</div>
 </div>
 
-<!-- PURPOSE DIAMOND -->
-<div class="node n-diamond" style="left:405px;top:530px;width:290px;height:76px;">
-  <div class="d-shape"><span>앱 사용<br>목적?</span></div>
-</div>
 
-<!-- COL LABELS -->
-<div class="col-label" style="left:30px;top:652px;color:rgba(105,201,208,.4);">① 대시보드 탭 (/)</div>
-<div class="col-label" style="left:610px;top:652px;color:rgba(200,255,87,.4);">② 추천·제작 탭 (/recommend · /production)</div>
-
-
-<!-- ════ LEFT: 대시보드 ════ -->
-
-<!-- 카테고리 탭 -->
-<div class="node n-done" style="left:30px;top:662px;width:450px;height:80px;">
+<!-- ════ PREFS ════ -->
+<div class="node n-lime" style="left:90px;top:350px;width:420px;">
   <div class="nh">
-    <div class="nt">🗂 카테고리 탭</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--lime)">◉</span> Prefs</div>
+    <span class="badge bg">취향 설정</span>
   </div>
+  <div class="np">OnboardingPrefsScreen</div>
   <div class="nd"></div>
-  <div class="ni ok">7개: 라이프스타일 · 뷰티 · 요리 · 운동 · 게임 · 정보 · 예술</div>
-  <div class="ni ok">페르소나 카테고리 자동 선택 · 터치로 전환</div>
+  <div class="ni g">플랫폼: tiktok · instagram · youtube · all</div>
+  <div class="ni g">카테고리 (복수): food · beauty · fitness · lifestyle · gaming · art · edu</div>
+  <div class="ni f">※ Category 타입과 완전 일치 — 트렌드 필터링에 직접 사용</div>
+  <div class="ni g">연령대: 10s / 20s / 30s / 40s / 50+</div>
+  <div class="ni">[건너뛰기] → null prefs로 persona 호출</div>
 </div>
 
-<!-- PlatformPulse -->
-<div class="node n-blue" style="left:30px;top:762px;width:450px;height:140px;">
+
+<!-- ════ LOADING ════ -->
+<div class="node" style="left:200px;top:572px;width:200px;height:50px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border-color:var(--border-hi);">
+  <div style="font-family:monospace;font-size:10px;color:var(--dim)">⏳ Loading — POST /api/persona</div>
+</div>
+
+
+<!-- ════ PERSONA ════ -->
+<div class="node n-gemini" style="left:130px;top:656px;width:340px;">
   <div class="nh">
-    <div class="nt">📊 플랫폼별 TOP 1 (PlatformPulse)</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--gemini)">◈</span> Persona Card</div>
+    <span class="badge bm">AI 생성</span>
   </div>
-  <div class="nd"></div>
-  <div class="ni b">3개 플랫폼 항상 표시 (SHORTS · TIKTOK · REELS)</div>
-  <div class="ni b">카테고리 필터 연동 — 선택 카테고리 기준 TOP 1</div>
-  <div class="ni">조회수 · 좋아요 · 업로드 시각 · 해시태그</div>
-  <div class="ni f">플랫폼 탭 선택과 무관하게 항상 3개 노출</div>
+  <div class="ni m">페르소나 타입 · 태그라인 · 카테고리 · 플랫폼</div>
+  <div class="ni f">PersonaScreen — [다음] 클릭 시 Trends로</div>
 </div>
 
-<!-- AI 키워드 분석 -->
-<div class="node n-gemini" style="left:30px;top:922px;width:450px;height:170px;">
+
+<!-- ════ TAB BAR ════ -->
+<div class="n-tabbar" style="left:100px;top:762px;width:420px;">
+  <div class="tab-item active">
+    <div style="font-size:16px;color:var(--lime)">📈</div>
+    <div class="tab-label">트렌드</div>
+  </div>
+  <div class="tab-item">
+    <div style="font-size:16px;color:var(--dim)">👤</div>
+    <div class="tab-label">마이페이지</div>
+  </div>
+</div>
+
+
+<!-- ════ TRENDS ════ -->
+<div class="node n-lime" style="left:90px;top:810px;width:420px;">
   <div class="nh">
-    <div class="nt">🔍 AI 키워드 분석 (KeywordInsight)</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--lime)">◉</span> Trends</div>
+    <span class="badge bg">TrendsScreen</span>
   </div>
+  <div class="np">GET /api/trends — 서버 24h 캐시</div>
   <div class="nd"></div>
-  <div class="ni m">카테고리별 키워드 6개 원형 버블맵 시각화</div>
-  <div class="ni m">HOT(핑크·84px) / RISING(라임·68px) / 일반(흰색·54px)</div>
-  <div class="ni m">수치 기반 명사형 인사이트 불릿 3개</div>
-  <div class="ni ok" style="color:var(--green);">캐싱: 서버 24h + Zustand 클라이언트 영구 유지</div>
-  <div class="gemini-tag"><span class="g-dot"></span>Gemini 2.5 Flash — POST /api/insights</div>
+  <div class="ni g">prefs.categories로 1차 필터 (없으면 전체)</div>
+  <div class="ni g">chatbot 첫 답변 키워드로 정렬</div>
+  <div class="ni">최대 12개 카드 표시 / 키워드 검색바</div>
+  <div class="ni">♥ 버튼 → 즉시 저장 (바텀시트 없이)</div>
+  <div class="nd"></div>
+  <div class="ni warn">카드 탭 → 바텀시트 ↓</div>
 </div>
 
-<!-- 플랫폼 탭 -->
-<div class="node n-done" style="left:30px;top:1112px;width:450px;height:80px;">
+<!-- Trends 바텀시트 -->
+<div class="sheet-node" style="left:130px;top:1000px;width:340px;">
+  <div class="sheet-handle"></div>
+  <div style="font-size:10px;font-weight:700;color:var(--text);margin-bottom:10px;">트렌드 제목 · 조회수 · 참여율</div>
+  <div class="sheet-btn sb-save">♥ 저장하기</div>
+  <div class="sheet-btn sb-make">이걸로 만들기 →</div>
+</div>
+
+
+<!-- ════ RIVALS ════ -->
+<div class="node n-blue" style="left:760px;top:860px;width:360px;">
   <div class="nh">
-    <div class="nt">📱 플랫폼 탭 (PlatformTabs)</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--blue)">◉</span> Rivals</div>
+    <span class="badge bb">SSE 스트리밍</span>
   </div>
+  <div class="np">RivalsScreen — POST /api/rival</div>
   <div class="nd"></div>
-  <div class="ni ok">SHORTS · TIKTOK · REELS (전체 없음, 항상 1개 선택)</div>
-  <div class="ni ok">카테고리 + 플랫폼 조합 필터 → 트렌드 목록</div>
+  <div class="stage-row"><span class="stage-dot stage-done"></span><span class="stage-label">stage1 · YouTube 채널 검색</span></div>
+  <div class="stage-row"><span class="stage-dot stage-done"></span><span class="stage-label">stage2 · Gemini AI 적합도 분석</span></div>
+  <div class="stage-row"><span class="stage-dot stage-done"></span><span class="stage-label">stage3 · Vision 썸네일 점수화</span></div>
+  <div class="nd"></div>
+  <div class="ni yt">YouTube Data API v3 + Gemini 2.5 Flash</div>
+  <div class="ni b">유사도% · matchReasons 태그 표시</div>
+  <div class="ni b">캐싱: page.tsx cachedRivals — 재방문 즉시 표시</div>
+  <div class="nd"></div>
+  <div class="ni warn">카드 탭 → 바텀시트 ↓</div>
 </div>
 
-<!-- 트렌드 목록 -->
-<div class="node" style="left:30px;top:1212px;width:450px;height:130px;">
+<!-- Rivals 바텀시트 -->
+<div class="sheet-node" style="left:800px;top:1060px;width:280px;">
+  <div class="sheet-handle"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(200,255,87,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--lime);flex-shrink:0">C</div>
+    <div><div style="font-size:11px;font-weight:700">채널명</div><div style="font-size:10px;color:var(--dim)">@handle · 구독자</div></div>
+  </div>
+  <div class="sheet-btn sb-save">♥ 저장하기</div>
+  <div class="sheet-btn sb-make" style="background:var(--blue);color:#000">채널 보러가기 →</div>
+</div>
+
+
+<!-- ════ MY PAGE ════ -->
+<div class="node n-pink" style="left:1030px;top:760px;width:310px;">
   <div class="nh">
-    <div class="nt">📋 트렌드 목록 (TrendRow)</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--pink)">◉</span> My</div>
+    <span class="badge bp">MyScreen</span>
   </div>
+  <div class="np">localStorage — pulse_saved_v1</div>
   <div class="nd"></div>
-  <div class="ni ok">정렬: rising → peak → fading (동일 lifecycle 내 engagement rate)</div>
-  <div class="ni">조회수 · 좋아요 · 공유 콤마 포맷 표시</div>
-  <div class="ni ok">YouTube live + TikTok·Instagram mock (28개, 7카테고리 × 2)</div>
+  <div class="ni p">저장한 트렌드 — 제목 · 조회수 · heatLevel</div>
+  <div class="ni p">저장한 크리에이터 — 썸네일 · 채널명 · 구독자</div>
+  <div class="ni p">저장한 대본 — HOOK · BODY · CTA</div>
+  <div class="ni p">저장한 콘티 — trendPoint + CUT1~4</div>
+  <div class="ni">각 항목 × 버튼으로 개별 삭제</div>
 </div>
 
-<!-- TrendActionSheet -->
-<div class="node n-pink" style="left:30px;top:1362px;width:450px;height:110px;">
+
+<!-- ════ PRODUCTION ════ -->
+<div class="node n-lime" style="left:90px;top:1150px;width:420px;">
   <div class="nh">
-    <div class="nt">⬆️ TrendActionSheet</div>
-    <span class="badge bk">완료</span>
+    <div class="nt"><span style="color:var(--lime)">◉</span> Production</div>
+    <span class="badge bg">ProductionScreen</span>
+  </div>
+  <div class="np">POST /api/conti — 마운트 즉시 자동 생성</div>
+  <div class="nd"></div>
+  <div class="ni m">selectedTrend + personaResult → Gemini 콘티 생성</div>
+  <div class="ni g">initialConti prop 있으면 재생성 없음 (캐시 재사용)</div>
+  <div class="ni g">캐싱: cachedTrendId + conti (동일 트렌드 즉시 표시)</div>
+  <div class="nd"></div>
+  <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+    <div style="padding:5px 10px;background:rgba(200,255,87,.08);border:1px solid rgba(200,255,87,.25);border-radius:6px;font-size:10px;color:var(--lime)">CUT1 0–3s 훅</div>
+    <div style="padding:5px 10px;background:rgba(200,255,87,.08);border:1px solid rgba(200,255,87,.25);border-radius:6px;font-size:10px;color:var(--lime)">CUT2 3–6s 전환</div>
+    <div style="padding:5px 10px;background:rgba(200,255,87,.08);border:1px solid rgba(200,255,87,.25);border-radius:6px;font-size:10px;color:var(--lime)">CUT3 6–12s 본론</div>
+    <div style="padding:5px 10px;background:rgba(200,255,87,.08);border:1px solid rgba(200,255,87,.25);border-radius:6px;font-size:10px;color:var(--lime)">CUT4 12–15s 클로징</div>
   </div>
   <div class="nd"></div>
-  <div class="ni p">트렌드 카드 탭 시 하단 슬라이드업</div>
-  <div class="ni p">원본 영상 보기 (플랫폼 이동)</div>
-  <div class="ni p">소재로 사용하기 (추천·제작 탭 연동)</div>
+  <div class="ni p">[저장하기] → saveItem({type:'conti'}) → My</div>
+  <div class="ni">[대본 보기] → Script / [스토리보드] → Storyboard</div>
 </div>
 
 
-<!-- ════ RIGHT: 추천·제작 ════ -->
-
-<!-- 영상 방향 설문 -->
-<div class="node n-lime" style="left:610px;top:662px;width:460px;height:190px;">
+<!-- ════ SCRIPT ════ -->
+<div class="node" style="left:60px;top:1444px;width:240px;background:var(--surface-2);border-color:var(--border-hi);">
   <div class="nh">
-    <div class="nt">📝 영상 방향 설문</div>
-    <span class="badge bk">완료</span>
+    <div class="nt" style="font-size:11px;">📄 Script</div>
+    <span class="badge bg" style="font-size:7px">POST /api/generate</span>
   </div>
-  <div class="nd"></div>
-  <div class="ni ok">Q1. 어떤 분위기의 영상을 만들고 싶나요?</div>
-  <div class="ni ok">Q2. 영상 길이 (쇼츠 / 1분 내외 / 긴 영상)</div>
-  <div class="ni ok">Q3. 강조하고 싶은 본인만의 특징</div>
-  <div style="height:5px;"></div>
-  <div class="ni f">페르소나 + 설문 응답 → 추천 프롬프트 인풋 생성</div>
-  <div class="done-banner">✅ 구현 완료 · /recommend</div>
+  <div class="ni" style="font-size:9px">대본 3종: 정보형 · 스토리형 · 훅형</div>
+  <div class="ni" style="font-size:9px">HOOK + BODY + CTA</div>
+  <div class="ni p" style="font-size:9px">[저장하기] → saveItem({type:'script'})</div>
 </div>
 
-<!-- CTA -->
-<div class="n-cta" style="left:610px;top:876px;width:460px;height:54px;">
-  <span style="font-size:16px;">✨</span>
-  <span class="cta-text">소재·컨셉 추천받기</span>
-  <span class="cta-sub">버튼 클릭 시에만 Gemini 호출</span>
-</div>
 
-<!-- 소재·컨셉 추천 -->
-<div class="node n-gemini" style="left:610px;top:954px;width:460px;height:172px;">
+<!-- ════ STORYBOARD ════ -->
+<div class="node" style="left:330px;top:1444px;width:240px;background:var(--surface-2);border-color:var(--border-hi);">
   <div class="nh">
-    <div class="nt">💡 소재·컨셉 추천</div>
-    <span class="badge bk">완료</span>
+    <div class="nt" style="font-size:11px;">🎬 Storyboard</div>
   </div>
-  <div class="nd"></div>
-  <div class="ni m">트렌드 TOP + 키워드 + 페르소나 종합</div>
-  <div class="ni m">맞춤 소재 3가지 제안 (각 제목·훅·포인트)</div>
-  <div class="ni ok">페르소나 연동 — 온보딩 카테고리·스타일 반영</div>
-  <div class="gemini-tag"><span class="g-dot"></span>Gemini 2.5 Flash — POST /api/recommend</div>
+  <div class="ni" style="font-size:9px">콘티 4컷 전체 보기</div>
+  <div class="ni" style="font-size:9px">trendPoint + 각 컷 대사·메모</div>
 </div>
 
-<!-- 대본 + 콘티 -->
-<div class="node n-pink" style="left:610px;top:1150px;width:460px;height:232px;">
-  <div class="nh">
-    <div class="nt">🎬 대본 + 콘티 생성</div>
-    <span class="badge bk">완료</span>
-  </div>
-  <div class="np">/production</div>
-  <div class="nd"></div>
-  <div class="ni p">페르소나 + 트렌드 + 소재 추천 결합 프롬프트</div>
-  <div style="height:4px;"></div>
-  <div style="padding:8px 12px;background:var(--surface-2);border:1px solid rgba(255,61,127,.15);border-radius:8px;margin-bottom:6px;">
-    <div style="font-family:monospace;font-size:9px;color:var(--pink);letter-spacing:.04em;margin-bottom:4px;">📄 대본 3종</div>
-    <div class="ni ok" style="font-size:9px;">① 정보형 &nbsp;② 감성형 &nbsp;③ 유머형 (HOOK + BODY + CTA)</div>
-  </div>
-  <div style="padding:8px 12px;background:var(--surface-2);border:1px solid rgba(255,61,127,.1);border-radius:8px;">
-    <div style="font-family:monospace;font-size:9px;color:var(--pink);letter-spacing:.04em;margin-bottom:3px;">🎞 콘티</div>
-    <div class="ni ok" style="font-size:9px;">장면 구성 · 자막 · 시각 요소 텍스트 콘티</div>
-  </div>
-  <div class="gemini-tag"><span class="g-dot"></span>Gemini 2.5 Flash — POST /api/generate · /api/storyboard</div>
-</div>
 
-<!-- DONE -->
-<div class="node n-oval" style="left:715px;top:1406px;width:260px;height:44px;">
-  <div style="font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;">
-    <span style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></span>
-    대본·콘티 완성 · 활용
+<!-- ════ API REFERENCE ════ -->
+<div class="node" style="left:90px;top:1680px;width:840px;border-color:var(--border-hi);">
+  <div style="font-family:monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">API 엔드포인트 매핑</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+    <div class="ni m">POST /api/persona — 온보딩 완료 · Gemini 페르소나</div>
+    <div class="ni g">GET /api/trends — 트렌드 탭 진입 · 24h 캐시</div>
+    <div class="ni b">POST /api/rival (SSE) — 라이벌 3단계 파이프라인</div>
+    <div class="ni g">POST /api/conti — 제작 화면 마운트 · 콘티 4컷</div>
+    <div class="ni m">POST /api/generate — 대본 3종 생성</div>
+    <div class="ni m">POST /api/insights — 트렌드 해시태그 버블 · 24h 캐시</div>
   </div>
 </div>
 
-</div>
+
+<!-- ════ CACHE LEGEND ════ -->
+<div class="node" style="left:90px;top:1830px;width:840px;border-color:var(--border-hi);">
+  <div style="font-family:monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">캐싱 전략</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 16px;">
+    <div>
+      <div style="font-family:monospace;font-size:8px;color:var(--lime);margin-bottom:4px;">서버 캐시 (24h)</div>
+      <div class="ni f">/api/trends — 트렌드 데이터</div>
+      <div class="ni f">/api/insights — Gemini 분석</div>
+    </div>
+    <div>
+      <div style="font-family:monospace;font-size:8px;color:var(--blue);margin-bottom:4px;">page.tsx 상태 캐시</div>
+      <div class="ni f">cachedRivals — 라이벌 결과</div>
+      <div class="ni f">cachedTrendId + conti</div>
+    </div>
+    <div>
+      <div style="font-family:monospace;font-size:8px;color:var(--pink);margin-bottom:4px;">localStorage 영속</div>
+      <div class="ni f">pulse_saved_v1 — 저장 항목</div>
+      <div class="ni f">type: trend·creator·script·conti</div>
+    </div>
+  </div>
 </div>
 
-<!-- LEGEND -->
+
+<!-- ════ DATA CONSTRAINTS ════ -->
+<div class="node" style="left:90px;top:1980px;width:840px;border-color:rgba(255,134,87,.2);">
+  <div style="font-family:monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:12px;">⚠ 데이터 제약</div>
+  <div class="ni warn">growth rate 산출 불가 — TikTok·IG 동일 영상 재조회 구조 없음</div>
+  <div class="ni warn">TikTok·IG 스냅샷 데이터: DISABLE_APIFY=true 시 mock fallback</div>
+  <div class="ni warn">콘티 이미지: TOGETHER_API_KEY 없으면 텍스트만 표시</div>
+  <div class="ni warn">저장 영속성: localStorage — Supabase DB 연동 예정</div>
+</div>
+
+</div><!-- /.canvas -->
+</div><!-- /.scroll-wrap -->
+
 <div class="legend">
-  <div class="legend-item"><div class="lbox" style="background:rgba(76,175,130,.1);border:1px solid rgba(76,175,130,.3);"></div><span style="color:var(--green);">✅ 구현 완료</span></div>
-  <div class="legend-item"><div class="lbox" style="background:rgba(200,255,87,.1);border:1px solid rgba(200,255,87,.3);"></div>신규 기능</div>
-  <div class="legend-item"><div class="lbox" style="background:rgba(105,201,208,.1);border:1px solid rgba(105,201,208,.3);"></div>대시보드</div>
-  <div class="legend-item"><div class="lbox" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);"></div>제작</div>
-  <div class="legend-item"><div class="lbox" style="background:rgba(138,180,248,.1);border:1px solid rgba(138,180,248,.3);"></div>Gemini API</div>
-  <div class="legend-item" style="margin-left:16px;">
-    <svg width="28" height="10"><line x1="0" y1="5" x2="21" y2="5" stroke="rgba(200,255,87,.55)" stroke-width="1.5"/><polygon points="21,2 28,5 21,8" fill="rgba(200,255,87,.55)"/></svg>핵심 플로우
-  </div>
-  <div class="legend-item">
-    <svg width="28" height="10"><line x1="0" y1="5" x2="21" y2="5" stroke="rgba(138,180,248,.55)" stroke-width="1.5"/><polygon points="21,2 28,5 21,8" fill="rgba(138,180,248,.55)"/></svg>Gemini 호출
-  </div>
-  <div class="legend-item" style="margin-left:16px;color:var(--faint);">Gemini 총 4 엔드포인트 (insights · persona · recommend · generate)</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(200,255,87,.2);border:1px solid rgba(200,255,87,.4)"></div>메인 플로우 (Trends·Production)</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(105,201,208,.2);border:1px solid rgba(105,201,208,.4)"></div>라이벌 파이프라인 (SSE)</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(255,61,127,.2);border:1px solid rgba(255,61,127,.4)"></div>저장 → My Page</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(138,180,248,.2);border:1px solid rgba(138,180,248,.4)"></div>Gemini AI 호출</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(181,127,255,.2);border:1px solid rgba(181,127,255,.4)"></div>데이터 캐시</div>
+  <div class="legend-item"><div class="lbox" style="background:rgba(255,134,87,.2);border:1px solid rgba(255,134,87,.4)"></div>제약/주의사항</div>
 </div>
 
 </body>

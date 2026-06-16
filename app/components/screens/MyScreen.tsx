@@ -64,13 +64,23 @@ export default function MyScreen({ onNavigate }: MyScreenProps) {
           </button>
         </div>
 
+        <div style={{ display: 'flex', gap: '10px', margin: '0 16px 10px' }}>
+          <button onClick={() => onNavigate('my-growth')} style={{ flex: '1', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,255,87,0.3)', borderRadius: '14px', padding: '14px 12px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', backdropFilter: 'blur(4px)' }}>
+            <div style={{ fontSize: '10px', color: 'rgba(200,255,87,0.6)', fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', marginBottom: '4px' }}>GROWTH</div>
+            <span style={{ color: 'rgba(255,255,255,0.85)' }}>채널 성장 기록 <span style={{ color: '#C8FF57' }}>→</span></span>
+          </button>
+          <button onClick={() => onNavigate('goal')} style={{ flex: '1', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,255,87,0.3)', borderRadius: '14px', padding: '14px 12px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', backdropFilter: 'blur(4px)' }}>
+            <div style={{ fontSize: '10px', color: 'rgba(200,255,87,0.6)', fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', marginBottom: '4px' }}>GOAL</div>
+            <span style={{ color: 'rgba(255,255,255,0.85)' }}>목표 트래커 <span style={{ color: '#C8FF57' }}>→</span></span>
+          </button>
+        </div>
         <div style={{ margin: '0 16px 16px' }}>
-          <button onClick={() => onNavigate('my-growth')} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,255,87,0.3)', borderRadius: '14px', padding: '16px 18px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(4px)' }}>
+          <button onClick={() => onNavigate('deep-profile')} style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(200,255,87,0.3)', borderRadius: '14px', padding: '16px 18px', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(4px)' }}>
             <div>
-              <div style={{ fontSize: '10px', color: 'rgba(200,255,87,0.6)', fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', marginBottom: '4px' }}>GROWTH</div>
-              <span style={{ color: 'rgba(255,255,255,0.85)' }}>내 채널 성장 기록</span>
+              <div style={{ fontSize: '10px', color: 'rgba(200,255,87,0.6)', fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', marginBottom: '4px' }}>AI NICHE</div>
+              <span style={{ color: 'rgba(255,255,255,0.85)' }}>AI 니치 분석 받기</span>
             </div>
-            <span style={{ color: '#C8FF57', fontSize: '18px' }}>→</span>
+            <span style={{ color: '#C8FF57', fontSize: '18px' }}>✦</span>
           </button>
         </div>
 

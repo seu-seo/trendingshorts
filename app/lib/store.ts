@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, RecommendResponse, PersonaInput, PersonaResult, AppIntent, AgeGroup } from './types';
-import type { InsightsResponse } from '@/app/api/insights/route';
+import type { Trend, PlatformFilter, Category, Persona, PersonaDraft, Tab, SurveyAnswers, PersonaInput, PersonaResult, AppIntent, AgeGroup } from './types';
 
 export interface SavedScript {
   id: string;
@@ -142,8 +141,6 @@ interface AppState {
   // 추천·제작 탭 상태
   surveyAnswers: SurveyAnswers | null;
   setSurveyAnswers: (a: SurveyAnswers | null) => void;
-  recommendResult: RecommendResponse | null;
-  setRecommendResult: (r: RecommendResponse | null) => void;
   selectedConceptIndex: number | null;
   setSelectedConceptIndex: (i: number | null) => void;
 
@@ -170,9 +167,6 @@ interface AppState {
   saveScript: (script: SavedScript) => void;
   removeSavedScript: (id: string) => void;
 
-  // Insights cache (카테고리별, 페이지 이동 후에도 유지)
-  insightsCache: Map<string, InsightsResponse>;
-  setInsightsCache: (key: string, value: InsightsResponse) => void;
 }
 
 export const useStore = create<AppState>((set, get) => {
@@ -251,8 +245,6 @@ export const useStore = create<AppState>((set, get) => {
 
   surveyAnswers: null,
   setSurveyAnswers: (a) => set({ surveyAnswers: a }),
-  recommendResult: null,
-  setRecommendResult: (r) => set({ recommendResult: r }),
   selectedConceptIndex: null,
   setSelectedConceptIndex: (i) => set({ selectedConceptIndex: i }),
 
@@ -295,11 +287,6 @@ export const useStore = create<AppState>((set, get) => {
     return { savedScripts: next };
   }),
 
-  insightsCache: new Map(),
-  setInsightsCache: (key, value) => set((s) => {
-    const next = new Map(s.insightsCache);
-    next.set(key, value);
-    return { insightsCache: next };
-  }),
   };
+
 });

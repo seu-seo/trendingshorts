@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "snapshot": "npx tsx scripts/fetch-apify-snapshot.ts",
-    "test": "vitest run"
+    "test": "vitest run --exclude='**/*.integration.test.ts'",
+    "test:api": "vitest run lib/__tests__/service.integration.test.ts",
+    "test:service": "bash scripts/test-service.sh",
+    "test:all": "npx tsc --noEmit && npm run lint -- --max-warnings=0 && npm test && npm run test:service"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.71",

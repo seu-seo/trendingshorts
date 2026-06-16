@@ -31,8 +31,13 @@ file disagree, fix this file.
   - `app/lib/themes/types.ts` — TypeScript types mirroring the JSON shape
 - Prefer semantic tokens (`var(--color-primary)`, `var(--radius)`, …) over raw hex.
 
-## v7 redesign work
+## v8 SPA architecture (feat/v8-next.js)
 
-When working on the v7 redesign (light themes A indigo / B bold / C purple, the
-conversational onboarding, etc.), **read [docs/v7/THEME-GUIDE.md](docs/v7/THEME-GUIDE.md)
-first.** It documents the theme token system and the migration plan.
+The active branch is a SPA. `app/app/page.tsx` manages a `Screen` union type — no
+URL routing between screens. Key files:
+- `app/components/screens/` — all 15 screen components
+- `app/lib/saved-items.ts` — localStorage persistence (`pulse_saved_v1`)
+- `app/lib/types.ts` — `Trend`, `Category`, `RivalResult`, `RivalSurvey` types
+- `app/app/api/rival/route.ts` — SSE streaming endpoint (3-stage rival pipeline)
+
+> Obsolete docs (v7 theme guide, old specs) are in `docs_old/`.

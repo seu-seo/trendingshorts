@@ -155,39 +155,51 @@ Instagram Reels    1.23%                           Social Insider, 2026
 
 ## How Down: 솔루션 도출
 
+> v8 구현 상태 반영. ✅ = feat/v8-next.js에서 구현 완료
+
 ```
 핵심 목적: 정보 비대칭 해소 + 서브카테고리 인사이트 + 대본까지 한 흐름
           │
           ▼ How?
           │
-How 1: 3개 플랫폼 데이터를 실시간으로 하나의 피드에 통합한다
-       [Real-time Trending Feed — 대시보드 탭, 첫 화면]
-       → 내 버블 밖 데이터를 집계해서 크리에이터 관점으로 재가공
+How 1: 3개 플랫폼 데이터를 실시간으로 하나의 피드에 통합한다  ✅
+       [TrendsScreen — GET /api/trends]
+       → YouTube live + TikTok·IG 스냅샷을 단일 피드로
+       → 온보딩 카테고리 기반 필터링으로 개인화
           │
           ▼ How?
           │
-How 2: 카테고리가 아닌 서브카테고리 단위로 분류하고 플랫폼별로 비교한다
-       [Claude 기반 서브카테고리 자동 분류기 + Cross-Platform Compare]
-       → "먹방" → "편의점 리뷰 / 혼밥 ASMR / 레시피 챌린지" 단위
-       → YouTube 5.91% vs TikTok 3.70% vs Instagram 1.23% 기준점
+How 2: 카테고리가 아닌 서브카테고리 단위로 분류하고 플랫폼별로 비교한다  ✅ (부분)
+       [Category 타입 7개: food·beauty·fitness·lifestyle·gaming·art·edu]
+       → 온보딩 설문이 Category 타입과 완전히 일치해 필터링 작동
+       → 서브카테고리 자동 분류기는 미구현 (LLM 분류 → V3 목표)
           │
           ▼ How?
           │
-How 3: 페르소나 기반 맞춤 추천을 제공하되, 설정은 선택적으로 한다
-       [For You — 추천 탭]
-       → 강제 온보딩 없이 대시보드 먼저, 설정은 자발적으로
+How 3: 페르소나 기반 맞춤 추천을 제공하되, 설정은 선택적으로 한다  ✅
+       [ChatbotScreen → OnboardingPrefsScreen → PersonaScreen]
+       → 챗봇 대화 4문답 + 취향설정 선택적 완료
+       → 건너뛰기 가능
           │
           ▼ How?
           │
-How 4: 발견한 트렌드를 바탕으로 대본 초안을 자동 생성한다
-       [대본 초안 생성 — 제작 탭]
-       → HOOK (첫 3초) + BODY (3단 내러티브) + CTA
-       → 기존 툴이 멈추는 지점에서 시작하는 워크플로우 확장
+How 4: 발견한 트렌드를 바탕으로 대본 초안을 자동 생성한다  ✅
+       [ProductionScreen — POST /api/conti, POST /api/generate]
+       → 트렌드 선택 즉시 콘티 4컷 자동 생성 (마운트 트리거)
+       → HOOK (첫 3초) + BODY + CTA 대본
+       → 결과 캐싱 + 마이페이지 저장
+          │
+          ▼ How? (라이벌 분석 — v8 추가)
+          │
+How 4.5: 비슷한 크리에이터를 실시간으로 발견하고 벤치마킹한다  ✅ [v8 신규]
+       [RivalsScreen — POST /api/rival SSE]
+       → YouTube 검색 → Gemini 분석 → Vision 점수화 3단계
+       → 유사도%, matchReasons, 구독자 정보 제공
           │
           ▼ How? (마케터 / 에이카랩스 파일럿)
           │
-How 5: 발견한 트렌드를 브랜드 소재로 변환하고 성과를 추적한다
-       [Marketing Use Case Layer]
+How 5: 발견한 트렌드를 브랜드 소재로 변환하고 성과를 추적한다  ⬜ 미구현
+       [Marketing Use Case Layer — V3 이후]
        A(트렌드) → A'(소재) → B(상품) → KPI
 ```
 

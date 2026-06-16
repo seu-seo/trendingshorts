@@ -41,13 +41,13 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [saved, setSaved] = useState<Set<string>>(() => new Set());
+  const [sheet, setSheet] = useState<Trend | null>(null);
 
   useEffect(() => {
     setSaved(new Set(getSavedItems().filter((i) => i.type === 'trend').map((i) => i.id)));
   }, []);
 
-  function toggleSave(t: Trend, e: React.MouseEvent) {
-    e.stopPropagation();
+  function toggleSave(t: Trend) {
     const id = `trend_${t.id}`;
     if (saved.has(id)) {
       removeItem(id);
@@ -129,13 +129,14 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
           )}
           {visible.map((t) => {
             const badge = BADGE[t.heatLevel];
+            const isSaved = saved.has(`trend_${t.id}`);
             return (
-              <div className="v7-tcard" key={t.id} onClick={() => onSelect(t)}>
+              <div className="v7-tcard" key={t.id} onClick={() => setSheet(t)}>
                 <div className="v7-tcard-top">
                   <div className="v7-tcard-title">{t.title}</div>
                   <span className={`v7-badge ${badge.cls}`}>{badge.label}</span>
-                  <button className={`v7-save-btn${saved.has(`trend_${t.id}`) ? ' saved' : ''}`} onClick={(e) => toggleSave(t, e)}>
-                    <svg viewBox="0 0 24 24" fill={saved.has(`trend_${t.id}`) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                  <button className={`v7-save-btn${isSaved ? ' saved' : ''}`} onClick={(e) => { e.stopPropagation(); toggleSave(t); }}>
+                    <svg viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
                   </button>
                 </div>
                 <div className="v7-tcard-meta">
@@ -165,6 +166,35 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
           <div className="tab-label">마이페이지</div>
         </div>
       </div>
+
+      {/* 트렌드 카드 바텀시트 */}
+      {sheet && (
+        <>
+          <div onClick={() => setSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50 }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 36px', zIndex: 51 }}>
+            <div style={{ width: '36px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', margin: '0 auto 20px' }} />
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)', marginBottom: '6px', lineHeight: 1.4 }}>{sheet.title}</div>
+            <div style={{ fontSize: '12px', color: 'var(--gray)', marginBottom: '20px' }}>
+              조회 {formatViews(sheet.views)} · 참여율 {sheet.engagementRate}%
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => { toggleSave(sheet); setSheet(null); }}
+                style={{ flex: 1, padding: '14px', borderRadius: '14px', border: `1px solid ${saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'rgba(255,255,255,0.15)'}`, background: saved.has(`trend_${sheet.id}`) ? 'rgba(200,255,87,0.1)' : 'rgba(255,255,255,0.05)', color: saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill={saved.has(`trend_${sheet.id}`) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                {saved.has(`trend_${sheet.id}`) ? '저장됨' : '저장하기'}
+              </button>
+              <button
+                onClick={() => { setSheet(null); onSelect(sheet); }}
+                style={{ flex: 2, padding: '14px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                이걸로 만들기 →
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

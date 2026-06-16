@@ -137,6 +137,7 @@ export default function RivalsScreen({ categories, chatAnswers, cachedResults, o
         niche: result.niche,
         subscribersLabel: result.subscribersLabel,
         thumbnail: result.thumbnail,
+        channelUrl: result.channelUrl,
         savedAt: new Date().toISOString(),
       };
       saveItem(item);

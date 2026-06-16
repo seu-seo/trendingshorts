@@ -54,7 +54,7 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
       removeItem(id);
       setSaved((prev) => { const n = new Set(prev); n.delete(id); return n; });
     } else {
-      saveItem({ type: 'trend', id, title: t.title, views: formatViews(t.views), engagementRate: `${t.engagementRate}%`, heatLevel: t.heatLevel, savedAt: new Date().toISOString() });
+      saveItem({ type: 'trend', id, title: t.title, views: formatViews(t.views), engagementRate: `${t.engagementRate}%`, heatLevel: t.heatLevel, savedAt: new Date().toISOString(), trend: t });
       setSaved((prev) => new Set([...prev, id]));
     }
   }

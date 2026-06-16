@@ -2,16 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { getSavedItems, removeItem, type SavedConti, type SavedCreator, type SavedItem, type SavedScript, type SavedTrend } from '@/lib/saved-items';
+import type { Trend } from '@/lib/types';
 
 interface MyScreenProps {
   onNavigate: (screen: string) => void;
+  onSelectTrend?: (trend: Trend) => void;
 }
 
 const HEAT_LABEL: Record<string, string> = { HOT: '반응 폭발', WARM: '상승 중', COLD: '꾸준함' };
 const HEAT_CLS: Record<string, string> = { HOT: 'v7-badge-hot', WARM: 'v7-badge-warm', COLD: 'v7-badge-warm' };
 
-export default function MyScreen({ onNavigate }: MyScreenProps) {
+export default function MyScreen({ onNavigate, onSelectTrend }: MyScreenProps) {
   const [items, setItems] = useState<SavedItem[]>([]);
+  const [trendSheet, setTrendSheet] = useState<SavedTrend | null>(null);
+  const [creatorSheet, setCreatorSheet] = useState<SavedCreator | null>(null);
 
   useEffect(() => { setItems(getSavedItems()); }, []);
 
@@ -97,13 +101,13 @@ export default function MyScreen({ onNavigate }: MyScreenProps) {
           ) : (
             <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {trends.map((t) => (
-                <div key={t.id} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div key={t.id} onClick={() => setTrendSheet(t)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</div>
                     <div style={{ fontSize: '11px', color: 'var(--gray)' }}>조회 {t.views} · 참여율 {t.engagementRate}</div>
                   </div>
                   <span className={`v7-badge ${HEAT_CLS[t.heatLevel] ?? 'v7-badge-warm'}`} style={{ flexShrink: 0 }}>{HEAT_LABEL[t.heatLevel] ?? t.heatLevel}</span>
-                  <button onClick={() => remove(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray)', fontSize: '16px', flexShrink: 0 }}>×</button>
+                  <button onClick={(e) => { e.stopPropagation(); remove(t.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray)', fontSize: '16px', flexShrink: 0 }}>×</button>
                 </div>
               ))}
             </div>
@@ -123,7 +127,7 @@ export default function MyScreen({ onNavigate }: MyScreenProps) {
           ) : (
             <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {creators.map((c) => (
-                <div key={c.id} className="v7-bcard" style={{ position: 'relative' }}>
+                <div key={c.id} className="v7-bcard" style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setCreatorSheet(c)}>
                   {c.thumbnail ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={c.thumbnail} alt={c.channelTitle} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
@@ -135,7 +139,7 @@ export default function MyScreen({ onNavigate }: MyScreenProps) {
                     <div className="v7-bmeta">{c.handle} · {c.niche}</div>
                     <div className="v7-bgrow">{c.subscribersLabel}</div>
                   </div>
-                  <button onClick={() => remove(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray)', fontSize: '16px', position: 'absolute', top: '10px', right: '10px' }}>×</button>
+                  <button onClick={(e) => { e.stopPropagation(); remove(c.id); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray)', fontSize: '16px', position: 'absolute', top: '10px', right: '10px' }}>×</button>
                 </div>
               ))}
             </div>
@@ -173,6 +177,71 @@ export default function MyScreen({ onNavigate }: MyScreenProps) {
           </div>
         )}
       </div>
+
+      {/* 트렌드 바텀시트 */}
+      {trendSheet && (
+        <>
+          <div onClick={() => setTrendSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 101 }} />
+          <div style={{ position: 'absolute', bottom: '72px', left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 28px', zIndex: 102, boxShadow: '0 -8px 24px rgba(0,0,0,0.35)' }}>
+            <div style={{ width: '36px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', margin: '0 auto 20px' }} />
+            <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px', lineHeight: 1.4 }}>{trendSheet.title}</div>
+            <div style={{ fontSize: '12px', color: 'var(--gray)', marginBottom: '20px' }}>
+              조회 {trendSheet.views} · 참여율 {trendSheet.engagementRate}
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {trendSheet.trend.videoUrl ? (
+                <a
+                  href={trendSheet.trend.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setTrendSheet(null)}
+                  style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+                >
+                  영상 보러가기 ↗
+                </a>
+              ) : null}
+              <button
+                onClick={() => { setTrendSheet(null); onSelectTrend?.(trendSheet.trend); }}
+                style={{ flex: 2, padding: '14px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+              >
+                이걸로 만들기 →
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 크리에이터 바텀시트 */}
+      {creatorSheet && (
+        <>
+          <div onClick={() => setCreatorSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 101 }} />
+          <div style={{ position: 'absolute', bottom: '72px', left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 28px', zIndex: 102, boxShadow: '0 -8px 24px rgba(0,0,0,0.35)' }}>
+            <div style={{ width: '36px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', margin: '0 auto 20px' }} />
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
+              {creatorSheet.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={creatorSheet.thumbnail} alt={creatorSheet.channelTitle} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+              ) : (
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,255,87,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700, color: 'var(--primary)', flexShrink: 0 }}>{creatorSheet.channelTitle[0]}</div>
+              )}
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>{creatorSheet.channelTitle}</div>
+                <div style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '2px' }}>{creatorSheet.handle} · {creatorSheet.subscribersLabel}</div>
+                <div style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '2px' }}>{creatorSheet.niche}</div>
+              </div>
+            </div>
+            <a
+              href={creatorSheet.channelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setCreatorSheet(null)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '14px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', textDecoration: 'none' }}
+            >
+              채널 보러가기 →
+            </a>
+          </div>
+        </>
+      )}
 
       <div className="tab-bar">
         <div className="tab-item" onClick={() => onNavigate('trends')}>

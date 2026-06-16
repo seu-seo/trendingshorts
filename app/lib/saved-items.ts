@@ -1,3 +1,5 @@
+import type { Trend } from './types';
+
 export type SavedItemType = 'trend' | 'creator' | 'script' | 'conti';
 
 export interface SavedTrend {
@@ -8,6 +10,7 @@ export interface SavedTrend {
   engagementRate: string;
   heatLevel: string;
   savedAt: string;
+  trend: Trend;
 }
 
 export interface SavedCreator {
@@ -18,6 +21,7 @@ export interface SavedCreator {
   niche: string;
   subscribersLabel: string;
   thumbnail?: string;
+  channelUrl: string;
   savedAt: string;
 }
 

@@ -185,7 +185,7 @@ export default function App() {
             onNext={() => setScreen('trends')}
             onBack={() => setScreen('trends')}
             onResultsCached={(r) => setCachedRivals(r)}
-            onSave={(r: RivalResult) => saveItem({ type: 'creator', id: `creator_${r.channelId}`, channelTitle: r.channelTitle, handle: r.handle, niche: r.niche, subscribersLabel: r.subscribersLabel, thumbnail: r.thumbnail, savedAt: new Date().toISOString() })}
+            onSave={(r: RivalResult) => saveItem({ type: 'creator', id: `creator_${r.channelId}`, channelTitle: r.channelTitle, handle: r.handle, niche: r.niche, subscribersLabel: r.subscribersLabel, thumbnail: r.thumbnail, channelUrl: r.channelUrl, savedAt: new Date().toISOString() })}
           />
         )}
 
@@ -224,7 +224,10 @@ export default function App() {
         )}
 
         {screen === 'my' && (
-          <MyScreen onNavigate={navigate} />
+          <MyScreen
+            onNavigate={navigate}
+            onSelectTrend={(t) => { setSelectedTrend(t); setScreen('production'); }}
+          />
         )}
 
         {screen === 'my-growth' && (

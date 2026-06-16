@@ -26,6 +26,19 @@ const SVG_MAP: Record<string, string> = {
   upper: 'M3 8h18v12H3zM12 2v6',
 };
 
+const CLIENT_FALLBACK_CONTI: ContiResponse = {
+  source: 'mock',
+  trendPoint: '고민→해결 구조로 트렌드 흐름을 활용합니다.',
+  character: '',
+  subject: '',
+  cuts: [
+    { index: 1, part: '훅', timeRange: '0~3s', shotType: '인물 클로즈업', sketchType: 'closeup', visualKo: '크리에이터 표정 클로즈업', visualEn: '', dialogue: '이거 모르면 손해예요!', shootingMemo: '인물 표정 클로즈업 — 첫 컷에서 시선 고정', imageUrl: '' },
+    { index: 2, part: '전환', timeRange: '3~6s', shotType: '제품 클로즈업', sketchType: 'split', visualKo: '제품 클로즈업 (인물 X)', visualEn: '', dialogue: '바로 이게 핵심이에요.', shootingMemo: '제품을 화면 가득 클로즈업 — 인물보다 제품', imageUrl: '' },
+    { index: 3, part: '본론', timeRange: '6~12s', shotType: '제품 시연', sketchType: 'split', visualKo: '제품 시연/디테일', visualEn: '', dialogue: '이렇게만 하면 돼요.', shootingMemo: '제품 사용/시연 장면 — 제품에 맞는 손·연출', imageUrl: '' },
+    { index: 4, part: '클로징', timeRange: '12~15s', shotType: '인물 정면', sketchType: 'front', visualKo: '크리에이터 정면 마무리', visualEn: '', dialogue: '저장하고 나중에 써먹어요!', shootingMemo: '다시 등장해 정면으로 밝게 마무리 + CTA', imageUrl: '' },
+  ],
+};
+
 const SCRIPT_ITEMS: [string, string][] = [
   ['정보형', '"이걸 꼭 알아야 할 이유, 지금 알려드릴게요."'],
   ['스토리형', '"처음엔 저도 몰랐어요. 근데 이제는 자신 있게 만들어요."'],
@@ -56,7 +69,7 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
       setConti(data);
       onContiGenerated?.(data);
     } catch {
-      setConti(null);
+      setConti(CLIENT_FALLBACK_CONTI);
     }
     setStage('conti');
   }, [trend, persona]);

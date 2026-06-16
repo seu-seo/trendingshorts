@@ -30,7 +30,7 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   '화장': '뷰티', '피부': '뷰티', '룩북': '뷰티', 'ootd': '뷰티', '옷': '뷰티',
   // 운동/피트니스
   '운동': '운동', '헬스': '운동', '다이어트': '운동', '홈트': '운동', '필라테스': '운동',
-  '요가': '운동', '힙': '운동', '근육': '운동', '식단': '운동', 'workout': '운동',
+  '요가': '운동', '힙업': '운동', '근육': '운동', '식단': '운동', 'workout': '운동',
   '피트니스': '운동', '하체': '운동',
   // 게임
   '게임': '게임',
@@ -61,6 +61,7 @@ interface ApifyPost {
   url: string;
   ownerUsername: string;
   hashtags?: string[];
+  displayUrl?: string;
 }
 
 function timeAgo(timestamp: string): string {
@@ -113,7 +114,7 @@ function processPosts(posts: ApifyPost[], skipExpiry = false): Trend[] {
       shares: 0,
       engagementRate,
       duration: '0:30',
-      thumb: THUMBNAIL_MAP[krCategory] ?? '📱',
+      thumb: post.displayUrl || THUMBNAIL_MAP[krCategory] || '📱',
       time: timeAgo(post.timestamp),
       hashtags: tags.map((t) => `#${t}`).slice(0, 4).join(' ') || '#릴스',
       videoUrl: post.url,

@@ -47,6 +47,10 @@ const CATEGORY_MAP: Record<string, Category> = {
   '28': 'edu',       // Science & Technology
 };
 
+// YouTube엔 'Howto & Style'(26)에 음식/레시피 콘텐츠가 별도 분류 없이 섞여 들어옴 →
+// 키워드로 음식 콘텐츠만 따로 식별해 'food'로 재분류 (나머지는 beauty 유지)
+const FOOD_KEYWORDS_RE = /먹방|레시피|요리|맛집|쿠킹|식당|반찬|메뉴|음식|먹스타그램|mukbang|asmr.*먹|먹.*asmr/i;
+
 const THUMBNAIL_MAP: Record<string, string> = {
   '1': '🎬', '10': '🎵', '15': '🐾', '17': '💪', '19': '✈️',
   '20': '🎮', '22': '📹', '23': '😂', '24': '🎭', '25': '📰',
@@ -110,7 +114,9 @@ function processVideos(items: (VideoDetail & { requestedCid: string })[]): Trend
       id: index + 1,
       platform: 'youtube' as const,
       platformLabel: PLATFORM_LABEL.youtube,
-      category: CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
+      category: video.requestedCid === '26' && FOOD_KEYWORDS_RE.test(video.snippet.title)
+        ? 'food'
+        : CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
       heatLevel: deriveHeatLevel(engagementRate),
       title: video.snippet.title,
       creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,

@@ -18,7 +18,7 @@ const HASHTAG_CATEGORY: Record<string, string> = {
   '화장': '뷰티', '피부': '뷰티', '룩북': '뷰티', 'ootd': '뷰티', '옷': '뷰티',
   // 운동/피트니스
   '운동': '운동', '헬스': '운동', '다이어트': '운동', '홈트': '운동', '필라테스': '운동',
-  '요가': '운동', '힙': '운동', '근육': '운동', '식단': '운동', '체력': '운동',
+  '요가': '운동', '힙업': '운동', '근육': '운동', '식단': '운동', '체력': '운동',
   'workout': '운동', '피트니스': '운동', '하체': '운동', '복근': '운동',
   // 게임
   '게임': '게임', '롤': '게임', '배그': '게임', '마인크래프트': '게임', '오버워치': '게임',
@@ -48,7 +48,7 @@ interface TikTokPost {
   shareCount: number;
   hashtags?: { name: string }[];
   authorMeta?: { name?: string };
-  videoMeta?: { duration?: number };
+  videoMeta?: { duration?: number; coverUrl?: string };
   webVideoUrl: string;
 }
 
@@ -107,7 +107,7 @@ function processPosts(posts: TikTokPost[], skipExpiry = false): Trend[] {
       shares: post.shareCount ?? 0,
       engagementRate,
       duration: formatDuration(post.videoMeta?.duration),
-      thumb: THUMBNAIL_MAP[krCategory] ?? '♪',
+      thumb: post.videoMeta?.coverUrl || THUMBNAIL_MAP[krCategory] || '♪',
       time: timeAgo(post.createTimeISO),
       hashtags: tagNames.map((t) => `#${t}`).slice(0, 4).join(' ') || '#틱톡',
       videoUrl: post.webVideoUrl,

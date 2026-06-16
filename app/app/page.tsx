@@ -139,7 +139,12 @@ export default function App() {
         )}
 
         {screen === 'persona' && personaResult && (
-          <PersonaScreen personaResult={personaResult} answers={answers} onNext={() => setScreen('trends')} />
+          <PersonaScreen
+            personaResult={personaResult}
+            answers={answers}
+            onNext={() => setScreen('trends')}
+            onRetryChat={() => setScreen('chatbot')}
+          />
         )}
 
         {screen === 'trends' && (

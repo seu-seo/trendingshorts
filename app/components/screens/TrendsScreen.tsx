@@ -21,12 +21,13 @@ const BADGE: Record<Trend['heatLevel'], { cls: string; label: string }> = {
   COLD: { cls: 'v7-badge-warm', label: '꾸준함' },
 };
 
-// videoUrl(유튜브)에서 영상 ID를 추출해 maxres 썸네일 URL 생성. 실패 시 t.thumb fallback.
-function thumbUrl(t: Trend): string {
+// videoUrl(유튜브)에서 영상 ID를 추출해 maxres 썸네일 URL 생성. 실패 시 t.thumb(실제 커버 이미지) fallback.
+// t.thumb가 emoji fallback(이미지 URL 아님)인 경우 null을 반환해 placeholder를 렌더링.
+function thumbUrl(t: Trend): string | null {
   const url = t.videoUrl ?? '';
   const m = url.match(/(?:v=|\/shorts\/|youtu\.be\/|\/vi\/)([\w-]{11})/);
   if (m) return `https://i.ytimg.com/vi/${m[1]}/maxresdefault.jpg`;
-  return t.thumb;
+  return t.thumb.startsWith('http') ? t.thumb : null;
 }
 
 function formatViews(n: number): string {
@@ -78,11 +79,10 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
       ? trends.filter((t) => t.title.toLowerCase().includes(q) || t.hashtags.toLowerCase().includes(q))
       : trends;
 
-    // 취향설정 카테고리로 필터링 (설문 결과 반영)
+    // 취향설정 카테고리로 필터링 (설문 결과 반영) — 선택한 카테고리 영상만, engagement 높은 순
     if (!q && categories && categories.length > 0) {
       const catSet = new Set(categories);
-      const filtered = pool.filter((t) => catSet.has(t.category));
-      pool = filtered.length > 0 ? filtered : [...pool].sort((a, b) => b.engagementRate - a.engagementRate);
+      pool = pool.filter((t) => catSet.has(t.category)).sort((a, b) => b.engagementRate - a.engagementRate);
     }
 
     // 챗봇 첫 답변 키워드로 추가 정렬
@@ -130,6 +130,7 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
           {visible.map((t) => {
             const badge = BADGE[t.heatLevel];
             const isSaved = saved.has(`trend_${t.id}`);
+            const thumb = thumbUrl(t);
             return (
               <div className="v7-tcard" key={t.id} onClick={() => setSheet(t)}>
                 <div className="v7-tcard-top">
@@ -143,8 +144,20 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
                   <span className="v7-tcard-stat">조회 <b>{formatViews(t.views)}</b></span>
                   <span className="v7-tcard-stat">참여율 <b>{t.engagementRate}%</b></span>
                 </div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="v7-tcard-thumb" src={thumbUrl(t)} alt={t.title} loading="lazy" />
+                {thumb ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    className="v7-tcard-thumb"
+                    src={thumb}
+                    alt={t.title}
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="v7-tcard-thumb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', background: 'rgba(255,255,255,0.04)' }}>
+                    {t.thumb}
+                  </div>
+                )}
                 <div className="v7-tcard-cta">이걸로 만들기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg></div>
               </div>
             );
@@ -170,8 +183,8 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
       {/* 트렌드 카드 바텀시트 */}
       {sheet && (
         <>
-          <div onClick={() => setSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50 }} />
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 36px', zIndex: 51 }}>
+          <div onClick={() => setSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 101 }} />
+          <div style={{ position: 'absolute', bottom: '72px', left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 36px', zIndex: 102, boxShadow: '0 -8px 24px rgba(0,0,0,0.35)' }}>
             <div style={{ width: '36px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', margin: '0 auto 20px' }} />
             <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)', marginBottom: '6px', lineHeight: 1.4 }}>{sheet.title}</div>
             <div style={{ fontSize: '12px', color: 'var(--gray)', marginBottom: '20px' }}>

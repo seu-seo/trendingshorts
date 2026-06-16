@@ -1,16 +1,18 @@
 'use client';
 
 import type { PersonaResult } from '@/lib/types';
+import CreatorTypeCard from '@/components/CreatorTypeCard';
 
 interface PersonaScreenProps {
   personaResult: PersonaResult;
   answers?: string[];
   onNext: () => void;
+  onRetryChat?: () => void;
 }
 
 const TAG_TONES = ['phero-lime', 'phero-pink', 'phero-blue'];
 
-export default function PersonaScreen({ personaResult, answers, onNext }: PersonaScreenProps) {
+export default function PersonaScreen({ personaResult, answers, onNext, onRetryChat }: PersonaScreenProps) {
   const chatAnswers = (answers ?? []).map((a) => a.trim()).filter(Boolean);
   const heroTags = personaResult.topTrends
     .slice(0, 3)
@@ -59,12 +61,7 @@ export default function PersonaScreen({ personaResult, answers, onNext }: Person
         </div>
         {chatAnswers.length > 0 && (
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gray)', marginBottom: '8px' }}>내가 답한 내용</div>
-            <div className="profile-chips" id="persona-answers">
-              {chatAnswers.map((a, i) => (
-                <span key={i} className="profile-chip">{a}</span>
-              ))}
-            </div>
+            <CreatorTypeCard answers={chatAnswers} onRetry={onRetryChat} />
           </div>
         )}
         <div className="persona-chat-insight" id="persona-chat-insight">{personaResult.personaSummary}</div>

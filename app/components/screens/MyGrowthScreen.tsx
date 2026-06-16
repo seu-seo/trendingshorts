@@ -1,5 +1,7 @@
 'use client';
 
+import UploadCalendar from '@/components/UploadCalendar';
+
 interface MyGrowthScreenProps {
   onBack: () => void;
 }
@@ -23,29 +25,7 @@ export default function MyGrowthScreen({ onBack }: MyGrowthScreenProps) {
         </div>
 
         {/* 업로드 달력 트래커 */}
-        <div style={{ margin: '4px 16px 16px', background: 'var(--bg-card)', borderRadius: '16px', padding: '16px', border: '1px solid var(--line)' }}>
-          <div className="cal-header">
-            <button className="cal-nav-btn">‹</button>
-            <div id="cal-month-label" className="cal-month-label">2025년 6월</div>
-            <button className="cal-nav-btn">›</button>
-          </div>
-          <div className="cal-plat-row">
-            <button className="cal-plat-btn active-tt" id="cal-btn-tiktok">틱톡</button>
-            <button className="cal-plat-btn" id="cal-btn-instagram">인스타</button>
-            <button className="cal-plat-btn" id="cal-btn-youtube">유튜브</button>
-          </div>
-          <div className="cal-day-headers">
-            <div className="cal-day-hdr" style={{ color: '#FF6B6B' }}>일</div>
-            <div className="cal-day-hdr">월</div>
-            <div className="cal-day-hdr">화</div>
-            <div className="cal-day-hdr">수</div>
-            <div className="cal-day-hdr">목</div>
-            <div className="cal-day-hdr">금</div>
-            <div className="cal-day-hdr" style={{ color: '#6BA3FF' }}>토</div>
-          </div>
-          <div id="cal-grid" className="cal-grid"></div>
-          <div id="cal-legend" style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}></div>
-        </div>
+        <UploadCalendar />
 
         {/* 플랫폼별 개별 차트 */}
         <div className="platform-graphs" style={{ margin: '8px 16px 16px' }}>

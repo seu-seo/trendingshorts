@@ -71,6 +71,7 @@ export default function App() {
   const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [cachedTrendId, setCachedTrendId] = useState<number | null>(null);
+  const [cachedRivals, setCachedRivals] = useState<RivalResult[] | null>(null);
   const [script, setScript] = useState<GenerateResponse | null>(null);
   const [conti, setConti] = useState<ContiResponse | null>(null);
 
@@ -169,8 +170,10 @@ export default function App() {
           <RivalsScreen
             categories={prefs?.categories ?? []}
             chatAnswers={answers}
+            cachedResults={cachedRivals ?? undefined}
             onNext={() => setScreen('trends')}
             onBack={() => setScreen('trends')}
+            onResultsCached={(r) => setCachedRivals(r)}
             onSave={(r: RivalResult) => saveItem({ type: 'creator', id: `creator_${r.channelId}`, channelTitle: r.channelTitle, handle: r.handle, niche: r.niche, subscribersLabel: r.subscribersLabel, thumbnail: r.thumbnail, savedAt: new Date().toISOString() })}
           />
         )}

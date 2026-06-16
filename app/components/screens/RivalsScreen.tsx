@@ -17,9 +17,11 @@ const CAT_TOPICS: Record<string, string> = {
 interface RivalsScreenProps {
   categories: string[];
   chatAnswers: string[];
+  cachedResults?: RivalResult[];
   onNext: () => void;
   onBack?: () => void;
   onSave?: (result: RivalResult) => void;
+  onResultsCached?: (results: RivalResult[]) => void;
 }
 
 type LoadStage = 'idle' | 'stage1' | 'stage2' | 'stage3' | 'done' | 'error';
@@ -39,11 +41,12 @@ function buildSurvey(categories: string[], chatAnswers: string[]): RivalSurvey {
   };
 }
 
-export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, onSave }: RivalsScreenProps) {
-  const [loadStage, setLoadStage] = useState<LoadStage>('idle');
-  const [results, setResults] = useState<RivalResult[]>([]);
+export default function RivalsScreen({ categories, chatAnswers, cachedResults, onNext, onBack, onSave, onResultsCached }: RivalsScreenProps) {
+  const [loadStage, setLoadStage] = useState<LoadStage>(cachedResults ? 'done' : 'idle');
+  const [results, setResults] = useState<RivalResult[]>(cachedResults ?? []);
   const [errorMsg, setErrorMsg] = useState('');
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [sheet, setSheet] = useState<RivalResult | null>(null);
 
   useEffect(() => {
     const savedCreatorIds = new Set(
@@ -97,6 +100,7 @@ export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, 
             } else if (msg.stage === 3 && msg.status === 'done' && msg.results) {
               setResults(msg.results);
               setLoadStage('done');
+              onResultsCached?.(msg.results);
             }
           }
         }
@@ -111,12 +115,11 @@ export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, 
   };
 
   useEffect(() => {
-    fetchRivals();
+    if (!cachedResults) fetchRivals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function toggleSave(result: RivalResult, e: React.MouseEvent) {
-    e.stopPropagation();
+  function toggleSave(result: RivalResult) {
     const id = `creator_${result.channelId}`;
     if (saved.has(id)) {
       removeItem(id);
@@ -192,7 +195,7 @@ export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, 
           const savedId = `creator_${r.channelId}`;
           const isSaved = saved.has(savedId);
           return (
-            <div className="v7-bcard" key={r.channelId} style={{ position: 'relative' }}>
+            <div className="v7-bcard" key={r.channelId} style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setSheet(r)}>
               {r.thumbnail ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -241,18 +244,11 @@ export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, 
                   </div>
                 )}
               </div>
-              <button
-                onClick={(e) => toggleSave(r, e)}
-                style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-                  color: isSaved ? 'var(--primary)' : 'rgba(255,255,255,0.3)', flexShrink: 0, alignSelf: 'flex-start',
-                }}
-                aria-label={isSaved ? '저장 취소' : '저장'}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div style={{ color: isSaved ? 'var(--primary)' : 'rgba(255,255,255,0.3)', flexShrink: 0, alignSelf: 'flex-start', padding: '4px' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
-              </button>
+              </div>
             </div>
           );
         })}
@@ -263,6 +259,47 @@ export default function RivalsScreen({ categories, chatAnswers, onNext, onBack, 
           </button>
         )}
       </div>
+
+      {/* 크리에이터 바텀시트 */}
+      {sheet && (
+        <>
+          <div onClick={() => setSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50 }} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--bg-card, #1a1a1a)', borderRadius: '20px 20px 0 0', padding: '20px 20px 36px', zIndex: 51 }}>
+            <div style={{ width: '36px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px', margin: '0 auto 20px' }} />
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+              {sheet.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={sheet.thumbnail} alt={sheet.channelTitle} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,255,87,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 700, color: 'var(--primary)' }}>{sheet.channelTitle[0]}</div>
+              )}
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>{sheet.channelTitle}</div>
+                <div style={{ fontSize: '12px', color: 'var(--gray)', marginTop: '2px' }}>{sheet.handle} · {sheet.subscribersLabel} 구독자</div>
+                <div style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '2px' }}>{sheet.niche}</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => { toggleSave(sheet); setSheet(null); }}
+                style={{ flex: 1, padding: '14px', borderRadius: '14px', border: `1px solid ${saved.has(`creator_${sheet.channelId}`) ? 'var(--primary)' : 'rgba(255,255,255,0.15)'}`, background: saved.has(`creator_${sheet.channelId}`) ? 'rgba(200,255,87,0.1)' : 'rgba(255,255,255,0.05)', color: saved.has(`creator_${sheet.channelId}`) ? 'var(--primary)' : 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill={saved.has(`creator_${sheet.channelId}`) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                {saved.has(`creator_${sheet.channelId}`) ? '저장됨' : '저장하기'}
+              </button>
+              <a
+                href={sheet.channelUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setSheet(null)}
+                style={{ flex: 2, padding: '14px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+              >
+                채널 보러가기 →
+              </a>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -198,6 +198,7 @@ export default function App() {
           <ProductionScreen
             trend={selectedTrend}
             persona={personaResult}
+            prefs={prefs}
             initialConti={selectedTrend.id === cachedTrendId ? conti ?? undefined : undefined}
             onNext={() => setScreen('trends')}
             onBack={() => setScreen('trends')}

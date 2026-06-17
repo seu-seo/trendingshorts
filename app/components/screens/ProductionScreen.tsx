@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import type { PersonaResult, Trend } from '@/lib/types';
+import type { Category, OnboardingPrefs, PersonaResult, RecommendConcept, Trend } from '@/lib/types';
 import type { ContiCut, ContiResponse } from '@/app/api/conti/route';
-import type { GenerateResponse } from '@/lib/prompts/types';
+import type { GenerateResponse, ScriptOutput, ScriptTone } from '@/lib/prompts/types';
 import { saveItem } from '@/lib/saved-items';
 
 interface ProductionScreenProps {
   trend: Trend;
   persona: PersonaResult;
+  prefs?: OnboardingPrefs | null;
   initialConti?: ContiResponse;
   onNext: () => void;
   onBack?: () => void;
@@ -39,15 +40,55 @@ const CLIENT_FALLBACK_CONTI: ContiResponse = {
   ],
 };
 
-const SCRIPT_ITEMS: [string, string][] = [
-  ['정보형', '"이걸 꼭 알아야 할 이유, 지금 알려드릴게요."'],
-  ['스토리형', '"처음엔 저도 몰랐어요. 근데 이제는 자신 있게 만들어요."'],
-  ['훅형', '"이게 된다고요? 끝까지 보면 깜짝 놀라요."'],
-];
+const TONE_LABEL: Record<ScriptTone, string> = {
+  informative: '정보형',
+  story: '스토리형',
+  hooking: '후킹형',
+};
 
 const INTENT_CHIPS = ['내 일상에 적용', '챌린지 도전', '제품·서비스 소개', '정보·팁 공유'];
 
-export default function ProductionScreen({ trend, persona, initialConti, onNext, onBack, onScriptReady, onContiReady, onContiGenerated }: ProductionScreenProps) {
+// PersonaResult + OnboardingPrefs → /api/generate 용 Persona 형태로 변환
+function buildPersonaForGenerate(persona: PersonaResult, prefs: OnboardingPrefs | null, trendCategory: Category) {
+  return {
+    category: (prefs?.categories?.[0] ?? trendCategory) as Category,
+    styles: persona.hookPatterns.map((h) => h.type),
+  };
+}
+
+// 사용자 의도 → concept 객체 변환
+function buildConcept(intentPart: string, trend: Trend): RecommendConcept | null {
+  if (!intentPart) return null;
+  return {
+    title: intentPart,
+    trendBasis: trend.title,
+    hook: '',
+    keywords: trend.hashtags.replace(/#/g, '').split(/\s+/).filter(Boolean),
+    expectedReaction: '저장·댓글',
+  };
+}
+
+// /api/generate 호출 → 추천 톤의 ScriptOutput 반환
+async function fetchScript(
+  trend: Trend,
+  persona: ReturnType<typeof buildPersonaForGenerate>,
+  concept: RecommendConcept | null,
+): Promise<{ script: ScriptOutput; tone: ScriptTone; raw: GenerateResponse } | null> {
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ trend, persona, concept }),
+    });
+    if (!res.ok) return null;
+    const data: GenerateResponse = await res.json();
+    return { script: data.scripts[data.recommendedTone], tone: data.recommendedTone, raw: data };
+  } catch {
+    return null;
+  }
+}
+
+export default function ProductionScreen({ trend, persona, prefs, initialConti, onNext, onBack, onScriptReady, onContiReady, onContiGenerated }: ProductionScreenProps) {
   const [stage, setStage] = useState<Stage>(initialConti ? 'conti' : 'intent');
   const [conti, setConti] = useState<ContiResponse | null>(initialConti ?? null);
   const [script, setScript] = useState<GenerateResponse | null>(null);
@@ -56,32 +97,35 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
   async function makeConti(intent: string) {
     setStage('loading');
     const intentPart = intent.trim();
-    const hookText = intentPart
-      ? `${intentPart} — 이걸 모르면 손해예요!`
-      : `${trend.title} - 지금 바로 알려드릴게요!`;
-    const bodyText = intentPart
-      ? `${intentPart} 관점에서 ${trend.title}의 핵심 포인트를 보여드릴게요. (${persona.personaType})`
-      : `${trend.title}의 핵심 포인트를 단계별로 설명해드릴게요. (${persona.personaType})`;
-    const ctaText = intentPart
-      ? `${intentPart}처럼 직접 해보세요!`
-      : `${trend.title} 지금 바로 따라해보세요!`;
+    const personaForGen = buildPersonaForGenerate(persona, prefs ?? null, trend.category);
+    const concept = buildConcept(intentPart, trend);
+
+    // 1단계: /api/generate → 실제 AI 대본 생성
+    let scriptForConti: ScriptOutput;
+    let toneForConti: ScriptTone = 'hooking';
+    const genResult = await fetchScript(trend, personaForGen, concept);
+    if (genResult) {
+      scriptForConti = genResult.script;
+      toneForConti = genResult.tone;
+    } else {
+      // generate 실패 시 템플릿 fallback
+      scriptForConti = {
+        hook: intentPart ? `${intentPart} — 이걸 모르면 손해예요!` : `${trend.title} - 지금 바로 알려드릴게요!`,
+        body: intentPart
+          ? `${intentPart} 관점에서 ${trend.title}의 핵심 포인트를 보여드릴게요. (${persona.personaType})`
+          : `${trend.title}의 핵심 포인트를 단계별로 설명해드릴게요. (${persona.personaType})`,
+        cta: intentPart ? `${intentPart}처럼 직접 해보세요!` : `${trend.title} 지금 바로 따라해보세요!`,
+      };
+    }
+
+    // 2단계: /api/conti → 실제 AI 대본 기반 4컷 콘티 생성
     try {
-      const res = await fetch('/api/conti', {
+      const contiRes = await fetch('/api/conti', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          script: { hook: hookText, body: bodyText, cta: ctaText },
-          tone: 'hooking',
-          concept: intentPart ? {
-            title: intentPart,
-            trendBasis: trend.title,
-            hook: hookText,
-            keywords: [],
-            expectedReaction: '',
-          } : null,
-        }),
+        body: JSON.stringify({ script: scriptForConti, tone: toneForConti, concept }),
       });
-      const data: ContiResponse = await res.json();
+      const data: ContiResponse = await contiRes.json();
       setConti(data);
       onContiGenerated?.(data);
     } catch {
@@ -90,21 +134,15 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
     setStage('conti');
   }
 
-  const makeScript = async () => {
+  async function makeScript() {
     setStage('loading');
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trend, persona: null }),
-      });
-      const data: GenerateResponse = await res.json();
-      setScript(data);
-    } catch {
-      setScript(null);
-    }
+    const intentPart = userIntent.trim();
+    const personaForGen = buildPersonaForGenerate(persona, prefs ?? null, trend.category);
+    const concept = buildConcept(intentPart, trend);
+    const genResult = await fetchScript(trend, personaForGen, concept);
+    setScript(genResult?.raw ?? null);
     setStage('script');
-  };
+  }
 
   const renderContiCut = (cut: ContiCut) => (
     <div className="v7-conti-card" key={cut.index}>
@@ -144,7 +182,8 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
           <div id="v7-make-intent">
             <div className="v7-make-title">어떤 내용의 영상을<br />만들고 싶어요?</div>
             <div className="v7-make-sub">내 스타일로 트렌드를 풀어보세요</div>
-            <div style={{ margin: '16px 0 10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '14px 16px', transition: 'border-color 0.2s' }}
+            <div
+              style={{ margin: '16px 0 10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '14px 16px', transition: 'border-color 0.2s' }}
               onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(200,255,87,0.4)')}
               onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
             >
@@ -173,15 +212,28 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
               className="welcome-start-btn"
               onClick={() => void makeConti(userIntent)}
               disabled={!userIntent.trim()}
-              style={{ maxWidth: '100%', margin: 0, opacity: userIntent.trim() ? 1 : 0.4, cursor: userIntent.trim() ? 'pointer' : 'not-allowed' }}
+              style={{ maxWidth: '100%', margin: '0 0 10px', opacity: userIntent.trim() ? 1 : 0.4, cursor: userIntent.trim() ? 'pointer' : 'not-allowed' }}
             >
               4컷 콘티 만들기 →
+            </button>
+            <button
+              className="v7-btn-ghost"
+              onClick={() => void makeScript()}
+              disabled={!userIntent.trim()}
+              style={{ opacity: userIntent.trim() ? 1 : 0.4, cursor: userIntent.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              대본으로 받기
             </button>
           </div>
         )}
 
         {stage === 'loading' && (
-          <div id="v7-make-loading"><div className="v7-make-loading"><div className="v7-spin"></div><div className="v7-loading-t">만들고 있어요...</div></div></div>
+          <div id="v7-make-loading">
+            <div className="v7-make-loading">
+              <div className="v7-spin"></div>
+              <div className="v7-loading-t">AI가 대본을 쓰고 있어요...</div>
+            </div>
+          </div>
         )}
 
         {stage === 'conti' && (
@@ -193,8 +245,9 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
             )}
             {(conti?.cuts ?? []).map(renderContiCut)}
             {conti && onContiReady && (
-              <button className="v7-btn-ghost" onClick={() => onContiReady(conti)} style={{ marginBottom: '10px' }}>콘티 전체 보기</button>
+              <button className="v7-btn-ghost" onClick={() => onContiReady(conti)} style={{ marginBottom: '8px' }}>콘티 전체 보기</button>
             )}
+            <button className="v7-btn-ghost" onClick={() => void makeScript()} style={{ marginBottom: '8px' }}>대본도 받아보기</button>
             <button className="welcome-start-btn" onClick={() => {
               if (conti) saveItem({ type: 'conti', id: `conti_${trend.id}`, trendTitle: trend.title, trendPoint: conti.trendPoint ?? '', cutsCount: conti.cuts.length, savedAt: new Date().toISOString() });
               setStage('saved');
@@ -204,17 +257,36 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
 
         {stage === 'script' && (
           <div id="v7-make-result">
-            <span className="v7-section-eyebrow">스크립트 3종</span>
+            <span className="v7-section-eyebrow">AI 대본 3종{script?.meta.source === 'live' ? ' · AI 생성' : ' · 미리보기'}</span>
             <div className="v7-result-title">마음에 드는 걸로 골라보세요</div>
-            {SCRIPT_ITEMS.map(([t, s]) => (
-              <div className="v7-script-card" key={t}><span className="v7-sc-tag">{t}</span><div className="v7-sc-text">{s}</div></div>
-            ))}
-            {script && onScriptReady && (
-              <button className="v7-btn-ghost" onClick={() => onScriptReady(script)} style={{ marginBottom: '10px' }}>대본 전체 보기</button>
+            {script ? (
+              (['informative', 'story', 'hooking'] as ScriptTone[]).map((tone) => {
+                const s = script.scripts[tone];
+                const isRec = tone === script.recommendedTone;
+                return (
+                  <div className="v7-script-card" key={tone} style={isRec ? { border: '1px solid rgba(200,255,87,0.35)' } : {}}>
+                    <span className="v7-sc-tag">{TONE_LABEL[tone]}{isRec ? ' ✦' : ''}</span>
+                    <div className="v7-sc-text">{s.hook}</div>
+                    {s.body && (
+                      <div style={{ fontSize: '11px', color: 'var(--gray)', marginTop: '5px', lineHeight: 1.5 }}>{s.body.split('\n')[0]}</div>
+                    )}
+                  </div>
+                );
+              })
+            ) : (
+              [['정보형', '이걸 꼭 알아야 할 이유, 지금 알려드릴게요.'], ['스토리형', '처음엔 저도 몰랐어요. 근데 이제는 자신 있게 만들어요.'], ['후킹형', '이게 된다고요? 끝까지 보면 깜짝 놀라요.']].map(([t, s]) => (
+                <div className="v7-script-card" key={t}><span className="v7-sc-tag">{t}</span><div className="v7-sc-text">{s}</div></div>
+              ))
             )}
-            <button className="v7-btn-ghost" onClick={() => setStage('intent')} style={{ marginBottom: '10px' }}>콘티도 받아보기</button>
+            {script && onScriptReady && (
+              <button className="v7-btn-ghost" onClick={() => onScriptReady(script)} style={{ marginBottom: '8px' }}>대본 전체 보기</button>
+            )}
+            <button className="v7-btn-ghost" onClick={() => void makeConti(userIntent)} style={{ marginBottom: '8px' }}>콘티도 받아보기</button>
             <button className="welcome-start-btn" onClick={() => {
-              saveItem({ type: 'script', id: `script_${trend.id}`, trendTitle: trend.title, items: SCRIPT_ITEMS.map(([tag, text]) => ({ tag, text })), savedAt: new Date().toISOString() });
+              const items = script
+                ? (['informative', 'story', 'hooking'] as ScriptTone[]).map((tone) => ({ tag: TONE_LABEL[tone], text: script.scripts[tone].hook }))
+                : [{ tag: '대본', text: trend.title }];
+              saveItem({ type: 'script', id: `script_${trend.id}`, trendTitle: trend.title, items, savedAt: new Date().toISOString() });
               setStage('saved');
             }} style={{ maxWidth: '100%', margin: 0 }}>저장하고 다음 주제 받기</button>
           </div>

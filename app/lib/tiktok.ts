@@ -10,16 +10,18 @@ const HASHTAGS = [
 ];
 
 const HASHTAG_CATEGORY: Record<string, string> = {
-  // 음식
+  // 음식 (먼저 체크 — 식단이 운동보다 음식으로 분류되지 않도록)
   '먹방': '먹방', '요리': '먹방', '레시피': '먹방', '맛집': '먹방', '먹스타그램': '먹방',
   '쿠킹': '먹방', '홈쿡': '먹방', '밥': '먹방', '음식': '먹방', '식당': '먹방',
+  // 운동/피트니스 (뷰티보다 먼저 — "피지컬뷰티짐" 같은 복합어에서 헬스장 태그가 먼저 잡히도록)
+  '운동': '운동', '헬스': '운동', '다이어트': '운동', '홈트': '운동', '필라테스': '운동',
+  '요가': '운동', '힙업': '운동', '근육': '운동', '체력': '운동',
+  'workout': '운동', '피트니스': '운동', '하체': '운동', '복근': '운동',
+  '웨이트': '운동', '트레이닝': '운동', '크로스핏': '운동', 'bodybuilding': '운동',
+  '삼두': '운동', '이두': '운동', '광배근': '운동', '스쿼트': '운동',
   // 뷰티
   '뷰티': '뷰티', '패션': '뷰티', '메이크업': '뷰티', '스킨케어': '뷰티', '코디': '뷰티',
   '화장': '뷰티', '피부': '뷰티', '룩북': '뷰티', 'ootd': '뷰티', '옷': '뷰티',
-  // 운동/피트니스
-  '운동': '운동', '헬스': '운동', '다이어트': '운동', '홈트': '운동', '필라테스': '운동',
-  '요가': '운동', '힙업': '운동', '근육': '운동', '식단': '운동', '체력': '운동',
-  'workout': '운동', '피트니스': '운동', '하체': '운동', '복근': '운동',
   // 게임
   '게임': '게임', '롤': '게임', '배그': '게임', '마인크래프트': '게임', '오버워치': '게임',
   // 음악/댄스
@@ -67,9 +69,26 @@ function formatDuration(seconds?: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function krCategoryFromHashtags(tags: string[]): string {
+const TEXT_CATEGORY_RE: [RegExp, string][] = [
+  [/먹방|요리|레시피|맛집|음식|mukbang/i, '먹방'],
+  [/운동|헬스|홈트|다이어트|필라테스|요가|근육|웨이트|트레이닝|workout|피트니스|하체|복근|삼두|이두|광배근|스쿼트|bodybuilding/i, '운동'],
+  [/뷰티|메이크업|화장|스킨케어|패션|코디|룩북|ootd/i, '뷰티'],
+  [/댄스|춤|안무|커버댄스/i, '댄스'],
+  [/음악|노래|kpop|케이팝/i, '음악'],
+  [/게임|게임플레이/i, '게임'],
+  [/강아지|고양이|반려동물|반려견|반려묘/i, '펫'],
+];
+
+function krCategoryFromHashtags(tags: string[], text = ''): string {
+  // 1차: 해시태그 기반
   for (const [kw, cat] of Object.entries(HASHTAG_CATEGORY)) {
     if (tags.some((t) => t.includes(kw))) return cat;
+  }
+  // 2차: 해시태그 없을 때 텍스트(제목) 기반
+  if (tags.length === 0 && text) {
+    for (const [re, cat] of TEXT_CATEGORY_RE) {
+      if (re.test(text)) return cat;
+    }
   }
   return '일상 브이로그';
 }
@@ -86,7 +105,7 @@ function processPosts(posts: TikTokPost[], skipExpiry = false): Trend[] {
     if (!skipExpiry && new Date(post.createTimeISO).getTime() < cutoff) continue;
     seen.add(post.id);
     const tagNames = (post.hashtags ?? []).map((h) => h.name);
-    const krCategory = krCategoryFromHashtags(tagNames);
+    const krCategory = krCategoryFromHashtags(tagNames, post.text ?? '');
     const views = post.playCount ?? 0;
     const likes = post.diggCount ?? 0;
     const comments = post.commentCount ?? 0;

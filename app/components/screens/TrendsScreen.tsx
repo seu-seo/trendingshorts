@@ -6,9 +6,7 @@ import { getSavedItems, saveItem, removeItem } from '@/lib/saved-items';
 
 interface TrendsScreenProps {
   category: string;
-  platform?: string;
   categories?: string[];
-  chatKeyword?: string;
   onSelect: (trend: Trend) => void;
   onBack?: () => void;
   onViewRivals?: () => void;
@@ -37,10 +35,9 @@ function formatViews(n: number): string {
   return String(n);
 }
 
-export default function TrendsScreen({ category, platform, categories, chatKeyword, onSelect, onBack, onViewRivals, onNavigate }: TrendsScreenProps) {
+export default function TrendsScreen({ category, categories, onSelect, onBack, onViewRivals, onNavigate }: TrendsScreenProps) {
   const [trends, setTrends] = useState<Trend[]>([]);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState('');
   const [saved, setSaved] = useState<Set<string>>(() => new Set());
   const [sheet, setSheet] = useState<Trend | null>(null);
 
@@ -62,8 +59,7 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    const url = platform && platform !== 'all' ? `/api/trends?platform=${platform}` : '/api/trends';
-    fetch(url)
+    fetch('/api/trends')
       .then((r) => r.json())
       .then((json: { data: Trend[] }) => {
         if (!cancelled) setTrends(json.data ?? []);
@@ -71,32 +67,18 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
       .catch(() => { if (!cancelled) setTrends([]); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [platform]);
+  }, []);
 
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let pool = q
-      ? trends.filter((t) => t.title.toLowerCase().includes(q) || t.hashtags.toLowerCase().includes(q))
-      : trends;
-
-    // 취향설정 카테고리로 필터링 (설문 결과 반영) — 선택한 카테고리 영상만, engagement 높은 순
-    if (!q && categories && categories.length > 0) {
+    if (categories && categories.length > 0) {
       const catSet = new Set(categories);
-      pool = pool.filter((t) => catSet.has(t.category)).sort((a, b) => b.engagementRate - a.engagementRate);
+      return trends
+        .filter((t) => catSet.has(t.category))
+        .sort((a, b) => b.engagementRate - a.engagementRate)
+        .slice(0, 12);
     }
-
-    // 챗봇 첫 답변 키워드로 추가 정렬
-    if (chatKeyword) {
-      const kw = chatKeyword.toLowerCase();
-      pool = [...pool].sort((a, b) => {
-        const aM = a.title.toLowerCase().includes(kw) ? 1 : 0;
-        const bM = b.title.toLowerCase().includes(kw) ? 1 : 0;
-        return bM - aM || b.engagementRate - a.engagementRate;
-      });
-    }
-
-    return pool.slice(0, 12);
-  }, [trends, query, categories, chatKeyword]);
+    return [...trends].sort((a, b) => b.engagementRate - a.engagementRate).slice(0, 12);
+  }, [trends, categories]);
 
   return (
     <div className="screen active v7-screen" id="screen-v7-trends">
@@ -108,31 +90,14 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
         <span className="v7-eyebrow" id="v7-eyebrow-text">{category} · 지금 뜨는 영상</span>
         <div className="v7-title">이런 영상이<br />요즘 <em>반응</em>이 좋아요</div>
         <div className="v7-sub">마음에 드는 걸 누르면 바로 만들 수 있어요</div>
-        <div className="v7-search-wrap">
-          <svg className="v7-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input
-            className="v7-search-input"
-            id="trend-search-input"
-            type="text"
-            placeholder="키워드로 트렌드 검색..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          {query && (
-            <button className="v7-search-clear" id="trend-search-clear" onClick={() => setQuery('')}>✕</button>
-          )}
-        </div>
         <div id="trend-original-cards">
           {loading && <div className="v7-sub" style={{ padding: '24px 0' }}>트렌드를 불러오는 중...</div>}
-          {!loading && visible.length === 0 && (
-            <div className="v7-sub" style={{ padding: '24px 0' }}>검색 결과가 없어요</div>
-          )}
           {visible.map((t) => {
             const badge = BADGE[t.heatLevel];
             const isSaved = saved.has(`trend_${t.id}`);
             const thumb = thumbUrl(t);
             return (
-              <div className="v7-tcard" key={t.id} onClick={() => setSheet(t)}>
+              <div className="v7-tcard" key={`${t.platform}_${t.id}`} onClick={() => setSheet(t)}>
                 <div className="v7-tcard-top">
                   <div className="v7-tcard-title">{t.title}</div>
                   <span className={`v7-badge ${badge.cls}`}>{badge.label}</span>

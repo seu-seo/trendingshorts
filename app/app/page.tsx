@@ -150,9 +150,7 @@ export default function App() {
         {screen === 'trends' && (
           <TrendsScreen
             category={personaResult?.personaTagline ?? '지금'}
-            platform={prefs?.platform}
             categories={prefs?.categories}
-            chatKeyword={answers[0]}
             onSelect={(t) => { setSelectedTrend(t); setScreen('production'); }}
             onBack={() => setScreen('persona')}
             onViewRivals={() => setScreen('rivals')}

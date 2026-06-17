@@ -93,7 +93,7 @@
 
 <div class="page-header">
   <div class="page-title"><span class="dot"></span>Shortform Pulse — User Flow v8</div>
-  <div class="page-sub">feat/v8-next.js · SPA 아키텍처 · 2026.06.15</div>
+  <div class="page-sub">feat/v8-next.js · SPA 아키텍처 · 2026.06.17</div>
   <div class="target-chip">팔로워 1만 이하 한국 초기 크리에이터</div>
 </div>
 
@@ -201,7 +201,7 @@
   <div class="np">OnboardingPrefsScreen</div>
   <div class="nd"></div>
   <div class="ni g">플랫폼: tiktok · instagram · youtube · all</div>
-  <div class="ni g">카테고리 (복수): food · beauty · fitness · lifestyle · gaming · art · edu</div>
+  <div class="ni g">카테고리 (복수, 필수 1개↑): food · beauty · dance · music · gaming · pets · fitness · lifestyle</div>
   <div class="ni f">※ Category 타입과 완전 일치 — 트렌드 필터링에 직접 사용</div>
   <div class="ni g">연령대: 10s / 20s / 30s / 40s / 50+</div>
   <div class="ni">[건너뛰기] → null prefs로 persona 호출</div>
@@ -221,7 +221,9 @@
     <span class="badge bm">AI 생성</span>
   </div>
   <div class="ni m">페르소나 타입 · 태그라인 · 카테고리 · 플랫폼</div>
-  <div class="ni f">PersonaScreen — [다음] 클릭 시 Trends로</div>
+  <div class="ni g">최상단 닉네임 입력 (필수 — 미입력 시 버튼 비활성화)</div>
+  <div class="ni g">입력 완료 → localStorage('user_profile') + page state</div>
+  <div class="ni f">PersonaScreen — [트렌드 보러가기] 클릭 시 Trends로</div>
 </div>
 
 
@@ -247,8 +249,7 @@
   <div class="np">GET /api/trends — 서버 24h 캐시</div>
   <div class="nd"></div>
   <div class="ni g">prefs.categories로 1차 필터 (없으면 전체)</div>
-  <div class="ni g">chatbot 첫 답변 키워드로 정렬</div>
-  <div class="ni">최대 12개 카드 표시 / 키워드 검색바</div>
+  <div class="ni g">engagementRate 내림차순 정렬 / 최대 12개</div>
   <div class="ni">♥ 버튼 → 즉시 저장 (바텀시트 없이)</div>
   <div class="nd"></div>
   <div class="ni warn">카드 탭 → 바텀시트 ↓</div>
@@ -300,7 +301,9 @@
     <div class="nt"><span style="color:var(--pink)">◉</span> My</div>
     <span class="badge bp">MyScreen</span>
   </div>
-  <div class="np">localStorage — pulse_saved_v1</div>
+  <div class="np">localStorage — pulse_saved_v1 + user_profile</div>
+  <div class="nd"></div>
+  <div class="ni p">프로필: userProfile.name · personaType · categories</div>
   <div class="nd"></div>
   <div class="ni p">저장한 트렌드 — 제목 · 조회수 · heatLevel</div>
   <div class="ni p">저장한 크리에이터 — 썸네일 · 채널명 · 구독자</div>
@@ -316,11 +319,13 @@
     <div class="nt"><span style="color:var(--lime)">◉</span> Production</div>
     <span class="badge bg">ProductionScreen</span>
   </div>
-  <div class="np">POST /api/conti — 마운트 즉시 자동 생성</div>
+  <div class="np">Stage: intent → loading → conti / script</div>
   <div class="nd"></div>
-  <div class="ni m">selectedTrend + personaResult → Gemini 콘티 생성</div>
-  <div class="ni g">initialConti prop 있으면 재생성 없음 (캐시 재사용)</div>
-  <div class="ni g">캐싱: cachedTrendId + conti (동일 트렌드 즉시 표시)</div>
+  <div class="ni g">① intent: 의도 텍스트 입력 + 퀵 칩 4종</div>
+  <div class="ni m">② loading: POST /api/generate → 3종 대본 생성</div>
+  <div class="ni m">&nbsp;&nbsp;&nbsp;persona.hookPatterns → styles / concept = userIntent+trend</div>
+  <div class="ni m">③ POST /api/conti → script 기반 4컷 생성</div>
+  <div class="ni g">캐싱: cachedTrendId + conti (동일 트렌드 즉시)</div>
   <div class="nd"></div>
   <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
     <div style="padding:5px 10px;background:rgba(200,255,87,.08);border:1px solid rgba(200,255,87,.25);border-radius:6px;font-size:10px;color:var(--lime)">CUT1 0–3s 훅</div>
@@ -330,7 +335,7 @@
   </div>
   <div class="nd"></div>
   <div class="ni p">[저장하기] → saveItem({type:'conti'}) → My</div>
-  <div class="ni">[대본 보기] → Script / [스토리보드] → Storyboard</div>
+  <div class="ni">[대본으로 받기] → Script / [스토리보드] → Storyboard</div>
 </div>
 
 
@@ -363,8 +368,8 @@
     <div class="ni m">POST /api/persona — 온보딩 완료 · Gemini 페르소나</div>
     <div class="ni g">GET /api/trends — 트렌드 탭 진입 · 24h 캐시</div>
     <div class="ni b">POST /api/rival (SSE) — 라이벌 3단계 파이프라인</div>
-    <div class="ni g">POST /api/conti — 제작 화면 마운트 · 콘티 4컷</div>
-    <div class="ni m">POST /api/generate — 대본 3종 생성</div>
+    <div class="ni m">POST /api/generate — 제작 Step 1 · 3종 대본 + 추천 톤</div>
+    <div class="ni g">POST /api/conti — 제작 Step 2 · script 기반 4컷 생성</div>
     <div class="ni m">POST /api/insights — 트렌드 해시태그 버블 · 24h 캐시</div>
   </div>
 </div>

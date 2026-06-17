@@ -1,7 +1,7 @@
 # Shortform Pulse — USERFLOW
 
 > 기준: feat/v8-next.js SPA 아키텍처 기준
-> 최종 업데이트: 2026-06-15
+> 최종 업데이트: 2026-06-17
 
 ---
 
@@ -54,9 +54,10 @@
       ▼
 [Prefs] — OnboardingPrefsScreen
   ┌─ 플랫폼: tiktok | instagram | youtube | all
-  ├─ 카테고리 (복수):
-  │    food(먹방/요리) · beauty(뷰티) · fitness(운동/홈트)
-  │    lifestyle(여행/라이프) · gaming(게임) · art(패션/아트) · edu(교육/정보)
+  ├─ 카테고리 (복수, 필수 1개 이상):
+  │    food(먹방/요리) · beauty(뷰티) · dance(댄스)
+  │    music(음악) · gaming(게임) · pets(반려동물)
+  │    fitness(운동/홈트) · lifestyle(여행/라이프)
   │    ※ 실제 Category 타입과 동일 — 트렌드 필터링에 직접 사용됨
   └─ 연령대: 10s / 20s / 30s / 40s / 50+
       │ [건너뛰기] 가능
@@ -66,6 +67,8 @@
       │
       ▼
 [Persona 결과 카드]
+  최상단: 닉네임 입력 필드 (필수 — 미입력 시 "트렌드 보러가기" 버튼 비활성화)
+  입력 완료 → UserProfile { name } → localStorage + page.tsx state 저장
       │
       ▼
 [Trends 화면]
@@ -79,13 +82,10 @@
 [Trends]
   TrendsScreen — GET /api/trends (서버 24h 캐시)
   │
-  ├─ 검색바 (키워드 실시간 필터)
-  │
   ├─ 트렌드 카드 목록 (최대 12개)
-  │   필터링 순서:
-  │   1. prefs.categories로 category 일치 필터
-  │   2. chatbot 첫 답변 키워드로 관련 항목 상위 정렬
-  │   3. 결과 없으면 전체 중 engagementRate 정렬
+  │   필터링 로직:
+  │   1. prefs.categories로 category 일치 필터 (결과 없으면 전체)
+  │   2. engagementRate 내림차순 정렬
   │
   │   카드 탭 → [바텀시트]
   │       ├─ 저장하기 (♥) → pulse_saved_v1 → MyScreen
@@ -134,7 +134,13 @@
 
 ```
 [My]
-  MyScreen — localStorage pulse_saved_v1 읽기
+  MyScreen — localStorage pulse_saved_v1 + user_profile 읽기
+  │
+  ├─ 프로필 섹션 (최상단)
+  │   아바타 (닉네임 첫 글자)
+  │   이름: userProfile.name 님
+  │   페르소나: personaResult.personaType
+  │   태그: prefs.platform 배지 + prefs.categories 태그
   │
   ├─ 저장한 트렌드
   │   제목 · 조회수 · heatLevel 배지 · ×삭제
@@ -156,23 +162,39 @@
 진입: Trends 바텀시트 → "이걸로 만들기 →"
 
 ```
-[Production]
-  ProductionScreen — selectedTrend + personaResult
+[Production] — Stage: intent
+  ProductionScreen — selectedTrend + personaResult + prefs
   │
-  ├─ 마운트 즉시 POST /api/conti 호출
-  │   (initialConti prop이 있으면 재호출 없음 — 캐시 재사용)
+  ├─ "무엇을 만들고 싶은지" 텍스트 입력
+  │   퀵 칩: 내 일상에 적용 / 챌린지 도전 / 제품·서비스 소개 / 정보·팁 공유
   │
-  ├─ 콘티 로딩 중: 스피너 표시
+  ├─ [4컷 콘티 만들기] 또는 [대본으로 받기] 클릭
   │
-  ├─ 콘티 완료 → ContiResponse 표시
+  ▼
+[Production] — Stage: loading
+  "AI가 대본을 쓰고 있어요..."
+  │
+  │   Step 1: POST /api/generate
+  │   입력: trend + persona (hookPatterns → styles) + concept (intent + trend 기반)
+  │   출력: GenerateResponse (3종 대본 — 정보형·스토리형·후킹형)
+  │
+  │   Step 2: POST /api/conti (콘티 선택 시)
+  │   입력: Step 1의 추천 톤 대본 script
+  │   출력: ContiResponse (trendPoint + CUT1~4)
+  │
+  ▼
+[Production] — Stage: conti / script
+  │
+  ├─ 콘티 표시 → ContiResponse
   │   trendPoint 설명 + CUT1~CUT4
   │   각 컷: 장면 설명 + 대사 + 촬영 메모
+  │   [저장하기] → saveItem({type:'conti',...}) → My
+  │   [스토리보드] → StoryboardScreen
   │
-  ├─ [저장하기] → saveItem({type:'conti',...}) → My
-  │
-  ├─ [대본 보기] → POST /api/generate → [Script]
-  │
-  └─ [스토리보드 보기] → [Storyboard]
+  └─ 대본 표시 → ScriptScreen
+      3종 톤 전환 (정보형·스토리형·후킹형)
+      추천 톤 ✦ 마커
+      [저장하기] → saveItem({type:'script',...}) → My
 
 콘티 4컷:
   CUT1 0–3s   훅 (시선 잡기)
@@ -181,6 +203,7 @@
   CUT4 12–15s 클로징 (CTA)
 
 캐싱: page.tsx cachedTrendId + conti — 동일 트렌드 재진입 시 즉시 표시
+(initialConti prop 있으면 intent 스테이지 건너뜀)
 ```
 
 ---
@@ -192,8 +215,8 @@
 | 온보딩 완료 | POST /api/persona | page state |
 | 트렌드 화면 진입 | GET /api/trends | 서버 24h |
 | 라이벌 화면 진입 | POST /api/rival (SSE) | page state cachedRivals |
-| 제작 화면 진입 | POST /api/conti | page state cachedTrendId+conti |
-| 대본 요청 | POST /api/generate | 없음 |
+| 제작 intent 확정 (Step 1) | POST /api/generate | 없음 |
+| 제작 콘티 생성 (Step 2) | POST /api/conti | page state cachedTrendId+conti |
 
 ---
 

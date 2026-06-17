@@ -2,7 +2,7 @@
 
 > 기준: main API 정책 유지 + V6 UX 통합 → V8 SPA 아키텍처 전환  
 > V6에서 가져온 항목은 `[V6 UX]` 표기, main에서 유지한 항목은 `[main]` 표기, v8 신규는 `[v8]` 표기  
-> 최종 업데이트: 2026-06-15 (feat/v8-next.js 반영)
+> 최종 업데이트: 2026-06-17 (feat/v8-next.js 반영)
 
 ---
 
@@ -109,26 +109,28 @@ v8은 Next.js SPA 패턴. `app/app/page.tsx`가 `Screen` 유니온 타입으로 
 | 항목 | 선택지 |
 |------|--------|
 | 플랫폼 | tiktok / instagram / youtube / all |
-| 카테고리 (복수) | food(먹방/요리) / beauty(뷰티) / fitness(운동/홈트) / lifestyle(여행/라이프) / gaming(게임) / art(패션/아트) / edu(교육/정보) |
+| 카테고리 (복수, 필수 1개 이상) | food(먹방/요리) / beauty(뷰티) / dance(댄스) / music(음악) / gaming(게임) / pets(반려동물) / fitness(운동/홈트) / lifestyle(여행/라이프) |
 | 연령대 | 10s / 20s / 30s / 40s / 50+ |
 
-> **카테고리 중요:** 실제 트렌드 데이터의 `Category` 타입(`food|beauty|lifestyle|edu|gaming|fitness|art`)과 완전히 일치해야 트렌드 필터링이 작동함. `[v8 수정]`
+> **카테고리 중요:** 실제 트렌드 데이터의 `Category` 타입(`food|beauty|dance|music|gaming|pets|fitness|lifestyle`)과 완전히 일치해야 트렌드 필터링이 작동함. `[v8 수정]`
 
 **온보딩 완료 시 처리:**
 1. `POST /api/persona` 호출 → Gemini 페르소나 생성 (`buildPersonaInput(answers, prefs)`)
 2. 페르소나 결과 카드(`PersonaScreen`) 표시
+   - **최상단 닉네임 입력 (필수):** 입력 없으면 "트렌드 보러가기" 버튼 비활성화
+   - 입력 완료 → `localStorage('user_profile')` + `page.tsx` state에 `UserProfile { name }` 저장
 3. Trends 화면 랜딩
 
 ---
 
 ### 6.2 트렌드 탭 `[V6 UX + main API + v8]`
 
-`TrendsScreen` — 온보딩 카테고리·챗봇 키워드 기반 개인화 필터링.
+`TrendsScreen` — 온보딩 카테고리 기반 개인화 필터링.
 
 **트렌드 필터링 로직 `[v8]`:**
 1. `GET /api/trends` 전체 목록 로드
 2. `prefs.categories`에 해당하는 카테고리만 필터링 (결과 없으면 전체)
-3. `chatbot 첫 답변` 키워드로 관련 트렌드 상위 정렬
+3. `engagementRate` 내림차순 정렬
 4. 최대 12개 노출
 
 **카드 인터랙션 `[v8]`:**
@@ -196,7 +198,17 @@ v8은 Next.js SPA 패턴. `app/app/page.tsx`가 `Screen` 유니온 타입으로 
 
 ### 6.3 마이 탭 `[v8]`
 
-`MyScreen` — 저장 항목 전체를 섹션별로 표시.
+`MyScreen` — 사용자 프로필 + 저장 항목 전체를 섹션별로 표시.
+
+#### 프로필 섹션 `[v8 신규]`
+
+| 표시 항목 | 출처 |
+|----------|------|
+| 아바타 (닉네임 첫 글자) | `userProfile.name[0].toUpperCase()` |
+| 이름 + 님 | `userProfile.name` (localStorage `user_profile`) |
+| 페르소나 타입 | `personaResult.personaType` |
+| 플랫폼 배지 | `prefs.platform` |
+| 카테고리 태그 | `prefs.categories.slice(0, 3)` |
 
 #### 저장 데이터 구조 `[v8 신규]`
 
@@ -243,13 +255,30 @@ type SavedItemType = 'trend' | 'creator' | 'script' | 'conti';
 
 ### 6.5 제작(Production) 플로우 `[v8]`
 
-`ProductionScreen` — 선택한 트렌드 기반 콘티 자동 생성.
+`ProductionScreen` — 사용자 의도 기반 AI 2-step 콘텐츠 생성.
 
 **진입:** Trends 바텀시트 → "이걸로 만들기 →"
 
-**자동 생성 `[v8]`:** 화면 마운트 시 즉시 `POST /api/conti` 호출. `initialConti` prop이 있으면 재생성하지 않음(캐시 재사용).
+**Stage 흐름:**
 
-**콘티 캐싱 `[v8]`:** `page.tsx`의 `cachedTrendId` + `conti` 상태. 동일 트렌드 재진입 시 API 호출 없이 즉시 표시.
+```
+[intent] → 사용자 의도 입력
+    ↓ "4컷 콘티 만들기" 또는 "대본으로 받기"
+[loading] → AI가 대본을 쓰고 있어요...
+    ↓
+[conti / script] → 결과 표시
+```
+
+**Step 1 — POST /api/generate `[v8 신규]`:**
+- 입력: `trend` + `persona` (hookPatterns → styles) + `concept` (userIntent + trendBasis)
+- 출력: 3종 대본 (정보형·스토리형·후킹형) + 추천 톤
+- `concept`이 `[영상 컨셉 — 최우선 지시]`로 프롬프트에 주입됨
+
+**Step 2 — POST /api/conti `[v8]`:**
+- 입력: Step 1의 추천 톤 대본 script
+- 출력: `ContiResponse` (trendPoint + CUT1~4 + 각 컷 이미지)
+
+**콘티 캐싱:** `page.tsx`의 `cachedTrendId` + `conti` 상태. `initialConti` prop 있으면 intent 스테이지를 건너뜀.
 
 **콘티 구조 (`POST /api/conti`):**
 
@@ -261,12 +290,6 @@ type SavedItemType = 'trend' | 'creator' | 'script' | 'conti';
 | CUT4 | 12–15s | 클로징 |
 
 **저장하기 버튼:** conti → `saveItem({type:'conti',...})` / script → `saveItem({type:'script',...})` → 마이 탭 반영
-
-**결과 저장 흐름:**
-```
-Production → [저장하기] → pulse_saved_v1 (localStorage)
-                         → MyScreen 섹션별 표시
-```
 
 ---
 
@@ -296,8 +319,8 @@ Production → [저장하기] → pulse_saved_v1 (localStorage)
 | 트렌드 탭 진입 | `POST /api/weekly-issues` | Gemini 2.5 Flash | 없음 | ✅ |
 | 트렌드 탭 진입 | `POST /api/keyword-insight` | Gemini 2.5 Flash | 없음 | ✅ |
 | 라이벌 화면 진입 | `POST /api/rival` (SSE) | YouTube Data API v3 + Gemini + Vision | page state cachedRivals | ✅ v8 신규 |
-| 제작 화면 진입 | `POST /api/conti` | Gemini 2.5 Flash | page state cachedTrendId+conti | ✅ |
-| 대본 요청 | `POST /api/generate` | Gemini 2.5 Flash | 없음 | ✅ |
+| 제작 intent 확정 (Step 1) | `POST /api/generate` | Gemini 2.5 Flash | 없음 | ✅ v8 신규 |
+| 제작 콘티 생성 (Step 2) | `POST /api/conti` | Gemini 2.5 Flash | page state cachedTrendId+conti | ✅ |
 | 니치 분석 (미사용) | `POST /api/recommend` | Gemini 2.5 Flash | 없음 | ⚠️ v8에서 미노출 |
 
 ### 7.3 데이터의 본질적 한계 `[main]`

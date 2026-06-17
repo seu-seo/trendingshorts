@@ -190,17 +190,29 @@ export default function TrendsScreen({ category, platform, categories, chatKeywo
             <div style={{ fontSize: '12px', color: 'var(--gray)', marginBottom: '20px' }}>
               조회 {formatViews(sheet.views)} · 참여율 {sheet.engagementRate}%
             </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={() => { toggleSave(sheet); setSheet(null); }}
-                style={{ flex: 1, padding: '14px', borderRadius: '14px', border: `1px solid ${saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'rgba(255,255,255,0.15)'}`, background: saved.has(`trend_${sheet.id}`) ? 'rgba(200,255,87,0.1)' : 'rgba(255,255,255,0.05)', color: saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ flex: 1, padding: '14px 8px', borderRadius: '14px', border: `1px solid ${saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'rgba(255,255,255,0.15)'}`, background: saved.has(`trend_${sheet.id}`) ? 'rgba(200,255,87,0.1)' : 'rgba(255,255,255,0.05)', color: saved.has(`trend_${sheet.id}`) ? 'var(--primary)' : 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill={saved.has(`trend_${sheet.id}`) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-                {saved.has(`trend_${sheet.id}`) ? '저장됨' : '저장하기'}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill={saved.has(`trend_${sheet.id}`) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                {saved.has(`trend_${sheet.id}`) ? '저장됨' : '저장'}
               </button>
+              {sheet.videoUrl && (
+                <a
+                  href={sheet.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setSheet(null)}
+                  style={{ flex: 1.2, padding: '14px 8px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: 'var(--ink)', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', textDecoration: 'none' }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                  콘텐츠 보기
+                </a>
+              )}
               <button
                 onClick={() => { setSheet(null); onSelect(sheet); }}
-                style={{ flex: 2, padding: '14px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+                style={{ flex: 1.8, padding: '14px 8px', borderRadius: '14px', border: 'none', background: 'var(--primary)', color: 'var(--on-primary, #000)', fontFamily: 'var(--font-body)', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
               >
                 이걸로 만들기 →
               </button>

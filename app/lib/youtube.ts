@@ -42,9 +42,11 @@ const CATEGORY_MAP: Record<string, Category> = {
   '26': 'beauty',    // Howto & Style
 };
 
-// YouTube엔 'Howto & Style'(26)에 음식/레시피 콘텐츠가 별도 분류 없이 섞여 들어옴 →
-// 키워드로 음식 콘텐츠만 따로 식별해 'food'로 재분류 (나머지는 beauty 유지)
+// YouTube 'Howto & Style'(26)은 뷰티 외 모든 튜토리얼이 섞임 → 키워드로 재분류
 const FOOD_KEYWORDS_RE = /먹방|레시피|요리|맛집|쿠킹|식당|반찬|메뉴|음식|먹스타그램|mukbang|asmr.*먹|먹.*asmr/i;
+const BEAUTY_KEYWORDS_RE = /뷰티|메이크업|화장|스킨케어|헤어|네일|향수|피부관리|코디|룩북|ootd|패션|미용|클렌징|파운데이션|립|아이섀도/i;
+// YouTube 'Pets & Animals'(15)는 야생동물·농장동물 포함 → 반려동물 키워드 없으면 lifestyle
+const PETS_KEYWORDS_RE = /강아지|고양이|반려|puppy|kitten|hamster|햄스터|토끼|앵무|물고기|거북|도마뱀|냥|댕|멍/i;
 
 const THUMBNAIL_MAP: Record<string, string> = {
   '1': '🎬', '10': '🎵', '15': '🐾', '17': '💪', '19': '✈️',
@@ -109,9 +111,17 @@ function processVideos(items: (VideoDetail & { requestedCid: string })[]): Trend
       id: index + 1,
       platform: 'youtube' as const,
       platformLabel: PLATFORM_LABEL.youtube,
-      category: video.requestedCid === '26' && FOOD_KEYWORDS_RE.test(video.snippet.title)
-        ? 'food'
-        : CATEGORY_MAP[video.requestedCid] ?? 'lifestyle',
+      category: (() => {
+        const title = video.snippet.title;
+        const cid = video.requestedCid;
+        if (cid === '26') {
+          if (FOOD_KEYWORDS_RE.test(title)) return 'food';
+          if (BEAUTY_KEYWORDS_RE.test(title)) return 'beauty';
+          return 'lifestyle';
+        }
+        if (cid === '15') return PETS_KEYWORDS_RE.test(title) ? 'pets' : 'lifestyle';
+        return CATEGORY_MAP[cid] ?? 'lifestyle';
+      })(),
       heatLevel: deriveHeatLevel(engagementRate),
       title: video.snippet.title,
       creator: `@${video.snippet.channelTitle.replace(/\s+/g, '_')}`,

@@ -50,7 +50,7 @@ function toPersonaPlatform(p: OnboardingPrefs['platform']): PersonaInput['platfo
 }
 
 // 취향설정의 카테고리 목록 중 첫 preset을 페르소나 카테고리로 사용. 없으면 기본값.
-const PRESET_CATEGORIES: OnboardingCategory[] = ['food', 'beauty', 'lifestyle', 'edu', 'gaming', 'fitness', 'art'];
+const PRESET_CATEGORIES: OnboardingCategory[] = ['food', 'beauty', 'dance', 'music', 'gaming', 'pets', 'fitness', 'lifestyle'];
 function toPersonaCategory(cats: string[]): OnboardingCategory {
   const preset = cats.find((c): c is Category => (PRESET_CATEGORIES as string[]).includes(c));
   return preset ?? 'lifestyle';

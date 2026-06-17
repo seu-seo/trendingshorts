@@ -1,7 +1,7 @@
 export type Platform = 'youtube' | 'tiktok' | 'instagram';
 export type PlatformFilter = Platform | 'all';
 
-export type Category = 'food' | 'beauty' | 'lifestyle' | 'edu' | 'gaming' | 'fitness' | 'art';
+export type Category = 'food' | 'beauty' | 'dance' | 'music' | 'gaming' | 'pets' | 'fitness' | 'lifestyle';
 
 export type HeatLevel = 'HOT' | 'WARM' | 'COLD';
 

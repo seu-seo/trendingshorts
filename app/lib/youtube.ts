@@ -6,7 +6,7 @@ const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 const HANGUL_RE = /[가-힣]/;
 
 const SHORTS_CATEGORY_IDS = [
-  '23', '24', '1', '17', '20', '26', '22', '15', '28', '10', '19', '27',
+  '23', '24', '1', '20', '26', '22', '15', '10', '19',
 ];
 
 function parseDuration(iso: string): number {
@@ -32,19 +32,15 @@ function timeAgo(publishedAt: string): string {
 
 // YouTube Data API v3 categoryId → 온보딩 카테고리 직접 매핑
 const CATEGORY_MAP: Record<string, Category> = {
-  '1':  'art',       // Film & Animation
-  '10': 'art',       // Music
-  '15': 'lifestyle', // Pets & Animals (온보딩에 pets 없음 → lifestyle)
-  '17': 'fitness',   // Sports
+  '1':  'dance',     // Film & Animation (커버댄스·공연 영상 위주)
+  '10': 'music',     // Music
+  '15': 'pets',      // Pets & Animals
   '19': 'lifestyle', // Travel & Events
   '20': 'gaming',    // Gaming
   '22': 'lifestyle', // People & Blogs
   '23': 'lifestyle', // Comedy
   '24': 'lifestyle', // Entertainment
-  '25': 'edu',       // News & Politics
   '26': 'beauty',    // Howto & Style
-  '27': 'edu',       // Education
-  '28': 'edu',       // Science & Technology
 };
 
 // YouTube엔 'Howto & Style'(26)에 음식/레시피 콘텐츠가 별도 분류 없이 섞여 들어옴 →

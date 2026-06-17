@@ -57,7 +57,7 @@ export function recommendTone(
     scoreStory += 15;
     signals.push(`카테고리 '${cat}' — 스토리형 친화 (일상 내러티브)`);
   }
-  if (cat === 'fitness' || cat === 'art') {
+  if (cat === 'fitness' || cat === 'dance' || cat === 'music') {
     scoreHooking += 15;
     signals.push(`카테고리 '${cat}' — 후킹형 친화 (챌린지/비주얼 포맷)`);
   }

@@ -6,12 +6,13 @@ import { saveItem, getSavedItems, removeItem } from '@/lib/saved-items';
 
 const CAT_TOPICS: Record<string, string> = {
   food: '요리 먹방 레시피',
-  beauty: '뷰티 메이크업 스킨케어',
-  fitness: '홈트 운동 다이어트',
-  lifestyle: '라이프스타일 브이로그 여행',
+  beauty: '뷰티 메이크업 패션',
+  dance: '댄스 커버댄스 안무',
+  music: '음악 kpop 노래',
   gaming: '게임 공략 리뷰',
-  art: '패션 코디 아트',
-  edu: '교육 정보 자기계발',
+  pets: '반려동물 강아지 고양이',
+  fitness: '홈트 운동 다이어트',
+  lifestyle: '브이로그 일상 여행',
 };
 
 interface RivalsScreenProps {

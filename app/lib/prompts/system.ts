@@ -8,13 +8,14 @@ const PLATFORM_LABEL: Record<Trend['platform'], string> = {
 };
 
 const CATEGORY_LABEL: Record<Trend['category'], string> = {
-  beauty: '뷰티/패션',
   food: '요리/먹방',
-  lifestyle: '라이프스타일',
+  beauty: '뷰티/패션',
+  dance: '댄스/공연',
+  music: '음악/K팝',
   gaming: '게임/엔터',
-  edu: '정보/자기계발',
+  pets: '반려동물',
   fitness: '운동/건강',
-  art: '예술/음악',
+  lifestyle: '일상/브이로그',
 };
 
 export function buildSystemPrompt(args: {

@@ -6,7 +6,7 @@ const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 const HANGUL_RE = /[가-힣]/;
 
 const SHORTS_CATEGORY_IDS = [
-  '23', '24', '1', '20', '26', '22', '15', '10', '19',
+  '23', '24', '20', '26', '22', '15', '10', '19',
 ];
 
 function parseDuration(iso: string): number {
@@ -32,7 +32,6 @@ function timeAgo(publishedAt: string): string {
 
 // YouTube Data API v3 categoryId → 온보딩 카테고리 직접 매핑
 const CATEGORY_MAP: Record<string, Category> = {
-  '1':  'dance',     // Film & Animation (커버댄스·공연 영상 위주)
   '10': 'music',     // Music
   '15': 'pets',      // Pets & Animals
   '19': 'lifestyle', // Travel & Events

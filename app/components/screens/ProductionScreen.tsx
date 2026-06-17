@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { PersonaResult, Trend } from '@/lib/types';
 import type { ContiCut, ContiResponse } from '@/app/api/conti/route';
 import type { GenerateResponse } from '@/lib/prompts/types';
@@ -17,7 +17,7 @@ interface ProductionScreenProps {
   onContiGenerated?: (conti: ContiResponse) => void;
 }
 
-type Stage = 'select' | 'loading' | 'conti' | 'script' | 'saved';
+type Stage = 'intent' | 'loading' | 'conti' | 'script' | 'saved';
 
 const SVG_MAP: Record<string, string> = {
   closeup: 'M12 2C9.2 2 7 4.2 7 7s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 12c-5.3 0-8 2.7-8 4v2h16v-2c0-1.3-2.7-4-8-4z',
@@ -45,16 +45,26 @@ const SCRIPT_ITEMS: [string, string][] = [
   ['훅형', '"이게 된다고요? 끝까지 보면 깜짝 놀라요."'],
 ];
 
+const INTENT_CHIPS = ['내 일상에 적용', '챌린지 도전', '제품·서비스 소개', '정보·팁 공유'];
+
 export default function ProductionScreen({ trend, persona, initialConti, onNext, onBack, onScriptReady, onContiReady, onContiGenerated }: ProductionScreenProps) {
-  const [stage, setStage] = useState<Stage>(initialConti ? 'conti' : 'loading');
+  const [stage, setStage] = useState<Stage>(initialConti ? 'conti' : 'intent');
   const [conti, setConti] = useState<ContiResponse | null>(initialConti ?? null);
   const [script, setScript] = useState<GenerateResponse | null>(null);
+  const [userIntent, setUserIntent] = useState('');
 
-  const makeConti = useCallback(async () => {
+  async function makeConti(intent: string) {
     setStage('loading');
-    const hookText = `${trend.title} - 지금 바로 알려드릴게요!`;
-    const bodyText = `${trend.title}의 핵심 포인트를 단계별로 설명해드릴게요. (${persona.personaType})`;
-    const ctaText = `${trend.title} 지금 바로 따라해보세요!`;
+    const intentPart = intent.trim();
+    const hookText = intentPart
+      ? `${intentPart} — 이걸 모르면 손해예요!`
+      : `${trend.title} - 지금 바로 알려드릴게요!`;
+    const bodyText = intentPart
+      ? `${intentPart} 관점에서 ${trend.title}의 핵심 포인트를 보여드릴게요. (${persona.personaType})`
+      : `${trend.title}의 핵심 포인트를 단계별로 설명해드릴게요. (${persona.personaType})`;
+    const ctaText = intentPart
+      ? `${intentPart}처럼 직접 해보세요!`
+      : `${trend.title} 지금 바로 따라해보세요!`;
     try {
       const res = await fetch('/api/conti', {
         method: 'POST',
@@ -62,7 +72,13 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
         body: JSON.stringify({
           script: { hook: hookText, body: bodyText, cta: ctaText },
           tone: 'hooking',
-          concept: null,
+          concept: intentPart ? {
+            title: intentPart,
+            trendBasis: trend.title,
+            hook: hookText,
+            keywords: [],
+            expectedReaction: '',
+          } : null,
         }),
       });
       const data: ContiResponse = await res.json();
@@ -72,12 +88,7 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
       setConti(CLIENT_FALLBACK_CONTI);
     }
     setStage('conti');
-  }, [trend, persona]);
-
-  // 캐시된 콘티가 없을 때만 자동 생성
-  useEffect(() => {
-    if (!initialConti) void makeConti();
-  }, [makeConti, initialConti]);
+  }
 
   const makeScript = async () => {
     setStage('loading');
@@ -129,22 +140,43 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
           <span id="v7-topic-text">{trend.title}</span>
         </div>
 
-        {stage === 'select' && (
-          <div id="v7-make-select">
-            <div className="v7-make-title">어떻게 만들어볼까요?</div>
-            <div className="v7-make-sub">둘 다 받아볼 수도 있어요</div>
-            <div className="v7-make-grid">
-              <div className="v7-mc" onClick={makeScript}>
-                <div className="v7-mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16v16H4zM8 9h8M8 13h6" /></svg></div>
-                <div className="v7-mc-t">스크립트</div>
-                <div className="v7-mc-d">뭐라고 말할지<br />대본 3종</div>
-              </div>
-              <div className="v7-mc" onClick={makeConti}>
-                <div className="v7-mc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 10h18M9 4v6" /></svg></div>
-                <div className="v7-mc-t">콘티</div>
-                <div className="v7-mc-d">어떻게 찍을지<br />4컷 구성</div>
-              </div>
+        {stage === 'intent' && (
+          <div id="v7-make-intent">
+            <div className="v7-make-title">어떤 내용의 영상을<br />만들고 싶어요?</div>
+            <div className="v7-make-sub">내 스타일로 트렌드를 풀어보세요</div>
+            <div style={{ margin: '16px 0 10px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', padding: '14px 16px', transition: 'border-color 0.2s' }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(200,255,87,0.4)')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+            >
+              <input
+                type="text"
+                placeholder={`예: 내 ${trend.category} 스타일로 ${trend.title.slice(0, 10)} 따라해보기`}
+                value={userIntent}
+                onChange={(e) => setUserIntent(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && userIntent.trim()) void makeConti(userIntent); }}
+                maxLength={60}
+                style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', fontWeight: 600, color: 'var(--ink)', fontFamily: 'var(--font-body)', caretColor: 'var(--primary)' }}
+              />
             </div>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '20px' }}>
+              {INTENT_CHIPS.map((chip) => (
+                <button
+                  key={chip}
+                  onClick={() => setUserIntent(chip)}
+                  style={{ background: userIntent === chip ? 'rgba(200,255,87,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${userIntent === chip ? 'rgba(200,255,87,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: '20px', padding: '6px 12px', fontSize: '12px', fontFamily: 'var(--font-body)', color: userIntent === chip ? 'var(--primary)' : 'var(--gray)', cursor: 'pointer', transition: 'all 0.15s' }}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+            <button
+              className="welcome-start-btn"
+              onClick={() => void makeConti(userIntent)}
+              disabled={!userIntent.trim()}
+              style={{ maxWidth: '100%', margin: 0, opacity: userIntent.trim() ? 1 : 0.4, cursor: userIntent.trim() ? 'pointer' : 'not-allowed' }}
+            >
+              4컷 콘티 만들기 →
+            </button>
           </div>
         )}
 
@@ -180,7 +212,7 @@ export default function ProductionScreen({ trend, persona, initialConti, onNext,
             {script && onScriptReady && (
               <button className="v7-btn-ghost" onClick={() => onScriptReady(script)} style={{ marginBottom: '10px' }}>대본 전체 보기</button>
             )}
-            <button className="v7-btn-ghost" onClick={() => setStage('select')} style={{ marginBottom: '10px' }}>콘티도 받아보기</button>
+            <button className="v7-btn-ghost" onClick={() => setStage('intent')} style={{ marginBottom: '10px' }}>콘티도 받아보기</button>
             <button className="welcome-start-btn" onClick={() => {
               saveItem({ type: 'script', id: `script_${trend.id}`, trendTitle: trend.title, items: SCRIPT_ITEMS.map(([tag, text]) => ({ tag, text })), savedAt: new Date().toISOString() });
               setStage('saved');

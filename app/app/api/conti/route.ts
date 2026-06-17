@@ -260,15 +260,12 @@ const GEMINI_IMAGE_MODEL = 'gemini-2.5-flash-image';
 async function generatePanelImage(prompt: string): Promise<string> {
   const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!key) return '';
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 25_000);
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_IMAGE_MODEL}:generateContent?key=${key}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
@@ -291,8 +288,6 @@ async function generatePanelImage(prompt: string): Promise<string> {
   } catch (e) {
     console.error('[/api/conti] gemini-image failed:', e instanceof Error ? e.message : e);
     return '';
-  } finally {
-    clearTimeout(timer);
   }
 }
 

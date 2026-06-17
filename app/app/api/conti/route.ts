@@ -17,7 +17,7 @@ import type { RecommendConcept } from '@/lib/types';
  *  3) 키 없음/이미지 실패 시 imageUrl='' → 프론트가 SVG 스케치로 fallback (비용 0)
  */
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export type SketchType = 'closeup' | 'upper' | 'split' | 'front';
 
@@ -260,12 +260,15 @@ const GEMINI_IMAGE_MODEL = 'gemini-2.5-flash-image';
 async function generatePanelImage(prompt: string): Promise<string> {
   const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!key) return '';
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25_000);
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_IMAGE_MODEL}:generateContent?key=${key}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
@@ -288,6 +291,8 @@ async function generatePanelImage(prompt: string): Promise<string> {
   } catch (e) {
     console.error('[/api/conti] gemini-image failed:', e instanceof Error ? e.message : e);
     return '';
+  } finally {
+    clearTimeout(timer);
   }
 }
 

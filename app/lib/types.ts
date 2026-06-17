@@ -174,3 +174,7 @@ export interface RivalResult {
   sampleThumbnails: string[];
   channelUrl: string;
 }
+
+export interface UserProfile {
+  name: string;
+}

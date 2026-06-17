@@ -2,17 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { getSavedItems, removeItem, type SavedConti, type SavedCreator, type SavedItem, type SavedScript, type SavedTrend } from '@/lib/saved-items';
-import type { Trend } from '@/lib/types';
+import type { OnboardingPrefs, PersonaResult, Trend, UserProfile } from '@/lib/types';
 
 interface MyScreenProps {
   onNavigate: (screen: string) => void;
   onSelectTrend?: (trend: Trend) => void;
+  userProfile?: UserProfile | null;
+  personaResult?: PersonaResult | null;
+  prefs?: OnboardingPrefs | null;
 }
+
+const CATEGORY_LABEL: Record<string, string> = {
+  food: '음식/먹방', beauty: '뷰티', dance: '댄스', music: '음악',
+  gaming: '게임', pets: '펫', fitness: '피트니스', lifestyle: '라이프스타일',
+};
+const PLATFORM_LABEL: Record<string, string> = {
+  youtube: '유튜브', tiktok: '틱톡', instagram: '인스타그램', all: '전체 플랫폼',
+};
 
 const HEAT_LABEL: Record<string, string> = { HOT: '반응 폭발', WARM: '상승 중', COLD: '꾸준함' };
 const HEAT_CLS: Record<string, string> = { HOT: 'v7-badge-hot', WARM: 'v7-badge-warm', COLD: 'v7-badge-warm' };
 
-export default function MyScreen({ onNavigate, onSelectTrend }: MyScreenProps) {
+export default function MyScreen({ onNavigate, onSelectTrend, userProfile, personaResult, prefs }: MyScreenProps) {
   const [items, setItems] = useState<SavedItem[]>([]);
   const [trendSheet, setTrendSheet] = useState<SavedTrend | null>(null);
   const [creatorSheet, setCreatorSheet] = useState<SavedCreator | null>(null);
@@ -42,17 +53,20 @@ export default function MyScreen({ onNavigate, onSelectTrend }: MyScreenProps) {
 
         <div className="profile-section">
           <div className="profile-row">
-            <div className="big-avatar">S</div>
+            <div className="big-avatar">{userProfile?.name?.[0]?.toUpperCase() ?? '?'}</div>
             <div className="profile-info">
-              <div className="profile-name">수진<span className="nim"> 님</span></div>
-              <div className="profile-meta">팔로워 4,200명 · 크리에이터</div>
+              <div className="profile-name">{userProfile?.name ?? '---'}<span className="nim"> 님</span></div>
+              <div className="profile-meta">{personaResult?.personaType ?? '크리에이터'}</div>
             </div>
             <div className="profile-arrow">→</div>
           </div>
           <div className="tag-row" id="my-tags">
-            <div className="tag">인스타그램</div>
-            <div className="tag">먹방</div>
-            <div className="tag">30대</div>
+            {prefs?.platform && prefs.platform !== 'all' && (
+              <div className="tag">{PLATFORM_LABEL[prefs.platform] ?? prefs.platform}</div>
+            )}
+            {(prefs?.categories ?? []).slice(0, 3).map((c) => (
+              <div key={c} className="tag">{CATEGORY_LABEL[c] ?? c}</div>
+            ))}
           </div>
         </div>
 

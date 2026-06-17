@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import type { Category, OnboardingCategory, OnboardingPrefs, PersonaInput, PersonaResult, RivalResult, Trend } from '@/lib/types';
+import type { Category, OnboardingCategory, OnboardingPrefs, PersonaInput, PersonaResult, RivalResult, Trend, UserProfile } from '@/lib/types';
+import { saveUserProfile } from '@/lib/user-profile';
 import { saveItem } from '@/lib/saved-items';
 import type { GenerateResponse } from '@/lib/prompts/types';
 import type { ContiResponse } from '@/app/api/conti/route';
@@ -75,6 +76,7 @@ export default function App() {
   const [answers, setAnswers] = useState<string[]>([]);
   const [prefs, setPrefs] = useState<OnboardingPrefs | null>(null);
   const [personaResult, setPersonaResult] = useState<PersonaResult | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [cachedTrendId, setCachedTrendId] = useState<number | null>(null);
   const [cachedRivals, setCachedRivals] = useState<RivalResult[] | null>(null);
@@ -142,6 +144,11 @@ export default function App() {
           <PersonaScreen
             personaResult={personaResult}
             answers={answers}
+            onLogin={(name) => {
+              const profile: UserProfile = { name };
+              saveUserProfile(profile);
+              setUserProfile(profile);
+            }}
             onNext={() => setScreen('trends')}
             onRetryChat={() => setScreen('chatbot')}
           />
@@ -225,6 +232,9 @@ export default function App() {
           <MyScreen
             onNavigate={navigate}
             onSelectTrend={(t) => { setSelectedTrend(t); setScreen('production'); }}
+            userProfile={userProfile}
+            personaResult={personaResult}
+            prefs={prefs}
           />
         )}
 

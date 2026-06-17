@@ -38,7 +38,6 @@ const AGES: { val: AgeGroup; label: string }[] = [
 export default function OnboardingPrefsScreen({ onComplete, onSkip, onBack }: OnboardingPrefsScreenProps) {
   const [platform, setPlatform] = useState<PlatformFilter | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
-  const [customCat, setCustomCat] = useState('');
   const [age, setAge] = useState<AgeGroup | null>(null);
 
   const toggleCategory = (cat: string) => {
@@ -47,13 +46,11 @@ export default function OnboardingPrefsScreen({ onComplete, onSkip, onBack }: On
     );
   };
 
-  const ready = platform !== null && age !== null;
+  const ready = platform !== null && categories.length > 0 && age !== null;
 
   const submit = () => {
     if (!ready) return;
-    const custom = customCat.trim();
-    const cats = custom ? [...categories, custom] : categories;
-    onComplete({ platform: platform!, categories: cats, age });
+    onComplete({ platform: platform!, categories, age });
   };
 
   return (
@@ -103,15 +100,6 @@ export default function OnboardingPrefsScreen({ onComplete, onSkip, onBack }: On
               </div>
             ))}
           </div>
-          <div className="cat-or-divider">또는</div>
-          <input
-            id="cat-custom-input"
-            className="cat-custom-input"
-            type="text"
-            placeholder="직접 입력 (예: 반려동물, 댄스...)"
-            value={customCat}
-            onChange={(e) => setCustomCat(e.target.value)}
-          />
         </div>
 
         <div className="q-all-divider"></div>
